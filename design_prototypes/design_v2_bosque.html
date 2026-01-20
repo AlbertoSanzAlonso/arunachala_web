@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arunāchala Yoga y Terapias - Bosque Sagrado</title>
+    <style>
+        /* Variables de tu paleta: Bosque Sagrado */
+        :root {
+            --color-cream: #F5F5DC;
+            /* Blanco Hueso */
+            --color-terra: #2F4F4F;
+            /* Verde Bosque (Primary) */
+            --color-orange: #8FBC8F;
+            /* Verde Matcha (Secondary) */
+            --color-slate: #5D4037;
+            /* Marrón Corteza (Text) */
+            --font-main: 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-main);
+            background-color: var(--color-cream);
+            color: var(--color-slate);
+        }
+
+        /* Navegación */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .logo-container {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: var(--color-terra);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-img-placeholder {
+            width: 50px;
+            height: 50px;
+            background-color: var(--color-terra);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 10px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--color-slate);
+            margin-left: 30px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-terra);
+        }
+
+        /* Sección Hero (Principal) */
+        .hero {
+            text-align: center;
+            padding: 100px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            color: var(--color-slate);
+        }
+
+        p.subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            color: var(--color-slate);
+            opacity: 0.9;
+        }
+
+        /* Botones */
+        .btn {
+            padding: 15px 35px;
+            border-radius: 30px;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .btn-primary {
+            background-color: var(--color-terra);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1a3030;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(47, 79, 79, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 2px solid var(--color-slate);
+            color: var(--color-slate);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--color-orange);
+            color: var(--color-orange);
+        }
+
+        /* Sección de Tarjetas */
+        .services {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 80px 50px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            border-top: 5px solid var(--color-orange);
+        }
+
+        .card h3 {
+            color: var(--color-slate);
+        }
+
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            background-color: var(--color-cream);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-terra);
+            font-size: 24px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo-container">
+            <div class="logo-img-placeholder">LOGO</div>
+            Arunāchala
+        </div>
+        <div class="nav-links">
+            <a href="#">Clases</a>
+            <a href="#">Terapias</a>
+            <a href="#">Retiros</a>
+            <a href="#">Contacto</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>Conecta con tu esencia interior</h1>
+        <p class="subtitle">Yoga tradicional y terapias holísticas en un espacio creado para tu bienestar y crecimiento
+            espiritual.</p>
+
+        <a href="#" class="btn btn-primary">Reservar clase</a>
+        <a href="#" class="btn btn-secondary">Ver horarios</a>
+    </section>
+
+    <section class="services">
+        <div class="card">
+            <div class="icon-circle">🧘‍♀️</div>
+            <h3>Hatha Yoga</h3>
+            <p>Práctica tradicional para alinear cuerpo y mente.</p>
+        </div>
+        <div class="card" style="border-top-color: var(--color-terra);">
+            <div class="icon-circle">✨</div>
+            <h3>Terapias</h3>
+            <p>Sanación holística y masajes terapéuticos.</p>
+        </div>
+        <div class="card" style="border-top-color: var(--color-slate);">
+            <div class="icon-circle">🌿</div>
+            <h3>Meditación</h3>
+            <p>Espacios de silencio para encontrar tu paz.</p>
+        </div>
+    </section>
+
+</body>
+
+</html>
