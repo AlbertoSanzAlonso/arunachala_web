@@ -1,5 +1,9 @@
 # --- SEGURIDAD (Lo más importante) ---
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # --- DATOS (No subir la base de datos) ---
 postgres_data/
@@ -10,10 +14,42 @@ nocodb_data/
 .DS_Store
 Thumbs.db
 
+# --- PROYECTO ---
+node_modules/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# --- FRONTEND ---
+frontend/build/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# --- ANTIGUO ---
 Analisis competencia/
 scripts/
 web/assets/palettes/
 web/prototypes/
-__pycache__/
-*.pyc
-venv/
