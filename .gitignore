@@ -1,6 +1,19 @@
+# --- SEGURIDAD (Lo más importante) ---
+.env
+
+# --- DATOS (No subir la base de datos) ---
+postgres_data/
+n8n_data/
+nocodb_data/
+
+# --- SISTEMA ---
+.DS_Store
+Thumbs.db
+
 Analisis competencia/
+scripts/
+web/assets/palettes/
+web/prototypes/
 __pycache__/
 *.pyc
-.env
 venv/
-.DS_Store
