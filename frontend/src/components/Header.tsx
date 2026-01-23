@@ -1,15 +1,19 @@
 import React from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import logo from '../assets/images/logo_transparent.webp';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const navigate = useNavigate();
 
     const handleNavigation = (path: string) => {
-        setIsMenuOpen(false);
+        handleLinkClick();
         navigate(path);
+    };
+
+    const handleLinkClick = () => {
+        setIsMenuOpen(false);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -39,9 +43,9 @@ const Header: React.FC = () => {
                 className={`fixed top-0 right-0 h-full w-full md:w-96 z-40 bg-bark/95 backdrop-blur-md shadow-2xl transform transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col items-center justify-center`}
             >
                 <nav className="flex flex-col gap-10 text-center">
-                    <button onClick={() => handleNavigation('/yoga')} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300">YOGA</button>
-                    <button onClick={() => handleNavigation('/therapies')} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300">MASAJES</button>
-                    <button onClick={() => handleNavigation('/contact')} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300">CONTACTO</button>
+                    <Link to="/yoga" onClick={handleLinkClick} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300">YOGA</Link>
+                    <Link to="/therapies" onClick={handleLinkClick} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300">MASAJES</Link>
+                    <Link to="/contact" onClick={handleLinkClick} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300">CONTACTO</Link>
                 </nav>
             </div>
         </>

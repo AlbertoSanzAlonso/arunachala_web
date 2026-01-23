@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
 
 import omSymbol from '../assets/images/om_symbol.png';
+import YogaSchedule from '../components/YogaSchedule';
 
 const YogaPage: React.FC = () => {
     return (
@@ -20,18 +21,19 @@ const YogaPage: React.FC = () => {
                                 Explora nuestra variedad de clases de yoga diseñadas para ayudarte a encontrar equilibrio y paz.
                                 Ya sea que actúes desde el cuerpo o la respiración, nuestro espacio es tuyo.
                             </p>
-                            <button className="bg-forest text-bone font-bold py-3 px-8 rounded-full hover:bg-matcha hover:text-forest transition-all duration-300 shadow-lg">
-                                Ver Horarios Completos
-                            </button>
                         </div>
                         <div className="md:w-1/2 h-64 bg-matcha/20 rounded-2xl flex items-center justify-center p-8">
                             <img src={omSymbol} alt="Om Symbol" className="h-32 w-auto opacity-50 animate-pulse" />
                         </div>
                     </div>
                 </section>
+
+                <section className="bg-white/50 py-12">
+                    <YogaSchedule />
+                </section>
             </main>
             <Footer />
-        </div>
+        </div >
     );
 };
 

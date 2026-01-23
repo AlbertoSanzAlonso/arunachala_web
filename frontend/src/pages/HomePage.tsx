@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import videoBgWebm from '../assets/videos/hero_optimized.webm';
 import yogaImg from '../assets/images/gallery/yoga_sample.webp';
 import therapyImg from '../assets/images/gallery/therapy_sample.webp';
@@ -30,12 +30,7 @@ const getDailyMantra = () => {
 };
 
 const HomePage: React.FC = () => {
-    const navigate = useNavigate();
 
-    const handleNavigation = (path: string) => {
-        navigate(path);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
 
     return (
         <div className="font-body text-bark relative">
@@ -61,27 +56,29 @@ const HomePage: React.FC = () => {
 
                     {/* Navigation Buttons */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-12 w-full text-center">
-                        <div
-                            onClick={() => handleNavigation('/yoga')}
-                            className="group cursor-pointer p-6 md:p-8 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center"
+                        <Link
+                            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                            to="/yoga"
+                            className="group cursor-pointer p-6 md:p-8 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-bone/50"
                         >
-                            <img src={omSymbol} alt="Om Symbol" className="h-14 md:h-20 w-auto mb-3 md:mb-4 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
+                            <img src={omSymbol} alt="" aria-hidden="true" className="h-14 md:h-20 w-auto mb-3 md:mb-4 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
                             <h2 className="text-3xl md:text-6xl font-headers text-bone mb-2 md:mb-4 group-hover:scale-110 transition-transform duration-500">YOGA</h2>
                             <p className="text-bone/80 text-base md:text-lg opacity-80 group-hover:opacity-100 transition-opacity duration-500">
                                 Muévete y respira
                             </p>
-                        </div>
+                        </Link>
 
-                        <div
-                            onClick={() => handleNavigation('/therapies')}
-                            className="group cursor-pointer p-6 md:p-8 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center"
+                        <Link
+                            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                            to="/therapies"
+                            className="group cursor-pointer p-6 md:p-8 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-bone/50"
                         >
-                            <img src={lotusFlower} alt="Lotus Flower" className="h-14 md:h-20 w-auto mb-3 md:mb-4 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
+                            <img src={lotusFlower} alt="" aria-hidden="true" className="h-14 md:h-20 w-auto mb-3 md:mb-4 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
                             <h2 className="text-3xl md:text-6xl font-headers text-bone mb-2 md:mb-4 group-hover:scale-110 transition-transform duration-500">MASAJES</h2>
                             <p className="text-bone/80 text-base md:text-lg opacity-80 group-hover:opacity-100 transition-opacity duration-500">
                                 Recupera tu bienestar
                             </p>
-                        </div>
+                        </Link>
                     </div>
 
                     {/* Mantra of the Day Section */}
