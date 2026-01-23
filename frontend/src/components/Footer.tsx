@@ -31,10 +31,10 @@ const Footer: React.FC = () => {
                 <div className="md:col-span-1 flex flex-col gap-6 text-center md:text-left">
                     <h3 className="text-2xl font-headers tracking-widest text-matcha">ARUNACHALA</h3>
                     <address className="not-italic text-bone/80 leading-relaxed text-sm">
-                        Calle de la Paz, 42<br />
-                        Valle del Silencio<br />
-                        28400, Madrid<br />
-                        España
+                        Pasaje de Mateu Oliva 3, bajos<br />
+                        (junto Plaza Pallars)<br />
+                        08940 Cornellà de Llobregat<br />
+                        Barcelona
                     </address>
                     <p className="text-bone/80 text-sm">
                         <a href="mailto:hola@arunachala.com" className="hover:text-matcha transition-colors">hola@arunachala.com</a>
