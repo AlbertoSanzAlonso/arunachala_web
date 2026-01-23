@@ -37,15 +37,14 @@ const Footer: React.FC = () => {
                         Barcelona
                     </address>
                     <p className="text-bone/80 text-sm">
-                        <a href="mailto:hola@arunachala.com" className="hover:text-matcha transition-colors">hola@arunachala.com</a>
+                        <a href="mailto:yogayterapiasarunachala@gmail.com" className="hover:text-matcha transition-colors">yogayterapiasarunachala@gmail.com</a>
                         <br />
-                        <a href="tel:+34600123456" className="hover:text-matcha transition-colors">+34 600 123 456</a>
+                        <a href="tel:+34678481971" className="hover:text-matcha transition-colors">Tel. 678 481 971</a>
                     </p>
                 </div>
 
                 {/* Sitemap */}
                 <div className="col-span-1 flex flex-col gap-4 text-center md:text-left">
-                    <h4 className="text-sm font-bold uppercase tracking-widest text-matcha/80 mb-2">Mapa del Sitio</h4>
                     <ul className="flex flex-col gap-3 text-sm text-bone/70">
                         <li><Link to="/" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">Inicio</Link></li>
                         <li><Link to="/yoga" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">Yoga & Horarios</Link></li>
@@ -56,7 +55,6 @@ const Footer: React.FC = () => {
 
                 {/* Legal */}
                 <div className="col-span-1 flex flex-col gap-4 text-center md:text-left">
-                    <h4 className="text-sm font-bold uppercase tracking-widest text-matcha/80 mb-2">Legal</h4>
                     <ul className="flex flex-col gap-3 text-sm text-bone/70">
                         <li><Link to="#" className="hover:text-bone transition-colors">Aviso Legal</Link></li>
                         <li><Link to="#" className="hover:text-bone transition-colors">Política de Privacidad</Link></li>
@@ -66,7 +64,6 @@ const Footer: React.FC = () => {
 
                 {/* Socials */}
                 <div className="col-span-1 flex flex-col gap-6 items-center md:items-start text-center md:text-left">
-                    <h4 className="text-sm font-bold uppercase tracking-widest text-matcha/80">Síguenos</h4>
                     <div className="flex gap-6">
                         <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-bone/70 hover:text-matcha hover:scale-110 transition-all duration-300">
                             <InstagramIcon className="w-6 h-6" />
