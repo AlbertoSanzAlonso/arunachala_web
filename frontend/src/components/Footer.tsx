@@ -58,7 +58,6 @@ const Footer: React.FC = () => {
                     <ul className="flex flex-col gap-3 text-sm text-bone/70">
                         <li><Link to="#" className="hover:text-bone transition-colors">Aviso Legal</Link></li>
                         <li><Link to="#" className="hover:text-bone transition-colors">Política de Privacidad</Link></li>
-                        <li><Link to="#" className="hover:text-bone transition-colors">Política de Cookies</Link></li>
                     </ul>
                 </div>
 
