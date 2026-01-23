@@ -14,6 +14,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, interval = 5000 }) =>
             nextSlide();
         }, interval);
         return () => clearInterval(slideInterval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentIndex, interval]);
 
     const prevSlide = () => {

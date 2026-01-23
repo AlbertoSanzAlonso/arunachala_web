@@ -1,4 +1,4 @@
-import { useState, Suspense, lazy } from 'react';
+import { Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import videoBgWebm from '../assets/videos/hero_optimized.webm';
 import yogaImg from '../assets/images/gallery/yoga_sample.webp';
