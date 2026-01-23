@@ -1,138 +1,131 @@
-import React, { useState } from 'react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'; // v2 imports
-import videoBg from '../assets/videos/VIDEOWEB.mov';
-import logo from '../assets/images/logo_transparent.webp';
+import { useState, Suspense, lazy } from 'react';
+import { useNavigate } from 'react-router-dom';
+import videoBgWebm from '../assets/videos/hero_optimized.webm';
+import yogaImg from '../assets/images/gallery/yoga_sample.webp';
+import therapyImg from '../assets/images/gallery/therapy_sample.webp';
+import gardenImg from '../assets/images/gallery/garden_sample.webp';
+import omSymbol from '../assets/images/om_symbol.png';
+import lotusFlower from '../assets/images/lotus_flower.png';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import FadeInSection from '../components/FadeInSection';
+
+// Lazy load heavy components
+const ImageSlider = lazy(() => import('../components/ImageSlider'));
+const ReviewsSection = lazy(() => import('../components/ReviewsSection'));
+const WellnessQuiz = lazy(() => import('../components/WellnessQuiz'));
+
+const MANTRAS = [
+    { text: "Lokah Samastah Sukhino Bhavantu", translation: "Que todos los seres en todas partes sean felices y libres" },
+    { text: "Om Namah Shivaya", translation: "Honro la divinidad que habita en mí" },
+    { text: "Sat Nam", translation: "La verdad es mi identidad" },
+    { text: "Om Mani Padme Hum", translation: "La joya en el loto de mi corazón" },
+    { text: "Aham Brahmasmi", translation: "Yo soy la totalidad del universo" }
+];
+
+const getDailyMantra = () => {
+    const today = new Date();
+    const index = (today.getDate() + today.getMonth()) % MANTRAS.length;
+    return MANTRAS[index];
+};
 
 const HomePage: React.FC = () => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const navigate = useNavigate();
 
-    const scrollToSection = (id: string) => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-        }
+    const handleNavigation = (path: string) => {
+        navigate(path);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     return (
         <div className="font-body text-bark relative">
-            {/* Header */}
-            <header className="fixed top-0 left-0 w-full z-50 p-4 flex justify-between items-center bg-bone shadow-md">
-                <div className="cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-                    <img src={logo} alt="Arunachala" className="h-16 w-auto" />
-                </div>
-
-                {/* Mobile Menu Button (Always visible as requested 'mobile phone format') */}
-                <button
-                    onClick={() => setIsMenuOpen(true)}
-                    className="text-forest hover:text-matcha transition-colors"
-                >
-                    <Bars3Icon className="h-8 w-8" />
-                </button>
-            </header>
-
-            {/* Slide-out Menu */}
-            <div className={`fixed inset-0 z-50 bg-bark/95 transform transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col items-center justify-center`}>
-                <button
-                    onClick={() => setIsMenuOpen(false)}
-                    className="absolute top-6 right-6 text-bone hover:text-matcha"
-                >
-                    <XMarkIcon className="h-10 w-10" />
-                </button>
-                <nav className="flex flex-col gap-8 text-center bg-transparent">
-                    <button onClick={() => { setIsMenuOpen(false); scrollToSection('yoga'); }} className="text-bone font-headers text-4xl hover:text-matcha transition">YOGA</button>
-                    <button onClick={() => { setIsMenuOpen(false); scrollToSection('therapies'); }} className="text-bone font-headers text-4xl hover:text-matcha transition">MASAJES</button>
-                    <button onClick={() => { setIsMenuOpen(false); }} className="text-bone font-headers text-4xl hover:text-matcha transition">CONTACT</button>
-                </nav>
-            </div>
+            <Header />
 
             {/* Hero Section with Video */}
-            <section className="relative h-screen w-full overflow-hidden flex items-center justify-center">
+            <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center">
                 <video
-                    className="absolute top-0 left-0 w-full h-full object-cover"
-                    src={videoBg}
+                    className="absolute top-0 left-0 w-full h-full object-cover opacity-85"
                     autoPlay
                     loop
                     muted
                     playsInline
-                />
+                >
+                    <source src={videoBgWebm} type="video/webm" />
+                    Your browser does not support the video tag.
+                </video>
                 {/* Overlay */}
                 <div className="absolute top-0 left-0 w-full h-full bg-black/30"></div>
 
-                {/* Main Options */}
-                <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-4xl px-4 text-center">
-                    <div
-                        onClick={() => scrollToSection('yoga')}
-                        className="group cursor-pointer p-8 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm"
-                    >
-                        <h2 className="text-4xl md:text-6xl font-headers text-bone mb-4 group-hover:scale-110 transition-transform duration-500">YOGA</h2>
-                        <p className="text-bone/80 text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform translate-y-4 group-hover:translate-y-0">
-                            Muévete y respira
+                {/* Main Content Container */}
+                <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-4xl px-4 gap-6 md:gap-16 pt-28 pb-12 md:pt-0 md:pb-0">
+
+                    {/* Navigation Buttons */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-12 w-full text-center">
+                        <div
+                            onClick={() => handleNavigation('/yoga')}
+                            className="group cursor-pointer p-6 md:p-8 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center"
+                        >
+                            <img src={omSymbol} alt="Om Symbol" className="h-14 md:h-20 w-auto mb-3 md:mb-4 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
+                            <h2 className="text-3xl md:text-6xl font-headers text-bone mb-2 md:mb-4 group-hover:scale-110 transition-transform duration-500">YOGA</h2>
+                            <p className="text-bone/80 text-base md:text-lg opacity-80 group-hover:opacity-100 transition-opacity duration-500">
+                                Muévete y respira
+                            </p>
+                        </div>
+
+                        <div
+                            onClick={() => handleNavigation('/therapies')}
+                            className="group cursor-pointer p-6 md:p-8 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center"
+                        >
+                            <img src={lotusFlower} alt="Lotus Flower" className="h-14 md:h-20 w-auto mb-3 md:mb-4 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
+                            <h2 className="text-3xl md:text-6xl font-headers text-bone mb-2 md:mb-4 group-hover:scale-110 transition-transform duration-500">MASAJES</h2>
+                            <p className="text-bone/80 text-base md:text-lg opacity-80 group-hover:opacity-100 transition-opacity duration-500">
+                                Recupera tu bienestar
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Mantra of the Day Section */}
+                    <div className="text-center animate-fade-in max-w-2xl px-6 py-6 rounded-2xl bg-black/10 backdrop-blur-sm border border-bone/10 shadow-2xl hover:bg-black/20 transition-all duration-700">
+                        <p className="text-xs md:text-sm uppercase tracking-[0.4em] text-bone/60 mb-4 font-light">Mantra del Día</p>
+                        <h3 className="text-2xl md:text-4xl font-serif italic text-bone mb-3 leading-relaxed drop-shadow-md">
+                            "{getDailyMantra().text}"
+                        </h3>
+                        <p className="text-bone/70 text-sm md:text-base font-light italic">
+                            — {getDailyMantra().translation}
                         </p>
                     </div>
 
-                    <div
-                        onClick={() => scrollToSection('therapies')}
-                        className="group cursor-pointer p-8 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm"
-                    >
-                        <h2 className="text-4xl md:text-6xl font-headers text-bone mb-4 group-hover:scale-110 transition-transform duration-500">MASAJES</h2>
-                        <p className="text-bone/80 text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform translate-y-4 group-hover:translate-y-0">
-                            Recupera tu bienestar
-                        </p>
-                    </div>
-                </div>
-
-                {/* Scroll Indicator */}
-                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce text-bone/70">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                    </svg>
                 </div>
             </section>
 
             {/* Content Sections */}
             <main className="bg-bone relative z-10">
-                <section id="yoga" className="py-20 px-8 max-w-7xl mx-auto border-b border-bark/10">
-                    <div className="flex flex-col md:flex-row items-center gap-12">
-                        <div className="md:w-1/2">
-                            <h2 className="text-5xl font-headers text-forest mb-6">Yoga Schedule</h2>
-                            <p className="text-xl leading-relaxed mb-6">
-                                Explore our variety of yoga classes designed to help you find balance and peace.
-                                Whether you act from the body or the breath, our space is yours.
-                            </p>
-                            <button className="bg-forest text-bone font-bold py-3 px-8 rounded-full hover:bg-matcha hover:text-forest transition-all duration-300 shadow-lg">
-                                View Full Schedule
-                            </button>
-                        </div>
-                        <div className="md:w-1/2 h-64 bg-matcha/20 rounded-2xl flex items-center justify-center">
-                            {/* Placeholder for Yoga Image */}
-                            <span className="text-forest/50 font-headers">Yoga Image Placeholder</span>
-                        </div>
-                    </div>
+                {/* Wellness Quiz Section */}
+                <Suspense fallback={<div className="h-64 flex items-center justify-center">Loading Experience...</div>}>
+                    <FadeInSection>
+                        <WellnessQuiz />
+                    </FadeInSection>
+                </Suspense>
+
+                {/* Gallery Slider - MOVED BEFORE REVIEWS */}
+                <section className="w-full max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-12">
+                    {/* Added margin to separate from Quiz */}
+                    <Suspense fallback={<div className="h-96 flex items-center justify-center">Loading Gallery...</div>}>
+                        <FadeInSection delay={0.2}>
+                            <ImageSlider images={[yogaImg, therapyImg, gardenImg]} />
+                        </FadeInSection>
+                    </Suspense>
                 </section>
 
-                <section id="therapies" className="py-20 px-8 max-w-7xl mx-auto">
-                    <div className="flex flex-col md:flex-row-reverse items-center gap-12">
-                        <div className="md:w-1/2 text-right md:text-left">
-                            <h2 className="text-5xl font-headers text-forest mb-6">Therapies</h2>
-                            <p className="text-xl leading-relaxed mb-6">
-                                Discover healing therapies tailored to your individual needs.
-                                Reconnect with your inner self through our guided sessions.
-                            </p>
-                            <button className="bg-forest text-bone font-bold py-3 px-8 rounded-full hover:bg-matcha hover:text-forest transition-all duration-300 shadow-lg">
-                                Book a Session
-                            </button>
-                        </div>
-                        <div className="md:w-1/2 h-64 bg-forest/20 rounded-2xl flex items-center justify-center">
-                            {/* Placeholder for Therapy Image */}
-                            <span className="text-forest/50 font-headers">Therapy Image Placeholder</span>
-                        </div>
-                    </div>
-                </section>
+                {/* Reviews Section */}
+                <Suspense fallback={<div className="h-64 flex items-center justify-center">Loading Reviews...</div>}>
+                    <FadeInSection delay={0.3}>
+                        <ReviewsSection />
+                    </FadeInSection>
+                </Suspense>
             </main>
 
-            <footer className="bg-bark text-bone py-12 text-center">
-                <p>&copy; 2024 Arunachala Web. All rights reserved.</p>
-            </footer>
+            <Footer />
         </div>
     );
 };

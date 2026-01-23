@@ -1,11 +1,11 @@
-# --- SEGURIDAD (Lo más importante) ---
+# --- SEGURIDAD ---
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# --- DATOS (No subir la base de datos) ---
+# --- DATOS ---
 postgres_data/
 n8n_data/
 nocodb_data/
@@ -48,8 +48,23 @@ frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
 
+# --- HEAVY ASSETS (Local only) ---
+frontend/src/assets/videos/VIDEOWEB.mov
+frontend/src/assets/videos/Video aniversario Arunachala .mp4
+frontend/src/assets/videos/VIDEOWEB_hero.mp4
+
 # --- ANTIGUO ---
 Analisis competencia/
 scripts/
 web/assets/palettes/
 web/prototypes/
+
+# --- IDE CONFIGURACION ---
+.vscode/settings.json
+.idea/
+.cursor/
+
+# --- AGENTES CONFIGURACION ---
+.opencode/package.json
+.opencode/node_modules/
+.opencode/bun.lock

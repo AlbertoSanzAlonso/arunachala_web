@@ -1,0 +1,34 @@
+---name: fastapi-developerdescription: Develop FastAPI backend endpoints with SQLAlchemy and Pydantic patternslicense: MITcompatibility: opencodemetadata:  audience: developers  stack: python-fastapi  project: arunachala-web---
+## What I do
+- Create FastAPI endpoints following REST conventions
+- Implement Pydantic models for request/response validation
+- Set up SQLAlchemy models with proper relationships
+- Write async database operations with best practices
+- Implement JWT authentication when needed
+- Add proper error handling and status codes
+- Create API documentation with FastAPI auto-docs
+
+## When to use me
+Use this when you need to:
+- Create new API endpoints
+- Modify existing backend logic
+- Set up database models
+- Implement authentication/authorization
+- Add input validation
+- Write database operations
+
+## My patterns for Arunachala Web
+- Use `app/api/` for endpoints
+- Use `app/models/` for SQLAlchemy models  
+- Use `app/services/` for business logic
+- Use async/await for database operations
+- Follow Pydantic v2 patterns
+- Use environment variables for configuration
+- Return proper HTTP status codes
+
+## Technology specifics
+- FastAPI with async support
+- PostgreSQL with SQLAlchemy 2.0
+- Pydantic v2 for validation
+- python-jose for JWT tokens
+- psycopg2-binary for PostgreSQL connection

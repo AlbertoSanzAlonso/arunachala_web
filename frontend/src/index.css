@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-forest: #2F4F4F;
+    --color-bone: #F5F5DC;
+    --color-matcha: #8FBC8F;
+    --color-bark: #5D4037;
+  }
+
+  body {
+    background-color: var(--color-bone);
+    color: var(--color-bark);
+    font-family: 'Mulish', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--color-forest);
+  }
+}
