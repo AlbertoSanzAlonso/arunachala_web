@@ -4,7 +4,8 @@
 - Create reusable components with Tailwind CSS
 - Apply brand colors, typography, and spacing patterns
 - Ensure responsive design across all devices
-- Implement accessibility standards (WCAG 2.1)
+- Implement accessibility standards (WCAG 2.1 AA+, Color Contrast, Focus Management)
+- Ensure SEO-friendly semantic HTML structure
 - Create animations and micro-interactions
 - Maintain design consistency across features
 
@@ -16,7 +17,10 @@ Use this when you need to:
 - Create consistent spacing and typography
 - Implement design system tokens
 - Add animations and transitions
-- Ensure accessibility compliance
+- Implement design system tokens
+- Add animations and transitions
+- Ensure accessibility compliance (WCAG 2.1 AA)
+- Optimize for SEO and Core Web Vitals
 - Create mobile-first responsive designs
 
 ## Arunachala Web Design System
@@ -509,7 +513,19 @@ const OptimizedImage: React.FC = () => (
 
 ### ♿ Accessibility Standards
 
-#### Focus Management
+#### Visual Accessibility
+- **Color Contrast**: Ensure minimum 4.5:1 ratio for normal text (WCAG AA) and 3:1 for large text.
+- **Touch Targets**: Interactive elements must be at least 44x44px.
+- **Focus Indicators**: Never remove default outline without replacing it with a visible custom focus state.
+- **Motion Sensitivity**: Respect `prefers-reduced-motion` media query.
+
+#### Semantic Structure (ARIA & HTML5)
+- **Landmarks**: Use `<main>`, `<nav>`, `<aside>`, `<footer>`, `<header>` correctly.
+- **Headings**: strictly follow `h1` -> `h2` -> `h3` hierarchy. No skipped levels.
+- **Alt Text**: All meaningful images must have descriptive `alt` text. Decorative images use `alt=""`.
+- **Form Labels**: All inputs must have associated `<label>` elements or `aria-label`.
+
+#### Focus Management Component
 ```typescript
 const FocusTrap: React.FC<{ children: React.ReactNode; isOpen: boolean; onClose: () => void }> = ({ 
   children, 
@@ -535,7 +551,7 @@ const FocusTrap: React.FC<{ children: React.ReactNode; isOpen: boolean; onClose:
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div className="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true">
       <div className="flex min-h-full items-center justify-center p-4">
         {children}
       </div>
@@ -544,20 +560,60 @@ const FocusTrap: React.FC<{ children: React.ReactNode; isOpen: boolean; onClose:
 };
 ```
 
-#### ARIA Labels
+#### Accessible Interactive Elements
 ```typescript
 const AccessibleButton: React.FC<ButtonProps> = (props) => {
   return (
     <Button
       {...props}
-      aria-label={props.ariaLabel || props.children?.toString()}
+      aria-label={props.ariaLabel || (typeof props.children === 'string' ? props.children : undefined)}
+      aria-disabled={props.disabled}
       role="button"
-      tabIndex={props.disabled ? -1 : 0}
+      // Ensure specific touch target size on mobile
+      className={`${props.className} min-h-[44px] min-w-[44px] flex items-center justify-center`}
     >
       {props.children}
     </Button>
   );
 };
+```
+
+### 🔍 SEO Design Principles
+
+#### content Hierarchy
+- **Single H1**: Only one `<h1>` per page, describing the main topic.
+- **Semantic Tags**: Use `<article>` for independent content, `<section>` for thematic grouping.
+- **Meaningful Links**: Links should have descriptive text (avoid "click here").
+
+#### Core Web Vitals Design
+- **CLS (layout Shift)**: Define explicit `width` and `height` for all images and videos to prevent layout shifts.
+- **LCP (Largest Contentful Paint)**: Prioritize loading of hero images (e.g., `<link rel="preload">`).
+- **FID (First Input Delay)**: Keep heavy JS off the main thread; use simple CSS transitions over complex JS animations where possible.
+
+#### Example: SEO-Optimized Article Card
+```typescript
+const ArticleCard: React.FC<{ article: Article }> = ({ article }) => (
+  <article className="card p-4">
+    <header>
+      <h2 className="text-xl font-bold">
+        <a href={`/blog/${article.slug}`} className="hover:underline">
+          {article.title}
+        </a>
+      </h2>
+      <time dateTime={article.publishedAt} className="text-sm text-gray-500">
+        {new Date(article.publishedAt).toLocaleDateString()}
+      </time>
+    </header>
+    <p className="mt-2 text-gray-700">{article.excerpt}</p>
+    <img 
+      src={article.thumbnail} 
+      alt={`Thumbnail for ${article.title}`}
+      width="400" 
+      height="250"
+      loading="lazy"
+    />
+  </article>
+);
 ```
 
 ### 🎨 Specific Component Guidelines

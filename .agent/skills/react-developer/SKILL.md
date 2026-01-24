@@ -8,6 +8,8 @@
 - Add proper TypeScript types
 - Create responsive layouts
 - Handle forms and user input
+- Implement SEO best practices (Meta tags, Helmet)
+- Ensure accessibility implementation (ARIA, Focus management)
 
 ## When to use me
 Use this when you need to:
@@ -18,6 +20,8 @@ Use this when you need to:
 - Set up routing
 - Handle user interactions
 - Create responsive designs
+- Implement SEO requirements
+- Fix accessibility issues
 
 ## My patterns for Arunachala Web
 - Use functional components with hooks (no classes)
@@ -29,6 +33,8 @@ Use this when you need to:
 - Use `@headlessui/react` for complex UI components
 - Use `@heroicons/react` for icons
 - Use `framer-motion` for animations
+- Use `react-helmet` (or similar) for document head management
+- Use `lighthouse` checks for performance/SEO/a11y validation
 
 ## Component structure
 ```typescript
@@ -46,6 +52,51 @@ const Component: React.FC<ComponentProps> = ({ ...props }) => {
 };
 
 export default Component;
+```
+
+## 🔍 SEO Implementation
+```typescript
+import { Helmet } from 'react-helmet';
+
+const PageSEO: React.FC<{ title: string; description: string; path: string }> = ({ 
+  title, 
+  description,
+  path 
+}) => (
+  <Helmet>
+    <title>{title} | Arunachala Yoga</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={`https://arunachalayoga.org${path}`} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+  </Helmet>
+);
+```
+
+## ♿ Accessibility Implementation
+- **Linter**: Ensure `eslint-plugin-jsx-a11y` is active and strict.
+- **Testing**: Use `jest-axe` for unit testing component accessibility.
+- **Runtime**: Check console for a11y warnings during development.
+
+### A11y Hook Example
+```typescript
+import { useEffect, useRef } from 'react';
+
+// Hook to manage focus for modals/menus
+export const useFocusTrap = (isActive: boolean) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isActive) return;
+    const element = containerRef.current;
+    if (!element) return;
+    
+    // Implementation of focus trap logic
+    // ...
+  }, [isActive]);
+  
+  return containerRef;
+};
 ```
 
 ## Technology specifics
