@@ -68,3 +68,9 @@ web/prototypes/
 .opencode/package.json
 .opencode/node_modules/
 .opencode/bun.lock
+
+# --- DB & LOGS ---
+*.db
+*.log
+backend/static/
+backend/app/static/

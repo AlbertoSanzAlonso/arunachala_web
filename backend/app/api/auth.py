@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Body
+from fastapi import APIRouter, Depends, HTTPException, status, Body, File, UploadFile
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import timedelta
@@ -8,10 +8,31 @@ from app.models.models import User, UserRole
 from app.core.security import verify_password, create_access_token, get_password_hash, ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
 from app.services.email import email_service
 from pydantic import BaseModel, EmailStr
+import os
+import shutil
+import uuid
 
 router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/token")
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    user = db.query(User).filter(User.email == username).first()
+    if user is None:
+        raise credentials_exception
+    return user
 
 class Token(BaseModel):
     access_token: str
@@ -22,6 +43,7 @@ class UserResponse(BaseModel):
     id: int
     email: str
     role: str
+    profile_picture: str | None = None
     
     class Config:
         from_attributes = True
@@ -53,6 +75,36 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     return new_user
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+@router.post("/login")
+def login(credentials: LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == credentials.email).first()
+    if not user or not verify_password(credentials.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuario o contraseña incorrectos",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.email}, expires_delta=access_token_expires
+    )
+    
+    return {
+        "access_token": access_token, 
+        "token_type": "bearer",
+        "user": {
+            "id": str(user.id),
+            "email": user.email,
+            "name": user.email.split('@')[0], 
+            "role": user.role
+        }
+    }
 
 @router.post("/token")
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
@@ -118,3 +170,79 @@ def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db))
     db.commit()
     
     return {"message": "Contraseña actualizada correctamente"}
+
+@router.get("/me", response_model=UserResponse)
+def read_users_me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+@router.post("/me/upload-picture")
+async def upload_profile_picture(
+    file: UploadFile = File(...), 
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # Define upload directory (point to /backend/static/)
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    upload_dir = os.path.join(base_dir, "static", "profiles")
+    os.makedirs(upload_dir, exist_ok=True)
+    
+    # Generate unique filename
+    file_extension = os.path.splitext(file.filename)[1]
+    filename = f"{current_user.id}_{uuid.uuid4()}{file_extension}"
+    file_path = os.path.join(upload_dir, filename)
+    
+    # Save file
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+        
+    # Update user profile picture URL
+    # Assuming the app serves static files under /static
+    picture_url = f"/static/profiles/{filename}"
+    
+    current_user.profile_picture = picture_url
+    db.commit()
+    db.refresh(current_user)
+    
+    return {"url": picture_url}
+
+class AdminUserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    role: str = "USER"  # USER or ADMIN
+
+@router.post("/admin/create-user", response_model=UserResponse)
+def admin_create_user(
+    user_in: AdminUserCreate, 
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # Check if current user is admin
+    if current_user.role != UserRole.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permisos para crear usuarios"
+        )
+    
+    # Check if user already exists
+    existing_user = db.query(User).filter(User.email == user_in.email).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="El email ya está registrado")
+    
+    # Validate role
+    try:
+        user_role = UserRole[user_in.role.upper()]
+    except KeyError:
+        raise HTTPException(status_code=400, detail="Rol inválido. Usa USER o ADMIN")
+    
+    # Create new user
+    new_user = User(
+        email=user_in.email,
+        hashed_password=get_password_hash(user_in.password),
+        role=user_role,
+        is_active=True
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    return new_user

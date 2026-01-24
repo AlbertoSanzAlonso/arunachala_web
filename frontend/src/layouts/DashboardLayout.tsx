@@ -1,6 +1,8 @@
 import React, { Fragment, useState } from 'react';
+import logoIcon from '../assets/images/logo_icon.webp';
+import logoWide from '../assets/images/logo_wide.webp';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Dialog, Transition } from '@headlessui/react';
+import { Dialog, Transition, Menu } from '@headlessui/react';
 import {
     HomeIcon,
     DocumentTextIcon,
@@ -9,6 +11,9 @@ import {
     Bars3Icon,
     XMarkIcon,
     PhotoIcon,
+    UserCircleIcon,
+    UserPlusIcon,
+    ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
 
 const navigation = [
@@ -73,8 +78,9 @@ export default function DashboardLayout() {
                                     </Transition.Child>
                                     {/* Sidebar component for mobile */}
                                     <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
-                                        <div className="flex h-16 shrink-0 items-center">
-                                            <h1 className="text-2xl font-bold text-primary-600">Arunachala</h1>
+                                        <div className="flex flex-col shrink-0 items-center mt-6 mb-1">
+                                            <img src={logoIcon} alt="Arunachala Icon" className="h-24 w-auto mb-1 rounded-full" />
+                                            <h1 className="text-xl font-bold text-primary-600 tracking-tight">Arunachala<span className="text-gray-400 font-light">Panel</span></h1>
                                         </div>
                                         <nav className="flex flex-1 flex-col">
                                             <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -116,8 +122,9 @@ export default function DashboardLayout() {
                 {/* Static sidebar for desktop */}
                 <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
                     <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
-                        <div className="flex h-16 shrink-0 items-center">
-                            <h1 className="text-2xl font-bold text-primary-600 tracking-tight">Arunachala<span className="text-gray-400 font-light">Admin</span></h1>
+                        <div className="flex flex-col shrink-0 items-center mt-6 mb-1">
+                            <img src={logoIcon} alt="Arunachala Icon" className="h-24 w-auto mb-1 rounded-full" />
+                            <h1 className="text-xl font-bold text-primary-600 tracking-tight">Arunachala<span className="text-gray-400 font-light">Panel</span></h1>
                         </div>
                         <nav className="flex flex-1 flex-col">
                             <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -153,24 +160,102 @@ export default function DashboardLayout() {
                 </div>
 
                 <div className="lg:pl-72">
-                    <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
-                        <button
-                            type="button"
-                            className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
-                            onClick={() => setSidebarOpen(true)}
-                        >
-                            <span className="sr-only">Open sidebar</span>
-                            <Bars3Icon className="h-6 w-6" aria-hidden="true" />
-                        </button>
+                    <div className="sticky top-0 z-40 flex h-24 shrink-0 px-0 items-center border-b border-gray-200 bg-[#becf81] shadow-sm justify-between relative">
+                        <div className="flex items-center h-full w-full relative">
+                            <button
+                                type="button"
+                                className="-m-2.5 p-2.5 text-gray-700 lg:hidden absolute left-4 z-50 bg-white/50 rounded-full"
+                                onClick={() => setSidebarOpen(true)}
+                            >
+                                <span className="sr-only">Open sidebar</span>
+                                <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+                            </button>
 
-                        {/* Separator */}
-                        <div className="h-6 w-px bg-gray-200 lg:hidden" aria-hidden="true" />
-
-                        <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 justify-end items-center">
-                            <span className="text-sm text-gray-500">Admin Mode</span>
-                            <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold border border-primary-200">
-                                A
+                            {/* Header Logo Banner - Full bleed with no margins, matching bg color */}
+                            <div className="w-full h-full flex items-center justify-center lg:justify-start bg-[#becf81] lg:pl-0">
+                                <img
+                                    src={logoWide}
+                                    alt="Arunachala"
+                                    className="h-full w-auto max-w-full object-contain"
+                                />
                             </div>
+                        </div>
+
+                        <div className="flex items-center gap-4 absolute right-0 pr-4 sm:pr-6 lg:pr-8 h-full bg-gradient-to-l from-[#becf81] via-[#becf81]/90 to-transparent pl-8">
+                            <Menu as="div" className="relative ml-3">
+                                <div>
+                                    <Menu.Button className="flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                                        <span className="sr-only">Open user menu</span>
+                                        <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-[#becf81] font-bold border border-white/50 shadow-sm">
+                                            A
+                                        </div>
+                                    </Menu.Button>
+                                </div>
+                                <Transition
+                                    as={Fragment}
+                                    enter="transition ease-out duration-100"
+                                    enterFrom="transform opacity-0 scale-95"
+                                    enterTo="transform opacity-100 scale-100"
+                                    leave="transition ease-in duration-75"
+                                    leaveFrom="transform opacity-100 scale-100"
+                                    leaveTo="transform opacity-0 scale-95"
+                                >
+                                    <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+
+                                        <div className="px-4 py-3 border-b border-gray-100">
+                                            <p className="text-sm text-gray-500">Sesión iniciada como</p>
+                                            <p className="text-sm font-medium text-gray-900 truncate">admin@arunachala.com</p>
+                                        </div>
+
+                                        <Menu.Item>
+                                            {({ active }) => (
+                                                <Link
+                                                    to="/dashboard/create-user"
+                                                    className={classNames(
+                                                        active ? 'bg-gray-100' : '',
+                                                        'block px-4 py-2 text-sm text-gray-700 flex items-center gap-2'
+                                                    )}
+                                                >
+                                                    <UserPlusIcon className="h-5 w-5 text-gray-400" />
+                                                    Crear Usuario
+                                                </Link>
+                                            )}
+                                        </Menu.Item>
+                                        <Menu.Item>
+                                            {({ active }) => (
+                                                <Link
+                                                    to="/dashboard/profile"
+                                                    className={classNames(
+                                                        active ? 'bg-gray-100' : '',
+                                                        'block px-4 py-2 text-sm text-gray-700 flex items-center gap-2'
+                                                    )}
+                                                >
+                                                    <UserCircleIcon className="h-5 w-5 text-gray-400" />
+                                                    Mi Cuenta
+                                                </Link>
+                                            )}
+                                        </Menu.Item>
+                                        <Menu.Item>
+                                            {({ active }) => (
+                                                <button
+                                                    onClick={() => {
+                                                        // Handle logout logic here
+                                                        localStorage.removeItem('token');
+                                                        window.location.href = '/login';
+                                                    }}
+                                                    className={classNames(
+                                                        active ? 'bg-gray-100' : '',
+                                                        'block w-full text-left px-4 py-2 text-sm text-red-600 flex items-center gap-2'
+                                                    )}
+                                                >
+                                                    <ArrowRightOnRectangleIcon className="h-5 w-5 text-red-400" />
+                                                    Cerrar Sesión
+                                                </button>
+                                            )}
+                                        </Menu.Item>
+                                    </Menu.Items>
+                                </Transition>
+                            </Menu>
                         </div>
                     </div>
 

@@ -19,6 +19,8 @@ const GalleryManager = lazy(() => import('./pages/dashboard/GalleryManager'));
 const ContentManager = lazy(() => import('./pages/dashboard/ContentManager'));
 const ScheduleManager = lazy(() => import('./pages/dashboard/ScheduleManager'));
 const SeoStats = lazy(() => import('./pages/dashboard/SeoStats'));
+const UserProfile = lazy(() => import('./pages/dashboard/profile/UserProfile'));
+const CreateUser = lazy(() => import('./pages/dashboard/CreateUser'));
 
 function App() {
     return (
@@ -45,6 +47,8 @@ function App() {
                                 <Route path="content" element={<ContentManager />} />
                                 <Route path="schedule" element={<ScheduleManager />} />
                                 <Route path="seo" element={<SeoStats />} />
+                                <Route path="profile" element={<UserProfile />} />
+                                <Route path="create-user" element={<CreateUser />} />
                             </Route>
                         </Route>
                     </Routes>

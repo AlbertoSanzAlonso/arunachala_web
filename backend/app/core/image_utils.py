@@ -4,11 +4,13 @@ from fastapi import UploadFile, HTTPException
 import uuid
 import shutil
 
-UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static", "uploads")
+# Point to /backend/static/ instead of /backend/app/static/
+STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "static")
 
-def save_upload_file(upload_file: UploadFile, destination_dir: str = UPLOAD_DIR) -> str:
+def save_upload_file(upload_file: UploadFile, subdirectory: str = "uploads") -> str:
     try:
-        # Create directory if it doesn't exist
+        # Create full destination directory
+        destination_dir = os.path.join(STATIC_DIR, subdirectory)
         os.makedirs(destination_dir, exist_ok=True)
 
         # Generate unique filename
@@ -18,14 +20,10 @@ def save_upload_file(upload_file: UploadFile, destination_dir: str = UPLOAD_DIR)
         # Open image using Pillow
         image = Image.open(upload_file.file)
 
-        # Convert to RGB if necessary (e.g. for PNGs with transparency if saving as JPEG, but WebP supports transparency)
-        # However, it's good practice to ensure consistency. 
-        # WebP handles RGBA, so we usually don't need to convert unless it's a specific mode not supported.
-
         # Save as WebP
         image.save(file_location, "WEBP", quality=80, optimize=True)
         
-        return f"/static/uploads/{filename}"
+        return f"/static/{subdirectory}/{filename}"
 
     except Exception as e:
         print(f"Error saving image: {e}")

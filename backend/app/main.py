@@ -38,9 +38,9 @@ app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(gallery.router, prefix="/api/gallery", tags=["gallery"])
 
 # Mount Static Files (for uploaded images)
-# Calculate absolute path to avoid CWD issues
+# Calculate absolute path to avoid CWD issues - point to /backend/static/
 import os
-static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+static_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static")
 if not os.path.exists(static_dir):
     os.makedirs(static_dir)
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
