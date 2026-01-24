@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LockClosedIcon } from '@heroicons/react/20/solid';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import logoIcon from '../assets/images/logo_icon.webp';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const { login } = useAuth();
@@ -21,7 +23,6 @@ export default function LoginPage() {
 
         try {
             await login(email, password);
-            // Use replace to prevent going back to login
             navigate(from, { replace: true });
         } catch (err) {
             setError('Email o contraseña incorrectos');
@@ -33,14 +34,14 @@ export default function LoginPage() {
     return (
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-gray-50 h-screen">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-                <div className="mx-auto h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center">
-                    <LockClosedIcon className="h-6 w-6 text-primary-600" aria-hidden="true" />
+                <div className="mx-auto h-24 w-24 flex items-center justify-center">
+                    <img src={logoIcon} alt="Arunachala Logo" className="h-full w-full object-contain rounded-full" />
                 </div>
-                <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-                    Iniciar sesión en Dashboard
+                <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+                    Iniciar sesión en Panel de control
                 </h2>
                 <p className="mt-2 text-center text-sm text-gray-500">
-                    Arunachala Yoga & Ayurveda
+                    Arunachala Yoga & Terapias
                 </p>
             </div>
 
@@ -59,7 +60,7 @@ export default function LoginPage() {
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
+                                className="block w-full rounded-md border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
                             />
                         </div>
                     </div>
@@ -70,17 +71,29 @@ export default function LoginPage() {
                                 Contraseña
                             </label>
                         </div>
-                        <div className="mt-2">
+                        <div className="mt-2 relative">
                             <input
                                 id="password"
                                 name="password"
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 autoComplete="current-password"
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
+                                className="block w-full rounded-md border-0 py-3 px-4 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
                             />
+                            <button
+                                type="button"
+                                tabIndex={-1}
+                                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? (
+                                    <EyeSlashIcon className="h-5 w-5" aria-hidden="true" />
+                                ) : (
+                                    <EyeIcon className="h-5 w-5" aria-hidden="true" />
+                                )}
+                            </button>
                         </div>
                     </div>
 
@@ -116,10 +129,6 @@ export default function LoginPage() {
                         </a>
                     </span>
                 </p>
-
-                <div className="mt-4 text-center text-xs text-gray-400">
-                    Credenciales Demo: admin@arunachala.com / admin
-                </div>
             </div>
         </div>
     );

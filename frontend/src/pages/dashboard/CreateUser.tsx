@@ -9,6 +9,8 @@ export default function CreateUser() {
         email: '',
         password: '',
         confirmPassword: '',
+        firstName: '',
+        lastName: '',
         role: 'USER'
     });
     const [loading, setLoading] = useState(false);
@@ -22,7 +24,7 @@ export default function CreateUser() {
 
         // Validaciones
         if (!formData.email || !formData.password || !formData.confirmPassword) {
-            setError('Todos los campos son obligatorios');
+            setError('Email, contraseña y confirmación son obligatorios');
             return;
         }
 
@@ -39,7 +41,7 @@ export default function CreateUser() {
         setLoading(true);
 
         try {
-            const token = localStorage.getItem('token');
+            const token = sessionStorage.getItem('access_token');
             const response = await fetch(`${API_URL}/api/auth/admin/create-user`, {
                 method: 'POST',
                 headers: {
@@ -49,6 +51,8 @@ export default function CreateUser() {
                 body: JSON.stringify({
                     email: formData.email,
                     password: formData.password,
+                    first_name: formData.firstName || null,
+                    last_name: formData.lastName || null,
                     role: formData.role
                 })
             });
@@ -63,6 +67,8 @@ export default function CreateUser() {
                 email: '',
                 password: '',
                 confirmPassword: '',
+                firstName: '',
+                lastName: '',
                 role: 'USER'
             });
 
@@ -140,6 +146,38 @@ export default function CreateUser() {
                                 required
                             />
                         </div>
+                    </div>
+
+                    {/* First Name */}
+                    <div>
+                        <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
+                            Nombre (opcional)
+                        </label>
+                        <input
+                            type="text"
+                            id="firstName"
+                            name="firstName"
+                            value={formData.firstName}
+                            onChange={handleChange}
+                            className="block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                            placeholder="Juan"
+                        />
+                    </div>
+
+                    {/* Last Name */}
+                    <div>
+                        <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
+                            Apellidos (opcional)
+                        </label>
+                        <input
+                            type="text"
+                            id="lastName"
+                            name="lastName"
+                            value={formData.lastName}
+                            onChange={handleChange}
+                            className="block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                            placeholder="Pérez García"
+                        />
                     </div>
 
                     {/* Password */}
@@ -220,6 +258,8 @@ export default function CreateUser() {
                                     email: '',
                                     password: '',
                                     confirmPassword: '',
+                                    firstName: '',
+                                    lastName: '',
                                     role: 'USER'
                                 });
                                 setError('');

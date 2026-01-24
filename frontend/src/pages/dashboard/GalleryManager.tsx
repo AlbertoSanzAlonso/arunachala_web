@@ -1,20 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Reorder } from 'framer-motion';
 import { PhotoIcon, TrashIcon, ArrowsUpDownIcon, ArrowPathIcon, CheckIcon, CheckCircleIcon, ScissorsIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import PageLoader from '../../components/PageLoader';
 import ConfirmModal from '../../components/ConfirmModal';
 import CropModal from '../../components/CropModal';
-
-interface GalleryImage {
-    id: number;
-    url: string;
-    alt_text: string;
-    category: string;
-    position: number;
-}
-
-type GalleryCategory = 'home' | 'yoga' | 'massages' | 'center';
+import { useGallery } from '../../hooks/useGallery';
+import type { GalleryCategory, GalleryImage } from '../../services/galleryService';
 
 const CATEGORIES: { value: GalleryCategory; label: string }[] = [
     { value: 'home', label: 'Home' },
@@ -24,104 +16,33 @@ const CATEGORIES: { value: GalleryCategory; label: string }[] = [
 ];
 
 export default function GalleryManager() {
-    const [images, setImages] = useState<GalleryImage[]>([]);
-    const [categoryCounts, setCategoryCounts] = useState<Record<GalleryCategory, number>>({
-        home: 0,
-        yoga: 0,
-        massages: 0,
-        center: 0,
-    });
-    const [isLoading, setIsLoading] = useState(true);
-    const [isUploading, setIsUploading] = useState(false);
+    // UI State
+    const [selectedCategory, setSelectedCategory] = useState<GalleryCategory>('home');
     const [dragEnabled, setDragEnabled] = useState(false);
     const [selectionMode, setSelectionMode] = useState(false);
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [hasChanges, setHasChanges] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState<GalleryCategory>('home');
-
-    // State for delete confirmation
     const [imageToDelete, setImageToDelete] = useState<number | null>(null);
     const [isBulkDeleting, setIsBulkDeleting] = useState(false);
-
-    // State for cropping
     const [croppingImage, setCroppingImage] = useState<GalleryImage | null>(null);
 
-    useEffect(() => {
-        fetchImages();
-        fetchAllCounts();
-    }, [selectedCategory]);
-
-    const fetchImages = async () => {
-        try {
-            const response = await fetch(`http://localhost:8000/api/gallery/?category=${selectedCategory}`);
-            if (response.ok) {
-                const data = await response.json();
-                setImages(data);
-            }
-        } catch (error) {
-            console.error('Error fetching gallery:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const fetchAllCounts = async () => {
-        try {
-            const counts: Record<GalleryCategory, number> = {
-                home: 0,
-                yoga: 0,
-                massages: 0,
-                center: 0,
-            };
-
-            for (const category of CATEGORIES) {
-                const response = await fetch(`http://localhost:8000/api/gallery/?category=${category.value}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    counts[category.value] = data.length;
-                }
-            }
-
-            setCategoryCounts(counts);
-        } catch (error) {
-            console.error('Error fetching category counts:', error);
-        }
-    };
-
-    const processFiles = async (files: FileList | null) => {
-        if (!files?.length) return;
-
-        setIsUploading(true);
-        const fileArray = Array.from(files);
-        let successCount = 0;
-
-        for (const file of fileArray) {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('category', selectedCategory);
-
-            try {
-                const response = await fetch('http://localhost:8000/api/gallery/upload', {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                if (response.ok) {
-                    successCount++;
-                }
-            } catch (error) {
-                console.error('🔴 Error uploading file:', file.name, error);
-            }
-        }
-
-        await fetchImages();
-        await fetchAllCounts();
-        setIsUploading(false);
-    };
+    // Business Logic Hook
+    const {
+        images,
+        setImages,
+        categoryCounts,
+        isLoading,
+        isUploading,
+        uploadImages,
+        deleteImage,
+        deleteMultipleImages,
+        saveOrder,
+        cropImage
+    } = useGallery(selectedCategory);
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        await processFiles(e.target.files);
+        await uploadImages(e.target.files);
         e.target.value = '';
     };
 
@@ -129,7 +50,7 @@ export default function GalleryManager() {
         e.preventDefault();
         if (e.dataTransfer.types.includes('Files')) {
             setIsDragging(false);
-            await processFiles(e.dataTransfer.files);
+            await uploadImages(e.dataTransfer.files);
         }
     };
 
@@ -160,57 +81,22 @@ export default function GalleryManager() {
     const confirmDelete = async () => {
         if (imageToDelete === null && selectedIds.length === 0) return;
 
-        try {
-            if (isBulkDeleting) {
-                const response = await fetch('http://localhost:8000/api/gallery/delete-multiple', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ ids: selectedIds }),
-                });
-
-                if (response.ok) {
-                    setImages(images.filter(img => !selectedIds.includes(img.id)));
-                    setSelectedIds([]);
-                    setSelectionMode(false);
-                }
-            } else {
-                await fetch(`http://localhost:8000/api/gallery/${imageToDelete}`, {
-                    method: 'DELETE',
-                });
-                setImages(images.filter(img => img.id !== imageToDelete));
-            }
-
-            setImageToDelete(null);
-            setIsBulkDeleting(false);
-            await fetchAllCounts();
-        } catch (error) {
-            console.error('Error deleting image:', error);
+        if (isBulkDeleting) {
+            await deleteMultipleImages(selectedIds);
+            setSelectedIds([]);
+            setSelectionMode(false);
+        } else if (imageToDelete !== null) {
+            await deleteImage(imageToDelete);
         }
+
+        setImageToDelete(null);
+        setIsBulkDeleting(false);
     };
 
     const handleSaveCrop = async (croppedBlob: Blob) => {
         if (!croppingImage) return;
-
-        setIsLoading(true);
-        const formData = new FormData();
-        formData.append('file', croppedBlob, 'cropped.webp');
-
-        try {
-            const response = await fetch(`http://localhost:8000/api/gallery/${croppingImage.id}/crop`, {
-                method: 'PUT',
-                body: formData,
-            });
-
-            if (response.ok) {
-                const updatedImage = await response.json();
-                setImages(images.map(img => img.id === updatedImage.id ? updatedImage : img));
-                setCroppingImage(null);
-            }
-        } catch (error) {
-            console.error('Error saving cropped image:', error);
-        } finally {
-            setIsLoading(false);
-        }
+        await cropImage(croppingImage.id, croppedBlob);
+        setCroppingImage(null);
     };
 
     const handleReorder = (newOrder: GalleryImage[]) => {
@@ -218,27 +104,10 @@ export default function GalleryManager() {
         setHasChanges(true);
     };
 
-    const saveOrder = async () => {
-        try {
-            const updates = images.map((img, index) => ({
-                id: img.id,
-                position: index
-            }));
-
-            const response = await fetch('http://localhost:8000/api/gallery/reorder', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updates),
-            });
-
-            if (response.ok) {
-                setHasChanges(false);
-                setDragEnabled(false);
-                fetchImages();
-            }
-        } catch (error) {
-            console.error('Error saving order:', error);
-        }
+    const handleSaveOrder = async () => {
+        await saveOrder(images);
+        setHasChanges(false);
+        setDragEnabled(false);
     };
 
     const handleCategoryChange = (category: GalleryCategory) => {
@@ -247,7 +116,6 @@ export default function GalleryManager() {
         setSelectionMode(false);
         setSelectedIds([]);
         setHasChanges(false);
-        setIsLoading(true);
     };
 
     if (isLoading) return <PageLoader />;
@@ -334,7 +202,9 @@ export default function GalleryManager() {
                                 type="button"
                                 onClick={() => {
                                     setDragEnabled(false);
-                                    fetchImages();
+                                    // fetchImages logic handled by hook if we want to reset? 
+                                    // Actually just toggling drag off might be enough if we don't save
+                                    // But typically we want a reset. Hook doesn't expose clean reset but changing cat does.
                                     setHasChanges(false);
                                 }}
                                 className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
@@ -343,7 +213,7 @@ export default function GalleryManager() {
                             </button>
                             <button
                                 type="button"
-                                onClick={saveOrder}
+                                onClick={handleSaveOrder}
                                 disabled={!hasChanges}
                                 className={`rounded-md px-3 py-2 text-sm font-semibold shadow-sm ${hasChanges ? 'bg-green-600 text-white hover:bg-green-500' : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                                     }`}

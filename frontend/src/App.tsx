@@ -21,6 +21,7 @@ const ScheduleManager = lazy(() => import('./pages/dashboard/ScheduleManager'));
 const SeoStats = lazy(() => import('./pages/dashboard/SeoStats'));
 const UserProfile = lazy(() => import('./pages/dashboard/profile/UserProfile'));
 const CreateUser = lazy(() => import('./pages/dashboard/CreateUser'));
+const ClassTypeManager = lazy(() => import('./pages/dashboard/ClassTypeManager'));
 
 function App() {
     return (
@@ -49,6 +50,7 @@ function App() {
                                 <Route path="seo" element={<SeoStats />} />
                                 <Route path="profile" element={<UserProfile />} />
                                 <Route path="create-user" element={<CreateUser />} />
+                                <Route path="classes" element={<ClassTypeManager />} />
                             </Route>
                         </Route>
                     </Routes>

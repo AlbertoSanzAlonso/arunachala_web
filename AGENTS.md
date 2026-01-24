@@ -17,14 +17,31 @@ arunachala_web/
 ```
 
 ## 🚀 Development Commands
-- **Backend**: `cd backend && uvicorn app.main:app --reload`
+- **Backend**: `cd backend && ../venv/bin/uvicorn app.main:app --reload` (Uses root `venv`)
 - **Frontend**: `cd frontend && npm start`  
 - **Database**: `cd infraestructura && docker-compose up -d`
 - **Tests**: `pytest` (backend) + `npm test` (frontend)
 - **Linting**: `flake8` (backend) + `npm run lint` (frontend)
+- **Environment Note**: Python virtual environment is located at project root (`/venv`), NOT in `backend/venv`.
 
-## 🔧 Environment Variables Required
-- OpenAI API, WhatsApp Business, Database strings, JWT keys
+## 🔧 Environment Configuration
+There are EXACTLY TWO required `.env` files in the project. Do NOT create one in the root.
+
+### 1. Backend Configuration (`backend/.env`)
+Used by FastAPI (Python). Must contain:
+- `DATABASE_URL`: Connection string to PostgreSQL.
+- `SECRET_KEY`: For JWT tokens.
+- `ALGORITHM`: Encryption algorithm (e.g., HS256).
+- `ACCESS_TOKEN_EXPIRE_MINUTES`: Token validity.
+- `GOOGLE_API_KEY`: For reviews/maps integration.
+
+### 2. Infrastructure Configuration (`infraestructura/.env`)
+Used by Docker Compose. Must contain:
+- `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`: For creating the DB container.
+- `NOCODB_PORT`: Port for the NocoDB dashboard.
+- `N8N_ENCRYPTION_KEY`, `GENERIC_TIMEZONE`: For n8n automation.
+
+**⚠️ IMPORTANT**: Never commit these files to Git. Use `.env.example` as a template.
 
 ---
 
@@ -42,6 +59,7 @@ arunachala_web/
 | **fastapi-developer** | Backend FastAPI, SQLAlchemy, Pydantic | Create endpoints, models, API |
 | **react-developer** | React components, TypeScript, Tailwind | UI components, hooks, routing |
 | **ui-design-system** | UI/UX design system with Tailwind CSS | Styling, components, layouts, animations |
+| **environment-management** | Run/Manage Frontend & Backend envs | Starting servers, installing deps, troubleshooting |
 
 #### 🎯 Domain Skills  
 | Skill | Purpose | When to use? |
@@ -95,6 +113,26 @@ arunachala_web/
 5. booking-system → Apply business logic
 6. github-workflow → Create PR and merge
 ```
+
+---
+
+## 🏛️ Architecture Standards (Clean Architecture)
+
+All code written for this project MUST adhere to **Clean Architecture** principles to ensure maintainability, testability, and separation of concerns.
+
+### 🐍 Backend (FastAPI)
+The backend must follow a layered architecture:
+1.  **Interface Layer (`app/api` - Routers)**: Handles HTTP requests/responses. **NO BUSINESS LOGIC ALLOWED HERE**. Delegates work to the Service Layer.
+2.  **Service Layer (`app/services`)**: Contains all business logic (Use Cases). Independent of the HTTP framework. Orchestrates data operations.
+3.  **Data Layer (`app/models` / `app/core`)**: Handles database models and raw data access.
+4.  **Dependencies**: Layers should depend on abstractions (or inner layers), not outer layers.
+
+### ⚛️ Frontend (React)
+The frontend must separate View from Logic:
+1.  **UI Components (`src/components`)**: Presentational "dumb" components. Responsible only for rendering props.
+2.  **Container/Pages (`src/pages`)**: Orchestration components. Handle state and pass data to UI components.
+3.  **Logic & Adapters (`src/hooks`)**: Custom hooks that encapsulate complex logic and state management.
+4.  **Infrastructure (`src/services`)**: API client and external communication. Components NEVER call standard `fetch`/`axios` directly; they verify strict interfaces via services.
 
 ---
 

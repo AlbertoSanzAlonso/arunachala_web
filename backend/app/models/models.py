@@ -13,11 +13,13 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
-    role = Column(String, default=UserRole.USER)
-    is_active = Column(Boolean, default=True)
+    password_hash = Column(String, nullable=False)
+    first_name = Column(String, nullable=True)
+    last_name = Column(String, nullable=True)
     profile_picture = Column(String, nullable=True)
+    role = Column(String, default="user")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
 class ContentType(str, enum.Enum):
     ARTICLE = "article"
@@ -60,14 +62,30 @@ class Gallery(Base):
     position = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
+class YogaClassDefinition(Base):
+    __tablename__ = "yoga_classes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True, nullable=False)
+    description = Column(Text, nullable=True)
+    color = Column(String, nullable=True) # Tailwind class like 'bg-forest/20'
+    intensity = Column(String, nullable=True) # Suave, Media, Alta
+    age_range = Column(String, nullable=True) # Optional note or age
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    schedules = relationship("ClassSchedule", back_populates="yoga_class")
+
 class ClassSchedule(Base):
     __tablename__ = "schedules"
 
     id = Column(Integer, primary_key=True, index=True)
-    class_name = Column(String, index=True, nullable=False)
+    class_id = Column(Integer, ForeignKey("yoga_classes.id"), nullable=True)
+    class_name = Column(String, nullable=True) # Keeping for backwards compatibility/migration
     day_of_week = Column(String, nullable=False) # Monday, Tuesday...
     start_time = Column(String, nullable=False) # "09:00"
     end_time = Column(String, nullable=False) # "10:30"
-    instructor = Column(String, nullable=False)
-    room = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
+
+    yoga_class = relationship("YogaClassDefinition", back_populates="schedules")
+
+

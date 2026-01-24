@@ -1,8 +1,9 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import logoIcon from '../assets/images/logo_icon.webp';
 import logoWide from '../assets/images/logo_wide.webp';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Dialog, Transition, Menu } from '@headlessui/react';
+import { useAuth } from '../context/AuthContext';
 import {
     HomeIcon,
     DocumentTextIcon,
@@ -13,6 +14,7 @@ import {
     PhotoIcon,
     UserCircleIcon,
     UserPlusIcon,
+    TagIcon,
     ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
 
@@ -20,6 +22,7 @@ const navigation = [
     { name: 'Vista General', href: '/dashboard', icon: HomeIcon },
     { name: 'Galería', href: '/dashboard/gallery', icon: PhotoIcon },
     { name: 'Contenido', href: '/dashboard/content', icon: DocumentTextIcon },
+    { name: 'Menú de Clases', href: '/dashboard/classes', icon: TagIcon },
     { name: 'Horarios', href: '/dashboard/schedule', icon: CalendarIcon },
     { name: 'SEO & Google', href: '/dashboard/seo', icon: ChartBarIcon },
 ];
@@ -28,9 +31,55 @@ function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ');
 }
 
+const API_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
+
 export default function DashboardLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [userProfile, setUserProfile] = useState<any>(null);
     const location = useLocation();
+    const { logout } = useAuth();
+
+    useEffect(() => {
+        fetchUserProfile();
+
+        // Listen for profile updates
+        const handleProfileUpdate = () => {
+            fetchUserProfile();
+        };
+
+        window.addEventListener('profileUpdated', handleProfileUpdate);
+
+        return () => {
+            window.removeEventListener('profileUpdated', handleProfileUpdate);
+        };
+    }, []);
+
+    const fetchUserProfile = async () => {
+        try {
+            const token = sessionStorage.getItem('access_token');
+            const response = await fetch(`${API_URL}/api/auth/me`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setUserProfile(data);
+            }
+        } catch (error) {
+            console.error("Error loading user profile", error);
+        }
+    };
+
+    const getUserInitial = () => {
+        if (userProfile?.first_name) {
+            return userProfile.first_name.charAt(0).toUpperCase();
+        }
+        if (userProfile?.email) {
+            return userProfile.email.charAt(0).toUpperCase();
+        }
+        return 'A';
+    };
 
     return (
         <>
@@ -184,11 +233,24 @@ export default function DashboardLayout() {
                         <div className="flex items-center gap-4 absolute right-0 pr-4 sm:pr-6 lg:pr-8 h-full bg-gradient-to-l from-[#becf81] via-[#becf81]/90 to-transparent pl-8">
                             <Menu as="div" className="relative ml-3">
                                 <div>
-                                    <Menu.Button className="flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                                    <Menu.Button className="flex items-center gap-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#becf81]">
                                         <span className="sr-only">Open user menu</span>
-                                        <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-[#becf81] font-bold border border-white/50 shadow-sm">
-                                            A
-                                        </div>
+                                        {userProfile?.profile_picture ? (
+                                            <img
+                                                className="h-8 w-8 rounded-full object-cover border-2 border-white shadow-sm"
+                                                src={`${API_URL}${userProfile.profile_picture}`}
+                                                alt="Profile"
+                                            />
+                                        ) : (
+                                            <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-[#becf81] font-bold border-2 border-white shadow-sm">
+                                                {getUserInitial()}
+                                            </div>
+                                        )}
+                                        <span className="hidden sm:block text-sm font-medium text-gray-800">
+                                            {userProfile?.first_name && userProfile?.last_name
+                                                ? `${userProfile.first_name} ${userProfile.last_name}`
+                                                : userProfile?.first_name || userProfile?.email?.split('@')[0] || 'Usuario'}
+                                        </span>
                                     </Menu.Button>
                                 </div>
                                 <Transition
@@ -204,7 +266,9 @@ export default function DashboardLayout() {
 
                                         <div className="px-4 py-3 border-b border-gray-100">
                                             <p className="text-sm text-gray-500">Sesión iniciada como</p>
-                                            <p className="text-sm font-medium text-gray-900 truncate">admin@arunachala.com</p>
+                                            <p className="text-sm font-medium text-gray-900 truncate">
+                                                {userProfile?.email || 'Cargando...'}
+                                            </p>
                                         </div>
 
                                         <Menu.Item>
@@ -240,7 +304,7 @@ export default function DashboardLayout() {
                                                 <button
                                                     onClick={() => {
                                                         // Handle logout logic here
-                                                        localStorage.removeItem('token');
+                                                        logout();
                                                         window.location.href = '/login';
                                                     }}
                                                     className={classNames(

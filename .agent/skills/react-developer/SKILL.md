@@ -23,12 +23,21 @@ Use this when you need to:
 - Implement SEO requirements
 - Fix accessibility issues
 
-## My patterns for Arunachala Web
-- Use functional components with hooks (no classes)
-- Use `src/components/` for reusable components
-- Use `src/hooks/` for custom hooks
-- Use `src/services/` for API calls
-- Use Tailwind CSS classes (no inline styles)
+## My patterns for Arunachala Web (Clean Architecture)
+- **UI Components (`src/components/`)**: "Dumb" presentation only.
+  - ❌ NO direct calls to `axios` or `fetch`.
+  - ❌ NO complex business logic.
+  - ✅ Receive data via props.
+- **Features/Pages (`src/pages/`)**: Container components.
+  - ✅ Manage state.
+  - ✅ Compose UI components.
+- **Custom Hooks (`src/hooks/`)**: Encapsulated Logic.
+  - ✅ Complex state logic goes here.
+  - ✅ API Data fetching logic goes here.
+- **Services (`src/services/`)**: API Interaction.
+  - ✅ ONLY place where `axios` is used.
+  - ✅ Define strict Types/Interfaces for API responses.
+- **Styling**: Tailwind CSS classes (clean and readable).
 - Follow TypeScript strict mode
 - Use `@headlessui/react` for complex UI components
 - Use `@heroicons/react` for icons

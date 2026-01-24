@@ -23,7 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         // Check for existing session
-        const storedUser = localStorage.getItem('arunachala_user');
+        const storedUser = sessionStorage.getItem('arunachala_user');
         if (storedUser) {
             setUser(JSON.parse(storedUser));
         }
@@ -48,8 +48,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const data = await response.json();
             const { access_token, user } = data;
 
-            localStorage.setItem('access_token', access_token);
-            localStorage.setItem('arunachala_user', JSON.stringify(user));
+            sessionStorage.setItem('access_token', access_token);
+            sessionStorage.setItem('arunachala_user', JSON.stringify(user));
             setUser(user);
         } catch (error) {
             console.error(error);
@@ -59,8 +59,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const logout = () => {
         setUser(null);
-        localStorage.removeItem('arunachala_user');
-        localStorage.removeItem('access_token');
+        sessionStorage.removeItem('arunachala_user');
+        sessionStorage.removeItem('access_token');
     };
 
     return (

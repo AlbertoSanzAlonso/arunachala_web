@@ -17,14 +17,20 @@ Use this when you need to:
 - Add input validation
 - Write database operations
 
-## My patterns for Arunachala Web
-- Use `app/api/` for endpoints
-- Use `app/models/` for SQLAlchemy models  
-- Use `app/services/` for business logic
-- Use async/await for database operations
-- Follow Pydantic v2 patterns
-- Use environment variables for configuration
-- Return proper HTTP status codes
+## My patterns for Arunachala Web (Clean Architecture)
+- **Routers (`app/api/`)**: STRICTLY for HTTP Request/Response handling.
+  - ❌ NO business logic here.
+  - ❌ NO direct database queries here (SQLAlchemy).
+  - ✅ CALLS services.
+- **Services (`app/services/`)**: Business Logic & Use Cases.
+  - ✅ IMPLEMENTS business rules.
+  - ✅ CALLS database models/crud.
+  - ✅ RETURNS Pydantic models (DTOs) to routers, not ORM objects.
+- **Models (`app/models/`)**: Database definitions only.
+- **Patterns**:
+  - Dependency Injection for services/db sessions.
+  - Pydantic v2 schemas for all input/output.
+  - Async/await everywhere.
 
 ## Technology specifics
 - FastAPI with async support

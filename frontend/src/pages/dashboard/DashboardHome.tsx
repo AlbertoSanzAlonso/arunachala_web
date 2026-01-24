@@ -1,5 +1,6 @@
-import React from 'react';
-import { ArrowTrendingUpIcon, UsersIcon, DocumentDuplicateIcon } from '@heroicons/react/24/outline';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { ArrowTrendingUpIcon, UsersIcon, DocumentDuplicateIcon, CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const stats = [
     { name: 'Visitas Totales', stat: '12,453', change: '12%', changeType: 'increase', icon: UsersIcon },
@@ -12,11 +13,51 @@ function classNames(...classes: string[]) {
 }
 
 export default function DashboardHome() {
+    const location = useLocation();
+    const [notification, setNotification] = useState<{ type: string; message: string } | null>(null);
+
+    useEffect(() => {
+        // Check if there's a notification in the location state
+        if (location.state?.notification) {
+            setNotification(location.state.notification);
+
+            // Clear the notification after 5 seconds
+            const timer = setTimeout(() => {
+                setNotification(null);
+            }, 5000);
+
+            // Clear location state to prevent showing notification on refresh
+            window.history.replaceState({}, document.title);
+
+            return () => clearTimeout(timer);
+        }
+    }, [location]);
+
     return (
         <div>
             <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-8">
                 Vista General
             </h2>
+
+            {/* Notification Banner */}
+            {notification && (
+                <div className="mb-6 rounded-md bg-green-50 p-4 border border-green-200 shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                            <CheckCircleIcon className="h-5 w-5 text-green-600 mr-3" />
+                            <p className="text-sm font-medium text-green-800">
+                                {notification.message}
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => setNotification(null)}
+                            className="text-green-600 hover:text-green-800 transition-colors"
+                        >
+                            <XMarkIcon className="h-5 w-5" />
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-8">
                 {stats.map((item) => (

@@ -42,6 +42,8 @@ class Token(BaseModel):
 class UserResponse(BaseModel):
     id: int
     email: str
+    first_name: str | None = None
+    last_name: str | None = None
     role: str
     profile_picture: str | None = None
     
@@ -67,9 +69,13 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
     
     new_user = User(
         email=user_in.email,
-        hashed_password=get_password_hash(user_in.password),
+        password_hash=get_password_hash(user_in.password),
         role=UserRole.USER, # Default to user
-        is_active=True
+        # is_active removed from model since it's not in DB yet or defaults to True? 
+        # Wait, the SQL I ran in Step 184 DID NOT include is_active!
+        # "CREATE TABLE IF NOT EXISTS users ( ... role VARCHAR(50) DEFAULT 'user', created_at ... );"
+        # I should probably remove is_active assignment here or add it to the DB schema if needed. 
+        # For now, let's stick to what's in the DB. The model update in Step 220 removed is_active.
     )
     db.add(new_user)
     db.commit()
@@ -83,7 +89,7 @@ class LoginRequest(BaseModel):
 @router.post("/login")
 def login(credentials: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == credentials.email).first()
-    if not user or not verify_password(credentials.password, user.hashed_password):
+    if not user or not verify_password(credentials.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuario o contraseña incorrectos",
@@ -109,7 +115,7 @@ def login(credentials: LoginRequest, db: Session = Depends(get_db)):
 @router.post("/token")
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == form_data.username).first()
-    if not user or not verify_password(form_data.password, user.hashed_password):
+    if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuario o contraseña incorrectos",
@@ -166,7 +172,7 @@ def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db))
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    user.hashed_password = get_password_hash(request.new_password)
+    user.password_hash = get_password_hash(request.new_password)
     db.commit()
     
     return {"message": "Contraseña actualizada correctamente"}
@@ -175,30 +181,106 @@ def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db))
 def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
 
+class UpdateProfileRequest(BaseModel):
+    first_name: str | None = None
+    last_name: str | None = None
+    new_password: str | None = None
+
+@router.put("/me", response_model=UserResponse)
+def update_user_profile(
+    profile_data: UpdateProfileRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # Update user profile fields
+    if profile_data.first_name is not None:
+        current_user.first_name = profile_data.first_name
+    if profile_data.last_name is not None:
+        current_user.last_name = profile_data.last_name
+    
+    # Update password if provided
+    if profile_data.new_password is not None and profile_data.new_password.strip():
+        # Validate password length
+        if len(profile_data.new_password) < 6:
+            raise HTTPException(
+                status_code=400,
+                detail="La contraseña debe tener al menos 6 caracteres"
+            )
+        
+        # Check if new password is same as current password
+        if verify_password(profile_data.new_password, current_user.password_hash):
+            raise HTTPException(
+                status_code=400,
+                detail="La nueva contraseña no puede ser igual a la contraseña actual"
+            )
+        
+        # Update password
+        current_user.password_hash = get_password_hash(profile_data.new_password)
+    
+    db.commit()
+    db.refresh(current_user)
+    
+    return current_user
+
 @router.post("/me/upload-picture")
 async def upload_profile_picture(
     file: UploadFile = File(...), 
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # Define upload directory (point to /backend/static/)
+    from PIL import Image
+    import io
+    
+    # Validate file type
+    allowed_types = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
+    if file.content_type not in allowed_types:
+        raise HTTPException(
+            status_code=400,
+            detail="Tipo de archivo no permitido. Solo se aceptan imágenes JPEG, PNG o WebP"
+        )
+    
+    # Define upload directory
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     upload_dir = os.path.join(base_dir, "static", "profiles")
     os.makedirs(upload_dir, exist_ok=True)
     
-    # Generate unique filename
-    file_extension = os.path.splitext(file.filename)[1]
-    filename = f"{current_user.id}_{uuid.uuid4()}{file_extension}"
+    # Delete old profile picture if exists
+    if current_user.profile_picture:
+        old_file_path = os.path.join(base_dir, "static", current_user.profile_picture.lstrip('/static/'))
+        if os.path.exists(old_file_path):
+            try:
+                os.remove(old_file_path)
+            except Exception as e:
+                print(f"Error deleting old profile picture: {e}")
+    
+    # Read and optimize image
+    contents = await file.read()
+    image = Image.open(io.BytesIO(contents))
+    
+    # Convert to RGB if necessary (for PNG with transparency)
+    if image.mode in ('RGBA', 'LA', 'P'):
+        # Create white background
+        background = Image.new('RGB', image.size, (255, 255, 255))
+        if image.mode == 'P':
+            image = image.convert('RGBA')
+        background.paste(image, mask=image.split()[-1] if image.mode == 'RGBA' else None)
+        image = background
+    elif image.mode != 'RGB':
+        image = image.convert('RGB')
+    
+    # Resize to max 500x500 while maintaining aspect ratio
+    max_size = (500, 500)
+    image.thumbnail(max_size, Image.Resampling.LANCZOS)
+    
+    # Generate unique filename with .webp extension
+    filename = f"{current_user.id}_{uuid.uuid4()}.webp"
     file_path = os.path.join(upload_dir, filename)
     
-    # Save file
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-        
-    # Update user profile picture URL
-    # Assuming the app serves static files under /static
-    picture_url = f"/static/profiles/{filename}"
+    # Save as WebP with optimization
+    image.save(file_path, "WEBP", quality=85, method=6)
     
+    # Update user profile picture URL in database
+    picture_url = f"/static/profiles/{filename}"
     current_user.profile_picture = picture_url
     db.commit()
     db.refresh(current_user)
@@ -208,6 +290,8 @@ async def upload_profile_picture(
 class AdminUserCreate(BaseModel):
     email: EmailStr
     password: str
+    first_name: str | None = None
+    last_name: str | None = None
     role: str = "USER"  # USER or ADMIN
 
 @router.post("/admin/create-user", response_model=UserResponse)
@@ -237,9 +321,10 @@ def admin_create_user(
     # Create new user
     new_user = User(
         email=user_in.email,
-        hashed_password=get_password_hash(user_in.password),
-        role=user_role,
-        is_active=True
+        password_hash=get_password_hash(user_in.password),
+        first_name=user_in.first_name,
+        last_name=user_in.last_name,
+        role=user_role
     )
     db.add(new_user)
     db.commit()
