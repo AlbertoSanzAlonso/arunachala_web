@@ -1,0 +1,72 @@
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Text, Enum
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
+import enum
+from app.core.database import Base
+
+class UserRole(str, enum.Enum):
+    ADMIN = "admin"
+    USER = "user"
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    role = Column(String, default=UserRole.USER)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class ContentType(str, enum.Enum):
+    ARTICLE = "article"
+    MANTRA = "mantra"
+    SERVICE = "service"
+    ANNOUNCEMENT = "announcement"
+
+class ContentStatus(str, enum.Enum):
+    DRAFT = "draft"
+    PUBLISHED = "published"
+    ARCHIVED = "archived"
+
+class Content(Base):
+    __tablename__ = "contents"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True, nullable=False)
+    slug = Column(String, unique=True, index=True)
+    body = Column(Text, nullable=True)
+    type = Column(String, nullable=False)  # ContentType
+    status = Column(String, default=ContentStatus.DRAFT)
+    author_id = Column(Integer, ForeignKey("users.id"))
+    thumbnail_url = Column(String, nullable=True)
+    seo_title = Column(String, nullable=True)
+    seo_description = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    author = relationship("User", back_populates="contents")
+
+User.contents = relationship("Content", back_populates="author")
+
+class Gallery(Base):
+    __tablename__ = "gallery"
+
+    id = Column(Integer, primary_key=True, index=True)
+    url = Column(String, nullable=False)
+    alt_text = Column(String, nullable=True)
+    category = Column(String, nullable=True) # e.g., 'studio', 'retreat', 'class'
+    position = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class ClassSchedule(Base):
+    __tablename__ = "schedules"
+
+    id = Column(Integer, primary_key=True, index=True)
+    class_name = Column(String, index=True, nullable=False)
+    day_of_week = Column(String, nullable=False) # Monday, Tuesday...
+    start_time = Column(String, nullable=False) # "09:00"
+    end_time = Column(String, nullable=False) # "10:30"
+    instructor = Column(String, nullable=False)
+    room = Column(String, nullable=True)
+    is_active = Column(Boolean, default=True)

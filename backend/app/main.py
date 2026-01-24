@@ -1,15 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+from app.core.database import engine, Base
+from app.models import models
 import os
 
 # Import the reviews router
-# Adjust the import based on your actual file structure
-# If 'app' is a package (has __init__.py), use: from app.api import reviews
-# If running from backend root: from app.api import reviews
-from app.api import reviews
+# Import routers
+from app.api import reviews, auth, gallery
+from fastapi.staticfiles import StaticFiles
 
 load_dotenv()
+
+# Create Tables
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Arunachala API")
 
@@ -30,6 +34,16 @@ app.add_middleware(
 
 # Include Routers
 app.include_router(reviews.router, prefix="/api", tags=["reviews"])
+app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+app.include_router(gallery.router, prefix="/api/gallery", tags=["gallery"])
+
+# Mount Static Files (for uploaded images)
+# Calculate absolute path to avoid CWD issues
+import os
+static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+if not os.path.exists(static_dir):
+    os.makedirs(static_dir)
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 @app.get("/")
 def read_root():

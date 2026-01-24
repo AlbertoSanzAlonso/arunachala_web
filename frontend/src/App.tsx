@@ -12,6 +12,7 @@ const TherapiesPage = lazy(() => import('./pages/TherapiesPage'));
 // Dashboard Pages
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const DashboardHome = lazy(() => import('./pages/dashboard/DashboardHome'));
+const GalleryManager = lazy(() => import('./pages/dashboard/GalleryManager'));
 const ContentManager = lazy(() => import('./pages/dashboard/ContentManager'));
 const ScheduleManager = lazy(() => import('./pages/dashboard/ScheduleManager'));
 const SeoStats = lazy(() => import('./pages/dashboard/SeoStats'));
@@ -34,6 +35,7 @@ function App() {
                         <Route element={<ProtectedRoute />}>
                             <Route path="/dashboard" element={<DashboardLayout />}>
                                 <Route index element={<DashboardHome />} />
+                                <Route path="gallery" element={<GalleryManager />} />
                                 <Route path="content" element={<ContentManager />} />
                                 <Route path="schedule" element={<ScheduleManager />} />
                                 <Route path="seo" element={<SeoStats />} />

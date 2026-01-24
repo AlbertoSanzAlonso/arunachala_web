@@ -8,10 +8,12 @@ import {
     ChartBarIcon,
     Bars3Icon,
     XMarkIcon,
+    PhotoIcon,
 } from '@heroicons/react/24/outline';
 
 const navigation = [
     { name: 'Vista General', href: '/dashboard', icon: HomeIcon },
+    { name: 'Galería', href: '/dashboard/gallery', icon: PhotoIcon },
     { name: 'Contenido', href: '/dashboard/content', icon: DocumentTextIcon },
     { name: 'Horarios', href: '/dashboard/schedule', icon: CalendarIcon },
     { name: 'SEO & Google', href: '/dashboard/seo', icon: ChartBarIcon },

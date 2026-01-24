@@ -31,29 +31,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const login = async (email: string, password: string) => {
-        // Mock login - in production this would hit the API
-        return new Promise<void>((resolve, reject) => {
-            setTimeout(() => {
-                if (email === 'admin@arunachala.com' && password === 'admin') {
-                    const mockUser: User = {
-                        id: '1',
-                        name: 'Alberto Admin',
-                        email: email,
-                        role: 'admin',
-                    };
-                    setUser(mockUser);
-                    localStorage.setItem('arunachala_user', JSON.stringify(mockUser));
-                    resolve();
-                } else {
-                    reject(new Error('Credenciales inválidas'));
-                }
-            }, 1000);
-        });
+        try {
+            const formData = new FormData();
+            formData.append('username', email); // OAuth2 expects 'username'
+            formData.append('password', password);
+
+            const response = await fetch('http://localhost:8000/api/auth/token', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Login failed');
+            }
+
+            const data = await response.json();
+            const { access_token, user } = data;
+
+            localStorage.setItem('access_token', access_token);
+            localStorage.setItem('arunachala_user', JSON.stringify(user));
+            setUser(user);
+        } catch (error) {
+            console.error(error);
+            throw new Error('Credenciales inválidas');
+        }
     };
 
     const logout = () => {
         setUser(null);
         localStorage.removeItem('arunachala_user');
+        localStorage.removeItem('access_token');
     };
 
     return (
