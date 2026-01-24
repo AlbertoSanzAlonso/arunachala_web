@@ -38,3 +38,19 @@ INFO:     Started server process [35346]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     127.0.0.1:40580 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53532 - "POST /api/gallery/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53532 - "GET /api/gallery/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53538 - "GET /uploads/3e673bc7-90f5-4990-9130-8ecac15667e2.webp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53554 - "POST /api/gallery/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53554 - "GET /api/gallery/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53566 - "GET /uploads/022d700a-fb92-417c-b15a-fc534a2a1c42.webp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48298 - "OPTIONS /api/gallery/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48298 - "DELETE /api/gallery/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48298 - "OPTIONS /api/gallery/2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48298 - "DELETE /api/gallery/2 HTTP/1.1" 200 OK
+Google API Key or Place ID not found. returning mock data.
+INFO:     127.0.0.1:50848 - "GET /api/reviews HTTP/1.1" 200 OK
+Google API Key or Place ID not found. returning mock data.
+INFO:     127.0.0.1:50848 - "GET /api/reviews HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45368 - "GET /api/gallery/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45368 - "GET /api/gallery/ HTTP/1.1" 200 OK

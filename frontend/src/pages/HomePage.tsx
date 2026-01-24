@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Link } from 'react-router-dom';
 import videoBgWebm from '../assets/videos/hero_optimized.webm';
 import yogaImg from '../assets/images/gallery/yoga_sample.webp';
@@ -31,6 +31,28 @@ const getDailyMantra = () => {
 
 const HomePage: React.FC = () => {
 
+    const [galleryImages, setGalleryImages] = React.useState<string[]>([yogaImg, therapyImg, gardenImg]);
+
+    React.useEffect(() => {
+        const fetchGallery = async () => {
+            try {
+                const response = await fetch('http://localhost:8000/api/gallery/');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.length > 0) {
+                        // Map to full URL
+                        const urls = data.map((img: any) => `http://localhost:8000${img.url}`);
+                        setGalleryImages(urls);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to load gallery:", error);
+                // Keep defaults on error
+            }
+        };
+
+        fetchGallery();
+    }, []);
 
     return (
         <div className="font-body text-bark relative">
@@ -109,7 +131,7 @@ const HomePage: React.FC = () => {
                     {/* Added margin to separate from Quiz */}
                     <Suspense fallback={<div className="h-96 flex items-center justify-center">Loading Gallery...</div>}>
                         <FadeInSection delay={0.2}>
-                            <ImageSlider images={[yogaImg, therapyImg, gardenImg]} />
+                            <ImageSlider images={galleryImages} />
                         </FadeInSection>
                     </Suspense>
                 </section>

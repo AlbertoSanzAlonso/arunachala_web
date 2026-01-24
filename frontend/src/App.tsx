@@ -11,6 +11,9 @@ const TherapiesPage = lazy(() => import('./pages/TherapiesPage'));
 
 // Dashboard Pages
 const LoginPage = lazy(() => import('./pages/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 const DashboardHome = lazy(() => import('./pages/dashboard/DashboardHome'));
 const GalleryManager = lazy(() => import('./pages/dashboard/GalleryManager'));
 const ContentManager = lazy(() => import('./pages/dashboard/ContentManager'));
@@ -30,6 +33,9 @@ function App() {
 
                         {/* Auth Route */}
                         <Route path="/login" element={<LoginPage />} />
+                        <Route path="/register" element={<RegisterPage />} />
+                        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
                         {/* Protected Dashboard Routes */}
                         <Route element={<ProtectedRoute />}>
