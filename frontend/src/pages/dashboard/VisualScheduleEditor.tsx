@@ -65,6 +65,7 @@ export default function VisualScheduleEditor({ onBack }: { onBack: () => void })
 
     useEffect(() => {
         fetchSchedules();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchSchedules = async () => {

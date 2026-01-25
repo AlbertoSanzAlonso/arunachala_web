@@ -132,9 +132,9 @@ export default function DashboardLayout() {
                                             <h1 className="text-xl font-bold text-primary-600 tracking-tight">Arunachala<span className="text-gray-400 font-light">Panel</span></h1>
                                         </div>
                                         <nav className="flex flex-1 flex-col">
-                                            <ul role="list" className="flex flex-1 flex-col gap-y-7">
+                                            <ul className="flex flex-1 flex-col gap-y-7">
                                                 <li>
-                                                    <ul role="list" className="-mx-2 space-y-1">
+                                                    <ul className="-mx-2 space-y-1">
                                                         {navigation.map((item) => (
                                                             <li key={item.name}>
                                                                 <Link
@@ -176,9 +176,9 @@ export default function DashboardLayout() {
                             <h1 className="text-xl font-bold text-primary-600 tracking-tight">Arunachala<span className="text-gray-400 font-light">Panel</span></h1>
                         </div>
                         <nav className="flex flex-1 flex-col">
-                            <ul role="list" className="flex flex-1 flex-col gap-y-7">
+                            <ul className="flex flex-1 flex-col gap-y-7">
                                 <li>
-                                    <ul role="list" className="-mx-2 space-y-1">
+                                    <ul className="-mx-2 space-y-1">
                                         {navigation.map((item) => (
                                             <li key={item.name}>
                                                 <Link

@@ -37,7 +37,7 @@ export const useGallery = (selectedCategory: GalleryCategory) => {
         } catch (error) {
             console.error('Error fetching counts:', error);
         }
-    }, []); // Empty dependency array as categories are constant
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Initial load
     useEffect(() => {

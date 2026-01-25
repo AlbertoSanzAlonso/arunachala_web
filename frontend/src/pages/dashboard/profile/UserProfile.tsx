@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UserCircleIcon, CameraIcon, ArrowLeftIcon, EyeIcon, EyeSlashIcon, XCircleIcon, CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { CameraIcon, ArrowLeftIcon, EyeIcon, EyeSlashIcon, XCircleIcon, CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import PageLoader from '../../../components/PageLoader';
 import { API_BASE_URL } from '../../../config';
