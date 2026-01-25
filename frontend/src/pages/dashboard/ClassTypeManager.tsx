@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { PlusIcon, PencilIcon, TrashIcon, TagIcon } from '@heroicons/react/24/outline';
+import { useNavigate } from 'react-router-dom';
+import { PlusIcon, PencilIcon, TrashIcon, TagIcon, CalendarIcon } from '@heroicons/react/24/outline';
 
 interface YogaClass {
     id: number;
     name: string;
     description: string;
     color: string;
-    intensity: string;
     age_range: string | null;
 }
 
@@ -23,6 +23,7 @@ const colorOptions = [
 ];
 
 export default function ClassTypeManager() {
+    const navigate = useNavigate();
     const [classes, setClasses] = useState<YogaClass[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -31,7 +32,6 @@ export default function ClassTypeManager() {
         name: '',
         description: '',
         color: 'bg-emerald-100 border-emerald-300 text-emerald-800',
-        intensity: 'Media',
         age_range: ''
     });
 
@@ -54,6 +54,12 @@ export default function ClassTypeManager() {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleAuthError = () => {
+        sessionStorage.removeItem('access_token');
+        sessionStorage.removeItem('user_role');
+        window.location.href = '/login';
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -79,6 +85,8 @@ export default function ClassTypeManager() {
             if (response.ok) {
                 await fetchClasses();
                 handleCloseModal();
+            } else if (response.status === 401 || response.status === 403) {
+                handleAuthError();
             } else {
                 const error = await response.json();
                 alert(error.detail || 'Error al guardar el tipo de clase');
@@ -111,6 +119,8 @@ export default function ClassTypeManager() {
                 await fetchClasses();
                 setShowDeleteConfirm(false);
                 setClassToDelete(null);
+            } else if (response.status === 401 || response.status === 403) {
+                handleAuthError();
             } else {
                 alert('Error al eliminar el tipo de clase');
             }
@@ -126,7 +136,6 @@ export default function ClassTypeManager() {
             name: yc.name,
             description: yc.description || '',
             color: yc.color || 'bg-emerald-100 border-emerald-300 text-emerald-800',
-            intensity: yc.intensity || 'Media',
             age_range: yc.age_range || ''
         });
         setShowModal(true);
@@ -139,7 +148,6 @@ export default function ClassTypeManager() {
             name: '',
             description: '',
             color: 'bg-emerald-100 border-emerald-300 text-emerald-800',
-            intensity: 'Media',
             age_range: ''
         });
     };
@@ -157,7 +165,15 @@ export default function ClassTypeManager() {
                         Define los tipos de clases, sus colores y descripciones que luego aparecerán en el horario.
                     </p>
                 </div>
-                <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+                <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex sm:gap-3 sm:flex-none">
+                    <button
+                        type="button"
+                        onClick={() => navigate('/dashboard/schedule')}
+                        className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-2 text-center text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                    >
+                        <CalendarIcon className="h-5 w-5 text-gray-400" />
+                        Ver Horarios
+                    </button>
                     <button
                         type="button"
                         onClick={() => setShowModal(true)}
@@ -176,9 +192,6 @@ export default function ClassTypeManager() {
                         <div className="flex-1 p-6">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-lg font-semibold text-gray-900">{yc.name}</h3>
-                                <div className={`px-2 py-0.5 rounded text-xs font-medium border ${yc.color}`}>
-                                    {yc.intensity}
-                                </div>
                             </div>
                             <p className="mt-2 text-sm text-gray-500 line-clamp-3">
                                 {yc.description}
@@ -241,29 +254,15 @@ export default function ClassTypeManager() {
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Intensidad</label>
-                                        <select
-                                            value={formData.intensity}
-                                            onChange={(e) => setFormData({ ...formData, intensity: e.target.value })}
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm p-3 border"
-                                        >
-                                            <option value="Suave">Suave</option>
-                                            <option value="Media">Media</option>
-                                            <option value="Alta">Alta</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Edad / Nota (Opcional)</label>
-                                        <input
-                                            type="text"
-                                            value={formData.age_range}
-                                            onChange={(e) => setFormData({ ...formData, age_range: e.target.value })}
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm p-3 border"
-                                            placeholder="Ej: 4-7 años o Práctica fluida"
-                                        />
-                                    </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Edad / Nota (Opcional)</label>
+                                    <input
+                                        type="text"
+                                        value={formData.age_range}
+                                        onChange={(e) => setFormData({ ...formData, age_range: e.target.value })}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm p-3 border"
+                                        placeholder="Ej: 4-7 años o Práctica fluida"
+                                    />
                                 </div>
 
                                 <div>

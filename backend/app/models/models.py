@@ -69,7 +69,6 @@ class YogaClassDefinition(Base):
     name = Column(String, unique=True, index=True, nullable=False)
     description = Column(Text, nullable=True)
     color = Column(String, nullable=True) # Tailwind class like 'bg-forest/20'
-    intensity = Column(String, nullable=True) # Suave, Media, Alta
     age_range = Column(String, nullable=True) # Optional note or age
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

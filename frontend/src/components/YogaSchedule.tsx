@@ -4,7 +4,6 @@ import omSymbol from '../assets/images/om_symbol.png';
 interface ClassType {
     name: string;
     description: string;
-    intensity: string;
     color: string;
     age_range: string | null;
 }
@@ -37,8 +36,9 @@ const TimeBlock = ({
 
     const getItemsForDay = (day: string) => {
         return scheduleItems.filter(item => {
-            const hour = parseInt(item.time.split(':')[0]);
-            return item.day === day && hour >= rangeStart && hour < rangeEnd + 2; // +buffer
+            const [h, m] = item.time.split(':').map(Number);
+            const totalMin = h * 60 + m;
+            return item.day === day && totalMin >= rangeStart * 60 && totalMin < rangeEnd * 60;
         });
     };
 
@@ -54,7 +54,7 @@ const TimeBlock = ({
     };
 
     return (
-        <div className="flex border-b-2 border-forest/10 last:border-b-0">
+        <div className="flex border-b-4 border-forest/10 last:border-b-0">
             {/* Sidebar Label */}
             <div className="w-12 md:w-16 bg-forest/10 flex items-center justify-center border-r border-forest/20 text-forest font-headers tracking-widest [writing-mode:vertical-lr] rotate-180 py-4 font-bold text-sm md:text-base">
                 {label}
@@ -98,21 +98,26 @@ const TimeBlock = ({
                                         className={`absolute left-1 right-1 rounded-lg border-l-4 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer pointer-events-auto flex flex-col justify-center px-1 md:px-2 py-1 ${classInfo.color || 'bg-gray-100'}`}
                                         style={style}
                                     >
-                                        <div className="flex justify-between items-baseline mb-0.5">
-                                            <span className="font-bold text-xs md:text-sm leading-none">{item.time}</span>
-                                            {(item.note || classInfo.age_range) && (
-                                                <span className="text-[9px] md:text-[10px] uppercase font-bold tracking-wide opacity-80 bg-white/40 px-1 rounded-full whitespace-nowrap overflow-hidden text-ellipsis max-w-[50%]">
-                                                    {item.note || classInfo.age_range}
-                                                </span>
+                                        <div className="flex flex-col flex-1 min-w-0">
+                                            <div className="flex justify-between items-center mb-0.5">
+                                                <span className="font-bold text-[10px] md:text-xs leading-none opacity-80">{item.time}</span>
+                                                {classInfo.age_range && (
+                                                    <span className="text-[8px] md:text-[9px] uppercase font-bold tracking-tight bg-white/30 text-current px-1.5 py-0.5 rounded border border-current/10 flex-none ml-1">
+                                                        {classInfo.age_range}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <span className="font-bold text-[11px] md:text-sm leading-tight line-clamp-2 min-w-0">{classInfo.name}</span>
+                                            {item.note && (
+                                                <span className="text-[8px] md:text-[9px] italic opacity-70 line-clamp-1">{item.note}</span>
                                             )}
                                         </div>
-                                        <span className="font-medium text-xs md:text-sm leading-tight text-opacity-90 line-clamp-2">{classInfo.name}</span>
 
                                         {/* Tooltip */}
                                         <div className="absolute z-50 left-1/2 -translate-x-1/2 bottom-full mb-2 w-48 md:w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-bark text-bone p-3 rounded-lg shadow-xl border border-bone/10 text-center pointer-events-none">
                                             <h5 className="font-headers text-base md:text-lg text-matcha mb-1">{classInfo.name}</h5>
                                             <p className="text-xs mb-2 opacity-90">{classInfo.description}</p>
-                                            <span className="text-xs font-mono">{item.duration} • {classInfo.intensity}</span>
+                                            <span className="text-xs font-mono">{item.duration}</span>
                                         </div>
                                     </div>
                                 );
@@ -152,7 +157,6 @@ const YogaSchedule: React.FC = () => {
                             name: item.class_name || 'Clase',
                             description: '',
                             color: 'bg-emerald-100 border-emerald-300 text-emerald-800',
-                            intensity: 'Media',
                             age_range: null
                         };
 
@@ -160,11 +164,11 @@ const YogaSchedule: React.FC = () => {
                             day: item.day_of_week,
                             time: start,
                             duration: `${durationMinutes} min`,
+                            note: item.note,
                             classInfo: {
                                 name: yc.name,
                                 description: yc.description,
                                 color: yc.color,
-                                intensity: yc.intensity,
                                 age_range: yc.age_range
                             }
                         };
@@ -215,21 +219,21 @@ const YogaSchedule: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Morning Block (9:00 - 13:30) - 2 rows visual */}
+                {/* Morning Block (09:00 - 13:00) - 2 rows visual */}
                 <TimeBlock
                     label="MAÑANA"
                     rows={2}
                     rangeStart={9}
-                    rangeEnd={13.5}
+                    rangeEnd={13}
                     scheduleItems={scheduleItems}
                 />
 
-                {/* Afternoon Block (16:00 - 21:00) - 3 rows visual */}
+                {/* Afternoon Block (15:30 - 21:30) - 3 rows visual */}
                 <TimeBlock
                     label="TARDE"
                     rows={3}
-                    rangeStart={16}
-                    rangeEnd={21}
+                    rangeStart={15.5}
+                    rangeEnd={21.5}
                     scheduleItems={scheduleItems}
                 />
             </div>
@@ -262,13 +266,18 @@ const YogaSchedule: React.FC = () => {
                             >
                                 <div className="flex justify-between items-center">
                                     <span className="font-bold text-2xl">{item.time}</span>
-                                    <span className="text-xs font-mono opacity-70 border border-current px-2 py-1 rounded-full">{item.duration}</span>
+                                    <div className="flex flex-col items-end gap-1">
+                                        <span className="text-xs font-mono opacity-70 border border-current px-2 py-1 rounded-full">{item.duration}</span>
+                                        {classInfo.age_range && (
+                                            <span className="text-[10px] uppercase font-black tracking-widest bg-black/10 px-2 py-0.5 rounded">
+                                                {classInfo.age_range}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
-                                <h4 className="text-xl font-headers">{classInfo.name}</h4>
-                                <p className="text-sm opacity-90 leading-relaxed mt-2">{classInfo.description}</p>
-                                <div className="mt-2 text-xs font-bold uppercase tracking-widest opacity-70">
-                                    Intensidad: {classInfo.intensity}
-                                </div>
+                                <h4 className="text-xl font-headers font-bold">{classInfo.name}</h4>
+                                {item.note && <p className="text-sm italic opacity-80 -mt-1">{item.note}</p>}
+                                <p className="text-sm opacity-90 leading-relaxed mt-1">{classInfo.description}</p>
                             </div>
                         );
                     })}

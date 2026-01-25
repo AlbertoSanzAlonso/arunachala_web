@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { useNavigate } from 'react-router-dom';
+import { PlusIcon, PencilIcon, TrashIcon, ClockIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import VisualScheduleEditor from './VisualScheduleEditor';
 
 interface YogaClassBrief {
     id: number;
@@ -23,18 +25,21 @@ const API_URL = 'http://localhost:8000';
 const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
 export default function ScheduleManager() {
+    const navigate = useNavigate();
     const [schedules, setSchedules] = useState<Schedule[]>([]);
     const [yogaClasses, setYogaClasses] = useState<YogaClassBrief[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
+    const [showVisualEditor, setShowVisualEditor] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [scheduleToDelete, setScheduleToDelete] = useState<number | null>(null);
     const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         class_id: '',
         day_of_week: 'Lunes',
         start_time: '',
-        end_time: '',
+        duration: '60',
         is_active: true
     });
 
@@ -77,12 +82,25 @@ export default function ScheduleManager() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setError(null);
         const token = sessionStorage.getItem('access_token');
 
-        // Convert class_id to number if present
+        // Calculate end_time based on start_time and duration
+        let calculatedEndTime = '';
+        if (formData.start_time && formData.duration) {
+            const [h, m] = formData.start_time.split(':').map(Number);
+            const totalMinutes = h * 60 + m + parseInt(formData.duration);
+            const endH = Math.floor(totalMinutes / 60) % 24;
+            const endM = totalMinutes % 60;
+            calculatedEndTime = `${endH.toString().padStart(2, '0')}:${endM.toString().padStart(2, '0')}`;
+        }
+
         const submitData = {
-            ...formData,
-            class_id: formData.class_id ? parseInt(formData.class_id) : null
+            class_id: formData.class_id ? parseInt(formData.class_id) : null,
+            day_of_week: formData.day_of_week,
+            start_time: formData.start_time,
+            end_time: calculatedEndTime,
+            is_active: formData.is_active
         };
 
         try {
@@ -105,12 +123,12 @@ export default function ScheduleManager() {
                 await fetchSchedules();
                 handleCloseModal();
             } else {
-                const error = await response.json();
-                alert(error.detail || 'Error al guardar el horario');
+                const errorData = await response.json();
+                setError(errorData.detail || 'Error al guardar el horario');
             }
         } catch (error) {
             console.error('Error saving schedule:', error);
-            alert('Error al guardar el horario');
+            setError('Error de conexión al servidor');
         }
     };
 
@@ -147,11 +165,20 @@ export default function ScheduleManager() {
 
     const handleEdit = (schedule: Schedule) => {
         setEditingSchedule(schedule);
+
+        // Calculate duration in minutes
+        let duration = '60';
+        if (schedule.start_time && schedule.end_time) {
+            const [h1, m1] = schedule.start_time.split(':').map(Number);
+            const [h2, m2] = schedule.end_time.split(':').map(Number);
+            duration = ((h2 * 60 + m2) - (h1 * 60 + m1)).toString();
+        }
+
         setFormData({
             class_id: schedule.class_id?.toString() || '',
             day_of_week: schedule.day_of_week,
             start_time: schedule.start_time,
-            end_time: schedule.end_time,
+            duration: duration,
             is_active: schedule.is_active
         });
         setShowModal(true);
@@ -160,16 +187,17 @@ export default function ScheduleManager() {
     const handleCloseModal = () => {
         setShowModal(false);
         setEditingSchedule(null);
+        setError(null);
         setFormData({
             class_id: '',
             day_of_week: 'Lunes',
             start_time: '',
-            end_time: '',
+            duration: '60',
             is_active: true
         });
     };
 
-    const groupedSchedules = schedules.reduce((acc, schedule) => {
+    const groupedSchedules = schedules.reduce((acc: Record<string, Schedule[]>, schedule: Schedule) => {
         if (!acc[schedule.day_of_week]) {
             acc[schedule.day_of_week] = [];
         }
@@ -181,6 +209,13 @@ export default function ScheduleManager() {
         return <div className="text-center py-12">Cargando datos...</div>;
     }
 
+    if (showVisualEditor) {
+        return <VisualScheduleEditor onBack={() => {
+            setShowVisualEditor(false);
+            fetchInitialData();
+        }} />;
+    }
+
     return (
         <div>
             <div className="sm:flex sm:items-center">
@@ -190,14 +225,30 @@ export default function ScheduleManager() {
                         Administra las clases semanales asignando los tipos de clase definidos en el menú.
                     </p>
                 </div>
-                <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+                <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex sm:gap-3 sm:flex-none">
+                    <button
+                        type="button"
+                        onClick={() => setShowVisualEditor(true)}
+                        className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-2 text-center text-sm font-semibold text-primary-700 shadow-sm ring-1 ring-inset ring-primary-300 hover:bg-primary-50 transition-all"
+                    >
+                        <CalendarIcon className="h-5 w-5" />
+                        Editar Horarios (Visual)
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => navigate('/dashboard/classes')}
+                        className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-2 text-center text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                    >
+                        <PlusIcon className="h-5 w-5 text-gray-400" />
+                        Crear Nueva Clase
+                    </button>
                     <button
                         type="button"
                         onClick={() => setShowModal(true)}
                         className="inline-flex items-center gap-2 rounded-md bg-primary-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-primary-500"
                     >
                         <PlusIcon className="h-5 w-5" />
-                        Añadir Clase al Horario
+                        Añadir al Horario
                     </button>
                 </div>
             </div>
@@ -267,6 +318,11 @@ export default function ScheduleManager() {
                             </h3>
                         </div>
                         <form onSubmit={handleSubmit} className="px-6 py-6 space-y-5">
+                            {error && (
+                                <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-md">
+                                    {error}
+                                </div>
+                            )}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Tipo de Clase</label>
                                 <select
@@ -303,22 +359,38 @@ export default function ScheduleManager() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Hora Inicio</label>
-                                    <input
-                                        type="time"
-                                        required
-                                        value={formData.start_time}
-                                        onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm p-3 border"
-                                    />
+                                    <div className="relative mt-1">
+                                        <input
+                                            type="time"
+                                            required
+                                            value={formData.start_time}
+                                            onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
+                                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm p-3 border [color-scheme:light] pr-10"
+                                            style={{ WebkitAppearance: 'none' }}
+                                        />
+                                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <ClockIcon className="h-5 w-5 text-gray-400" />
+                                        </div>
+                                    </div>
+                                    <style dangerouslySetInnerHTML={{
+                                        __html: `
+                                        input::-webkit-calendar-picker-indicator {
+                                            display: none !important;
+                                            -webkit-appearance: none;
+                                        }
+                                    `}} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Hora Fin</label>
+                                    <label className="block text-sm font-medium text-gray-700">Duración (min)</label>
                                     <input
-                                        type="time"
+                                        type="number"
                                         required
-                                        value={formData.end_time}
-                                        onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
+                                        min="5"
+                                        step="5"
+                                        value={formData.duration}
+                                        onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm p-3 border"
+                                        placeholder="Ej: 60"
                                     />
                                 </div>
                             </div>

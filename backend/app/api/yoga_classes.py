@@ -12,7 +12,6 @@ class YogaClassBase(BaseModel):
     name: str
     description: str | None = None
     color: str | None = None
-    intensity: str | None = None
     age_range: str | None = None
 
 class YogaClassCreate(YogaClassBase):
@@ -22,7 +21,6 @@ class YogaClassUpdate(BaseModel):
     name: str | None = None
     description: str | None = None
     color: str | None = None
-    intensity: str | None = None
     age_range: str | None = None
 
 class YogaClassResponse(YogaClassBase):

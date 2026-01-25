@@ -22,12 +22,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Check for existing session
-        const storedUser = sessionStorage.getItem('arunachala_user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-        setIsLoading(false);
+        const validateSession = async () => {
+            const token = sessionStorage.getItem('access_token');
+            const storedUser = sessionStorage.getItem('arunachala_user');
+
+            if (token && storedUser) {
+                try {
+                    // Validate token with backend
+                    const response = await fetch('http://localhost:8000/api/auth/me', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        setUser(JSON.parse(storedUser));
+                    } else {
+                        throw new Error('Session invalid');
+                    }
+                } catch (error) {
+                    console.error('Session validation failed:', error);
+                    logout(); // Force clean logout
+                }
+            }
+            setIsLoading(false);
+        };
+
+        validateSession();
     }, []);
 
     const login = async (email: string, password: string) => {
@@ -61,7 +82,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
         sessionStorage.removeItem('arunachala_user');
         sessionStorage.removeItem('access_token');
+        window.location.href = '/login';
     };
+
+    // Session Management
+    useEffect(() => {
+        let warningTimeout: any;
+        let logoutTimeout: any;
+
+        // 30 minutes in ms
+        const SESSION_DURATION = 30 * 60 * 1000;
+        const WARNING_BEFORE = 2 * 60 * 1000; // Warning 2 mins before
+
+        const resetTimers = () => {
+            clearTimeout(warningTimeout);
+            clearTimeout(logoutTimeout);
+
+            if (user) {
+                // Set warning timer
+                warningTimeout = setTimeout(() => {
+                    const confirmExtend = window.confirm("Tu sesión está a punto de expirar por inactividad. ¿Quieres mantener la sesión?");
+                    if (confirmExtend) {
+                        resetTimers();
+                    } else {
+                        logout();
+                    }
+                }, SESSION_DURATION - WARNING_BEFORE);
+
+                // Set hard logout timer
+                logoutTimeout = setTimeout(() => {
+                    alert("Tu sesión ha expirado por inactividad.");
+                    logout();
+                }, SESSION_DURATION);
+            }
+        };
+
+        const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+        const handleActivity = () => resetTimers();
+
+        if (user) {
+            events.forEach(event => window.addEventListener(event, handleActivity));
+            resetTimers();
+        }
+
+        return () => {
+            events.forEach(event => window.removeEventListener(event, handleActivity));
+            clearTimeout(warningTimeout);
+            clearTimeout(logoutTimeout);
+        };
+    }, [user]);
 
     return (
         <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, isLoading }}>

@@ -14,7 +14,6 @@ class YogaClassBrief(BaseModel):
     name: str
     color: str | None = None
     description: str | None = None
-    intensity: str | None = None
     age_range: str | None = None
 
     class Config:
@@ -45,6 +44,23 @@ class ScheduleResponse(ScheduleBase):
 
     class Config:
         from_attributes = True
+
+def check_schedule_overlap(db: Session, day: str, start: str, end: str, exclude_id: int = None):
+    """
+    Check if a new schedule overlaps with existing ones.
+    Overlap exists if: (StartA < EndB) AND (EndA > StartB)
+    """
+    query = db.query(ClassSchedule).filter(
+        ClassSchedule.day_of_week == day,
+        ClassSchedule.is_active == True,
+        ClassSchedule.start_time < end,
+        ClassSchedule.end_time > start
+    )
+    
+    if exclude_id:
+        query = query.filter(ClassSchedule.id != exclude_id)
+        
+    return query.first()
 
 # Endpoints
 @router.get("", response_model=List[ScheduleResponse])
@@ -80,6 +96,24 @@ def create_schedule(
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
+    # Check for overlap
+    overlap = check_schedule_overlap(
+        db, 
+        schedule_data.day_of_week, 
+        schedule_data.start_time, 
+        schedule_data.end_time
+    )
+    
+    if overlap:
+        name = overlap.class_name
+        if overlap.yoga_class:
+            name = overlap.yoga_class.name
+        
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Conflicto de horario: Ya existe la clase '{name or 'Sin nombre'}' de {overlap.start_time} a {overlap.end_time}."
+        )
+
     new_schedule = ClassSchedule(
         class_id=schedule_data.class_id,
         class_name=schedule_data.class_name,
@@ -109,6 +143,22 @@ def update_schedule(
     schedule = db.query(ClassSchedule).filter(ClassSchedule.id == schedule_id).first()
     if not schedule:
         raise HTTPException(status_code=404, detail="Schedule not found")
+    
+    # Prepare data for overlap check
+    new_day = schedule_data.day_of_week or schedule.day_of_week
+    new_start = schedule_data.start_time or schedule.start_time
+    new_end = schedule_data.end_time or schedule.end_time
+    
+    overlap = check_schedule_overlap(db, new_day, new_start, new_end, exclude_id=schedule_id)
+    if overlap:
+        name = overlap.class_name
+        if overlap.yoga_class:
+            name = overlap.yoga_class.name
+            
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Conflicto de horario: Ya existe la clase '{name or 'Sin nombre'}' de {overlap.start_time} a {overlap.end_time}."
+        )
     
     # Update fields
     if schedule_data.class_id is not None:
