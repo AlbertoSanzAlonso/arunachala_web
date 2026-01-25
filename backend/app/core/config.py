@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
-from typing import Optional
+from typing import Optional, Union
+from pydantic import field_validator
 
 class Settings(BaseSettings):
     # Database
@@ -10,8 +11,15 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
-    # CORS
-    ALLOWED_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000"]
+    # CORS - can be a list or comma-separated string
+    ALLOWED_ORIGINS: Union[list[str], str] = "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000"
+    
+    @field_validator('ALLOWED_ORIGINS', mode='before')
+    @classmethod
+    def parse_origins(cls, v):
+        if isinstance(v, str):
+            return [origin.strip() for origin in v.split(',')]
+        return v
     
     # Storage Configuration (local vs cloudinary)
     STORAGE_TYPE: str = "local" # Options: "local", "cloudinary"
