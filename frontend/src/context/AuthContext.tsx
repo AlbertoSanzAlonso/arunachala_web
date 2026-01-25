@@ -14,6 +14,8 @@ interface AuthContextType {
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
     isLoading: boolean;
+    showSessionWarning: boolean;
+    extendSession: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -21,6 +23,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [showSessionWarning, setShowSessionWarning] = useState(false);
 
     useEffect(() => {
         const validateSession = async () => {
@@ -79,11 +82,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    const logout = () => {
+    const logout = (message?: string) => {
         setUser(null);
+        setShowSessionWarning(false);
         sessionStorage.removeItem('arunachala_user');
         sessionStorage.removeItem('access_token');
-        window.location.href = '/login';
+        if (message) {
+            window.location.href = `/login?message=${encodeURIComponent(message)}`;
+        } else {
+            window.location.href = '/login';
+        }
+    };
+
+    const extendSession = () => {
+        setShowSessionWarning(false);
+        // Reset timers happens automatically because showSessionWarning changing triggers usage elsewhere? 
+        // No, we need to manually trigger activity.
+        // Actually, just calling this function implies activity.
     };
 
     // Session Management
@@ -96,30 +111,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const WARNING_BEFORE = 2 * 60 * 1000; // Warning 2 mins before
 
         const resetTimers = () => {
+            if (!user) return;
+
             clearTimeout(warningTimeout);
             clearTimeout(logoutTimeout);
 
-            if (user) {
-                // Set warning timer
-                warningTimeout = setTimeout(() => {
-                    const confirmExtend = window.confirm("Tu sesión está a punto de expirar por inactividad. ¿Quieres mantener la sesión?");
-                    if (confirmExtend) {
-                        resetTimers();
-                    } else {
-                        logout();
-                    }
-                }, SESSION_DURATION - WARNING_BEFORE);
+            // If checking from warning state, don't reset unless explicit extend action
+            if (showSessionWarning) return;
 
-                // Set hard logout timer
-                logoutTimeout = setTimeout(() => {
-                    alert("Tu sesión ha expirado por inactividad.");
-                    logout();
-                }, SESSION_DURATION);
-            }
+            // Set warning timer
+            warningTimeout = setTimeout(() => {
+                setShowSessionWarning(true);
+            }, SESSION_DURATION - WARNING_BEFORE);
+
+            // Set hard logout timer
+            logoutTimeout = setTimeout(() => {
+                logout("Tu sesión ha expirado por inactividad.");
+            }, SESSION_DURATION);
         };
 
         const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
-        const handleActivity = () => resetTimers();
+
+        // Wrap resetTimers to match event listener signature
+        const handleActivity = () => {
+            // Only reset if NOT in warning mode (if in warning mode, user MUST click "Extend" explicitly)
+            if (!showSessionWarning) {
+                resetTimers();
+            }
+        };
 
         if (user) {
             events.forEach(event => window.addEventListener(event, handleActivity));
@@ -131,10 +150,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             clearTimeout(warningTimeout);
             clearTimeout(logoutTimeout);
         };
-    }, [user]);
+    }, [user, showSessionWarning]);
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, isLoading }}>
+        <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, isLoading, showSessionWarning, extendSession }}>
             {children}
         </AuthContext.Provider>
     );

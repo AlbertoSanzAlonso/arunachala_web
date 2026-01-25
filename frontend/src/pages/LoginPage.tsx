@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, EyeSlashIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import logoIcon from '../assets/images/logo_icon.webp';
 
 export default function LoginPage() {
@@ -13,6 +13,8 @@ export default function LoginPage() {
     const { login } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const [searchParams] = useSearchParams();
+    const message = searchParams.get('message');
 
     const from = location.state?.from?.pathname || '/dashboard';
 
@@ -46,6 +48,19 @@ export default function LoginPage() {
             </div>
 
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+                {message && (
+                    <div className="mb-6 rounded-md bg-blue-50 p-4">
+                        <div className="flex">
+                            <div className="flex-shrink-0">
+                                <InformationCircleIcon className="h-5 w-5 text-blue-400" aria-hidden="true" />
+                            </div>
+                            <div className="ml-3 flex-1 md:flex md:justify-between">
+                                <p className="text-sm text-blue-700">{message}</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <form className="space-y-6" onSubmit={handleSubmit}>
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
@@ -130,6 +145,6 @@ export default function LoginPage() {
                     </span>
                 </p>
             </div>
-        </div>
+        </div >
     );
 }
