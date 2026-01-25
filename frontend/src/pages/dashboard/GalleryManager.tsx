@@ -7,6 +7,7 @@ import ConfirmModal from '../../components/ConfirmModal';
 import CropModal from '../../components/CropModal';
 import { useGallery } from '../../hooks/useGallery';
 import type { GalleryCategory, GalleryImage } from '../../services/galleryService';
+import { API_BASE_URL } from '../../config';
 
 const CATEGORIES: { value: GalleryCategory; label: string }[] = [
     { value: 'home', label: 'Home' },
@@ -289,7 +290,7 @@ export default function GalleryManager() {
                             >
                                 <div className="h-16 w-24 flex-shrink-0 rounded overflow-hidden bg-gray-100">
                                     <img
-                                        src={`http://localhost:8000${image.url}`}
+                                        src={`${API_BASE_URL}${image.url}`}
                                         alt={image.alt_text}
                                         className="h-full w-full object-cover pointer-events-none select-none"
                                     />
@@ -316,7 +317,7 @@ export default function GalleryManager() {
                                         }`}
                                 >
                                     <img
-                                        src={`http://localhost:8000${image.url}`}
+                                        src={`${API_BASE_URL}${image.url}`}
                                         alt={image.alt_text || 'Gallery image'}
                                         className={`w-full h-full object-cover transition-transform duration-300 ${isSelected ? 'scale-110' : 'group-hover:scale-105'}`}
                                     />
@@ -391,7 +392,7 @@ export default function GalleryManager() {
                 <CropModal
                     open={!!croppingImage}
                     onClose={() => setCroppingImage(null)}
-                    imageSrc={`http://localhost:8000${croppingImage.url}`}
+                    imageSrc={`${API_BASE_URL}${croppingImage.url}`}
                     onSave={handleSaveCrop}
                 />
             )}

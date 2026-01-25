@@ -9,6 +9,7 @@ import lotusFlower from '../assets/images/lotus_flower.png';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import FadeInSection from '../components/FadeInSection';
+import { API_BASE_URL } from '../config';
 
 // Lazy load heavy components
 const ImageSlider = lazy(() => import('../components/ImageSlider'));
@@ -36,12 +37,12 @@ const HomePage: React.FC = () => {
     React.useEffect(() => {
         const fetchGallery = async () => {
             try {
-                const response = await fetch('http://localhost:8000/api/gallery/');
+                const response = await fetch(`${API_BASE_URL}/api/gallery/`);
                 if (response.ok) {
                     const data = await response.json();
                     if (data.length > 0) {
                         // Map to full URL
-                        const urls = data.map((img: any) => `http://localhost:8000${img.url}`);
+                        const urls = data.map((img: any) => `${API_BASE_URL}${img.url}`);
                         setGalleryImages(urls);
                     }
                 }

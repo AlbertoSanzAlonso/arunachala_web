@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { UserCircleIcon, CameraIcon, ArrowLeftIcon, EyeIcon, EyeSlashIcon, XCircleIcon, CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import PageLoader from '../../../components/PageLoader';
+import { API_BASE_URL } from '../../../config';
 
 export default function UserProfile() {
     const navigate = useNavigate();
@@ -29,7 +30,7 @@ export default function UserProfile() {
     const fetchProfile = async () => {
         try {
             const token = sessionStorage.getItem('access_token');
-            const response = await fetch('http://localhost:8000/api/auth/me', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -60,7 +61,7 @@ export default function UserProfile() {
 
         try {
             const token = sessionStorage.getItem('access_token');
-            const response = await fetch('http://localhost:8000/api/auth/me/upload-picture', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/me/upload-picture`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -140,7 +141,7 @@ export default function UserProfile() {
             }
 
             // Update profile information (first_name, last_name, and optionally password)
-            const profileResponse = await fetch('http://localhost:8000/api/auth/me', {
+            const profileResponse = await fetch(`${API_BASE_URL}/api/auth/me`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -215,7 +216,7 @@ export default function UserProfile() {
                                             {formData.profile_picture ? (
                                                 <img
                                                     className="h-full w-full object-cover"
-                                                    src={`http://localhost:8000${formData.profile_picture}?v=${profileVersion}`}
+                                                    src={`${API_BASE_URL}${formData.profile_picture}?v=${profileVersion}`}
                                                     alt="Profile"
                                                 />
                                             ) : (

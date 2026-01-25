@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { API_BASE_URL } from '../config';
 
 interface User {
     id: string;
@@ -29,7 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (token && storedUser) {
                 try {
                     // Validate token with backend
-                    const response = await fetch('http://localhost:8000/api/auth/me', {
+                    const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }
@@ -57,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             formData.append('username', email); // OAuth2 expects 'username'
             formData.append('password', password);
 
-            const response = await fetch('http://localhost:8000/api/auth/token', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/token`, {
                 method: 'POST',
                 body: formData,
             });

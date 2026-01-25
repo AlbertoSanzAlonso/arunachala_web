@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { UserPlusIcon, EnvelopeIcon, LockClosedIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
 
-const API_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
+import { API_BASE_URL } from '../../config';
+
+const API_URL = API_BASE_URL;
 
 export default function CreateUser() {
     const [formData, setFormData] = useState({

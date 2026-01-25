@@ -18,7 +18,9 @@ interface ScheduleItem {
     classInfo: ClassType;
 }
 
-const API_URL = 'http://localhost:8000';
+import { API_BASE_URL } from '../../config';
+
+const API_URL = API_BASE_URL;
 const DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
 
 export default function VisualScheduleEditor({ onBack }: { onBack: () => void }) {

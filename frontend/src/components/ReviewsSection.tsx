@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StarIcon } from '@heroicons/react/24/solid';
+import { API_BASE_URL } from '../config';
 
 interface Review {
     id: string | number;
@@ -44,8 +45,7 @@ const ReviewsSection: React.FC = () => {
         const fetchReviews = async () => {
             try {
                 // Determine API URL based on environment or default to localhost
-                const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-                const response = await fetch(`${apiUrl}/api/reviews`);
+                const response = await fetch(`${API_BASE_URL}/api/reviews`);
 
                 if (response.ok) {
                     const data = await response.json();
