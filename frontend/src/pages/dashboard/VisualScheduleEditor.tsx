@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeftIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline';
 import omSymbol from '../../assets/images/om_symbol.png';
+import { API_BASE_URL } from '../../config';
 
 interface ClassType {
     id: number;
@@ -17,8 +18,6 @@ interface ScheduleItem {
     duration: number; // in minutes
     classInfo: ClassType;
 }
-
-import { API_BASE_URL } from '../../config';
 
 const API_URL = API_BASE_URL;
 const DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];

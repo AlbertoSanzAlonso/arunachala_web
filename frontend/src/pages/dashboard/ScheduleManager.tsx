@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PlusIcon, PencilIcon, TrashIcon, ClockIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import VisualScheduleEditor from './VisualScheduleEditor';
+import { API_BASE_URL } from '../../config';
 
 interface YogaClassBrief {
     id: number;
@@ -20,7 +21,6 @@ interface Schedule {
     yoga_class?: YogaClassBrief | null;
 }
 
-import { API_BASE_URL } from '../../config';
 
 const API_URL = API_BASE_URL;
 
