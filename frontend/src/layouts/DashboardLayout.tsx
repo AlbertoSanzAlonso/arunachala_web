@@ -32,7 +32,7 @@ function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ');
 }
 
-const API_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 export default function DashboardLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
