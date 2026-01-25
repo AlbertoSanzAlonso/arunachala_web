@@ -34,6 +34,14 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
     return user
 
+def get_current_admin_user(current_user: User = Depends(get_current_user)):
+    if current_user.role != UserRole.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permisos de administrador"
+        )
+    return current_user
+
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -53,34 +61,19 @@ class UserResponse(BaseModel):
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
+    first_name: str | None = None
+    last_name: str | None = None
+    role: str = "USER"
 
-class ForgotPasswordRequest(BaseModel):
-    email: EmailStr
+class UserUpdate(BaseModel):
+    email: EmailStr | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    role: str | None = None
 
-class ResetPasswordRequest(BaseModel):
-    token: str
+class PasswordUpdate(BaseModel):
+    current_password: str
     new_password: str
-
-@router.post("/register", response_model=UserResponse)
-def register(user_in: UserCreate, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == user_in.email).first()
-    if user:
-        raise HTTPException(status_code=400, detail="El email ya está registrado")
-    
-    new_user = User(
-        email=user_in.email,
-        password_hash=get_password_hash(user_in.password),
-        role=UserRole.USER, # Default to user
-        # is_active removed from model since it's not in DB yet or defaults to True? 
-        # Wait, the SQL I ran in Step 184 DID NOT include is_active!
-        # "CREATE TABLE IF NOT EXISTS users ( ... role VARCHAR(50) DEFAULT 'user', created_at ... );"
-        # I should probably remove is_active assignment here or add it to the DB schema if needed. 
-        # For now, let's stick to what's in the DB. The model update in Step 220 removed is_active.
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
 
 class LoginRequest(BaseModel):
     email: EmailStr
@@ -116,11 +109,11 @@ def login(credentials: LoginRequest, db: Session = Depends(get_db)):
             "id": str(user.id),
             "email": user.email,
             "name": user.email.split('@')[0], 
-            "role": user.role
+            "role": user.role.value
         }
     }
 
-@router.post("/token")
+@router.post("/token", response_model=Token)
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == form_data.username).first()
     if not user or not verify_password(form_data.password, user.password_hash):
@@ -142,9 +135,16 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
             "id": str(user.id),
             "email": user.email,
             "name": user.email.split('@')[0], 
-            "role": user.role
+            "role": user.role.value
         }
     }
+
+@router.get("/me", response_model=UserResponse)
+def read_users_me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
 
 @router.post("/forgot-password")
 async def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
@@ -165,6 +165,10 @@ async def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(
     await email_service.send_reset_password_email(user.email, reset_token)
     return {"message": "Email enviado"}
 
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
 @router.post("/reset-password")
 def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db)):
     try:
@@ -172,151 +176,96 @@ def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db))
         email: str = payload.get("sub")
         token_type: str = payload.get("type")
         
-        if email is None or token_type != "reset":
+        if token_type != "reset":
             raise HTTPException(status_code=400, detail="Token inválido")
-            
+        
+        if email is None:
+            raise HTTPException(status_code=400, detail="Token inválido")
     except JWTError:
         raise HTTPException(status_code=400, detail="Token inválido o expirado")
-
+    
     user = db.query(User).filter(User.email == email).first()
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
-
+    
     user.password_hash = get_password_hash(request.new_password)
     db.commit()
     
     return {"message": "Contraseña actualizada correctamente"}
 
-@router.get("/me", response_model=UserResponse)
-def read_users_me(current_user: User = Depends(get_current_user)):
-    return current_user
-
-class UpdateProfileRequest(BaseModel):
-    first_name: str | None = None
-    last_name: str | None = None
-    new_password: str | None = None
-
-@router.put("/me", response_model=UserResponse)
-def update_user_profile(
-    profile_data: UpdateProfileRequest,
+@router.put("/me/password")
+def update_password(
+    password_update: PasswordUpdate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # Update user profile fields
-    if profile_data.first_name is not None:
-        current_user.first_name = profile_data.first_name
-    if profile_data.last_name is not None:
-        current_user.last_name = profile_data.last_name
+    if not verify_password(password_update.current_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La contraseña actual es incorrecta"
+        )
     
-    # Update password if provided
-    if profile_data.new_password is not None and profile_data.new_password.strip():
-        # Validate password length
-        if len(profile_data.new_password) < 6:
-            raise HTTPException(
-                status_code=400,
-                detail="La contraseña debe tener al menos 6 caracteres"
-            )
-        
-        # Check if new password is same as current password
-        if verify_password(profile_data.new_password, current_user.password_hash):
-            raise HTTPException(
-                status_code=400,
-                detail="La nueva contraseña no puede ser igual a la contraseña actual"
-            )
-        
-        # Update password
-        current_user.password_hash = get_password_hash(profile_data.new_password)
+    current_user.password_hash = get_password_hash(password_update.new_password)
+    db.commit()
+    
+    return {"message": "Contraseña actualizada correctamente"}
+
+@router.put("/me")
+def update_profile(
+    first_name: str | None = Body(None),
+    last_name: str | None = Body(None),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if first_name is not None:
+        current_user.first_name = first_name
+    if last_name is not None:
+        current_user.last_name = last_name
     
     db.commit()
     db.refresh(current_user)
     
     return current_user
 
-@router.post("/me/upload-picture")
+@router.post("/me/profile-picture")
 async def upload_profile_picture(
-    file: UploadFile = File(...), 
+    file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    from PIL import Image
-    import io
-    
     # Validate file type
-    allowed_types = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
+    allowed_types = ["image/jpeg", "image/png", "image/webp"]
     if file.content_type not in allowed_types:
-        raise HTTPException(
-            status_code=400,
-            detail="Tipo de archivo no permitido. Solo se aceptan imágenes JPEG, PNG o WebP"
-        )
+        raise HTTPException(status_code=400, detail="Solo se permiten imágenes (JPEG, PNG, WEBP)")
     
-    # Define upload directory
-    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    upload_dir = os.path.join(base_dir, "static", "profiles")
+    # Create uploads directory if it doesn't exist
+    upload_dir = "static/profile_pictures"
     os.makedirs(upload_dir, exist_ok=True)
+    
+    # Generate unique filename
+    file_extension = file.filename.split(".")[-1]
+    unique_filename = f"{uuid.uuid4()}.{file_extension}"
+    file_path = os.path.join(upload_dir, unique_filename)
+    
+    # Save file
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
     
     # Delete old profile picture if exists
     if current_user.profile_picture:
-        old_file_path = os.path.join(base_dir, "static", current_user.profile_picture.lstrip('/static/'))
+        old_file_path = current_user.profile_picture.lstrip("/")
         if os.path.exists(old_file_path):
-            try:
-                os.remove(old_file_path)
-            except Exception as e:
-                print(f"Error deleting old profile picture: {e}")
+            os.remove(old_file_path)
     
-    # Read and optimize image
-    contents = await file.read()
-    image = Image.open(io.BytesIO(contents))
-    
-    # Convert to RGB if necessary (for PNG with transparency)
-    if image.mode in ('RGBA', 'LA', 'P'):
-        # Create white background
-        background = Image.new('RGB', image.size, (255, 255, 255))
-        if image.mode == 'P':
-            image = image.convert('RGBA')
-        background.paste(image, mask=image.split()[-1] if image.mode == 'RGBA' else None)
-        image = background
-    elif image.mode != 'RGB':
-        image = image.convert('RGB')
-    
-    # Resize to max 500x500 while maintaining aspect ratio
-    max_size = (500, 500)
-    image.thumbnail(max_size, Image.Resampling.LANCZOS)
-    
-    # Generate unique filename with .webp extension
-    filename = f"{current_user.id}_{uuid.uuid4()}.webp"
-    file_path = os.path.join(upload_dir, filename)
-    
-    # Save as WebP with optimization
-    image.save(file_path, "WEBP", quality=85, method=6)
-    
-    # Update user profile picture URL in database
-    picture_url = f"/static/profiles/{filename}"
-    current_user.profile_picture = picture_url
+    # Update user profile picture path
+    current_user.profile_picture = f"/{file_path}"
     db.commit()
     db.refresh(current_user)
     
-    return {"url": picture_url}
+    return {"profile_picture": current_user.profile_picture}
 
-class AdminUserCreate(BaseModel):
-    email: EmailStr
-    password: str
-    first_name: str | None = None
-    last_name: str | None = None
-    role: str = "USER"  # USER or ADMIN
-
-@router.post("/admin/create-user", response_model=UserResponse)
-def admin_create_user(
-    user_in: AdminUserCreate, 
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    # Check if current user is admin
-    if current_user.role != UserRole.ADMIN:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="No tienes permisos para crear usuarios"
-        )
-    
+@router.post("/register")
+def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
     # Check if user already exists
     existing_user = db.query(User).filter(User.email == user_in.email).first()
     if existing_user:
@@ -341,3 +290,100 @@ def admin_create_user(
     db.refresh(new_user)
     
     return new_user
+
+# ============= USER MANAGEMENT ENDPOINTS (ADMIN ONLY) =============
+
+@router.get("/users", response_model=list[UserResponse])
+def list_users(
+    skip: int = 0,
+    limit: int = 100,
+    current_user: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db)
+):
+    """List all users (admin only)"""
+    users = db.query(User).offset(skip).limit(limit).all()
+    return users
+
+@router.get("/users/{user_id}", response_model=UserResponse)
+def get_user(
+    user_id: int,
+    current_user: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db)
+):
+    """Get a specific user by ID (admin only)"""
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return user
+
+@router.put("/users/{user_id}", response_model=UserResponse)
+def update_user(
+    user_id: int,
+    user_update: UserUpdate,
+    current_user: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db)
+):
+    """Update a user (admin only)"""
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+    # Prevent admin from demoting themselves
+    if user.id == current_user.id and user_update.role and user_update.role.upper() != "ADMIN":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No puedes cambiar tu propio rol de administrador"
+        )
+    
+    # Update fields
+    if user_update.email:
+        # Check if email is already taken by another user
+        existing = db.query(User).filter(User.email == user_update.email, User.id != user_id).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="El email ya está en uso")
+        user.email = user_update.email
+    
+    if user_update.first_name is not None:
+        user.first_name = user_update.first_name
+    
+    if user_update.last_name is not None:
+        user.last_name = user_update.last_name
+    
+    if user_update.role:
+        try:
+            user.role = UserRole[user_update.role.upper()]
+        except KeyError:
+            raise HTTPException(status_code=400, detail="Rol inválido. Usa USER o ADMIN")
+    
+    db.commit()
+    db.refresh(user)
+    return user
+
+@router.delete("/users/{user_id}")
+def delete_user(
+    user_id: int,
+    current_user: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db)
+):
+    """Delete a user (admin only)"""
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+    # Prevent admin from deleting themselves
+    if user.id == current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No puedes eliminar tu propia cuenta"
+        )
+    
+    # Delete profile picture if exists
+    if user.profile_picture:
+        file_path = user.profile_picture.lstrip("/")
+        if os.path.exists(file_path):
+            os.remove(file_path)
+    
+    db.delete(user)
+    db.commit()
+    
+    return {"message": "Usuario eliminado correctamente"}

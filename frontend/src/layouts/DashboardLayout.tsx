@@ -15,6 +15,7 @@ import {
     UserCircleIcon,
     UserPlusIcon,
     TagIcon,
+    UsersIcon,
     ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
 
@@ -24,6 +25,7 @@ const navigation = [
     { name: 'Contenido', href: '/dashboard/content', icon: DocumentTextIcon },
     { name: 'Menú de Clases', href: '/dashboard/classes', icon: TagIcon },
     { name: 'Horarios', href: '/dashboard/schedule', icon: CalendarIcon },
+    { name: 'Usuarios', href: '/dashboard/users', icon: UsersIcon },
     { name: 'SEO & Google', href: '/dashboard/seo', icon: ChartBarIcon },
 ];
 
