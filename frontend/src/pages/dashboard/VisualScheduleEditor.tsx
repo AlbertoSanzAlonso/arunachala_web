@@ -256,7 +256,6 @@ export default function VisualScheduleEditor({ onBack }: { onBack: () => void })
                     throw new Error(errorData.detail || `Error guardando '${item.classInfo.name}'`);
                 }
             }
-            setOriginalItems(JSON.parse(JSON.stringify(currentItems)));
             setHistory([]); // Reset history after save
             setMsg({ type: 'success', text: 'Horarios actualizados correctamente' });
             setTimeout(() => setMsg(null), 3000);
