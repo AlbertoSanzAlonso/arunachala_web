@@ -140,10 +140,14 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
 
 @router.post("/forgot-password")
 async def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    print(f"DEBUG: Forgot password called for {request.email}", flush=True)
     user = db.query(User).filter(User.email == request.email).first()
     if not user:
+        print(f"DEBUG: User {request.email} NOT FOUND in DB", flush=True)
         # Don't reveal if user exists
         return {"message": "Si el email existe, se enviará un enlace."}
+
+    print(f"DEBUG: User found via API endpoint.", flush=True)
 
     # Generate a password reset token (valid for 15 mins)
     reset_token_expires = timedelta(minutes=15)

@@ -13,10 +13,10 @@ class EmailService:
         # Construction of the link (assuming frontend runs on localhost:3000)
         reset_link = f"http://localhost:3000/reset-password?token={token}"
         
-        print("=================================================================")
-        print(f"📧 SENDING EMAIL TO: {email}")
-        print(f"🔗 RESET LINK: {reset_link}")
-        print("=================================================================")
+        print("=================================================================", flush=True)
+        print(f"📧 SENDING EMAIL TO: {email}", flush=True)
+        print(f"🔗 RESET LINK: {reset_link}", flush=True)
+        print("=================================================================", flush=True)
         
         return True
 
