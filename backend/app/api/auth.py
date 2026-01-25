@@ -109,7 +109,7 @@ def login(credentials: LoginRequest, db: Session = Depends(get_db)):
             "id": str(user.id),
             "email": user.email,
             "name": user.email.split('@')[0], 
-            "role": user.role.value
+            "role": getattr(user.role, 'value', user.role)
         }
     }
 
@@ -135,7 +135,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
             "id": str(user.id),
             "email": user.email,
             "name": user.email.split('@')[0], 
-            "role": user.role.value
+            "role": getattr(user.role, 'value', user.role)
         }
     }
 

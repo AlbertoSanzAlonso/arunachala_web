@@ -15,6 +15,7 @@ interface AuthContextType {
     logout: () => void;
     isLoading: boolean;
     showSessionWarning: boolean;
+    remainingTime: number;
     extendSession: () => void;
 }
 
@@ -24,6 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [showSessionWarning, setShowSessionWarning] = useState(false);
+    const [remainingTime, setRemainingTime] = useState(120); // 2 minutes in seconds
 
     useEffect(() => {
         const validateSession = async () => {
@@ -96,15 +98,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const extendSession = () => {
         setShowSessionWarning(false);
-        // Reset timers happens automatically because showSessionWarning changing triggers usage elsewhere? 
-        // No, we need to manually trigger activity.
-        // Actually, just calling this function implies activity.
+        setRemainingTime(120);
     };
 
     // Session Management
     useEffect(() => {
         let warningTimeout: any;
         let logoutTimeout: any;
+        let countdownInterval: any;
 
         // 30 minutes in ms
         const SESSION_DURATION = 30 * 60 * 1000;
@@ -115,13 +116,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             clearTimeout(warningTimeout);
             clearTimeout(logoutTimeout);
+            clearInterval(countdownInterval);
 
             // If checking from warning state, don't reset unless explicit extend action
-            if (showSessionWarning) return;
+            if (showSessionWarning) {
+                // Start countdown if warning is shown
+                const expiryTime = Date.now() + WARNING_BEFORE;
+
+                countdownInterval = setInterval(() => {
+                    const now = Date.now();
+                    const diff = Math.max(0, Math.floor((expiryTime - now) / 1000));
+                    setRemainingTime(diff);
+
+                    if (diff <= 0) {
+                        clearInterval(countdownInterval);
+                    }
+                }, 1000);
+
+                return;
+            }
 
             // Set warning timer
             warningTimeout = setTimeout(() => {
                 setShowSessionWarning(true);
+                setRemainingTime(120);
             }, SESSION_DURATION - WARNING_BEFORE);
 
             // Set hard logout timer
@@ -149,11 +167,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             events.forEach(event => window.removeEventListener(event, handleActivity));
             clearTimeout(warningTimeout);
             clearTimeout(logoutTimeout);
+            clearInterval(countdownInterval);
         };
     }, [user, showSessionWarning]);
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, isLoading, showSessionWarning, extendSession }}>
+        <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, isLoading, showSessionWarning, remainingTime, extendSession }}>
             {children}
         </AuthContext.Provider>
     );

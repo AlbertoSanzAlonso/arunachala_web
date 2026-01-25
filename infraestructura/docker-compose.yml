@@ -24,8 +24,8 @@ services:
     depends_on:
       - postgres
     environment:
-      # Usando formato de parámetros explícitos para evitar errores de parseo
-      NC_DB: "pg://postgres:5432?u=${POSTGRES_USER}&p=${POSTGRES_PASSWORD}&d=nocodb_meta"
+      # Conectado a la misma base de datos que la aplicación
+      NC_DB: "pg://postgres:5432?u=${POSTGRES_USER}&p=${POSTGRES_PASSWORD}&d=${POSTGRES_DB}"
     ports:
       - "${NOCODB_PORT}:8080"
     networks:

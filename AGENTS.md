@@ -189,7 +189,7 @@ develop        ← Integration (protected)
 feature/*      ← Individual features
 ```
 
-**Commit Format**: `type(scope): description`  
+**Commit Format**: `type(scope): description` (Must be brief and in English)  
 **Branch Strategy**: feature → develop → main  
 **Protection Rules**: Reviews required for main/develop
 

@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings
 from typing import Optional, Union
 from pydantic import field_validator
+import json
 
 class Settings(BaseSettings):
     # Database
@@ -18,7 +19,17 @@ class Settings(BaseSettings):
     @classmethod
     def parse_origins(cls, v):
         if isinstance(v, str):
-            return [origin.strip() for origin in v.split(',')]
+            v_stripped = v.strip()
+            # If it looks like a JSON list, try to parse it
+            if v_stripped.startswith("[") and v_stripped.endswith("]"):
+                try:
+                    return json.loads(v_stripped)
+                except:
+                    # Fallback to simple split if json loading fails
+                    v_stripped = v_stripped[1:-1] # remove brackets
+            
+            # Simple comma separated strings
+            return [origin.strip().strip('"').strip("'") for origin in v_stripped.split(',')]
         return v
     
     # Storage Configuration (local vs cloudinary)

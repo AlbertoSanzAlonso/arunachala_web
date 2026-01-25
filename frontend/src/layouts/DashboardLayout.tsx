@@ -39,7 +39,14 @@ export default function DashboardLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [userProfile, setUserProfile] = useState<any>(null);
     const location = useLocation();
-    const { logout, showSessionWarning, extendSession } = useAuth();
+    const { logout, showSessionWarning, extendSession, remainingTime } = useAuth();
+
+    // Format remaining time (MM:SS)
+    const formatTime = (seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
 
     useEffect(() => {
         fetchUserProfile();
@@ -371,7 +378,13 @@ export default function DashboardLayout() {
                                             </Dialog.Title>
                                             <div className="mt-2">
                                                 <p className="text-sm text-gray-500">
-                                                    Hemos detectado inactividad durante un tiempo. Por seguridad, tu sesión se cerrará automáticamente en 2 minutos. ¿Quieres seguir conectado?
+                                                    Hemos detectado inactividad durante un tiempo. Por seguridad, tu sesión se cerrará automáticamente en:
+                                                </p>
+                                                <p className="mt-2 text-2xl font-mono font-bold text-primary-600 text-center bg-primary-50 py-2 rounded-lg">
+                                                    {formatTime(remainingTime)}
+                                                </p>
+                                                <p className="mt-2 text-sm text-gray-500">
+                                                    ¿Quieres seguir conectado?
                                                 </p>
                                             </div>
                                         </div>
