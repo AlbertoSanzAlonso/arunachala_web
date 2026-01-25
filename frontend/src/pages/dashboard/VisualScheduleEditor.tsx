@@ -279,7 +279,7 @@ export default function VisualScheduleEditor({ onBack }: { onBack: () => void })
                     </button>
                     <div>
                         <h2 className="text-lg lg:text-xl font-bold text-gray-900 leading-tight">Editor Visual</h2>
-                        <p className="hidden md:block text-sm text-gray-500">Arrastra las clases para ajustar la hora (snap 15 min)</p>
+                        <p className="hidden md:block text-sm text-gray-500">Arrastra las clases para ajustar la hora</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2 lg:gap-3 flex-wrap justify-end">
