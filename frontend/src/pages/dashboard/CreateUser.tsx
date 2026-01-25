@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { UserPlusIcon, EnvelopeIcon, LockClosedIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
 
@@ -18,6 +19,7 @@ export default function CreateUser() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -65,17 +67,13 @@ export default function CreateUser() {
             }
 
             setSuccess(true);
-            setFormData({
-                email: '',
-                password: '',
-                confirmPassword: '',
-                firstName: '',
-                lastName: '',
-                role: 'USER'
-            });
 
-            // Auto-hide success message after 5 seconds
-            setTimeout(() => setSuccess(false), 5000);
+            // Redirect to user list with success message after a short delay
+            setTimeout(() => {
+                navigate('/dashboard/users', {
+                    state: { message: 'Usuario creado correctamente' }
+                });
+            }, 1500);
 
         } catch (err: any) {
             setError(err.message || 'Error al crear el usuario');
@@ -109,7 +107,7 @@ export default function CreateUser() {
                     <div className="flex items-center">
                         <CheckCircleIcon className="h-5 w-5 text-green-600 mr-3" />
                         <p className="text-sm font-medium text-green-800">
-                            ¡Usuario creado exitosamente!
+                            ¡Usuario creado exitosamente! Redirigiendo...
                         </p>
                     </div>
                 </div>

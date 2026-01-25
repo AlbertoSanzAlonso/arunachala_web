@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { PencilIcon, TrashIcon, UserPlusIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { API_BASE_URL } from '../../config';
+import { useAuth } from '../../context/AuthContext';
 
 interface User {
     id: number;
@@ -13,6 +15,7 @@ interface User {
 }
 
 export default function UserManager() {
+    const { user: currentUser } = useAuth();
     const [users, setUsers] = useState<User[]>([]);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -27,19 +30,32 @@ export default function UserManager() {
         role: 'USER'
     });
     const [successMessage, setSuccessMessage] = useState('');
+    const location = useLocation();
 
     useEffect(() => {
+        // Check for messages sent via navigation state (e.g., from CreateUser)
+        if (location.state && (location.state as any).message) {
+            setSuccessMessage((location.state as any).message);
+            // Clear message from state to avoid showing it again on refresh
+            window.history.replaceState({}, document.title);
+            setTimeout(() => setSuccessMessage(''), 5000);
+        }
         fetchUsers();
-    }, []);
+    }, [location.state]);
 
     useEffect(() => {
-        const filtered = users.filter(user =>
-            user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.last_name?.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        const filtered = users.filter(user => {
+            // Ocultar al usuario actual de la lista
+            if (user.email === currentUser?.email) return false;
+
+            return (
+                user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.last_name?.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        });
         setFilteredUsers(filtered);
-    }, [searchTerm, users]);
+    }, [searchTerm, users, currentUser]);
 
     const fetchUsers = async () => {
         try {
@@ -51,9 +67,9 @@ export default function UserManager() {
             });
 
             if (response.ok) {
-                const data = await response.json();
+                const data: User[] = await response.json();
                 setUsers(data);
-                setFilteredUsers(data);
+                setFilteredUsers(data.filter(u => u.email !== currentUser?.email));
             } else if (response.status === 403) {
                 alert('No tienes permisos para ver esta página');
             }

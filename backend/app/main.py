@@ -20,9 +20,14 @@ from app.core.config import settings
 app = FastAPI(title="Arunachala API")
 
 # Configure CORS
+origins = settings.ALLOWED_ORIGINS
+if isinstance(origins, str):
+    # Handle comma-separated string from environment variables
+    origins = [o.strip() for o in origins.split(',')]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
