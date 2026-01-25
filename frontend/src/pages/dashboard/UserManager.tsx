@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PencilIcon, TrashIcon, UserPlusIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { API_BASE_URL } from '../../config';
 
 interface User {
@@ -25,6 +26,7 @@ export default function UserManager() {
         last_name: '',
         role: 'USER'
     });
+    const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
         fetchUsers();
@@ -97,6 +99,8 @@ export default function UserManager() {
                 await fetchUsers();
                 setShowEditModal(false);
                 setSelectedUser(null);
+                setSuccessMessage('Usuario actualizado correctamente');
+                setTimeout(() => setSuccessMessage(''), 5000);
             } else {
                 const error = await response.json();
                 alert(error.detail || 'Error al actualizar usuario');
@@ -123,6 +127,8 @@ export default function UserManager() {
                 await fetchUsers();
                 setShowDeleteConfirm(false);
                 setSelectedUser(null);
+                setSuccessMessage('Usuario eliminado correctamente');
+                setTimeout(() => setSuccessMessage(''), 5000);
             } else {
                 const error = await response.json();
                 alert(error.detail || 'Error al eliminar usuario');
@@ -167,6 +173,18 @@ export default function UserManager() {
                     </button>
                 </div>
             </div>
+
+            {/* Success Message */}
+            {successMessage && (
+                <div className="mt-6 rounded-lg bg-green-50 p-4 border border-green-200 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="flex items-center">
+                        <CheckCircleIcon className="h-5 w-5 text-green-600 mr-3" />
+                        <p className="text-sm font-medium text-green-800">
+                            {successMessage}
+                        </p>
+                    </div>
+                </div>
+            )}
 
             {/* Search Bar */}
             <div className="mt-6">
