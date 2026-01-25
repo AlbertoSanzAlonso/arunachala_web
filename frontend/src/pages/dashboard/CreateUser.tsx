@@ -44,7 +44,7 @@ export default function CreateUser() {
 
         try {
             const token = sessionStorage.getItem('access_token');
-            const response = await fetch(`${API_URL}/api/auth/admin/create-user`, {
+            const response = await fetch(`${API_URL}/api/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
