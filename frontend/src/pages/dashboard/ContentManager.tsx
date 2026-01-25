@@ -58,17 +58,17 @@ export default function ContentManager() {
                                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{item.type}</td>
                                             <td className="whitespace-nowrap px-3 py-4 text-sm">
                                                 <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${item.status === 'Publicado'
-                                                        ? 'bg-green-50 text-green-700 ring-green-600/20'
-                                                        : 'bg-yellow-50 text-yellow-800 ring-yellow-600/20'
+                                                    ? 'bg-green-50 text-green-700 ring-green-600/20'
+                                                    : 'bg-yellow-50 text-yellow-800 ring-yellow-600/20'
                                                     }`}>
                                                     {item.status}
                                                 </span>
                                             </td>
                                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{item.date}</td>
                                             <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                                <a href="#" className="text-primary-600 hover:text-primary-900">
+                                                <button type="button" className="text-primary-600 hover:text-primary-900">
                                                     Editar<span className="sr-only">, {item.title}</span>
-                                                </a>
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}

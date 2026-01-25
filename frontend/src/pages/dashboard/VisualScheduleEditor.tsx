@@ -24,7 +24,6 @@ const DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
 
 export default function VisualScheduleEditor({ onBack }: { onBack: () => void }) {
     const [items, _setItems] = useState<ScheduleItem[]>([]);
-    const [originalItems, setOriginalItems] = useState<ScheduleItem[]>([]);
     const [history, setHistory] = useState<ScheduleItem[][]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -92,8 +91,7 @@ export default function VisualScheduleEditor({ onBack }: { onBack: () => void })
                     };
                 });
                 setItems(mapped);
-                setOriginalItems(JSON.parse(JSON.stringify(mapped)));
-                setHistory([]); // Clean history on fresh load
+                setHistory([mapped]); // Initial state for undon fresh load
             }
         } catch (error) {
             console.error('Error fetching:', error);

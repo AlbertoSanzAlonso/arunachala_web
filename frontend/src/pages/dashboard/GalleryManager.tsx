@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Reorder } from 'framer-motion';
-import { PhotoIcon, TrashIcon, ArrowsUpDownIcon, ArrowPathIcon, CheckIcon, CheckCircleIcon, ScissorsIcon } from '@heroicons/react/24/outline';
+import { PhotoIcon, TrashIcon, ArrowsUpDownIcon, ArrowPathIcon, CheckCircleIcon, ScissorsIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import PageLoader from '../../components/PageLoader';
 import ConfirmModal from '../../components/ConfirmModal';
