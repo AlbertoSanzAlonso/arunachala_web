@@ -238,27 +238,22 @@ async def upload_profile_picture(
     if file.content_type not in allowed_types:
         raise HTTPException(status_code=400, detail="Solo se permiten imágenes (JPEG, PNG, WEBP)")
     
-    # Create uploads directory if it doesn't exist
-    upload_dir = "static/profile_pictures"
-    os.makedirs(upload_dir, exist_ok=True)
+    from app.core.image_utils import save_upload_file
     
-    # Generate unique filename
-    file_extension = file.filename.split(".")[-1]
-    unique_filename = f"{uuid.uuid4()}.{file_extension}"
-    file_path = os.path.join(upload_dir, unique_filename)
+    # Save file (will handle local or Cloudinary based on settings)
+    image_url = save_upload_file(file, subdirectory="profile_pictures")
     
-    # Save file
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    
-    # Delete old profile picture if exists
-    if current_user.profile_picture:
+    # Delete old profile picture if it was a local file
+    if current_user.profile_picture and current_user.profile_picture.startswith("/static/"):
         old_file_path = current_user.profile_picture.lstrip("/")
         if os.path.exists(old_file_path):
-            os.remove(old_file_path)
+            try:
+                os.remove(old_file_path)
+            except Exception as e:
+                print(f"Error deleting old local profile picture: {e}")
     
     # Update user profile picture path
-    current_user.profile_picture = f"/{file_path}"
+    current_user.profile_picture = image_url
     db.commit()
     db.refresh(current_user)
     
