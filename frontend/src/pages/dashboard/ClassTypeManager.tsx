@@ -166,7 +166,7 @@ export default function ClassTypeManager() {
                         Define los tipos de clases, sus colores y descripciones que luego aparecerán en el horario.
                     </p>
                 </div>
-                <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex sm:gap-3 sm:flex-none">
+                <div className="mt-4 sm:ml-16 sm:mt-0 flex flex-col sm:flex-row gap-3 sm:flex-none">
                     <button
                         type="button"
                         onClick={() => navigate('/dashboard/schedule')}

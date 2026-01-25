@@ -29,7 +29,7 @@ export default function ForgotPasswordPage() {
                 throw new Error(data.detail || 'Error al procesar solicitud');
             }
 
-            setMessage('Si el email existe, recibirás un enlace de recuperación.');
+            setMessage('Hemos enviado un enlace de recuperación a tu bandeja de entrada.');
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -84,7 +84,6 @@ export default function ForgotPasswordPage() {
                 ) : (
                     <div className="text-green-700 text-center bg-green-50 p-4 rounded-lg">
                         <p>{message}</p>
-                        <p className="mt-4 text-sm">Revisa tu terminal del backend para ver el enlace (modo demo).</p>
                     </div>
                 )}
 

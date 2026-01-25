@@ -26,8 +26,8 @@ export default function LoginPage() {
         try {
             await login(email, password);
             navigate(from, { replace: true });
-        } catch (err) {
-            setError('Email o contraseña incorrectos');
+        } catch (err: any) {
+            setError(err.message || 'Error al iniciar sesión');
         } finally {
             setIsLoading(false);
         }
@@ -131,18 +131,10 @@ export default function LoginPage() {
                 </form>
 
                 <p className="mt-10 text-center text-sm text-gray-500">
-                    <span className="block mb-2">
-                        ¿Olvidaste tu contraseña?{' '}
-                        <a href="/forgot-password" className="font-semibold leading-6 text-primary-600 hover:text-primary-500">
-                            Recuperar acceso
-                        </a>
-                    </span>
-                    <span className="block">
-                        ¿No tienes cuenta?{' '}
-                        <a href="/register" className="font-semibold leading-6 text-primary-600 hover:text-primary-500">
-                            Regístrate
-                        </a>
-                    </span>
+                    ¿Olvidaste tu contraseña?{' '}
+                    <a href="/forgot-password" className="font-semibold leading-6 text-primary-600 hover:text-primary-500">
+                        Recuperar acceso
+                    </a>
                 </p>
             </div>
         </div >

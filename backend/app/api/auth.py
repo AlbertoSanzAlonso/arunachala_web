@@ -89,10 +89,18 @@ class LoginRequest(BaseModel):
 @router.post("/login")
 def login(credentials: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == credentials.email).first()
-    if not user or not verify_password(credentials.password, user.password_hash):
+    
+    if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Usuario o contraseña incorrectos",
+            detail="El correo electrónico es incorrecto",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    if not verify_password(credentials.password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="La contraseña es incorrecta",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
@@ -140,14 +148,12 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
 
 @router.post("/forgot-password")
 async def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
-    print(f"DEBUG: Forgot password called for {request.email}", flush=True)
     user = db.query(User).filter(User.email == request.email).first()
     if not user:
-        print(f"DEBUG: User {request.email} NOT FOUND in DB", flush=True)
-        # Don't reveal if user exists
-        return {"message": "Si el email existe, se enviará un enlace."}
-
-    print(f"DEBUG: User found via API endpoint.", flush=True)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No existe ninguna cuenta con este correo electrónico."
+        )
 
     # Generate a password reset token (valid for 15 mins)
     reset_token_expires = timedelta(minutes=15)

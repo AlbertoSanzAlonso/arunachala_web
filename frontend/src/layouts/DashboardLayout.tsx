@@ -88,10 +88,10 @@ export default function DashboardLayout() {
                     <Dialog as="div" className="relative z-50 lg:hidden" onClose={setSidebarOpen}>
                         <Transition.Child
                             as={Fragment}
-                            enter="transition-opacity ease-linear duration-300"
+                            enter="transition-opacity ease-linear duration-500"
                             enterFrom="opacity-0"
                             enterTo="opacity-100"
-                            leave="transition-opacity ease-linear duration-300"
+                            leave="transition-opacity ease-in-out duration-500"
                             leaveFrom="opacity-100"
                             leaveTo="opacity-0"
                         >
@@ -101,20 +101,20 @@ export default function DashboardLayout() {
                         <div className="fixed inset-0 flex">
                             <Transition.Child
                                 as={Fragment}
-                                enter="transition ease-in-out duration-300 transform"
+                                enter="transition ease-out duration-500 transform"
                                 enterFrom="-translate-x-full"
                                 enterTo="translate-x-0"
-                                leave="transition ease-in-out duration-300 transform"
+                                leave="transition ease-in-out duration-500 transform"
                                 leaveFrom="translate-x-0"
                                 leaveTo="-translate-x-full"
                             >
                                 <Dialog.Panel className="relative mr-16 flex w-full max-w-xs flex-1">
                                     <Transition.Child
                                         as={Fragment}
-                                        enter="ease-in-out duration-300"
+                                        enter="ease-out duration-500"
                                         enterFrom="opacity-0"
                                         enterTo="opacity-100"
-                                        leave="ease-in-out duration-300"
+                                        leave="ease-in duration-400"
                                         leaveFrom="opacity-100"
                                         leaveTo="opacity-0"
                                     >
@@ -139,6 +139,7 @@ export default function DashboardLayout() {
                                                             <li key={item.name}>
                                                                 <Link
                                                                     to={item.href}
+                                                                    onClick={() => setSidebarOpen(false)}
                                                                     className={classNames(
                                                                         location.pathname === item.href
                                                                             ? 'bg-primary-50 text-primary-600'
@@ -255,10 +256,10 @@ export default function DashboardLayout() {
                                 </div>
                                 <Transition
                                     as={Fragment}
-                                    enter="transition ease-out duration-100"
+                                    enter="transition ease-out duration-200"
                                     enterFrom="transform opacity-0 scale-95"
                                     enterTo="transform opacity-100 scale-100"
-                                    leave="transition ease-in duration-75"
+                                    leave="transition ease-in duration-150"
                                     leaveFrom="transform opacity-100 scale-100"
                                     leaveTo="transform opacity-0 scale-95"
                                 >

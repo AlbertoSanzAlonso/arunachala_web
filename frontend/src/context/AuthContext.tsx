@@ -57,17 +57,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const login = async (email: string, password: string) => {
         try {
-            const formData = new FormData();
-            formData.append('username', email); // OAuth2 expects 'username'
-            formData.append('password', password);
-
-            const response = await fetch(`${API_BASE_URL}/api/auth/token`, {
+            const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
             });
 
             if (!response.ok) {
-                throw new Error('Login failed');
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Error al iniciar sesión');
             }
 
             const data = await response.json();
@@ -76,9 +76,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             sessionStorage.setItem('access_token', access_token);
             sessionStorage.setItem('arunachala_user', JSON.stringify(user));
             setUser(user);
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            throw new Error('Credenciales inválidas');
+            throw error; // Re-throw the error with the original message
         }
     };
 

@@ -1,6 +1,8 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
 from app.core.database import engine, Base
 from app.models import models
 import os
@@ -9,8 +11,6 @@ import os
 # Import routers
 from app.api import reviews, auth, gallery, schedules, yoga_classes
 from fastapi.staticfiles import StaticFiles
-
-load_dotenv()
 
 # Create Tables
 models.Base.metadata.create_all(bind=engine)

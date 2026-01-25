@@ -21,8 +21,19 @@ class Settings(BaseSettings):
     CLOUDINARY_API_KEY: Optional[str] = None
     CLOUDINARY_API_SECRET: Optional[str] = None
 
+    # Frontend
+    FRONTEND_URL: str = "http://localhost:3000"
+    
+    # Email (SMTP)
+    MAIL_SERVER: Optional[str] = None
+    MAIL_PORT: int = 587
+    MAIL_USERNAME: Optional[str] = None
+    MAIL_PASSWORD: Optional[str] = None
+    MAIL_FROM: Optional[str] = None
+
     class Config:
         env_file = ".env"
         case_sensitive = True
+        extra = "ignore" # Important: don't crash if .env has extra vars
 
 settings = Settings()

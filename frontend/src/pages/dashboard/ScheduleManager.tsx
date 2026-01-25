@@ -227,7 +227,7 @@ export default function ScheduleManager() {
                         Administra las clases semanales asignando los tipos de clase definidos en el menú.
                     </p>
                 </div>
-                <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex sm:gap-3 sm:flex-none">
+                <div className="mt-4 sm:ml-16 sm:mt-0 flex flex-col sm:flex-row gap-3 sm:flex-none">
                     <button
                         type="button"
                         onClick={() => setShowVisualEditor(true)}
