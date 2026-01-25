@@ -14,7 +14,13 @@ if not DATABASE_URL:
 if "sqlite" in DATABASE_URL:
     raise ValueError("SQLite is forbidden! Configure DATABASE_URL to use PostgreSQL.")
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,
+    pool_recycle=300,
+    pool_size=5,
+    max_overflow=10
+)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
