@@ -95,7 +95,7 @@ const HomePage: React.FC = () => {
 
                         <Link
                             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                            to="/therapies"
+                            to="/masajes-y-terapias"
                             className="group cursor-pointer p-6 md:p-8 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-bone/50"
                         >
                             <img src={lotusFlower} alt="" aria-hidden="true" className="h-14 md:h-20 w-auto mb-3 md:mb-4 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />

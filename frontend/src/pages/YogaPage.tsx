@@ -53,6 +53,25 @@ const YogaPage: React.FC = () => {
         blogRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    // Scroll Snap & Back to Top Logic
+    const [showBackToTop, setShowBackToTop] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 500) {
+                setShowBackToTop(true);
+            } else {
+                setShowBackToTop(false);
+            }
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
     // Loading skeleton for lazy components
     const SectionLoader = () => (
         <div className="w-full h-96 flex items-center justify-center bg-bone/20 rounded-xl animate-pulse">
@@ -61,7 +80,7 @@ const YogaPage: React.FC = () => {
     );
 
     return (
-        <div className="font-body text-bark min-h-screen flex flex-col">
+        <div className="font-body text-bark min-h-screen flex flex-col relative snap-y snap-mandatory scroll-smooth">
             <Helmet>
                 <title>Clases de Yoga en Barcelona | Arunachala</title>
                 <meta name="description" content="Descubre nuestras clases de yoga en Cornellà de Llobregat. Hatha Yoga, Vinyasa y meditación para todos los niveles. Horarios flexibles y ambiente acogedor." />
@@ -70,9 +89,25 @@ const YogaPage: React.FC = () => {
 
             <Header />
 
+            {/* Floating Back to Top Button */}
+            {showBackToTop && (
+                <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    onClick={scrollToTop}
+                    className="fixed bottom-8 right-8 z-50 bg-forest text-white p-4 rounded-full shadow-2xl hover:bg-matcha transition-colors group focus:outline-none focus:ring-2 focus:ring-matcha/50"
+                    aria-label="Volver arriba"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 group-hover:-translate-y-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                    </svg>
+                </motion.button>
+            )}
+
             <main className="flex-grow bg-bone">
                 {/* Hero Section */}
-                <div className="relative w-full min-h-[100vh] md:min-h-0 md:h-[80vh] flex items-center justify-center overflow-hidden" role="banner">
+                <div id="top" className="relative w-full min-h-[100vh] md:min-h-0 md:h-[80vh] flex items-center justify-center overflow-hidden snap-start" role="banner">
                     {/* Background Image */}
                     <div
                         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
@@ -83,7 +118,7 @@ const YogaPage: React.FC = () => {
                     </div>
 
                     {/* Content Container */}
-                    <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 max-w-7xl mx-auto w-full h-full pt-28 md:pt-0">
+                    <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 max-w-7xl mx-auto w-full h-full pt-28 pb-12 md:pt-0 md:pb-0">
                         <div className="self-start md:absolute md:top-32 md:left-8 w-full md:w-auto mb-4 md:mb-0">
                             <BackButton className="text-white hover:text-matcha transition-colors" />
                         </div>
@@ -163,25 +198,35 @@ const YogaPage: React.FC = () => {
                 </div>
 
                 {/* Schedule Section */}
-                <section ref={scheduleRef} className="bg-white py-24 md:py-32 scroll-mt-20" aria-label="Horarios de Clases">
+                <section ref={scheduleRef} className="bg-white py-24 md:py-32 scroll-mt-20 snap-start relative" aria-label="Horarios de Clases">
                     <FadeInSection className="max-w-7xl mx-auto px-4 md:px-8">
                         <Suspense fallback={<SectionLoader />}>
                             <YogaSchedule />
                         </Suspense>
+
+                        <div className="flex justify-center mt-12 md:mt-16">
+                            <button
+                                onClick={scrollToTop}
+                                className="text-forest/60 hover:text-forest transition-colors flex flex-col items-center gap-2 group text-sm uppercase tracking-widest font-bold"
+                            >
+                                <span className="group-hover:-translate-y-1 transition-transform">↑</span>
+                                Volver al principio
+                            </button>
+                        </div>
                     </FadeInSection>
                 </section>
 
                 {/* Gallery Slider Section */}
-                <section ref={galleryRef} className="w-full max-w-7xl mx-auto px-4 md:px-6 mt-12 mb-24 scroll-mt-24" aria-label="Galería de Imágenes">
+                <section ref={galleryRef} className="w-full max-w-7xl mx-auto px-4 md:px-6 py-24 scroll-mt-24 snap-start" aria-label="Galería de Imágenes">
                     <FadeInSection>
-                        <h2 className="text-3xl md:text-5xl font-headers text-forest mb-12 text-center text-pretty">Galería de Imágenes</h2>
+                        <h2 className="text-3xl md:text-5xl font-headers text-forest mb-12 text-center text-pretty uppercase">Galería de Imágenes</h2>
                         <Suspense fallback={<SectionLoader />}>
                             {galleryImages.length > 0 ? (
                                 <ImageSlider images={galleryImages}>
                                     <div className="absolute bottom-5 right-5 md:bottom-8 md:right-8 pointer-events-auto z-30">
                                         <button
-                                            onClick={() => navigate('/gallery/yoga')}
-                                            className="px-6 py-2 md:px-8 md:py-3 bg-black/30 hover:bg-white backdrop-blur-md border border-white/30 rounded-full text-white hover:text-forest font-headers tracking-wide transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2 group text-sm md:text-base"
+                                            onClick={() => navigate('/galeria/yoga')}
+                                            className="px-6 py-2 md:px-8 md:py-3 bg-black/30 hover:bg-white backdrop-blur-md border border-white/30 rounded-full text-white hover:text-forest font-headers tracking-wide transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2 group text-sm md:text-base uppercase"
                                         >
                                             Ver Galería Completa <span className="text-xl leading-none mb-1">→</span>
                                         </button>
@@ -193,20 +238,30 @@ const YogaPage: React.FC = () => {
                                 </div>
                             )}
                         </Suspense>
+
+                        <div className="flex justify-center mt-16">
+                            <button
+                                onClick={scrollToTop}
+                                className="text-forest/60 hover:text-forest transition-colors flex flex-col items-center gap-2 group text-sm uppercase tracking-widest font-bold"
+                            >
+                                <span className="group-hover:-translate-y-1 transition-transform">↑</span>
+                                Volver al principio
+                            </button>
+                        </div>
                     </FadeInSection>
                 </section>
 
                 {/* Blog Preview Section */}
-                <section ref={blogRef} className="bg-white py-24 md:py-32 border-t border-forest/5 scroll-mt-20" aria-label="Últimas publicaciones del blog">
+                <section ref={blogRef} className="bg-white py-24 md:py-32 border-t border-forest/5 scroll-mt-20 snap-start" aria-label="Últimas publicaciones del blog">
                     <FadeInSection className="max-w-7xl mx-auto px-4 md:px-8">
                         <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6 text-center md:text-left">
                             <div>
-                                <h2 className="text-3xl md:text-5xl font-headers text-forest mb-3">Últimas Publicaciones</h2>
+                                <h2 className="text-3xl md:text-5xl font-headers text-forest mb-3 uppercase">Últimas Publicaciones</h2>
                                 <p className="text-bark/70 text-lg">Inspiración para tu práctica y vida diaria</p>
                             </div>
                             <button
                                 onClick={() => navigate('/blog')}
-                                className="hidden md:block text-forest font-bold hover:text-matcha transition-colors text-lg"
+                                className="hidden md:block text-forest font-bold hover:text-matcha transition-colors text-lg uppercase"
                                 aria-label="Ir a la página principal del blog"
                             >
                                 Ver todo el blog →
@@ -253,9 +308,9 @@ const YogaPage: React.FC = () => {
                                     </div>
                                     <div className="p-8 flex-grow flex flex-col">
                                         <span className="text-xs font-bold text-matcha uppercase tracking-widest mb-2 block">{post.date}</span>
-                                        <h3 className="text-xl font-headers text-forest mb-3 group-hover:text-matcha transition-colors leading-tight">{post.title}</h3>
+                                        <h3 className="text-xl font-headers text-forest mb-3 group-hover:text-matcha transition-colors leading-tight uppercase">{post.title}</h3>
                                         <p className="text-bark/80 text-base leading-relaxed mb-4 line-clamp-3 flex-grow">{post.excerpt}</p>
-                                        <span className="text-forest text-sm font-bold mt-auto pt-4 border-t border-forest/10 inline-block">Leer artículo</span>
+                                        <span className="text-forest text-sm font-bold mt-auto pt-4 border-t border-forest/10 inline-block uppercase">Leer artículo</span>
                                     </div>
                                 </article>
                             ))}
@@ -263,15 +318,26 @@ const YogaPage: React.FC = () => {
 
                         <button
                             onClick={() => navigate('/blog')}
-                            className="md:hidden w-full mt-12 text-forest font-bold border-2 border-forest/20 py-4 rounded-xl hover:bg-forest hover:text-white transition-all text-lg"
+                            className="md:hidden w-full mt-12 text-forest font-bold border-2 border-forest/20 py-4 rounded-xl hover:bg-forest hover:text-white transition-all text-lg uppercase"
                         >
                             Ver todo el blog
                         </button>
+
+                        <div className="flex justify-center mt-16">
+                            <button
+                                onClick={scrollToTop}
+                                className="text-forest/60 hover:text-forest transition-colors flex flex-col items-center gap-2 group text-sm uppercase tracking-widest font-bold"
+                            >
+                                <span className="group-hover:-translate-y-1 transition-transform">↑</span>
+                                Volver al principio
+                            </button>
+                        </div>
                     </FadeInSection>
                 </section>
             </main>
             <Footer />
         </div >
+
     );
 };
 

@@ -9,7 +9,7 @@ import os
 
 # Import the reviews router
 # Import routers
-from app.api import reviews, auth, gallery, schedules, yoga_classes
+from app.api import reviews, auth, gallery, schedules, yoga_classes, treatments
 from fastapi.staticfiles import StaticFiles
 
 # Create Tables
@@ -40,6 +40,7 @@ app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(gallery.router, prefix="/api/gallery", tags=["gallery"])
 app.include_router(schedules.router)
 app.include_router(yoga_classes.router)
+app.include_router(treatments.router)
 
 
 # Mount Static Files (for uploaded images)

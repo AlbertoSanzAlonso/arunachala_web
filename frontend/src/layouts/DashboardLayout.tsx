@@ -15,6 +15,7 @@ import {
     UserCircleIcon,
     TagIcon,
     UsersIcon,
+    HeartIcon,
     ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
 
@@ -23,6 +24,7 @@ const navigation = [
     { name: 'Galería', href: '/dashboard/gallery', icon: PhotoIcon },
     { name: 'Contenido', href: '/dashboard/content', icon: DocumentTextIcon },
     { name: 'Menú de Clases', href: '/dashboard/classes', icon: TagIcon },
+    { name: 'Tratamientos', href: '/dashboard/treatments', icon: HeartIcon },
     { name: 'Horarios', href: '/dashboard/schedule', icon: CalendarIcon },
     { name: 'Usuarios', href: '/dashboard/users', icon: UsersIcon },
     { name: 'SEO & Google', href: '/dashboard/seo', icon: ChartBarIcon },

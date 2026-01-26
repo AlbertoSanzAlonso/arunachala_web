@@ -76,3 +76,27 @@ def save_upload_file(upload_file: UploadFile, subdirectory: str = "uploads") -> 
             if 'file_location' in locals() and os.path.exists(file_location):
                 os.remove(file_location)
             raise HTTPException(status_code=500, detail=f"Could not save image: {str(e)}")
+
+def delete_file(file_url: str) -> bool:
+    """
+    Deletes a file given its URL (local path).
+    Returns True if deleted, False otherwise.
+    """
+    if not file_url:
+        return False
+        
+    try:
+        # Check if it is a local static file
+        if file_url.startswith("/static/"):
+            # Remove '/static/' prefix
+            relative_path = file_url[len("/static/"):]
+            full_path = os.path.join(STATIC_DIR, relative_path)
+            
+            if os.path.exists(full_path) and os.path.isfile(full_path):
+                os.remove(full_path)
+                print(f"Deleted file: {full_path}")
+                return True
+        return False
+    except Exception as e:
+        print(f"Error deleting file {file_url}: {e}")
+        return False

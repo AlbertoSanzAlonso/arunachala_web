@@ -37,9 +37,11 @@ class GalleryService:
     def upload_image(self, file: UploadFile, category: str, alt_text: str = "") -> Gallery:
         valid_categories = ["home", "yoga", "therapies", "center"]
         if category not in valid_categories:
+            print(f"❌ Invalid category attempt: {category}")
             raise HTTPException(status_code=400, detail=f"Invalid category. Must be one of {valid_categories}")
 
         if not file.content_type.startswith("image/"):
+            print(f"❌ Invalid file type: {file.content_type}")
             raise HTTPException(status_code=400, detail="File must be an image")
 
         # Get max position

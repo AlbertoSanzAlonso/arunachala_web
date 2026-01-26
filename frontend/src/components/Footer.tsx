@@ -50,7 +50,7 @@ const Footer: React.FC = () => {
                     <ul className="flex flex-col gap-3 text-sm text-bone/70">
                         <li><Link to="/" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">Inicio</Link></li>
                         <li><Link to="/yoga" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">Yoga & Horarios</Link></li>
-                        <li><Link to="/therapies" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">Masaje y terapias</Link></li>
+                        <li><Link to="/masajes-y-terapias" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">Masaje y terapias</Link></li>
                         <li><span className="cursor-not-allowed opacity-50">Blog (Próximamente)</span></li>
                     </ul>
                 </div>

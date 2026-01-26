@@ -11,6 +11,7 @@ const YogaPage = lazy(() => import('./pages/YogaPage'));
 const TherapiesPage = lazy(() => import('./pages/TherapiesPage'));
 const BlogPage = lazy(() => import('./pages/BlogPage'));
 const YogaGalleryPage = lazy(() => import('./pages/YogaGalleryPage'));
+const TherapiesGalleryPage = lazy(() => import('./pages/TherapiesGalleryPage'));
 
 // Dashboard Pages
 const LoginPage = lazy(() => import('./pages/LoginPage'));
@@ -25,6 +26,7 @@ const SeoStats = lazy(() => import('./pages/dashboard/SeoStats'));
 const UserProfile = lazy(() => import('./pages/dashboard/profile/UserProfile'));
 const CreateUser = lazy(() => import('./pages/dashboard/CreateUser'));
 const ClassTypeManager = lazy(() => import('./pages/dashboard/ClassTypeManager'));
+const TreatmentsManager = lazy(() => import('./pages/dashboard/TreatmentsManager'));
 const UserManager = lazy(() => import('./pages/dashboard/UserManager'));
 
 function App() {
@@ -36,9 +38,10 @@ function App() {
                         {/* Public Routes */}
                         <Route path="/" element={<HomePage />} />
                         <Route path="/yoga" element={<YogaPage />} />
-                        <Route path="/therapies" element={<TherapiesPage />} />
+                        <Route path="/masajes-y-terapias" element={<TherapiesPage />} />
                         <Route path="/blog" element={<BlogPage />} />
-                        <Route path="/gallery/yoga" element={<YogaGalleryPage />} />
+                        <Route path="/galeria/yoga" element={<YogaGalleryPage />} />
+                        <Route path="/galeria/masajes-y-terapias" element={<TherapiesGalleryPage />} />
 
                         {/* Auth Route */}
                         <Route path="/login" element={<LoginPage />} />
@@ -57,6 +60,7 @@ function App() {
                                 <Route path="profile" element={<UserProfile />} />
                                 <Route path="create-user" element={<CreateUser />} />
                                 <Route path="classes" element={<ClassTypeManager />} />
+                                <Route path="treatments" element={<TreatmentsManager />} />
                                 <Route path="users" element={<UserManager />} />
                             </Route>
                         </Route>

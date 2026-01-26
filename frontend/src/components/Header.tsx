@@ -44,7 +44,7 @@ const Header: React.FC = () => {
             >
                 <nav className="flex flex-col gap-10 text-center">
                     <Link to="/yoga" onClick={handleLinkClick} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300">YOGA</Link>
-                    <Link to="/therapies" onClick={handleLinkClick} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">Masaje y terapias</Link>
+                    <Link to="/masajes-y-terapias" onClick={handleLinkClick} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">Masaje y terapias</Link>
                     <Link to="/contact" onClick={handleLinkClick} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300">CONTACTO</Link>
                 </nav>
             </div>

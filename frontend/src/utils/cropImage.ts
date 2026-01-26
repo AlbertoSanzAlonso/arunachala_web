@@ -12,7 +12,7 @@ export function getRadianAngle(degreeValue: number) {
 }
 
 /**
- * Returns the rotated size of the image.
+ * Returns the new bounding area of a rotated rectangle.
  */
 export function rotateSize(width: number, height: number, rotation: number) {
     const rotRad = getRadianAngle(rotation)
@@ -26,7 +26,7 @@ export function rotateSize(width: number, height: number, rotation: number) {
 }
 
 /**
- * This function was adapted from the one in the react-easy-crop project
+ * This function was adapted from the one in the ReadMe of https://github.com/DominicTobias/react-image-crop
  */
 export default async function getCroppedImg(
     imageSrc: string,
@@ -64,7 +64,7 @@ export default async function getCroppedImg(
     // draw rotated image
     ctx.drawImage(image, 0, 0)
 
-    // croppedAreaPixels values are bounding box relative
+    // croppedAreaPixels values are bounding-box relative
     // extract the cropped image using these values
     const data = ctx.getImageData(
         pixelCrop.x,
@@ -77,13 +77,16 @@ export default async function getCroppedImg(
     canvas.width = pixelCrop.width
     canvas.height = pixelCrop.height
 
-    // paste generated rotate image at the correct offset relative to itself
+    // paste generated rotate image at the top left corner
     ctx.putImageData(data, 0, 0)
+
+    // As Base64 string
+    // return canvas.toDataURL('image/jpeg');
 
     // As a blob
     return new Promise((resolve, reject) => {
         canvas.toBlob((file) => {
             resolve(file)
-        }, 'image/webp')
+        }, 'image/webp', 0.9)
     })
 }

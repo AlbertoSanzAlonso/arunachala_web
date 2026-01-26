@@ -6,8 +6,9 @@ import BackButton from '../components/BackButton';
 import FadeInSection from '../components/FadeInSection';
 import { API_BASE_URL } from '../config';
 import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { Helmet } from 'react-helmet-async';
 
-const YogaGalleryPage: React.FC = () => {
+const TherapiesGalleryPage: React.FC = () => {
     const [images, setImages] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
@@ -20,13 +21,13 @@ const YogaGalleryPage: React.FC = () => {
 
     const fetchGallery = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/gallery/?category=yoga`);
+            const response = await fetch(`${API_BASE_URL}/api/gallery/?category=therapies`);
             if (response.ok) {
                 const data = await response.json();
                 setImages(data);
             }
         } catch (error) {
-            console.error("Failed to load yoga gallery:", error);
+            console.error("Failed to load therapies gallery:", error);
         } finally {
             setIsLoading(false);
         }
@@ -58,20 +59,25 @@ const YogaGalleryPage: React.FC = () => {
 
     return (
         <div className="font-body text-bark min-h-screen flex flex-col pt-24 bg-bone">
+            <Helmet>
+                <title>Galería de Masajes y Terapias | Arunachala</title>
+                <meta name="description" content="Explora nuestras instalaciones y tratamientos de masajes y terapias holísticas." />
+            </Helmet>
+
             <Header />
 
             <main className="flex-grow">
                 <section className="py-12 md:py-20 px-4 md:px-8 max-w-7xl mx-auto">
                     <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
-                        <BackButton to="/yoga" label="Volver a Yoga" />
-                        <h1 className="text-4xl md:text-6xl font-headers text-forest text-center flex-grow">Galería de Yoga</h1>
+                        <BackButton to="/masajes-y-terapias" label="Volver a Terapias" />
+                        <h1 className="text-4xl md:text-6xl font-headers text-forest text-center flex-grow uppercase">Galería de Terapias</h1>
                         <div className="w-10 hidden md:block"></div> {/* Spacer for symmetry */}
                     </div>
 
                     <FadeInSection>
                         <p className="text-center text-bark/70 text-lg max-w-2xl mx-auto mb-16">
-                            Nuestros espacios y momentos dedicados a la práctica del Yoga.
-                            Encuentra la inspiración que necesitas para tu camino.
+                            Un vistazo a nuestros espacios de sanación y tratamientos holísticos.
+                            Encuentra la paz y el bienestar que estás buscando.
                         </p>
 
                         {isLoading ? (
@@ -94,7 +100,7 @@ const YogaGalleryPage: React.FC = () => {
                                     >
                                         <img
                                             src={`${API_BASE_URL}${image.url}`}
-                                            alt={image.alt_text || 'Yoga practice at Arunachala'}
+                                            alt={image.alt_text || 'Therapies at Arunachala'}
                                             className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                                             loading="lazy"
                                         />
@@ -112,7 +118,7 @@ const YogaGalleryPage: React.FC = () => {
 
                         {!isLoading && images.length === 0 && (
                             <div className="text-center py-20 bg-white/30 rounded-3xl border border-forest/10">
-                                <p className="text-forest/60 text-xl font-headers">Estamos preparando las imágenes de Yoga para ti.</p>
+                                <p className="text-forest/60 text-xl font-headers">Estamos preparando las imágenes de Terapias para ti.</p>
                             </div>
                         )}
                     </FadeInSection>
@@ -159,7 +165,7 @@ const YogaGalleryPage: React.FC = () => {
                         >
                             <img
                                 src={`${API_BASE_URL}${images[selectedImageIndex].url}`}
-                                alt={images[selectedImageIndex].alt_text || 'Yoga Gallery'}
+                                alt={images[selectedImageIndex].alt_text || 'Therapies Gallery'}
                                 className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl border border-white/10"
                             />
                             {images[selectedImageIndex].alt_text && (
@@ -177,4 +183,4 @@ const YogaGalleryPage: React.FC = () => {
     );
 };
 
-export default YogaGalleryPage;
+export default TherapiesGalleryPage;

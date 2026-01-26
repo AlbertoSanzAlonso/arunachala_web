@@ -88,3 +88,29 @@ class ClassSchedule(Base):
     yoga_class = relationship("YogaClassDefinition", back_populates="schedules")
 
 
+
+class MassageType(Base):
+    __tablename__ = "massage_types"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True, nullable=False)
+    excerpt = Column(String, nullable=True) # Short description for thumbnail
+    description = Column(Text, nullable=True) # Full description
+    benefits = Column(Text, nullable=True) # Benefits list/text
+    duration_min = Column(Integer, nullable=True)
+    image_url = Column(String, nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class TherapyType(Base):
+    __tablename__ = "therapy_types"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True, nullable=False)
+    excerpt = Column(String, nullable=True) # Short description for thumbnail
+    description = Column(Text, nullable=True) # Full description
+    benefits = Column(Text, nullable=True) # Benefits list/text
+    duration_min = Column(Integer, nullable=True)
+    image_url = Column(String, nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

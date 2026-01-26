@@ -11,7 +11,7 @@ Full-stack web application for Arunachala Yoga studio with automated content gen
 arunachala_web/
 ├── backend/          # FastAPI + SQLAlchemy + Pydantic
 ├── frontend/         # React + TypeScript + Tailwind  
-├── infraestructura/   # Docker + PostgreSQL
+├── infraestructura/   # Docker + PostgreSQL (Configured at root/infraestructura)
 ├── n8n-workflows/   # AI automation
 └── docs/            # Documentation
 ```
@@ -29,14 +29,14 @@ There are EXACTLY TWO required `.env` files in the project. Do NOT create one in
 
 ### 1. Backend Configuration (`backend/.env`)
 Used by FastAPI (Python). Must contain:
-- `DATABASE_URL`: Connection string to PostgreSQL.
+- `DATABASE_URL=postgresql://arunachala:arunachala1234@localhost:5432/arunachala_db` (Local development)
+- `DATABASE_URL` (Neon dynamic URL for production)
 - `SECRET_KEY`: For JWT tokens.
 - `ALGORITHM`: Encryption algorithm (e.g., HS256).
-- `ACCESS_TOKEN_EXPIRE_MINUTES`: Token validity.
-- `GOOGLE_API_KEY`: For reviews/maps integration.
 
 ### 2. Infrastructure Configuration (`infraestructura/.env`)
-Used by Docker Compose. Must contain:
+Located in `root/infraestructura/`. This folder contains the `docker-compose.yml` for PostgreSQL, n8n, and NocoDB.
+Must contain:
 - `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`: For creating the DB container.
 - `NOCODB_PORT`: Port for the NocoDB dashboard.
 - `N8N_ENCRYPTION_KEY`, `GENERIC_TIMEZONE`: For n8n automation.
@@ -52,10 +52,10 @@ To ensure consistency, SEO, ease of maintenance, and high performance, all new p
 ### 1. SEO & Metadata
 - **Tool**: Use `react-helmet-async` for all head management.
 - **Requirement**: Every page must define a `<title>` and `<nav>` meta tags (description, keywords).
+- **URLs**: URLs MUST be in Spanish and SEO-friendly (e.g., use `/terapias-y-masajes` instead of `/therapies`).
 - **Structure**:
 ```tsx
 import { Helmet } from 'react-helmet-async';
-
 // Inside component return:
 <Helmet>
   <title>Page Title | Arunachala</title>
