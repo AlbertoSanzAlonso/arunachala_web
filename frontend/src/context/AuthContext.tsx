@@ -102,73 +102,56 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     // Session Management
+    // Session Management - Idle Detection
     useEffect(() => {
+        if (!user || showSessionWarning) return;
+
+        const SESSION_DURATION = 30 * 60 * 1000; // 30 minutes
+        const WARNING_DURATION = 2 * 60 * 1000;  // 2 minutes
+        const IDLE_BEFORE_WARNING = SESSION_DURATION - WARNING_DURATION;
+
         let warningTimeout: any;
-        let logoutTimeout: any;
-        let countdownInterval: any;
 
-        // 30 minutes in ms
-        const SESSION_DURATION = 30 * 60 * 1000;
-        const WARNING_BEFORE = 2 * 60 * 1000; // Warning 2 mins before
+        const startWarning = () => {
+            setShowSessionWarning(true);
+            setRemainingTime(WARNING_DURATION / 1000); // 120 seconds
+        };
 
-        const resetTimers = () => {
-            if (!user) return;
-
+        const resetIdleTimer = () => {
             clearTimeout(warningTimeout);
-            clearTimeout(logoutTimeout);
-            clearInterval(countdownInterval);
-
-            // If checking from warning state, don't reset unless explicit extend action
-            if (showSessionWarning) {
-                // Start countdown if warning is shown
-                const expiryTime = Date.now() + WARNING_BEFORE;
-
-                countdownInterval = setInterval(() => {
-                    const now = Date.now();
-                    const diff = Math.max(0, Math.floor((expiryTime - now) / 1000));
-                    setRemainingTime(diff);
-
-                    if (diff <= 0) {
-                        clearInterval(countdownInterval);
-                    }
-                }, 1000);
-
-                return;
-            }
-
-            // Set warning timer
-            warningTimeout = setTimeout(() => {
-                setShowSessionWarning(true);
-                setRemainingTime(120);
-            }, SESSION_DURATION - WARNING_BEFORE);
-
-            // Set hard logout timer
-            logoutTimeout = setTimeout(() => {
-                logout("Tu sesión ha expirado por inactividad.");
-            }, SESSION_DURATION);
+            warningTimeout = setTimeout(startWarning, IDLE_BEFORE_WARNING);
         };
 
         const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
 
-        // Wrap resetTimers to match event listener signature
-        const handleActivity = () => {
-            // Only reset if NOT in warning mode (if in warning mode, user MUST click "Extend" explicitly)
-            if (!showSessionWarning) {
-                resetTimers();
-            }
-        };
+        // Initialize timer
+        resetIdleTimer();
 
-        if (user) {
-            events.forEach(event => window.addEventListener(event, handleActivity));
-            resetTimers();
-        }
+        // Listen for activity
+        events.forEach(event => window.addEventListener(event, resetIdleTimer));
 
         return () => {
-            events.forEach(event => window.removeEventListener(event, handleActivity));
+            events.forEach(event => window.removeEventListener(event, resetIdleTimer));
             clearTimeout(warningTimeout);
-            clearTimeout(logoutTimeout);
-            clearInterval(countdownInterval);
         };
+    }, [user, showSessionWarning]);
+
+    // Session Management - Countdown
+    useEffect(() => {
+        if (!user || !showSessionWarning) return;
+
+        const countdownInterval = setInterval(() => {
+            setRemainingTime((prev) => {
+                if (prev <= 1) {
+                    clearInterval(countdownInterval);
+                    logout("Tu sesión ha expirado por inactividad.");
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(countdownInterval);
     }, [user, showSessionWarning]);
 
     return (

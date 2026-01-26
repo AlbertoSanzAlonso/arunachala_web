@@ -45,6 +45,50 @@ Used by Docker Compose. Must contain:
 
 ---
 
+## 🎨 Page Creation Standards (Frontend)
+
+To ensure consistency, SEO, ease of maintenance, and high performance, all new pages **MUST** follow these guidelines:
+
+### 1. SEO & Metadata
+- **Tool**: Use `react-helmet-async` for all head management.
+- **Requirement**: Every page must define a `<title>` and `<nav>` meta tags (description, keywords).
+- **Structure**:
+```tsx
+import { Helmet } from 'react-helmet-async';
+
+// Inside component return:
+<Helmet>
+  <title>Page Title | Arunachala</title>
+  <meta name="description" content="Detailed page description..." />
+</Helmet>
+```
+
+### 2. Performance & Lazy Loading
+- **Suspense**: Wrap heavy or below-the-fold components in `React.lazy` imports and `<Suspense>` boundaries.
+- **Images**: Use `loading="lazy"` for images that are not in the initial viewport (hero section).
+- **Code Splitting**: Main route components should be lazy loaded in `App.tsx`.
+
+### 3. Accessibility (a11y)
+- **Semantic HTML**: Use proper tags (`<main>`, `<article>`, `<section>`, `<nav>`) instead of generic `<div>`.
+- **Labels**: All interactive elements (buttons, links within icons) MUST have an `aria-label` or visible text.
+- **Images**: Mandatory `alt` text describing the image content.
+- **Redundancy**: Avoid `role="article"` on `<article>` tags or similar default semantics.
+
+### 4. Code & Import Organization
+- **Imports**: Group imports: React/libs first, Components second, Assets/Config last.
+- **Clean Code**: Remove unused imports or variables immediately.
+
+### 5. Mobile & Responsive Design
+- **Spacing**: Use generous padding/gap for mobile layouts to ensure touch targets are accessible and content breathes (e.g., `py-24`, `gap-8`).
+- **Typography**: Adjust font sizes for smaller screens using Tailwind responsive prefixes (`text-3xl md:text-5xl`).
+
+### 6. UX & Animations
+- **Smooth Scroll**: Use `element.scrollIntoView({ behavior: 'smooth' })` for internal navigation.
+- **Transitions**: Use `<FadeInSection>` (framer-motion wrapper) for sections appearing on scroll.
+- **Feedback**: Provide loading skeletons or spinners (`fallback={<Loader />}`) for async content.
+
+---
+
 ## ☁️ Deployment Strategy (Hybrid)
 
 This project is configured to work seamlessly in both **Local Development** (Docker/Localhost) and **Production** (Cloud Services) without code changes, using a hybrid configuration strategy.
@@ -201,6 +245,7 @@ feature/*      ← Individual features
 - Input validation with Pydantic
 - SQL injection prevention via SQLAlchemy
 - API rate limiting
+- Rate limit creation: use `Limiter(key_func=get_remote_address)`
 
 ---
 

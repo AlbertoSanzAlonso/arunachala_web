@@ -35,7 +35,7 @@ class GalleryService:
         return query.order_by(Gallery.position.asc()).all()
 
     def upload_image(self, file: UploadFile, category: str, alt_text: str = "") -> Gallery:
-        valid_categories = ["home", "yoga", "massages", "center"]
+        valid_categories = ["home", "yoga", "therapies", "center"]
         if category not in valid_categories:
             raise HTTPException(status_code=400, detail=f"Invalid category. Must be one of {valid_categories}")
 

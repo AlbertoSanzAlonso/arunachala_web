@@ -4,7 +4,7 @@ import { galleryService, GalleryImage, GalleryCategory } from '../services/galle
 export const useGallery = (selectedCategory: GalleryCategory) => {
     const [images, setImages] = useState<GalleryImage[]>([]);
     const [categoryCounts, setCategoryCounts] = useState<Record<GalleryCategory, number>>({
-        home: 0, yoga: 0, massages: 0, center: 0
+        home: 0, yoga: 0, therapies: 0, center: 0
     });
     const [isLoading, setIsLoading] = useState(true);
     const [isUploading, setIsUploading] = useState(false);
@@ -23,7 +23,7 @@ export const useGallery = (selectedCategory: GalleryCategory) => {
 
     const fetchCounts = useCallback(async () => {
         try {
-            const categories: GalleryCategory[] = ['home', 'yoga', 'massages', 'center'];
+            const categories: GalleryCategory[] = ['home', 'yoga', 'therapies', 'center'];
             const newCounts = { ...categoryCounts };
 
             // Parallel fetching could be better but let's keep it simple/sequential 

@@ -5,9 +5,12 @@ import DashboardLayout from './layouts/DashboardLayout';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
+
 const HomePage = lazy(() => import('./pages/HomePage'));
 const YogaPage = lazy(() => import('./pages/YogaPage'));
 const TherapiesPage = lazy(() => import('./pages/TherapiesPage'));
+const BlogPage = lazy(() => import('./pages/BlogPage'));
+const YogaGalleryPage = lazy(() => import('./pages/YogaGalleryPage'));
 
 // Dashboard Pages
 const LoginPage = lazy(() => import('./pages/LoginPage'));
@@ -34,6 +37,8 @@ function App() {
                         <Route path="/" element={<HomePage />} />
                         <Route path="/yoga" element={<YogaPage />} />
                         <Route path="/therapies" element={<TherapiesPage />} />
+                        <Route path="/blog" element={<BlogPage />} />
+                        <Route path="/gallery/yoga" element={<YogaGalleryPage />} />
 
                         {/* Auth Route */}
                         <Route path="/login" element={<LoginPage />} />

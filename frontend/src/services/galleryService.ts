@@ -8,7 +8,7 @@ export interface GalleryImage {
     position: number;
 }
 
-export type GalleryCategory = 'home' | 'yoga' | 'massages' | 'center';
+export type GalleryCategory = 'home' | 'yoga' | 'therapies' | 'center';
 
 export const galleryService = {
     getAll: async (category?: string) => {

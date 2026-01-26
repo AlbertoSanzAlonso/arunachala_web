@@ -12,7 +12,7 @@ import { API_BASE_URL } from '../../config';
 const CATEGORIES: { value: GalleryCategory; label: string }[] = [
     { value: 'home', label: 'Home' },
     { value: 'yoga', label: 'Yoga' },
-    { value: 'massages', label: 'Masajes' },
+    { value: 'therapies', label: 'Terapias' },
     { value: 'center', label: 'Centro' },
 ];
 

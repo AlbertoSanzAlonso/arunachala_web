@@ -37,7 +37,7 @@ const HomePage: React.FC = () => {
     React.useEffect(() => {
         const fetchGallery = async () => {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/gallery/`);
+                const response = await fetch(`${API_BASE_URL}/api/gallery/?category=home`);
                 if (response.ok) {
                     const data = await response.json();
                     if (data.length > 0) {
@@ -53,6 +53,8 @@ const HomePage: React.FC = () => {
         };
 
         fetchGallery();
+        const interval = setInterval(fetchGallery, 5000); // Poll every 5 seconds
+        return () => clearInterval(interval);
     }, []);
 
     return (
@@ -85,7 +87,7 @@ const HomePage: React.FC = () => {
                             className="group cursor-pointer p-6 md:p-8 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-bone/50"
                         >
                             <img src={omSymbol} alt="" aria-hidden="true" className="h-14 md:h-20 w-auto mb-3 md:mb-4 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
-                            <h2 className="text-3xl md:text-6xl font-headers text-bone mb-2 md:mb-4 group-hover:scale-110 transition-transform duration-500">YOGA</h2>
+                            <h2 className="text-3xl md:text-5xl font-headers text-bone mb-2 md:mb-4 group-hover:scale-110 transition-transform duration-500 uppercase">YOGA</h2>
                             <p className="text-bone/80 text-base md:text-lg opacity-80 group-hover:opacity-100 transition-opacity duration-500">
                                 Muévete y respira
                             </p>
@@ -97,7 +99,7 @@ const HomePage: React.FC = () => {
                             className="group cursor-pointer p-6 md:p-8 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-bone/50"
                         >
                             <img src={lotusFlower} alt="" aria-hidden="true" className="h-14 md:h-20 w-auto mb-3 md:mb-4 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
-                            <h2 className="text-3xl md:text-6xl font-headers text-bone mb-2 md:mb-4 group-hover:scale-110 transition-transform duration-500">MASAJES</h2>
+                            <h2 className="text-3xl md:text-5xl font-headers text-bone mb-2 md:mb-4 group-hover:scale-110 transition-transform duration-500 uppercase">Masaje y terapias</h2>
                             <p className="text-bone/80 text-base md:text-lg opacity-80 group-hover:opacity-100 transition-opacity duration-500">
                                 Recupera tu bienestar
                             </p>

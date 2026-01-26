@@ -358,18 +358,45 @@ export default function DashboardLayout() {
                                         <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-yellow-100 sm:mx-0 sm:h-10 sm:w-10">
                                             <ArrowRightOnRectangleIcon className="h-6 w-6 text-yellow-600" aria-hidden="true" />
                                         </div>
-                                        <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                        <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
                                             <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
                                                 Tu sesión está a punto de expirar
                                             </Dialog.Title>
-                                            <div className="mt-2">
-                                                <p className="text-sm text-gray-500">
-                                                    Hemos detectado inactividad durante un tiempo. Por seguridad, tu sesión se cerrará automáticamente en:
+                                            <div className="mt-2 flex flex-col items-center">
+                                                <p className="text-sm text-gray-500 mb-4 text-center">
+                                                    Hemos detectado inactividad. Tu sesión se cerrará en:
                                                 </p>
-                                                <p className="mt-2 text-2xl font-mono font-bold text-primary-600 text-center bg-primary-50 py-2 rounded-lg">
-                                                    {formatTime(remainingTime)}
-                                                </p>
-                                                <p className="mt-2 text-sm text-gray-500">
+
+                                                {/* Circular Progress Timer */}
+                                                <div className="relative h-24 w-24 flex items-center justify-center mb-4">
+                                                    <svg className="transform -rotate-90 w-full h-full">
+                                                        <circle
+                                                            cx="48"
+                                                            cy="48"
+                                                            r="40"
+                                                            stroke="currentColor"
+                                                            strokeWidth="8"
+                                                            fill="transparent"
+                                                            className="text-gray-200"
+                                                        />
+                                                        <circle
+                                                            cx="48"
+                                                            cy="48"
+                                                            r="40"
+                                                            stroke="currentColor"
+                                                            strokeWidth="8"
+                                                            fill="transparent"
+                                                            strokeDasharray={251.2}
+                                                            strokeDashoffset={251.2 * (1 - remainingTime / 120)}
+                                                            className="text-primary-600 transition-all duration-1000 ease-linear"
+                                                        />
+                                                    </svg>
+                                                    <span className="absolute text-xl font-mono font-bold text-gray-700">
+                                                        {formatTime(remainingTime)}
+                                                    </span>
+                                                </div>
+
+                                                <p className="text-xs text-gray-400 text-center">
                                                     ¿Quieres seguir conectado?
                                                 </p>
                                             </div>
