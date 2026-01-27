@@ -1,53 +1,57 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-
-// Mock Data for Quiz
-const QUESTIONS = [
-    {
-        id: 1,
-        question: "¿Cómo te sientes hoy?",
-        options: [
-            { id: 'tired', text: 'Cansado y estresado', icon: '😴' }, // Leads to Therapy
-            { id: 'stiff', text: 'Con tensión física', icon: '🤕' }, // Leads to Yoga/Therapy
-            { id: 'energetic', text: 'Con energía para moverme', icon: '⚡' }, // Leads to Yoga
-            { id: 'seeking', text: 'Buscando paz interior', icon: '🙏' }, // Leads to Meditation/Yoga
-        ]
-    },
-    {
-        id: 2,
-        question: "¿Qué es lo que más necesitas ahora mismo?",
-        options: [
-            { id: 'relax', text: 'Desconectar y relajarme', score: { therapy: 2, yoga: 0 } },
-            { id: 'heal', text: 'Aliviar dolor muscular', score: { therapy: 2, yoga: 1 } },
-            { id: 'flow', text: 'Fluir y fortalecer', score: { therapy: 0, yoga: 2 } },
-            { id: 'clarity', text: 'Claridad mental', score: { therapy: 1, yoga: 2 } },
-        ]
-    }
-];
-
-const RECOMMENDATIONS = {
-    yoga: {
-        title: "Tu camino es el Yoga",
-        description: "Tu cuerpo pide movimiento consciente y conexión. Te recomendamos unirte a nuestras clases de Vinyasa Flow o Hatha Yoga para canalizar esa energía.",
-        cta: "Ver Horarios de Yoga",
-        link: "yoga", // ID to scroll to
-        image: "🧘‍♀️"
-    },
-    therapy: {
-        title: "Necesitas Sanación y Descanso",
-        description: "Es momento de parar y cuidar de ti. Nuestras terapias holísticas o un masaje relajante son justo lo que necesitas para restaurar tu equilibrio.",
-        cta: "Reservar Terapia",
-        link: "therapies", // ID to scroll to
-        image: "💆‍♂️"
-    }
-};
+import { useTranslation } from 'react-i18next';
 
 const WellnessQuiz: React.FC = () => {
+    const { t } = useTranslation();
     const [started, setStarted] = useState(false);
     const [currentQIndex, setCurrentQIndex] = useState(0);
     const [answers, setAnswers] = useState<any[]>([]);
-    const [result, setResult] = useState<keyof typeof RECOMMENDATIONS | null>(null);
+    const [result, setResult] = useState<'yoga' | 'therapy' | null>(null);
+
+    const questions_translated = t('home.quiz.questions', { returnObjects: true }) as any[];
+
+    // Maintain the same IDs and logic structure but use translated text
+    const QUESTIONS = [
+        {
+            id: 1,
+            question: questions_translated[0]?.question,
+            options: [
+                { id: 'tired', text: questions_translated[0]?.options.tired, icon: '😴' },
+                { id: 'stiff', text: questions_translated[0]?.options.stiff, icon: '🤕' },
+                { id: 'energetic', text: questions_translated[0]?.options.energetic, icon: '⚡' },
+                { id: 'seeking', text: questions_translated[0]?.options.seeking, icon: '🙏' },
+            ]
+        },
+        {
+            id: 2,
+            question: questions_translated[1]?.question,
+            options: [
+                { id: 'relax', text: questions_translated[1]?.options.relax, score: { therapy: 2, yoga: 0 } },
+                { id: 'heal', text: questions_translated[1]?.options.heal, score: { therapy: 2, yoga: 1 } },
+                { id: 'flow', text: questions_translated[1]?.options.flow, score: { therapy: 0, yoga: 2 } },
+                { id: 'clarity', text: questions_translated[1]?.options.clarity, score: { therapy: 1, yoga: 2 } },
+            ]
+        }
+    ];
+
+    const RECOMMENDATIONS: any = {
+        yoga: {
+            title: t('home.quiz.results.yoga.title'),
+            description: t('home.quiz.results.yoga.description'),
+            cta: t('home.quiz.results.yoga.cta'),
+            link: "yoga",
+            image: "🧘‍♀️"
+        },
+        therapy: {
+            title: t('home.quiz.results.therapy.title'),
+            description: t('home.quiz.results.therapy.description'),
+            cta: t('home.quiz.results.therapy.cta'),
+            link: "masajes-y-terapias",
+            image: "💆‍♂️"
+        }
+    };
 
     const handleStart = () => setStarted(true);
 
@@ -63,8 +67,6 @@ const WellnessQuiz: React.FC = () => {
     };
 
     const calculateResult = (finalAnswers: any[]) => {
-        // Simple logic: Count 'therapy' vs 'yoga' leanings
-        // This is a naive implementation for demo purposes
         let yogaScore = 0;
         let therapyScore = 0;
 
@@ -103,16 +105,15 @@ const WellnessQuiz: React.FC = () => {
                             exit={{ opacity: 0, y: -20 }}
                             className="bg-white/50 backdrop-blur-md rounded-3xl p-10 md:p-16 shadow-xl border border-bark/5"
                         >
-                            <h2 className="text-3xl md:text-5xl font-headers text-forest mb-6">¿Cómo estás hoy?</h2>
-                            <p className="text-xl md:text-2xl text-bark/80 mb-10 font-light leading-relaxed">
-                                Descubre qué experiencia de Arunachala resuena mejor contigo en este momento.
-                                <br />Toma solo unos segundos.
+                            <h2 className="text-3xl md:text-5xl font-headers text-forest mb-6">{t('home.quiz.title')}</h2>
+                            <p className="text-xl md:text-2xl text-bark/80 mb-10 font-light leading-relaxed whitespace-pre-line">
+                                {t('home.quiz.subtitle')}
                             </p>
                             <button
                                 onClick={handleStart}
                                 className="bg-forest text-bone text-lg md:text-xl font-bold py-4 px-12 rounded-full hover:bg-matcha hover:text-forest transition-all duration-300 shadow-lg transform hover:scale-105"
                             >
-                                Descubrir mi momento
+                                {t('home.quiz.cta_start')}
                             </button>
                         </motion.div>
                     )}
@@ -126,7 +127,9 @@ const WellnessQuiz: React.FC = () => {
                             className="bg-white/80 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-xl border border-bark/5 max-w-2xl mx-auto"
                         >
                             <div className="mb-8">
-                                <span className="text-sm uppercase tracking-widest text-forest/60">Pregunta {currentQIndex + 1} de {QUESTIONS.length}</span>
+                                <span className="text-sm uppercase tracking-widest text-forest/60">
+                                    {t('home.quiz.progress', { current: currentQIndex + 1, total: QUESTIONS.length })}
+                                </span>
                                 <div className="w-full bg-bark/10 h-1 mt-2 rounded-full overflow-hidden">
                                     <div
                                         className="bg-forest h-full transition-all duration-500"
@@ -165,7 +168,7 @@ const WellnessQuiz: React.FC = () => {
 
                             <div className="text-6xl mb-6">{RECOMMENDATIONS[result].image}</div>
 
-                            <h3 className="text-sm uppercase tracking-[0.3em] text-forest mb-2">Tu Recomendación Personalizada</h3>
+                            <h3 className="text-sm uppercase tracking-[0.3em] text-forest mb-2">{t('home.quiz.recommendation_title')}</h3>
                             <h2 className="text-3xl md:text-5xl font-headers text-bark mb-6">
                                 {RECOMMENDATIONS[result].title}
                             </h2>
@@ -185,7 +188,7 @@ const WellnessQuiz: React.FC = () => {
                                     onClick={resetQuiz}
                                     className="text-forest underline underline-offset-4 hover:text-matcha transition-colors py-2"
                                 >
-                                    Volver a empezar
+                                    {t('home.quiz.restart')}
                                 </button>
                             </div>
                         </motion.div>

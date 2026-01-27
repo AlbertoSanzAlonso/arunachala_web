@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
@@ -9,13 +10,14 @@ import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/2
 import { Helmet } from 'react-helmet-async';
 
 const TherapiesGalleryPage: React.FC = () => {
+    const { t } = useTranslation();
     const [images, setImages] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
     useEffect(() => {
         fetchGallery();
-        const interval = setInterval(fetchGallery, 10000); // Poll every 10s for updates
+        const interval = setInterval(fetchGallery, 30000);
         return () => clearInterval(interval);
     }, []);
 
@@ -60,24 +62,23 @@ const TherapiesGalleryPage: React.FC = () => {
     return (
         <div className="font-body text-bark min-h-screen flex flex-col pt-24 bg-bone">
             <Helmet>
-                <title>Galería de Masajes y Terapias | Arunachala</title>
-                <meta name="description" content="Explora nuestras instalaciones y tratamientos de masajes y terapias holísticas." />
+                <title>{t('gallery.therapies.title')} | Arunachala</title>
+                <meta name="description" content={t('gallery.therapies.subtitle')} />
             </Helmet>
 
             <Header />
 
             <main className="flex-grow">
                 <section className="py-12 md:py-20 px-4 md:px-8 max-w-7xl mx-auto">
-                    <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
-                        <BackButton to="/masajes-y-terapias" label="Volver a Terapias" />
-                        <h1 className="text-4xl md:text-6xl font-headers text-forest text-center flex-grow uppercase">Galería de Terapias</h1>
-                        <div className="w-10 hidden md:block"></div> {/* Spacer for symmetry */}
+                    <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6 text-center md:text-left">
+                        <BackButton to="/masajes-y-terapias" label={t('gallery.therapies.back')} />
+                        <h1 className="text-4xl md:text-6xl font-headers text-forest flex-grow uppercase">{t('gallery.therapies.title')}</h1>
+                        <div className="w-10 hidden md:block"></div>
                     </div>
 
                     <FadeInSection>
-                        <p className="text-center text-bark/70 text-lg max-w-2xl mx-auto mb-16">
-                            Un vistazo a nuestros espacios de sanación y tratamientos holísticos.
-                            Encuentra la paz y el bienestar que estás buscando.
+                        <p className="text-center text-bark/70 text-lg max-w-2xl mx-auto mb-16 whitespace-pre-line">
+                            {t('gallery.therapies.subtitle')}
                         </p>
 
                         {isLoading ? (
@@ -100,7 +101,7 @@ const TherapiesGalleryPage: React.FC = () => {
                                     >
                                         <img
                                             src={`${API_BASE_URL}${image.url}`}
-                                            alt={image.alt_text || 'Therapies at Arunachala'}
+                                            alt={image.alt_text || t('gallery.therapies.title')}
                                             className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                                             loading="lazy"
                                         />
@@ -118,7 +119,7 @@ const TherapiesGalleryPage: React.FC = () => {
 
                         {!isLoading && images.length === 0 && (
                             <div className="text-center py-20 bg-white/30 rounded-3xl border border-forest/10">
-                                <p className="text-forest/60 text-xl font-headers">Estamos preparando las imágenes de Terapias para ti.</p>
+                                <p className="text-forest/60 text-xl font-headers uppercase">{t('gallery.therapies.empty')}</p>
                             </div>
                         )}
                     </FadeInSection>
@@ -135,27 +136,15 @@ const TherapiesGalleryPage: React.FC = () => {
                         className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 md:p-10"
                         onClick={closeLightbox}
                     >
-                        <button
-                            onClick={closeLightbox}
-                            className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors z-[110]"
-                        >
+                        <button onClick={closeLightbox} className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors z-[110]">
                             <XMarkIcon className="h-10 w-10" />
                         </button>
-
-                        <button
-                            onClick={prevImage}
-                            className="absolute left-4 md:left-10 text-white/50 hover:text-white transition-all transform hover:scale-110 z-[110]"
-                        >
+                        <button onClick={prevImage} className="absolute left-4 md:left-10 text-white/50 hover:text-white transition-all transform hover:scale-110 z-[110]">
                             <ChevronLeftIcon className="h-12 w-12" />
                         </button>
-
-                        <button
-                            onClick={nextImage}
-                            className="absolute right-4 md:right-10 text-white/50 hover:text-white transition-all transform hover:scale-110 z-[110]"
-                        >
+                        <button onClick={nextImage} className="absolute right-4 md:right-10 text-white/50 hover:text-white transition-all transform hover:scale-110 z-[110]">
                             <ChevronRightIcon className="h-12 w-12" />
                         </button>
-
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
@@ -165,14 +154,9 @@ const TherapiesGalleryPage: React.FC = () => {
                         >
                             <img
                                 src={`${API_BASE_URL}${images[selectedImageIndex].url}`}
-                                alt={images[selectedImageIndex].alt_text || 'Therapies Gallery'}
+                                alt={images[selectedImageIndex].alt_text || t('gallery.therapies.title')}
                                 className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl border border-white/10"
                             />
-                            {images[selectedImageIndex].alt_text && (
-                                <p className="absolute -bottom-12 left-0 right-0 text-center text-white/80 font-light italic">
-                                    {images[selectedImageIndex].alt_text}
-                                </p>
-                            )}
                         </motion.div>
                     </motion.div>
                 )}

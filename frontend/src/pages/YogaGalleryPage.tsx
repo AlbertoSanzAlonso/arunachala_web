@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
@@ -8,13 +9,14 @@ import { API_BASE_URL } from '../config';
 import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
 const YogaGalleryPage: React.FC = () => {
+    const { t } = useTranslation();
     const [images, setImages] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
     useEffect(() => {
         fetchGallery();
-        const interval = setInterval(fetchGallery, 10000); // Poll every 10s for updates
+        const interval = setInterval(fetchGallery, 30000);
         return () => clearInterval(interval);
     }, []);
 
@@ -62,16 +64,15 @@ const YogaGalleryPage: React.FC = () => {
 
             <main className="flex-grow">
                 <section className="py-12 md:py-20 px-4 md:px-8 max-w-7xl mx-auto">
-                    <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
-                        <BackButton to="/yoga" label="Volver a Yoga" />
-                        <h1 className="text-4xl md:text-6xl font-headers text-forest text-center flex-grow">Galería de Yoga</h1>
-                        <div className="w-10 hidden md:block"></div> {/* Spacer for symmetry */}
+                    <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6 text-center md:text-left">
+                        <BackButton to="/yoga" label={t('gallery.yoga.back')} />
+                        <h1 className="text-4xl md:text-6xl font-headers text-forest flex-grow uppercase">{t('gallery.yoga.title')}</h1>
+                        <div className="w-10 hidden md:block"></div>
                     </div>
 
                     <FadeInSection>
-                        <p className="text-center text-bark/70 text-lg max-w-2xl mx-auto mb-16">
-                            Nuestros espacios y momentos dedicados a la práctica del Yoga.
-                            Encuentra la inspiración que necesitas para tu camino.
+                        <p className="text-center text-bark/70 text-lg max-w-2xl mx-auto mb-16 whitespace-pre-line">
+                            {t('gallery.yoga.subtitle')}
                         </p>
 
                         {isLoading ? (
@@ -94,7 +95,7 @@ const YogaGalleryPage: React.FC = () => {
                                     >
                                         <img
                                             src={`${API_BASE_URL}${image.url}`}
-                                            alt={image.alt_text || 'Yoga practice at Arunachala'}
+                                            alt={image.alt_text || 'Yoga practice'}
                                             className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                                             loading="lazy"
                                         />
@@ -112,7 +113,7 @@ const YogaGalleryPage: React.FC = () => {
 
                         {!isLoading && images.length === 0 && (
                             <div className="text-center py-20 bg-white/30 rounded-3xl border border-forest/10">
-                                <p className="text-forest/60 text-xl font-headers">Estamos preparando las imágenes de Yoga para ti.</p>
+                                <p className="text-forest/60 text-xl font-headers uppercase">{t('gallery.yoga.empty')}</p>
                             </div>
                         )}
                     </FadeInSection>
@@ -129,27 +130,15 @@ const YogaGalleryPage: React.FC = () => {
                         className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 md:p-10"
                         onClick={closeLightbox}
                     >
-                        <button
-                            onClick={closeLightbox}
-                            className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors z-[110]"
-                        >
+                        <button onClick={closeLightbox} className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors z-[110]">
                             <XMarkIcon className="h-10 w-10" />
                         </button>
-
-                        <button
-                            onClick={prevImage}
-                            className="absolute left-4 md:left-10 text-white/50 hover:text-white transition-all transform hover:scale-110 z-[110]"
-                        >
+                        <button onClick={prevImage} className="absolute left-4 md:left-10 text-white/50 hover:text-white transition-all transform hover:scale-110 z-[110]">
                             <ChevronLeftIcon className="h-12 w-12" />
                         </button>
-
-                        <button
-                            onClick={nextImage}
-                            className="absolute right-4 md:right-10 text-white/50 hover:text-white transition-all transform hover:scale-110 z-[110]"
-                        >
+                        <button onClick={nextImage} className="absolute right-4 md:right-10 text-white/50 hover:text-white transition-all transform hover:scale-110 z-[110]">
                             <ChevronRightIcon className="h-12 w-12" />
                         </button>
-
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
@@ -162,11 +151,6 @@ const YogaGalleryPage: React.FC = () => {
                                 alt={images[selectedImageIndex].alt_text || 'Yoga Gallery'}
                                 className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl border border-white/10"
                             />
-                            {images[selectedImageIndex].alt_text && (
-                                <p className="absolute -bottom-12 left-0 right-0 text-center text-white/80 font-light italic">
-                                    {images[selectedImageIndex].alt_text}
-                                </p>
-                            )}
                         </motion.div>
                     </motion.div>
                 )}

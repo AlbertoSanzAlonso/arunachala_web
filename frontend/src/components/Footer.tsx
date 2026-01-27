@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 // Simple Icon Components for cleaner footer code
 const InstagramIcon = (props: React.ComponentProps<'svg'>) => (
@@ -22,9 +23,10 @@ const SpotifyIcon = (props: React.ComponentProps<'svg'>) => (
 
 
 const Footer: React.FC = () => {
+    const { t } = useTranslation();
+
     return (
         <footer className="bg-bark text-bone font-light">
-            {/* Main Footer Content */}
             <div className="max-w-7xl mx-auto px-8 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
 
                 {/* Brand & Address */}
@@ -45,38 +47,35 @@ const Footer: React.FC = () => {
 
                 {/* Sitemap */}
                 <div className="col-span-1 flex flex-col gap-6 text-center">
-                    {/* Spacer to align with Address column title */}
                     <h3 className="text-2xl font-headers tracking-widest text-transparent select-none hidden md:block" aria-hidden="true">_</h3>
                     <ul className="flex flex-col gap-3 text-sm text-bone/70">
-                        <li><Link to="/" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">Inicio</Link></li>
-                        <li><Link to="/yoga" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">Yoga & Horarios</Link></li>
-                        <li><Link to="/masajes-y-terapias" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">Masaje y terapias</Link></li>
-                        <li><span className="cursor-not-allowed opacity-50">Blog (Próximamente)</span></li>
+                        <li><Link to="/" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">{t('footer.labels.home')}</Link></li>
+                        <li><Link to="/yoga" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">{t('footer.labels.yoga')}</Link></li>
+                        <li><Link to="/masajes-y-terapias" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">{t('footer.labels.therapies')}</Link></li>
+                        <li><span className="opacity-50">{t('footer.labels.blog')}</span></li>
                     </ul>
                 </div>
 
                 {/* Legal */}
                 <div className="col-span-1 flex flex-col gap-6 text-center">
-                    {/* Spacer to align with Address column title */}
                     <h3 className="text-2xl font-headers tracking-widest text-transparent select-none hidden md:block" aria-hidden="true">_</h3>
                     <ul className="flex flex-col gap-3 text-sm text-bone/70">
-                        <li><Link to="#" className="hover:text-bone transition-colors">Aviso Legal</Link></li>
-                        <li><Link to="#" className="hover:text-bone transition-colors">Política de Privacidad</Link></li>
+                        <li><Link to="#" className="hover:text-bone transition-colors">{t('footer.labels.legal')}</Link></li>
+                        <li><Link to="#" className="hover:text-bone transition-colors">{t('footer.labels.privacy')}</Link></li>
                     </ul>
                 </div>
 
                 {/* Socials */}
                 <div className="col-span-1 flex flex-col gap-6 items-center text-center lg:h-full lg:justify-between">
-                    {/* Spacer to align with Address column title */}
                     <h3 className="text-2xl font-headers tracking-widest text-transparent select-none hidden md:block" aria-hidden="true">_</h3>
                     <div className="flex gap-6">
-                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Síguenos en Instagram" className="text-bone/70 hover:text-matcha hover:scale-110 transition-all duration-300">
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label={t('footer.labels.instagram')} className="text-bone/70 hover:text-matcha hover:scale-110 transition-all duration-300">
                             <InstagramIcon className="w-6 h-6" aria-hidden="true" />
                         </a>
-                        <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" aria-label="Suscríbete a nuestro canal de YouTube" className="text-bone/70 hover:text-matcha hover:scale-110 transition-all duration-300">
+                        <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" aria-label={t('footer.labels.youtube')} className="text-bone/70 hover:text-matcha hover:scale-110 transition-all duration-300">
                             <YoutubeIcon className="w-6 h-6" aria-hidden="true" />
                         </a>
-                        <a href="https://spotify.com" target="_blank" rel="noopener noreferrer" aria-label="Escúchanos en Spotify" className="text-bone/70 hover:text-matcha hover:scale-110 transition-all duration-300">
+                        <a href="https://spotify.com" target="_blank" rel="noopener noreferrer" aria-label={t('footer.labels.spotify')} className="text-bone/70 hover:text-matcha hover:scale-110 transition-all duration-300">
                             <SpotifyIcon className="w-6 h-6" aria-hidden="true" />
                         </a>
                     </div>
@@ -87,7 +86,7 @@ const Footer: React.FC = () => {
             {/* Copyright Bar */}
             <div className="w-full bg-black/20 py-6 text-center border-t border-bone/10">
                 <p className="text-xs text-bone/40 uppercase tracking-widest">
-                    &copy; 2026 Arunachala Web. All rights reserved.
+                    &copy; {new Date().getFullYear()} Arunachala Web. {t('footer.rights')}
                 </p>
             </div>
         </footer>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PlusIcon, PencilIcon, TrashIcon, ClockIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, PencilIcon, TrashIcon, ClockIcon, CalendarIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import VisualScheduleEditor from './VisualScheduleEditor';
 import { API_BASE_URL } from '../../config';
 
@@ -222,7 +222,16 @@ export default function ScheduleManager() {
         <div>
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto">
-                    <h1 className="text-2xl font-semibold leading-6 text-gray-900">Gestión de Horarios</h1>
+                    <div className="flex items-center gap-4 mb-2">
+                        <button
+                            onClick={() => navigate('/dashboard')}
+                            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                            aria-label="Volver al panel"
+                        >
+                            <ArrowLeftIcon className="h-6 w-6 text-gray-500" />
+                        </button>
+                        <h1 className="text-2xl font-semibold leading-6 text-gray-900">Gestión de Horarios</h1>
+                    </div>
                     <p className="mt-2 text-sm text-gray-700">
                         Administra las clases semanales asignando los tipos de clase definidos en el menú.
                     </p>

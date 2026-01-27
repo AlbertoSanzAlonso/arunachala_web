@@ -16,7 +16,9 @@ import {
     TagIcon,
     UsersIcon,
     HeartIcon,
-    ArrowRightOnRectangleIcon
+    ArrowRightOnRectangleIcon,
+    ChatBubbleLeftRightIcon,
+    GlobeAltIcon
 } from '@heroicons/react/24/outline';
 
 const navigation = [
@@ -27,6 +29,7 @@ const navigation = [
     { name: 'Tratamientos', href: '/dashboard/treatments', icon: HeartIcon },
     { name: 'Horarios', href: '/dashboard/schedule', icon: CalendarIcon },
     { name: 'Usuarios', href: '/dashboard/users', icon: UsersIcon },
+    { name: 'Control de Agente', href: '/dashboard/agent', icon: ChatBubbleLeftRightIcon },
     { name: 'SEO & Google', href: '/dashboard/seo', icon: ChartBarIcon },
 ];
 
@@ -242,7 +245,16 @@ export default function DashboardLayout() {
                         </div>
 
                         <div className="flex items-center gap-4 absolute right-0 pr-4 sm:pr-6 lg:pr-8 h-full bg-gradient-to-l from-[#becf81] via-[#becf81]/90 to-transparent pl-8">
-                            <Menu as="div" className="relative ml-3">
+                            <a
+                                href="/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/20 hover:bg-white/30 text-primary-900 text-sm font-semibold transition-colors border border-white/20 shadow-sm"
+                            >
+                                <GlobeAltIcon className="w-5 h-5" />
+                                <span className="hidden sm:inline">Ir a la Web</span>
+                            </a>
+                            <Menu as="div" className="relative ml-0">
                                 <div>
                                     <Menu.Button className="flex items-center gap-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#becf81]">
                                         <span className="sr-only">Open user menu</span>

@@ -1,0 +1,197 @@
+{
+    "footer": {
+        "labels": {
+            "home": "Inicio",
+            "yoga": "Yoga & Horarios",
+            "therapies": "Masaje y terapias",
+            "blog": "Blog (Próximamente)",
+            "legal": "Aviso Legal",
+            "privacy": "Política de Privacidad",
+            "instagram": "Síguenos en Instagram",
+            "youtube": "Suscríbete a nuestro canal de YouTube",
+            "spotify": "Escúchanos en Spotify"
+        },
+        "rights": "Todos los derechos reservados."
+    },
+    "gallery": {
+        "yoga": {
+            "title": "Galería de Yoga",
+            "back": "Volver a Yoga",
+            "subtitle": "Nuestros espacios y momentos dedicados a la práctica del Yoga.\nEncuentra la inspiración que necesitas para tu camino.",
+            "empty": "Estamos preparando las imágenes de Yoga para ti."
+        },
+        "therapies": {
+            "title": "Galería de Terapias",
+            "back": "Volver a Terapias",
+            "subtitle": "Un vistazo a nuestro espacio de sanación y bienestar.",
+            "empty": "Próximamente fotos del centro..."
+        }
+    },
+    "therapies": {
+        "title": "MASAJE Y TERAPIAS",
+        "subtitle": "Un espacio para el reencuentro contigo mismo a través del cuidado corporal y emocional.",
+        "seo": {
+            "title": "Masaje y Terapias en Cornellà | Arunachala",
+            "description": "Descubre nuestras terapias y masajes en Cornellà de Llobregat. Reiki, Terapia Floral, Masaje Tailandés y más para tu bienestar."
+        },
+        "buttons": {
+            "massages": "Masajes",
+            "therapies": "Terapias",
+            "gallery": "Galería",
+            "blog": "Blog"
+        },
+        "sections": {
+            "massages": "Nuestros Masajes",
+            "massages_sub": "Libera tensiones y recupera la vitalidad de tu cuerpo.",
+            "therapies": "Terapias Holísticas",
+            "therapies_sub": "Acompañamiento en tu proceso de sanación y autoconocimiento.",
+            "gallery": "Galería",
+            "gallery_sub": "Un vistazo a nuestro espacio de sanación.",
+            "blog": "Blog de Bienestar",
+            "blog_sub": "Lecturas para nutrir tu alma y equilibrar tu vida."
+        },
+        "modal": {
+            "description": "Descripción",
+            "benefits": "Beneficios",
+            "close": "Cerrar",
+            "no_description": "Sin descripción disponible."
+        },
+        "none": {
+            "massages": "No hay masajes disponibles en este momento.",
+            "therapies": "No hay terapias disponibles en este momento.",
+            "gallery": "Próximamente fotos del centro..."
+        }
+    },
+    "welcome": "Bienvenido a Arunachala",
+    "hero": {
+        "yoga": {
+            "title": "YOGA",
+            "subtitle": "Muévete y respira"
+        },
+        "therapies": {
+            "title": "MASAJE Y TERAPIAS",
+            "subtitle": "Recupera tu bienestar"
+        }
+    },
+    "menu": {
+        "home": "Nuestro Espacio",
+        "yoga": "Clases de Yoga",
+        "therapies": "Terapias y Masajes",
+        "about": "Sobre Nosotros",
+        "contact": "Contacto"
+    },
+    "yoga": {
+        "title": "YOGA",
+        "subtitle": "Encuentra equilibrio y paz a través del movimiento y la respiración.",
+        "seo": {
+            "title": "Clases de Yoga en Barcelona | Arunachala",
+            "description": "Descubre nuestras clases de yoga en Cornellà de Llobregat. Hatha Yoga, Vinyasa y meditación para todos los niveles."
+        },
+        "buttons": {
+            "schedule": "Horarios",
+            "schedule_sub": "Reserva tu clase",
+            "gallery": "Galería",
+            "gallery_sub": "Nuestro Espacio",
+            "blog": "Blog",
+            "blog_sub": "Artículos y Reflexiones"
+        },
+        "sections": {
+            "schedule": "Horarios de Clases",
+            "gallery": "Galería de Imágenes",
+            "blog": "Últimas Publicaciones",
+            "blog_sub": "Inspiración para tu práctica y vida diaria"
+        },
+        "common": {
+            "back_to_top": "Volver al principio",
+            "view_all_gallery": "Ver Galería Completa",
+            "view_all_blog": "Ver todo el blog",
+            "read_article": "Leer artículo"
+        }
+    },
+    "common": {
+        "days": {
+            "monday": "Lunes",
+            "tuesday": "Martes",
+            "wednesday": "Miércoles",
+            "thursday": "Jueves",
+            "friday": "Viernes",
+            "saturday": "Sábado",
+            "sunday": "Domingo"
+        },
+        "times": {
+            "morning": "MAÑANA",
+            "afternoon": "TARDE"
+        },
+        "back_home": "Volver al inicio"
+    },
+    "home": {
+        "mantra_title": "Mantra del Día",
+        "loading": {
+            "experience": "Cargando Experiencia...",
+            "gallery": "Cargando Galería...",
+            "reviews": "Cargando Reseñas..."
+        },
+        "mantras": [
+            {
+                "text": "Lokah Samastah Sukhino Bhavantu",
+                "translation": "Que todos los seres en todas partes sean felices y libres"
+            },
+            {
+                "text": "Om Namah Shivaya",
+                "translation": "Honro la divinidad que habita en mí"
+            },
+            {
+                "text": "Sat Nam",
+                "translation": "La verdad es mi identidad"
+            },
+            {
+                "text": "Om Mani Padme Hum",
+                "translation": "La joya en el loto de mi corazón"
+            },
+            {
+                "text": "Aham Brahmasmi",
+                "translation": "Yo soy la totalidad del universo"
+            }
+        ],
+        "quiz": {
+            "title": "¿Cómo estás hoy?",
+            "subtitle": "Descubre qué experiencia de Arunachala resuena mejor contigo en este momento.\nToma solo unos segundos.",
+            "cta_start": "Descubrir mi momento",
+            "progress": "Pregunta {{current}} de {{total}}",
+            "restart": "Volver a empezar",
+            "recommendation_title": "Tu Recomendación Personalizada",
+            "questions": [
+                {
+                    "question": "¿Cómo te sientes hoy?",
+                    "options": {
+                        "tired": "Cansado y estresado",
+                        "stiff": "Con tensión física",
+                        "energetic": "Con energía para moverme",
+                        "seeking": "Buscando paz interior"
+                    }
+                },
+                {
+                    "question": "¿Qué es lo que más necesitas ahora mismo?",
+                    "options": {
+                        "relax": "Desconectar y relajarme",
+                        "heal": "Aliviar dolor muscular",
+                        "flow": "Fluir y fortalecer",
+                        "clarity": "Claridad mental"
+                    }
+                }
+            ],
+            "results": {
+                "yoga": {
+                    "title": "Tu camino es el Yoga",
+                    "description": "Tu cuerpo pide movimiento consciente y conexión. Te recomendamos unirte a nuestras clases de Vinyasa Flow o Hatha Yoga para canalizar esa energía.",
+                    "cta": "Ver Horarios de Yoga"
+                },
+                "therapy": {
+                    "title": "Necesitas Sanación y Descanso",
+                    "description": "Es momento de parar y cuidar de ti. Nuestras terapias holísticas o un masaje relajante son justo lo que necesitas para restaurar tu equilibrio.",
+                    "cta": "Reservar Terapia"
+                }
+            }
+        }
+    }
+}

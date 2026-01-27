@@ -1,0 +1,197 @@
+{
+    "footer": {
+        "labels": {
+            "home": "Inici",
+            "yoga": "Ioga i Horaris",
+            "therapies": "Massatge i teràpies",
+            "blog": "Blog (Properament)",
+            "legal": "Avís Legal",
+            "privacy": "Política de Privadesa",
+            "instagram": "Seguiu-nos a Instagram",
+            "youtube": "Subscriviu-vos al nostre canal de YouTube",
+            "spotify": "Escolteu-nos a Spotify"
+        },
+        "rights": "Tots els drets reservats."
+    },
+    "gallery": {
+        "yoga": {
+            "title": "Galeria de Ioga",
+            "back": "Tornar a Ioga",
+            "subtitle": "Els nostres espais i moments dedicats a la pràctica del Ioga.\nTroba la inspiració que necessites per al teu camí.",
+            "empty": "Estem preparant les imatges de Ioga per a tu."
+        },
+        "therapies": {
+            "title": "Galeria de Teràpies",
+            "back": "Tornar a Teràpies",
+            "subtitle": "Un cop d'ull al nostre espai de sanació i benestar.",
+            "empty": "Properament fotos del centre..."
+        }
+    },
+    "therapies": {
+        "title": "MASSATGE I TERÀPIES",
+        "subtitle": "Un espai per al retrobament amb tu mateix a través de la cura corporal i emocional.",
+        "seo": {
+            "title": "Massatges i Teràpies a Cornellà | Arunachala",
+            "description": "Descobreix les nostres teràpies i massatges a Cornellà de Llobregat. Reiki, Teràpia Floral, Massatge Tailandès i més per al teu benestar."
+        },
+        "buttons": {
+            "massages": "Massatges",
+            "therapies": "Teràpies",
+            "gallery": "Galeria",
+            "blog": "Blog"
+        },
+        "sections": {
+            "massages": "Els Nostres Massatges",
+            "massages_sub": "Allibera tensions i recupera la vitalitat del teu cos.",
+            "therapies": "Teràpies Holístiques",
+            "therapies_sub": "Acompanyament en el teu procés de sanació i autoconeixement.",
+            "gallery": "Galeria",
+            "gallery_sub": "Un cop d'ull al nostre espai de sanació.",
+            "blog": "Blog de Benestar",
+            "blog_sub": "Lectures per nutrir la teva ànima i equilibrar la teva vida."
+        },
+        "modal": {
+            "description": "Descripció",
+            "benefits": "Beneficis",
+            "close": "Tancar",
+            "no_description": "Sense descripció disponible."
+        },
+        "none": {
+            "massages": "No hi ha massatges disponibles en aquest moment.",
+            "therapies": "No hi ha teràpies disponibles en aquest moment.",
+            "gallery": "Properament fotos del centre..."
+        }
+    },
+    "welcome": "Benvingut a Arunachala",
+    "hero": {
+        "yoga": {
+            "title": "IOGA",
+            "subtitle": "Mou-te i respira"
+        },
+        "therapies": {
+            "title": "MASSATGE I TERÀPIES",
+            "subtitle": "Recupera el teu benestar"
+        }
+    },
+    "menu": {
+        "home": "El Nostre Espai",
+        "yoga": "Classes de Ioga",
+        "therapies": "Teràpies i Massatges",
+        "about": "Sobre Nosaltres",
+        "contact": "Contacte"
+    },
+    "yoga": {
+        "title": "IOGA",
+        "subtitle": "Troba equilibri i pau a través del moviment i la respiració.",
+        "seo": {
+            "title": "Classes de Ioga a Barcelona | Arunachala",
+            "description": "Descobreix les nostres classes de ioga a Cornellà de Llobregat. Hatha Ioga, Vinyasa i meditació per a tots els nivells."
+        },
+        "buttons": {
+            "schedule": "Horaris",
+            "schedule_sub": "Reserva la teva classe",
+            "gallery": "Galeria",
+            "gallery_sub": "El Nostre Espai",
+            "blog": "Blog",
+            "blog_sub": "Articles i Reflexions"
+        },
+        "sections": {
+            "schedule": "Horaris de Classes",
+            "gallery": "Galeria d'Imatges",
+            "blog": "Últimes Publicacions",
+            "blog_sub": "Inspiració per a la teva pràctica i vida diària"
+        },
+        "common": {
+            "back_to_top": "Tornar al principi",
+            "view_all_gallery": "Veure Galeria Completa",
+            "view_all_blog": "Veure tot el blog",
+            "read_article": "Llegir article"
+        }
+    },
+    "common": {
+        "days": {
+            "monday": "Dilluns",
+            "tuesday": "Dimarts",
+            "wednesday": "Dimecres",
+            "thursday": "Dijous",
+            "friday": "Divendres",
+            "saturday": "Dissabte",
+            "sunday": "Diumenge"
+        },
+        "times": {
+            "morning": "MATÍ",
+            "afternoon": "TARDA"
+        },
+        "back_home": "Tornar a l'inici"
+    },
+    "home": {
+        "mantra_title": "Mantra del Dia",
+        "loading": {
+            "experience": "Carregant Experiència...",
+            "gallery": "Carregant Galeria...",
+            "reviews": "Carregant Ressenyes..."
+        },
+        "mantras": [
+            {
+                "text": "Lokah Samastah Sukhino Bhavantu",
+                "translation": "Que tots els éssers de tot arreu siguin feliços i lliures"
+            },
+            {
+                "text": "Om Namah Shivaya",
+                "translation": "Honoro la divinitat que habita en mi"
+            },
+            {
+                "text": "Sat Nam",
+                "translation": "La veritat és la meva identitat"
+            },
+            {
+                "text": "Om Mani Padme Hum",
+                "translation": "La joia al lotus del meu cor"
+            },
+            {
+                "text": "Aham Brahmasmi",
+                "translation": "Jo sóc la totalitat de l'univers"
+            }
+        ],
+        "quiz": {
+            "title": "Com estàs avui?",
+            "subtitle": "Descobreix quina experiència d'Arunachala ressona millor amb tu en aquest moment.\nNomés et prendrà uns segons.",
+            "cta_start": "Descobrir el meu moment",
+            "progress": "Pregunta {{current}} de {{total}}",
+            "restart": "Tornar a començar",
+            "recommendation_title": "La Teva Recomanació Personalitzada",
+            "questions": [
+                {
+                    "question": "Com et sents avui?",
+                    "options": {
+                        "tired": "Cansat i estressat",
+                        "stiff": "Amb tensió física",
+                        "energetic": "Amb energia per moure'm",
+                        "seeking": "Busca pau interior"
+                    }
+                },
+                {
+                    "question": "Què és el que més necessites ara mateix?",
+                    "options": {
+                        "relax": "Desconnectar i relaxar-me",
+                        "heal": "Alleujar dolor muscular",
+                        "flow": "Fluir i enfortir",
+                        "clarity": "Claredat mental"
+                    }
+                }
+            ],
+            "results": {
+                "yoga": {
+                    "title": "El teu camí és el Ioga",
+                    "description": "El teu cos demana moviment conscient i connexió. Et recomanem unir-te a les nostres classes de Vinyasa Flow o Hatha Ioga per canalitzar aquesta energia.",
+                    "cta": "Veure Horaris de Ioga"
+                },
+                "therapy": {
+                    "title": "Necessites Sanació i Descans",
+                    "description": "És moment de parar i cuidar de tu. Les nostres teràpies holístiques o un massatge relaxant són just el que necessites per restaurar el teu equilibri.",
+                    "cta": "Reservar Teràpia"
+                }
+            }
+        }
+    }
+}
