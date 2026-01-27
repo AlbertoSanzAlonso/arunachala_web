@@ -2,6 +2,8 @@
 ## What I do
 - Generate daily mantras using OpenAI API
 - Create SEO-optimized articles for yoga and wellness
+- Implement **RAG (Retrieval-Augmented Generation) Chatbot** for customer support
+- Manage **Knowledge Base ingestion** (Qdrant + OpenAI Embeddings)
 - Implement content moderation and quality control
 - Set up automated content scheduling
 - Manage content templates and prompts
@@ -12,6 +14,8 @@
 ## When to use me
 Use this when you need to:
 - Generate daily inspirational content
+- **Modify or extend the RAG Chatbot logic**
+- **Ingest new documents into the Knowledge Base**
 - Create blog posts about yoga/therapy
 - Implement automated content workflows
 - Set up content personalization
@@ -21,6 +25,18 @@ Use this when you need to:
 - Set up content scheduling
 
 ## My patterns for Arunachala Web
+### RAG Chatbot (Arunachala Bot)
+- **Vector DB**: Qdrant (Collection: `arunachala_knowledge_base`)
+- **Embeddings**: OpenAI `text-embedding-3-small` (1536 dimensions)
+- **Engine**: OpenAI `gpt-4o-mini`
+- **Context Retrieval**: Top 3 most relevant snippets from Qdrant
+- **Admin Control**: Dynamic tone, length, and focus area via Dashboard (`AgentConfig`)
+
+### Ingestion Workflow
+- Endpoint: `/api/ingest` (requires `ADMIN_SECRET`)
+- Logic: Text -> OpenAI Embedding -> Qdrant Upsert
+- Supported Sources: PDFs, Website text, Manual notes
+
 ### Daily Mantra Generation
 - Use OpenAI API with custom prompts
 - Generate content in multiple languages (Spanish, English)
@@ -61,7 +77,9 @@ Target keywords: [keywords]. Language: [language]"
 ```
 
 ## Technology specifics
-- OpenAI API (GPT-4) for content generation
+- **OpenAI API (GPT-4o-mini)** for chat and content generation
+- **Qdrant** for vector search and RAG
+- **i18next** for frontend multilingual support (es, ca, en)
 - PostgreSQL for content storage
 - n8n for workflow automation
 - Meta WhatsApp API for distribution
@@ -70,6 +88,8 @@ Target keywords: [keywords]. Language: [language]"
 - Multi-language support with translation APIs
 
 ## Integration Points
+- Chatbot available on public pages (except Dashboard/Auth)
+- Knowledge Base ingestion via `scripts/seed_knowledge.py` or n8n
 - Daily generation scheduled via n8n
 - WhatsApp Business API for mantra distribution
 - Website API for content display

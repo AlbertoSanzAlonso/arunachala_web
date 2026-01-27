@@ -3,8 +3,8 @@
 ## 🎯 Quick Overview
 Full-stack web application for Arunachala Yoga studio with automated content generation and wellness tools.
 
-**Tech Stack**: FastAPI + React + PostgreSQL + AI + WhatsApp  
-**Features**: Yoga scheduling, in-studio therapy booking, AI content, user management
+**Tech Stack**: FastAPI + React + PostgreSQL + Qdrant (RAG) + OpenAI + i18next  
+**Features**: Yoga scheduling, in-studio therapy booking, **AI RAG Chatbot**, multilingual support (ES/CA/EN), user management
 
 ## 🏗️ Project Structure
 ```
@@ -256,6 +256,21 @@ feature/*      ← Individual features
 - **Scalable**: Skills collaborate with each other
 - **Multi-IDE**: Compatible with Antigravity and OpenCode
 - **9 specialized skills**: Frontend, backend, UI/UX design, and Git workflow
+
+## 🧠 AI RAG System (Arunachala Bot)
+The application includes a Retrieval-Augmented Generation chatbot for customer support.
+- **Components**:
+    - **Frontend**: `ChatBot.tsx` (Floating UI, except in Dashboard/Auth).
+    - **Backend**: `app.routers.chat` with `/api/chat` and `/api/ingest`.
+    - **Vector DB**: Qdrant (runs on port 6333).
+    - **LLM**: OpenAI `gpt-4o-mini` for responses and `text-embedding-3-small` for search.
+- **Admin Control**: The dashboard includes an "Agent Control" page to adjust tone, response length, and focus area.
+
+## 🌐 Multilingual System
+Full support for Spanish (ES), Catalan (CA), and English (EN).
+- **Frontend**: Managed via `i18next` and `translation.json` files in `src/locales`.
+- **Database**: Models support a `translations` JSON field for dynamic content (Class names, descriptions, etc.).
+- **Auto-detection**: The site automatically detects the browser language or falls back to Spanish.
 
 ## 🛠️ Maintenance Tools
 - **Data Restoration**: `backend/restore_data.py` - Script to restore base classes, therapies, and images after a database reset/recreation.
