@@ -103,13 +103,13 @@ export default function VisualScheduleEditor({ onBack }: { onBack: () => void })
 
     // Global Interaction Handlers
     useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => {
+        const handleMove = (clientY: number) => {
             if (!interaction) return;
 
             const { id, startY, originalValue, type, block, rect } = interaction;
             const totalMinutes = (block.end - block.start) * 60;
             const pixelsPerMinute = rect.height / totalMinutes;
-            const deltaY = e.clientY - startY;
+            const deltaY = clientY - startY;
             const minuteDelta = deltaY / pixelsPerMinute;
             const snappedDelta = Math.round(minuteDelta / 15) * 15;
 
@@ -140,7 +140,16 @@ export default function VisualScheduleEditor({ onBack }: { onBack: () => void })
             }
         };
 
-        const handleMouseUp = () => {
+        const handleMouseMove = (e: MouseEvent) => handleMove(e.clientY);
+        const handleTouchMove = (e: TouchEvent) => {
+            if (interaction) {
+                // Prevent scrolling while dragging
+                if (e.cancelable) e.preventDefault();
+                handleMove(e.touches[0].clientY);
+            }
+        };
+
+        const handleEnd = () => {
             if (interaction && lastInteractionState.current) {
                 const finalState = itemsRef.current;
                 const hasChanged = JSON.stringify(finalState) !== JSON.stringify(lastInteractionState.current);
@@ -157,30 +166,38 @@ export default function VisualScheduleEditor({ onBack }: { onBack: () => void })
 
         if (interaction) {
             window.addEventListener('mousemove', handleMouseMove);
-            window.addEventListener('mouseup', handleMouseUp);
+            window.addEventListener('mouseup', handleEnd);
+            window.addEventListener('touchmove', handleTouchMove, { passive: false });
+            window.addEventListener('touchend', handleEnd);
         }
 
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseup', handleMouseUp);
+            window.removeEventListener('mouseup', handleEnd);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleEnd);
         };
     }, [interaction]);
 
-    const handleDragStart = (e: React.MouseEvent, id: number, time: string, duration: number, block: any, rect: DOMRect) => {
-        if (window.innerWidth < 1024) return;
+    const handleDragStart = (e: React.MouseEvent | React.TouchEvent, id: number, time: string, duration: number, block: any, rect: DOMRect) => {
+        // For mouse events or if explicitly triggered
+        const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+
         lastInteractionState.current = JSON.parse(JSON.stringify(itemsRef.current));
-        setInteraction({ id, startY: e.clientY, originalValue: time, extraData: duration, type: 'drag', block, rect });
-        e.preventDefault();
+        setInteraction({ id, startY: clientY, originalValue: time, extraData: duration, type: 'drag', block, rect });
+        // Don't prevent default here immediately on touch to allow click events if needed, but for drag we might want to
+        if (!('touches' in e)) e.preventDefault();
     };
 
-    const handleResizeStart = (e: React.MouseEvent, id: number, time: string, duration: number, block: any, rect: DOMRect) => {
-        if (window.innerWidth < 1024) return;
+    const handleResizeStart = (e: React.MouseEvent | React.TouchEvent, id: number, time: string, duration: number, block: any, rect: DOMRect) => {
+        const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+
         lastInteractionState.current = JSON.parse(JSON.stringify(itemsRef.current));
         const [h, m] = time.split(':').map(Number);
         const startMinutes = h * 60 + m;
-        setInteraction({ id, startY: e.clientY, originalValue: duration, extraData: startMinutes, type: 'resize', block, rect });
+        setInteraction({ id, startY: clientY, originalValue: duration, extraData: startMinutes, type: 'resize', block, rect });
         e.stopPropagation();
-        e.preventDefault();
+        if (!('touches' in e)) e.preventDefault();
     };
 
     const handleUndo = () => {
@@ -339,13 +356,14 @@ export default function VisualScheduleEditor({ onBack }: { onBack: () => void })
 interface VisualTimeBlockProps {
     block: { label: string, start: number, end: number, rows: number };
     items: ScheduleItem[];
-    onDragStart: (e: React.MouseEvent, id: number, time: string, duration: number, block: any, rect: DOMRect) => void;
-    onResizeStart: (e: React.MouseEvent, id: number, time: string, duration: number, block: any, rect: DOMRect) => void;
+    onDragStart: (e: React.MouseEvent | React.TouchEvent, id: number, time: string, duration: number, block: any, rect: DOMRect) => void;
+    onResizeStart: (e: React.MouseEvent | React.TouchEvent, id: number, time: string, duration: number, block: any, rect: DOMRect) => void;
     isInteracting: boolean;
 }
 
 function VisualTimeBlock({ block, items, onDragStart, onResizeStart, isInteracting }: VisualTimeBlockProps) {
     const containerRef = useRef<HTMLDivElement>(null);
+    const touchTimer = useRef<NodeJS.Timeout | null>(null);
     const totalMinutes = (block.end - block.start) * 60;
 
     const getItemsForDay = (day: string) => {
@@ -363,6 +381,33 @@ function VisualTimeBlock({ block, items, onDragStart, onResizeStart, isInteracti
             top: `${(startMin / totalMinutes) * 100}%`,
             height: `${(duration / totalMinutes) * 100}%`
         };
+    };
+
+    const handleTouchStart = (e: React.TouchEvent, item: any) => {
+        const clientY = e.touches[0].clientY;
+
+        // Clear any existing timer
+        if (touchTimer.current) clearTimeout(touchTimer.current);
+
+        touchTimer.current = setTimeout(() => {
+            const rect = containerRef.current!.getBoundingClientRect();
+            // Construct a compatible event-like object for handleDragStart
+            const fakeEvent = {
+                touches: [{ clientY }],
+                preventDefault: () => { }
+            } as unknown as React.TouchEvent;
+
+            onDragStart(fakeEvent, item.id, item.time, item.duration, block, rect);
+            if (navigator.vibrate) navigator.vibrate(50);
+            touchTimer.current = null;
+        }, 600); // 600ms for long press
+    };
+
+    const cancelTouch = () => {
+        if (touchTimer.current) {
+            clearTimeout(touchTimer.current);
+            touchTimer.current = null;
+        }
     };
 
     return (
@@ -408,7 +453,10 @@ function VisualTimeBlock({ block, items, onDragStart, onResizeStart, isInteracti
                                     <div
                                         key={item.id}
                                         onMouseDown={(e) => onDragStart(e, item.id, item.time, item.duration, block, containerRef.current!.getBoundingClientRect())}
-                                        className={`absolute left-1 right-1 rounded-lg border-l-4 shadow-sm flex flex-col justify-center px-2 py-1 cursor-move select-none hover:shadow-md z-20 group transition-all ${isInteracting ? 'duration-0' : 'duration-500 ease-in-out'
+                                        onTouchStart={(e) => handleTouchStart(e, item)}
+                                        onTouchMove={cancelTouch}
+                                        onTouchEnd={cancelTouch}
+                                        className={`absolute left-1 right-1 rounded-lg border-l-4 shadow-sm flex flex-col justify-center px-2 py-1 cursor-move select-none hover:shadow-md z-20 group transition-all ${isInteracting ? 'duration-0 scale-105 shadow-xl z-50 ring-2 ring-primary-400' : 'duration-500 ease-in-out'
                                             } ${conflict
                                                 ? 'bg-red-50 border-red-500 ring-2 ring-red-500 ring-inset opacity-90'
                                                 : (item.classInfo.color || 'bg-gray-100')
@@ -433,6 +481,7 @@ function VisualTimeBlock({ block, items, onDragStart, onResizeStart, isInteracti
 
                                         <div
                                             onMouseDown={(e) => onResizeStart(e, item.id, item.time, item.duration, block, containerRef.current!.getBoundingClientRect())}
+                                            onTouchStart={(e) => { e.stopPropagation(); /* Resizing on mobile not prioritized but prevent drag start */ }}
                                             className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize hover:bg-black/5 flex items-center justify-center group-hover:bg-black/10 transition-colors"
                                         >
                                             <div className={`w-8 h-0.5 rounded-full ${conflict ? 'bg-red-400' : 'bg-black/20'}`} />

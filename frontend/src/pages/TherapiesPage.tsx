@@ -96,7 +96,7 @@ const TherapiesPage: React.FC = () => {
     );
 
     return (
-        <div className="font-body text-bark min-h-screen flex flex-col relative snap-y snap-mandatory scroll-smooth">
+        <div className="font-body text-bark h-screen overflow-y-auto flex flex-col relative snap-y snap-mandatory scroll-smooth">
             <Helmet>
                 <title>Masaje y Terapias en Cornellà | Arunachala</title>
                 <meta name="description" content="Descubre nuestras terapias y masajes en Cornellà de Llobregat. Reiki, Terapia Floral, Masaje Tailandés y más para tu bienestar." />

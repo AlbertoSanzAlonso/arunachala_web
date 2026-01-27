@@ -80,7 +80,7 @@ const YogaPage: React.FC = () => {
     );
 
     return (
-        <div className="font-body text-bark min-h-screen flex flex-col relative snap-y snap-mandatory scroll-smooth">
+        <div className="font-body text-bark h-screen overflow-y-auto flex flex-col relative snap-y snap-mandatory scroll-smooth">
             <Helmet>
                 <title>Clases de Yoga en Barcelona | Arunachala</title>
                 <meta name="description" content="Descubre nuestras clases de yoga en Cornellà de Llobregat. Hatha Yoga, Vinyasa y meditación para todos los niveles. Horarios flexibles y ambiente acogedor." />
