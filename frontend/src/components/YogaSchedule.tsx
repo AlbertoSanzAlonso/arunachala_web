@@ -22,13 +22,13 @@ interface ScheduleItem {
 
 const YogaSchedule: React.FC = () => {
     const { t, i18n } = useTranslation();
-    const DAYS = [
+    const DAYS = React.useMemo(() => [
         t('common.days.monday'),
         t('common.days.tuesday'),
         t('common.days.wednesday'),
         t('common.days.thursday'),
         t('common.days.friday')
-    ];
+    ], [t]);
 
     const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);

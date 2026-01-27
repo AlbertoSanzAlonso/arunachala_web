@@ -1,10 +1,10 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
-import yogaHero from '../assets/images/yoga_hero.png'; // Reusing hero for now
+
 
 const EventsPage: React.FC = () => {
     return (
