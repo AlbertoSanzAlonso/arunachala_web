@@ -256,3 +256,7 @@ feature/*      ← Individual features
 - **Scalable**: Skills collaborate with each other
 - **Multi-IDE**: Compatible with Antigravity and OpenCode
 - **9 specialized skills**: Frontend, backend, UI/UX design, and Git workflow
+
+## 🛠️ Maintenance Tools
+- **Data Restoration**: `backend/restore_data.py` - Script to restore base classes, therapies, and images after a database reset/recreation.
+- **DB Debugging**: `backend/debug_db.py` - Script to check current database state and integrity.

@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import PageLoader from './components/PageLoader';
 import DashboardLayout from './layouts/DashboardLayout';
 import { AuthProvider } from './context/AuthContext';
@@ -12,6 +12,7 @@ const TherapiesPage = lazy(() => import('./pages/TherapiesPage'));
 const BlogPage = lazy(() => import('./pages/BlogPage'));
 const YogaGalleryPage = lazy(() => import('./pages/YogaGalleryPage'));
 const TherapiesGalleryPage = lazy(() => import('./pages/TherapiesGalleryPage'));
+const EventsPage = lazy(() => import('./pages/EventsPage'));
 
 // Dashboard Pages
 const LoginPage = lazy(() => import('./pages/LoginPage'));
@@ -28,44 +29,65 @@ const CreateUser = lazy(() => import('./pages/dashboard/CreateUser'));
 const ClassTypeManager = lazy(() => import('./pages/dashboard/ClassTypeManager'));
 const TreatmentsManager = lazy(() => import('./pages/dashboard/TreatmentsManager'));
 const UserManager = lazy(() => import('./pages/dashboard/UserManager'));
+const AgentControl = lazy(() => import('./pages/dashboard/AgentControl'));
+const ChatBot = lazy(() => import('./components/ChatBot'));
+
+const AppContent = () => {
+    const location = useLocation();
+
+    // Hide ChatBot on login, register, and all dashboard paths
+    const hideChatBot =
+        location.pathname.startsWith('/login') ||
+        location.pathname.startsWith('/dashboard') ||
+        location.pathname.startsWith('/register') ||
+        location.pathname.startsWith('/forgot-password') ||
+        location.pathname.startsWith('/reset-password');
+
+    return (
+        <Suspense fallback={<PageLoader />}>
+            {!hideChatBot && <ChatBot />}
+            <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<HomePage />} />
+                <Route path="/yoga" element={<YogaPage />} />
+                <Route path="/masajes-y-terapias" element={<TherapiesPage />} />
+                <Route path="/blog" element={<BlogPage />} />
+                <Route path="/galeria/yoga" element={<YogaGalleryPage />} />
+                <Route path="/galeria/masajes-y-terapias" element={<TherapiesGalleryPage />} />
+                <Route path="/eventos" element={<EventsPage />} />
+
+                {/* Auth Route */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+                {/* Protected Dashboard Routes */}
+                <Route element={<ProtectedRoute />}>
+                    <Route path="/dashboard" element={<DashboardLayout />}>
+                        <Route index element={<DashboardHome />} />
+                        <Route path="gallery" element={<GalleryManager />} />
+                        <Route path="content" element={<ContentManager />} />
+                        <Route path="schedule" element={<ScheduleManager />} />
+                        <Route path="seo" element={<SeoStats />} />
+                        <Route path="profile" element={<UserProfile />} />
+                        <Route path="create-user" element={<CreateUser />} />
+                        <Route path="classes" element={<ClassTypeManager />} />
+                        <Route path="treatments" element={<TreatmentsManager />} />
+                        <Route path="users" element={<UserManager />} />
+                        <Route path="agent" element={<AgentControl />} />
+                    </Route>
+                </Route>
+            </Routes>
+        </Suspense>
+    );
+};
 
 function App() {
     return (
         <AuthProvider>
             <BrowserRouter>
-                <Suspense fallback={<PageLoader />}>
-                    <Routes>
-                        {/* Public Routes */}
-                        <Route path="/" element={<HomePage />} />
-                        <Route path="/yoga" element={<YogaPage />} />
-                        <Route path="/masajes-y-terapias" element={<TherapiesPage />} />
-                        <Route path="/blog" element={<BlogPage />} />
-                        <Route path="/galeria/yoga" element={<YogaGalleryPage />} />
-                        <Route path="/galeria/masajes-y-terapias" element={<TherapiesGalleryPage />} />
-
-                        {/* Auth Route */}
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route path="/register" element={<RegisterPage />} />
-                        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                        <Route path="/reset-password" element={<ResetPasswordPage />} />
-
-                        {/* Protected Dashboard Routes */}
-                        <Route element={<ProtectedRoute />}>
-                            <Route path="/dashboard" element={<DashboardLayout />}>
-                                <Route index element={<DashboardHome />} />
-                                <Route path="gallery" element={<GalleryManager />} />
-                                <Route path="content" element={<ContentManager />} />
-                                <Route path="schedule" element={<ScheduleManager />} />
-                                <Route path="seo" element={<SeoStats />} />
-                                <Route path="profile" element={<UserProfile />} />
-                                <Route path="create-user" element={<CreateUser />} />
-                                <Route path="classes" element={<ClassTypeManager />} />
-                                <Route path="treatments" element={<TreatmentsManager />} />
-                                <Route path="users" element={<UserManager />} />
-                            </Route>
-                        </Route>
-                    </Routes>
-                </Suspense>
+                <AppContent />
             </BrowserRouter>
         </AuthProvider>
     );

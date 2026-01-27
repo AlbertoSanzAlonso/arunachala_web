@@ -210,17 +210,24 @@ def update_password(
     
     return {"message": "Contraseña actualizada correctamente"}
 
+class ProfileUpdate(BaseModel):
+    first_name: str | None = None
+    last_name: str | None = None
+    new_password: str | None = None
+
 @router.put("/me")
 def update_profile(
-    first_name: str | None = Body(None),
-    last_name: str | None = Body(None),
+    profile_data: ProfileUpdate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    if first_name is not None:
-        current_user.first_name = first_name
-    if last_name is not None:
-        current_user.last_name = last_name
+    if profile_data.first_name is not None:
+        current_user.first_name = profile_data.first_name
+    if profile_data.last_name is not None:
+        current_user.last_name = profile_data.last_name
+    
+    if profile_data.new_password is not None and profile_data.new_password.strip():
+        current_user.password_hash = get_password_hash(profile_data.new_password)
     
     db.commit()
     db.refresh(current_user)

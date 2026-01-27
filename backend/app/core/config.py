@@ -50,9 +50,10 @@ class Settings(BaseSettings):
     MAIL_PASSWORD: Optional[str] = None
     MAIL_FROM: Optional[str] = None
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
-        extra = "ignore" # Important: don't crash if .env has extra vars
+    model_config = {
+        "env_file": ".env",
+        "case_sensitive": True,
+        "extra": "ignore"
+    }
 
 settings = Settings()
