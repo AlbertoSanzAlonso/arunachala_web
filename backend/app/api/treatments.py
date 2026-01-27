@@ -6,7 +6,9 @@ from app.core.database import get_db
 from app.models.models import MassageType, TherapyType, User
 from app.api.auth import get_current_user
 from app.core.image_utils import save_upload_file, delete_file
+from app.core.webhooks import notify_n8n_content_change
 import os
+import json
 
 router = APIRouter(prefix="/api/treatments", tags=["treatments"])
 
@@ -19,6 +21,7 @@ class TreatmentBase(BaseModel):
     duration_min: Optional[int] = None
     image_url: Optional[str] = None
     is_active: bool = True
+    translations: Optional[dict] = None
 
 class TreatmentCreate(TreatmentBase):
     pass
@@ -31,6 +34,7 @@ class TreatmentUpdate(BaseModel):
     duration_min: Optional[int] = None
     image_url: Optional[str] = None
     is_active: Optional[bool] = None
+    translations: Optional[dict] = None
 
 class TreatmentResponse(TreatmentBase):
     id: int
@@ -45,13 +49,14 @@ def get_massages(db: Session = Depends(get_db)):
     return db.query(MassageType).order_by(MassageType.name).all()
 
 @router.post("/massages", response_model=TreatmentResponse)
-def create_massage(
+async def create_massage(
     name: str = Form(...),
     excerpt: str = Form(None),
     description: str = Form(None),
     benefits: str = Form(None),
     duration_min: int = Form(None),
     is_active: bool = Form(True),
+    translations: str = Form(None),
     image: UploadFile = File(None),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -73,15 +78,20 @@ def create_massage(
         benefits=benefits,
         duration_min=duration_min,
         is_active=is_active,
-        image_url=image_url
+        image_url=image_url,
+        translations=json.loads(translations) if translations else None
     )
     db.add(db_massage)
     db.commit()
     db.refresh(db_massage)
+    
+    # Notify n8n for RAG update
+    await notify_n8n_content_change(db_massage.id, "massage", "create")
+    
     return db_massage
 
 @router.put("/massages/{massage_id}", response_model=TreatmentResponse)
-def update_massage(
+async def update_massage(
     massage_id: int,
     name: str = Form(None),
     excerpt: str = Form(None),
@@ -89,6 +99,7 @@ def update_massage(
     benefits: str = Form(None),
     duration_min: int = Form(None),
     is_active: bool = Form(None),
+    translations: str = Form(None),
     image: UploadFile = File(None),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -116,13 +127,18 @@ def update_massage(
     if duration_min is not None: 
         db_massage.duration_min = None if duration_min == 0 else duration_min
     if is_active is not None: db_massage.is_active = is_active
+    if translations is not None: db_massage.translations = json.loads(translations) if translations else None
     
     db.commit()
     db.refresh(db_massage)
+    
+    # Notify n8n for RAG update
+    await notify_n8n_content_change(db_massage.id, "massage", "update")
+    
     return db_massage
 
 @router.delete("/massages/{massage_id}")
-def delete_massage(
+async def delete_massage(
     massage_id: int,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -138,6 +154,9 @@ def delete_massage(
     if db_massage.image_url:
         delete_file(db_massage.image_url)
     
+    # Notify n8n
+    await notify_n8n_content_change(db_massage.id, "massage", "delete")
+    
     db.delete(db_massage)
     db.commit()
     return {"message": "Massage deleted successfully"}
@@ -149,13 +168,14 @@ def get_therapies(db: Session = Depends(get_db)):
     return db.query(TherapyType).order_by(TherapyType.name).all()
 
 @router.post("/therapies", response_model=TreatmentResponse)
-def create_therapy(
+async def create_therapy(
     name: str = Form(...),
     excerpt: str = Form(None),
     description: str = Form(None),
     benefits: str = Form(None),
     duration_min: int = Form(None),
     is_active: bool = Form(True),
+    translations: str = Form(None),
     image: UploadFile = File(None),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -177,15 +197,20 @@ def create_therapy(
         benefits=benefits,
         duration_min=duration_min,
         is_active=is_active,
-        image_url=image_url
+        image_url=image_url,
+        translations=json.loads(translations) if translations else None
     )
     db.add(db_therapy)
     db.commit()
     db.refresh(db_therapy)
+    
+    # Notify n8n for RAG update
+    await notify_n8n_content_change(db_therapy.id, "therapy", "create")
+    
     return db_therapy
 
 @router.put("/therapies/{therapy_id}", response_model=TreatmentResponse)
-def update_therapy(
+async def update_therapy(
     therapy_id: int,
     name: str = Form(None),
     excerpt: str = Form(None),
@@ -193,6 +218,7 @@ def update_therapy(
     benefits: str = Form(None),
     duration_min: int = Form(None),
     is_active: bool = Form(None),
+    translations: str = Form(None),
     image: UploadFile = File(None),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -219,13 +245,18 @@ def update_therapy(
     if duration_min is not None: 
         db_therapy.duration_min = None if duration_min == 0 else duration_min
     if is_active is not None: db_therapy.is_active = is_active
+    if translations is not None: db_therapy.translations = json.loads(translations) if translations else None
     
     db.commit()
     db.refresh(db_therapy)
+    
+    # Notify n8n for RAG update
+    await notify_n8n_content_change(db_therapy.id, "therapy", "update")
+    
     return db_therapy
 
 @router.delete("/therapies/{therapy_id}")
-def delete_therapy(
+async def delete_therapy(
     therapy_id: int,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -240,6 +271,9 @@ def delete_therapy(
     # Delete file from disk
     if db_therapy.image_url:
         delete_file(db_therapy.image_url)
+    
+    # Notify n8n
+    await notify_n8n_content_change(db_therapy.id, "therapy", "delete")
     
     db.delete(db_therapy)
     db.commit()
