@@ -79,22 +79,35 @@ def save_upload_file(upload_file: UploadFile, subdirectory: str = "uploads") -> 
 
 def delete_file(file_url: str) -> bool:
     """
-    Deletes a file given its URL (local path).
+    Deletes a file given its URL (local path or Cloudinary URL).
     Returns True if deleted, False otherwise.
     """
     if not file_url:
         return False
         
     try:
-        # Check if it is a local static file
+        # 1. Cloudinary deletion
+        if "res.cloudinary.com" in file_url:
+            import cloudinary.uploader
+            # Extract public_id from URL
+            # Cloudinary URLs look like: https://res.cloudinary.com/cloud/image/upload/v123/arunachala/yoga/id.webp
+            # We need the path after 'upload/v[digits]/' and remove the extension
+            import re
+            match = re.search(r'upload/v\d+/(.+)\.\w+$', file_url)
+            if match:
+                public_id = match.group(1)
+                cloudinary.uploader.destroy(public_id)
+                print(f"Deleted from Cloudinary: {public_id}")
+                return True
+
+        # 2. Local file system deletion
         if file_url.startswith("/static/"):
-            # Remove '/static/' prefix
             relative_path = file_url[len("/static/"):]
             full_path = os.path.join(STATIC_DIR, relative_path)
             
             if os.path.exists(full_path) and os.path.isfile(full_path):
                 os.remove(full_path)
-                print(f"Deleted file: {full_path}")
+                print(f"Deleted locally: {full_path}")
                 return True
         return False
     except Exception as e:
