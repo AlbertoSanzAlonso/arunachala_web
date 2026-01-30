@@ -77,11 +77,11 @@ def search_knowledge_base(query: str, limit: int = 3):
 
         query_vector = get_embedding(query)
         
-        search_result = qdrant_client.search(
+        search_result = qdrant_client.query_points(
             collection_name=COLLECTION_NAME,
-            query_vector=query_vector,
+            query=query_vector,
             limit=limit
-        )
+        ).points
         return search_result
     except Exception as e:
         print(f"Error searching Qdrant: {e}")
