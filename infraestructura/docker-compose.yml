@@ -47,6 +47,17 @@ services:
     networks:
       - yoga_network
 
+  # 4. LA MEMORIA (Qdrant - RAG AI)
+  qdrant:
+    image: qdrant/qdrant
+    restart: always
+    ports:
+      - "6333:6333"
+    volumes:
+      - ./qdrant_data:/qdrant/storage
+    networks:
+      - yoga_network
+
 # Red privada para que hablen entre ellos
 networks:
   yoga_network:

@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Text, Enum
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Text, Enum, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import enum
@@ -68,6 +68,7 @@ class YogaClassDefinition(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True, nullable=False)
     description = Column(Text, nullable=True)
+    translations = Column(JSON, nullable=True) # { "ca": { "name": "...", "description": "..." }, "en": {...} }
     color = Column(String, nullable=True) # Tailwind class like 'bg-forest/20'
     age_range = Column(String, nullable=True) # Optional note or age
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -97,6 +98,7 @@ class MassageType(Base):
     excerpt = Column(String, nullable=True) # Short description for thumbnail
     description = Column(Text, nullable=True) # Full description
     benefits = Column(Text, nullable=True) # Benefits list/text
+    translations = Column(JSON, nullable=True)
     duration_min = Column(Integer, nullable=True)
     image_url = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
@@ -110,7 +112,20 @@ class TherapyType(Base):
     excerpt = Column(String, nullable=True) # Short description for thumbnail
     description = Column(Text, nullable=True) # Full description
     benefits = Column(Text, nullable=True) # Benefits list/text
+    translations = Column(JSON, nullable=True)
     duration_min = Column(Integer, nullable=True)
     image_url = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class AgentConfig(Base):
+    __tablename__ = "agent_config"
+
+    id = Column(Integer, primary_key=True, index=True)
+    tone = Column(String, default="Asistente Amable")
+    response_length = Column(String, default="balanced") # concise, balanced, detailed
+    emoji_style = Column(String, default="moderate") # none, moderate, high
+    focus_area = Column(String, default="info") # info, booking, coaching
+    system_instructions = Column(Text, nullable=True)
+    is_active = Column(Boolean, default=True)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

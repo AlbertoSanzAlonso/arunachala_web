@@ -23,6 +23,7 @@ arunachala_web/
 - **Tests**: `pytest` (backend) + `npm test` (frontend)
 - **Linting**: `flake8` (backend) + `npm run lint` (frontend)
 - **Environment Note**: Python virtual environment is located at project root (`/venv`), NOT in `backend/venv`.
+- **Database Requirement**: This project **EXCLUSIVELY** uses **PostgreSQL**. Do **NOT** use SQLite. All data must reside in the PostgreSQL database managed via Docker or Neon. Any mention of SQLite or `.db` files should be ignored or removed.
 
 ## 🔧 Environment Configuration
 There are EXACTLY TWO required `.env` files in the project. Do NOT create one in the root.
@@ -243,9 +244,10 @@ feature/*      ← Individual features
 - Environment variables never committed
 - JWT for authentication
 - Input validation with Pydantic
-- SQL injection prevention via SQLAlchemy
+- SQL injection prevention via SQLAlchemy (PostgreSQL dialect)
 - API rate limiting
 - Rate limit creation: use `Limiter(key_func=get_remote_address)`
+- **DATABASE ENFORCEMENT**: Never attempts to use SQLite. Always defaults to the `DATABASE_URL` pointing to PostgreSQL.
 
 ---
 
@@ -265,6 +267,15 @@ The application includes a Retrieval-Augmented Generation chatbot for customer s
     - **Vector DB**: Qdrant (runs on port 6333).
     - **LLM**: OpenAI `gpt-4o-mini` for responses and `text-embedding-3-small` for search.
 - **Admin Control**: The dashboard includes an "Agent Control" page to adjust tone, response length, and focus area.
+- **🔄 Auto-Knowledge Sync (n8n)**:
+    - **Trigger**: Every time a Yoga Class, Massage, or Therapy is Created/Updated/Deleted in the Dashboard, a Webhook (`backend/app/core/webhooks.py`) notifies n8n.
+    - **n8n Workflow**:
+        1. **Receive Webhook**: Gets the `id` and `type` of the changed content.
+        2. **Fetch Data**: Calls the Backend API to get the latest full details.
+        3. **Process**: Formats the text and prepares metadata.
+        4. **Embeddings**: Generates vectors using OpenAI `text-embedding-3-small`.
+        5. **Vector Store**: Upserts/Updates the data directly in **Qdrant**.
+    - **Benefit**: The chatbot is always up-to-date with the latest studio offerings without manual ingestion.
 
 ## 🌐 Multilingual System
 Full support for Spanish (ES), Catalan (CA), and English (EN).

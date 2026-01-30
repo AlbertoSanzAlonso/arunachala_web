@@ -71,7 +71,7 @@ const YogaPage: React.FC = () => {
     );
 
     return (
-        <div ref={containerRef} className="font-body text-bark h-screen overflow-y-auto flex flex-col relative snap-y snap-mandatory scroll-smooth">
+        <div ref={containerRef} className="font-body text-bark h-screen overflow-y-auto flex flex-col relative snap-y snap-proximity scroll-smooth">
             <Helmet>
                 <title>{t('yoga.seo.title')}</title>
                 <meta name="description" content={t('yoga.seo.description')} />
@@ -100,7 +100,7 @@ const YogaPage: React.FC = () => {
                         <div className="absolute inset-0 bg-black/50" />
                     </div>
 
-                    <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 max-w-7xl mx-auto w-full h-full pt-28 pb-12 md:pt-12 md:pb-0">
+                    <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 max-w-7xl mx-auto w-full h-full pt-28 pb-32 md:pt-12 md:pb-0">
                         <div className="self-start md:absolute md:top-32 md:left-10 w-full md:w-auto mb-4 md:mb-0">
                             <BackButton className="text-white hover:text-matcha transition-colors" label={t('common.back_home')} />
                         </div>

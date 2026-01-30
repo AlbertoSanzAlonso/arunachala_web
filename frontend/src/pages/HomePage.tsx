@@ -71,7 +71,7 @@ const HomePage: React.FC = () => {
     };
 
     return (
-        <div ref={containerRef} className="font-body text-bark relative h-screen overflow-y-auto snap-y snap-mandatory scroll-smooth">
+        <div ref={containerRef} className="font-body text-bark relative h-screen overflow-y-auto snap-y snap-proximity scroll-smooth">
             <Header />
 
             {/* Floating Back to Top Button */}
@@ -108,7 +108,7 @@ const HomePage: React.FC = () => {
                 <div className="absolute top-0 left-0 w-full h-full bg-black/50"></div>
 
                 {/* Main Content Container */}
-                <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-4xl px-4 gap-6 md:gap-16 pt-28 pb-12 md:pt-0 md:pb-0">
+                <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-4xl px-4 gap-6 md:gap-16 pt-28 pb-32 md:pt-0 md:pb-0">
 
                     {/* Navigation Buttons */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-12 w-full text-center">

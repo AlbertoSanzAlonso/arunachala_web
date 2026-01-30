@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 load_dotenv()
+# Reload trigger for env vars
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,6 +11,7 @@ import os
 # Import the reviews router
 # Import routers
 from app.api import reviews, auth, gallery, schedules, yoga_classes, treatments
+from app.routers import chat
 from fastapi.staticfiles import StaticFiles
 
 # Create Tables
@@ -41,6 +43,7 @@ app.include_router(gallery.router, prefix="/api/gallery", tags=["gallery"])
 app.include_router(schedules.router)
 app.include_router(yoga_classes.router)
 app.include_router(treatments.router)
+app.include_router(chat.router, prefix="/api", tags=["chat"])
 
 
 # Mount Static Files (for uploaded images)
