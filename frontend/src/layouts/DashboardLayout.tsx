@@ -13,7 +13,6 @@ import {
     XMarkIcon,
     PhotoIcon,
     UserCircleIcon,
-    TagIcon,
     UsersIcon,
     HeartIcon,
     ArrowRightOnRectangleIcon,
