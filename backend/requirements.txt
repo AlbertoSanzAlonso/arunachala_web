@@ -62,3 +62,6 @@ uvloop==0.22.1
 watchfiles==1.1.1
 websockets==16.0
 gunicorn==21.2.0
+qdrant-client
+groq
+google-generativeai
