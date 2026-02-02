@@ -20,6 +20,7 @@ async def notify_n8n_content_change(content_id: int, content_type: str, action: 
                     "type": content_type,
                     "action": action
                 }, timeout=5.0)
+                print(f"Successfully notified n8n for {content_type} {content_id} ({action})")
             except Exception as e:
                 print(f"Error notifying n8n for {content_type} {content_id}: {e}")
 

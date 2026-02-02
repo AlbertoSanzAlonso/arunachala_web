@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../../config';
+import { useNavigate } from 'react-router-dom';
 import { Cog6ToothIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 
 const AgentControl: React.FC = () => {
+    const navigate = useNavigate();
     const [tone, setTone] = useState("Asistente Amable");
     const [responseLength, setResponseLength] = useState("balanced");
     const [emojiStyle, setEmojiStyle] = useState("moderate");
@@ -13,6 +15,10 @@ const AgentControl: React.FC = () => {
     const [isActive, setIsActive] = useState(true);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<string | null>(null);
+    const [showResetModal, setShowResetModal] = useState(false);
+    const [resetStep, setResetStep] = useState(1); // 1: Select Type, 2: Final Warning
+    const [resetScope, setResetScope] = useState<string | null>(null);
+    const [resetLoading, setResetLoading] = useState(false);
 
     useEffect(() => {
         fetchConfig();
@@ -84,6 +90,9 @@ const AgentControl: React.FC = () => {
 
             if (response.ok) {
                 setMessage("Configuración guardada correctamente. El agente actualizará su comportamiento de inmediato.");
+                setTimeout(() => {
+                    navigate('/dashboard');
+                }, 1500);
             } else {
                 setMessage("Error al guardar la configuración.");
             }
@@ -91,6 +100,34 @@ const AgentControl: React.FC = () => {
             setMessage("Error de conexión al guardar.");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleResetMemory = async () => {
+        if (!resetScope) return;
+        setResetLoading(true);
+        try {
+            const token = sessionStorage.getItem('access_token');
+            const response = await fetch(`${API_BASE_URL}/api/chat-memory-reset`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ scope: resetScope })
+            });
+
+            if (response.ok) {
+                setMessage(`Memoria (${resetScope}) reiniciada correctamente. La IA ya no recordará esa información.`);
+                setShowResetModal(false);
+                setResetStep(1);
+            } else {
+                setMessage("Error al reiniciar la memoria.");
+            }
+        } catch (error) {
+            setMessage("Error de conexión al reiniciar.");
+        } finally {
+            setResetLoading(false);
         }
     };
 
@@ -268,7 +305,14 @@ const AgentControl: React.FC = () => {
                 )}
 
                 {/* Submit */}
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-4">
+                    <button
+                        type="button"
+                        onClick={() => setShowResetModal(true)}
+                        className="px-6 py-3 bg-red-50 text-red-600 font-medium rounded-xl hover:bg-red-100 transition-all"
+                    >
+                        Reiniciar Memoria (RAG)
+                    </button>
                     <button
                         type="submit"
                         disabled={loading}
@@ -279,6 +323,78 @@ const AgentControl: React.FC = () => {
                 </div>
 
             </form>
+
+            {/* Panic Reset Modal */}
+            {showResetModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bark/60 backdrop-blur-sm">
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl border border-red-100"
+                    >
+                        {resetStep === 1 ? (
+                            <>
+                                <h2 className="text-2xl font-headers text-red-600 mb-4">Reiniciar Memoria de IA</h2>
+                                <p className="text-gray-600 mb-6">Esta acción eliminará segmentos del conocimiento de la IA. ¿Qué parte quieres borrar?</p>
+                                <div className="grid grid-cols-2 gap-3 mb-8">
+                                    {[
+                                        { id: 'all', label: 'TODO (Reset Total)', color: 'bg-red-600' },
+                                        { id: 'yoga_class', label: 'Clases de Yoga', color: 'bg-forest' },
+                                        { id: 'massage', label: 'Masajes', color: 'bg-matcha' },
+                                        { id: 'therapy', label: 'Terapias', color: 'bg-matcha' },
+                                        { id: 'content', label: 'Blog/Artículos', color: 'bg-bark' },
+                                    ].map(cat => (
+                                        <button
+                                            key={cat.id}
+                                            onClick={() => { setResetScope(cat.id); setResetStep(2); }}
+                                            className={`p-4 rounded-xl text-white font-medium text-sm transition-transform hover:scale-105 ${cat.color}`}
+                                        >
+                                            {cat.label}
+                                        </button>
+                                    ))}
+                                </div>
+                                <button
+                                    onClick={() => setShowResetModal(false)}
+                                    className="w-full text-gray-400 text-sm hover:underline"
+                                >
+                                    Cancelar
+                                </button>
+                            </>
+                        ) : (
+                            <div className="text-center">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+                                <h2 className="text-2xl font-headers text-bark mb-4">¿Estás Complemente Seguro?</h2>
+                                <div className="bg-red-50 p-4 rounded-xl mb-6 text-left">
+                                    <ul className="text-sm text-red-700 space-y-2">
+                                        <li>• La IA olvidará esta información de inmediato.</li>
+                                        <li>• No podrás recuperar los datos vectoriales.</li>
+                                        <li>• Tendrás que volver a guardar los elementos en el dashboard para que la IA los vuelva a aprender.</li>
+                                    </ul>
+                                </div>
+                                <div className="flex flex-col gap-3">
+                                    <button
+                                        onClick={handleResetMemory}
+                                        disabled={resetLoading}
+                                        className="w-full py-4 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-all shadow-lg"
+                                    >
+                                        {resetLoading ? 'Procesando...' : 'SÍ, BORRAR DEFINITIVAMENTE'}
+                                    </button>
+                                    <button
+                                        onClick={() => setResetStep(1)}
+                                        className="w-full py-3 bg-gray-100 text-gray-600 rounded-xl font-medium hover:bg-gray-200 transition-all"
+                                    >
+                                        Volver atrás
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </motion.div>
+                </div>
+            )}
         </div>
     );
 };

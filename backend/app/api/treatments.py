@@ -48,6 +48,13 @@ class TreatmentResponse(TreatmentBase):
 def get_massages(db: Session = Depends(get_db)):
     return db.query(MassageType).order_by(MassageType.name).all()
 
+@router.get("/massages/{massage_id}", response_model=TreatmentResponse)
+def get_massage(massage_id: int, db: Session = Depends(get_db)):
+    db_massage = db.query(MassageType).filter(MassageType.id == massage_id).first()
+    if not db_massage:
+        raise HTTPException(status_code=404, detail="Massage not found")
+    return db_massage
+
 @router.post("/massages", response_model=TreatmentResponse)
 async def create_massage(
     name: str = Form(...),
@@ -166,6 +173,13 @@ async def delete_massage(
 @router.get("/therapies", response_model=List[TreatmentResponse])
 def get_therapies(db: Session = Depends(get_db)):
     return db.query(TherapyType).order_by(TherapyType.name).all()
+
+@router.get("/therapies/{therapy_id}", response_model=TreatmentResponse)
+def get_therapy(therapy_id: int, db: Session = Depends(get_db)):
+    db_therapy = db.query(TherapyType).filter(TherapyType.id == therapy_id).first()
+    if not db_therapy:
+        raise HTTPException(status_code=404, detail="Therapy not found")
+    return db_therapy
 
 @router.post("/therapies", response_model=TreatmentResponse)
 async def create_therapy(

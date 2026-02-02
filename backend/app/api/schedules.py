@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from app.core.database import get_db
 from app.models.models import ClassSchedule, User
 from app.api.auth import get_current_user
+from app.core.webhooks import notify_n8n_content_change
 
 router = APIRouter(prefix="/api/schedules", tags=["schedules"])
 
@@ -87,7 +88,7 @@ def get_schedule(
     return schedule
 
 @router.post("", response_model=ScheduleResponse)
-def create_schedule(
+async def create_schedule(
     schedule_data: ScheduleCreate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -127,10 +128,13 @@ def create_schedule(
     db.commit()
     db.refresh(new_schedule)
     
+    if new_schedule.class_id:
+        await notify_n8n_content_change(new_schedule.class_id, "yoga_class", "update")
+    
     return new_schedule
 
 @router.put("/{schedule_id}", response_model=ScheduleResponse)
-def update_schedule(
+async def update_schedule(
     schedule_id: int,
     schedule_data: ScheduleUpdate,
     current_user: User = Depends(get_current_user),
@@ -177,10 +181,13 @@ def update_schedule(
     db.commit()
     db.refresh(schedule)
     
+    if schedule.class_id:
+        await notify_n8n_content_change(schedule.class_id, "yoga_class", "update")
+    
     return schedule
 
 @router.delete("/{schedule_id}")
-def delete_schedule(
+async def delete_schedule(
     schedule_id: int,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -193,8 +200,13 @@ def delete_schedule(
     if not schedule:
         raise HTTPException(status_code=404, detail="Schedule not found")
     
+    class_id = schedule.class_id
+    
     db.delete(schedule)
     db.commit()
+    
+    if class_id:
+        await notify_n8n_content_change(class_id, "yoga_class", "update")
     
     return {"message": "Schedule deleted successfully"}
 

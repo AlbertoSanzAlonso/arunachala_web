@@ -129,8 +129,9 @@ const ChatBot: React.FC = () => {
                             const data = JSON.parse(jsonStr);
                             if (data.content) {
                                 accumulatedText += data.content;
+                                const contentToUpdate = accumulatedText;
                                 setMessages(prev => prev.map(m =>
-                                    m.id === botMsgId ? { ...m, text: accumulatedText } : m
+                                    m.id === botMsgId ? { ...m, text: contentToUpdate } : m
                                 ));
                             }
                             if (data.sources) {
@@ -165,8 +166,9 @@ const ChatBot: React.FC = () => {
                 for await (const part of (puterResponse as any)) {
                     if (part?.text) {
                         accumulatedText += part.text;
+                        const textToUpdate = accumulatedText;
                         setMessages(prev => prev.map(m =>
-                            m.id === botMsgId ? { ...m, text: accumulatedText } : m
+                            m.id === botMsgId ? { ...m, text: textToUpdate } : m
                         ));
                     }
                 }

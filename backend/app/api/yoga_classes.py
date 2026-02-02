@@ -26,8 +26,19 @@ class YogaClassUpdate(BaseModel):
     age_range: str | None = None
     translations: dict | None = None
 
+class ScheduleBrief(BaseModel):
+    id: int
+    day_of_week: str
+    start_time: str
+    end_time: str
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
 class YogaClassResponse(YogaClassBase):
     id: int
+    schedules: List[ScheduleBrief] = []
 
     class Config:
         from_attributes = True
@@ -35,6 +46,13 @@ class YogaClassResponse(YogaClassBase):
 @router.get("", response_model=List[YogaClassResponse])
 def get_yoga_classes(db: Session = Depends(get_db)):
     return db.query(YogaClassDefinition).order_by(YogaClassDefinition.name).all()
+
+@router.get("/{class_id}", response_model=YogaClassResponse)
+def get_yoga_class(class_id: int, db: Session = Depends(get_db)):
+    db_class = db.query(YogaClassDefinition).filter(YogaClassDefinition.id == class_id).first()
+    if not db_class:
+        raise HTTPException(status_code=404, detail="Class not found")
+    return db_class
 
 @router.post("", response_model=YogaClassResponse)
 async def create_yoga_class(

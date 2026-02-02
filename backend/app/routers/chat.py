@@ -11,6 +11,10 @@ router = APIRouter()
 
 from groq import Groq
 import google.generativeai as genai
+from sqlalchemy.orm import Session
+from app.models.models import AgentConfig, User
+from app.core.database import get_db
+from app.api.auth import get_current_user
 
 # --- Configurations ---
 QDRANT_HOST = os.getenv("QDRANT_HOST", "localhost")
@@ -51,6 +55,9 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
     sources: Optional[List[str]] = None
+
+class ResetRequest(BaseModel):
+    scope: str  # 'all', 'yoga_class', 'massage', 'therapy', 'content'
 
 
 # --- Helper Functions ---
@@ -100,10 +107,6 @@ def format_context(search_results):
 
 
 # --- Endpoints ---
-
-from sqlalchemy.orm import Session
-from app.models.models import AgentConfig
-from app.core.database import get_db
 
 @router.get("/config")
 def get_agent_config(db: Session = Depends(get_db)):
@@ -352,3 +355,49 @@ async def ingest_data(secret: str, content: str, source: str):
     )
     
     return {"status": "success", "id": point_id}
+
+@router.post("/chat-memory-reset")
+async def reset_rag_memory(
+    request: ResetRequest,
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Resets the RAG memory in Qdrant based on the provided scope.
+    """
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+        
+    if not qdrant_client:
+        raise HTTPException(status_code=503, detail="Qdrant service not available")
+
+    try:
+        if request.scope == "all":
+            # Recreate the entire collection
+            try:
+                qdrant_client.delete_collection(COLLECTION_NAME)
+            except:
+                pass
+            qdrant_client.create_collection(
+                collection_name=COLLECTION_NAME,
+                vectors_config=models.VectorParams(size=1536, distance=models.Distance.COSINE)
+            )
+        else:
+            # Delete points by type filter
+            qdrant_client.delete(
+                collection_name=COLLECTION_NAME,
+                points_selector=models.FilterSelector(
+                    filter=models.Filter(
+                        must=[
+                            models.FieldCondition(
+                                key="type",
+                                match=models.MatchValue(value=request.scope)
+                            )
+                        ]
+                    )
+                )
+            )
+        
+        return {"status": "success", "message": f"Memory for {request.scope} reset successfully"}
+    except Exception as e:
+        print(f"Error resetting RAG memory: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

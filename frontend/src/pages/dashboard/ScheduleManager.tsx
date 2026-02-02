@@ -250,8 +250,7 @@ export default function ScheduleManager() {
                         onClick={() => navigate('/dashboard/classes')}
                         className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-2 text-center text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                     >
-                        <PlusIcon className="h-5 w-5 text-gray-400" />
-                        Crear Nueva Clase
+                        Menú de Clases
                     </button>
                     <button
                         type="button"
@@ -259,7 +258,7 @@ export default function ScheduleManager() {
                         className="inline-flex items-center gap-2 rounded-md bg-primary-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-primary-500"
                     >
                         <PlusIcon className="h-5 w-5" />
-                        Añadir al Horario
+                        Añadir Clase
                     </button>
                 </div>
             </div>
@@ -325,7 +324,7 @@ export default function ScheduleManager() {
                     <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 overflow-hidden">
                         <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
                             <h3 className="text-lg font-medium text-gray-900">
-                                {editingSchedule ? 'Editar Horario' : 'Añadir al Horario'}
+                                {editingSchedule ? 'Editar Horario' : 'Añadir Clase'}
                             </h3>
                         </div>
                         <form onSubmit={handleSubmit} className="px-6 py-6 space-y-5">

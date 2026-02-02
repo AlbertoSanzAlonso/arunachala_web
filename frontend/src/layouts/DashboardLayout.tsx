@@ -25,7 +25,6 @@ const navigation = [
     { name: 'Vista General', href: '/dashboard', icon: HomeIcon },
     { name: 'Galería', href: '/dashboard/gallery', icon: PhotoIcon },
     { name: 'Contenido', href: '/dashboard/content', icon: DocumentTextIcon },
-    { name: 'Menú de Clases', href: '/dashboard/classes', icon: TagIcon },
     { name: 'Tratamientos', href: '/dashboard/treatments', icon: HeartIcon },
     { name: 'Horarios', href: '/dashboard/schedule', icon: CalendarIcon },
     { name: 'Usuarios', href: '/dashboard/users', icon: UsersIcon },
