@@ -19,6 +19,9 @@ from app.api.auth import get_current_user
 # --- Configurations ---
 QDRANT_HOST = os.getenv("QDRANT_HOST", "localhost")
 QDRANT_PORT = int(os.getenv("QDRANT_PORT", 6333))
+QDRANT_URL = os.getenv("QDRANT_URL")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -26,7 +29,10 @@ COLLECTION_NAME = "arunachala_knowledge_base"
 
 # --- Clients ---
 try:
-    qdrant_client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
+    if QDRANT_URL and QDRANT_API_KEY:
+        qdrant_client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
+    else:
+        qdrant_client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
 except Exception as e:
     print(f"Warning: Could not connect to Qdrant: {e}")
     qdrant_client = None
