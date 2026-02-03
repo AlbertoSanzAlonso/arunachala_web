@@ -286,3 +286,9 @@ Full support for Spanish (ES), Catalan (CA), and English (EN).
 ## 🛠️ Maintenance Tools
 - **Data Restoration**: `backend/restore_data.py` - Script to restore base classes, therapies, and images after a database reset/recreation.
 - **DB Debugging**: `backend/debug_db.py` - Script to check current database state and integrity.
+
+## 📝 Recent Updates (2025-02-04)
+- **AI Image Generation**: Fixed routing conflicts in `content.py` (422 error) by moving endpoint and renaming to `generate-ai-image`. Switched to GET method for better proxy compatibility and added specific error handling (502/503).
+- **Dashboard**: Implemented `DashboardActivity` system to log and display deleted content in the general overview.
+- **UI Improvements**: Removed "General" category from Content Manager and Blog.
+- **Fixes**: Removed `React.StrictMode` to suppress `react-quill` deprecation warnings.

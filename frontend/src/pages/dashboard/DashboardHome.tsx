@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ArrowTrendingUpIcon, UsersIcon, DocumentDuplicateIcon, CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { API_BASE_URL } from '../../config';
 
 const stats = [
     { name: 'Visitas Totales', stat: '12,453', change: '12%', changeType: 'increase', icon: UsersIcon },
@@ -8,13 +9,38 @@ const stats = [
     { name: 'Ratio de Rebote', stat: '24.57%', change: '3.2%', changeType: 'decrease', icon: ArrowTrendingUpIcon },
 ];
 
+interface ActivityItem {
+    id: number;
+    type: string;
+    action: string;
+    title: string;
+    timestamp: string;
+}
+
 function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ');
+}
+
+function formatTimeAgo(timestamp: string): string {
+    const now = new Date();
+    const past = new Date(timestamp);
+    const diffMs = now.getTime() - past.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Ahora mismo';
+    if (diffMins < 60) return `Hace ${diffMins} min`;
+    if (diffHours < 24) return `Hace ${diffHours} ${diffHours === 1 ? 'hora' : 'horas'}`;
+    if (diffDays < 7) return `Hace ${diffDays} ${diffDays === 1 ? 'día' : 'días'}`;
+    return past.toLocaleDateString('es-ES');
 }
 
 export default function DashboardHome() {
     const location = useLocation();
     const [notification, setNotification] = useState<{ type: string; message: string } | null>(null);
+    const [activities, setActivities] = useState<ActivityItem[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         // Check if there's a notification in the location state
@@ -32,6 +58,30 @@ export default function DashboardHome() {
             return () => clearTimeout(timer);
         }
     }, [location]);
+
+    useEffect(() => {
+        const fetchRecentActivity = async () => {
+            try {
+                const token = sessionStorage.getItem('access_token');
+                const response = await fetch(`${API_BASE_URL}/api/dashboard/recent-activity?limit=5`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setActivities(data);
+                }
+            } catch (error) {
+                console.error('Error fetching recent activity:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchRecentActivity();
+    }, []);
 
     return (
         <div>
@@ -88,20 +138,20 @@ export default function DashboardHome() {
 
             <div className="bg-white shadow rounded-lg p-6 border border-gray-200">
                 <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">Actividad Reciente</h3>
-                <ul className="divide-y divide-gray-200">
-                    <li className="py-4 flex justify-between">
-                        <span className="text-gray-700">Nueva reserva para Yoga Principiantes</span>
-                        <span className="text-gray-500 text-sm">Hace 5 min</span>
-                    </li>
-                    <li className="py-4 flex justify-between">
-                        <span className="text-gray-700">Artículo "Los 8 pasos del Yoga" actualizado</span>
-                        <span className="text-gray-500 text-sm">Hace 2 horas</span>
-                    </li>
-                    <li className="py-4 flex justify-between">
-                        <span className="text-gray-700">Nuevo comentario en Google Maps</span>
-                        <span className="text-gray-500 text-sm">Hace 1 día</span>
-                    </li>
-                </ul>
+                {isLoading ? (
+                    <p className="text-gray-500 text-center py-4">Cargando actividad...</p>
+                ) : activities.length === 0 ? (
+                    <p className="text-gray-500 text-center py-4">No hay actividad reciente</p>
+                ) : (
+                    <ul className="divide-y divide-gray-200">
+                        {activities.map((activity) => (
+                            <li key={`${activity.type}-${activity.id}`} className="py-4 flex justify-between">
+                                <span className="text-gray-700">{activity.title}</span>
+                                <span className="text-gray-500 text-sm">{formatTimeAgo(activity.timestamp)}</span>
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
         </div>
     );

@@ -112,6 +112,8 @@
         }
     },
     "common": {
+        "view_all": "Ver todos",
+        "back_home": "Volver al inicio",
         "days": {
             "monday": "Lunes",
             "tuesday": "Martes",
@@ -124,8 +126,7 @@
         "times": {
             "morning": "MAÑANA",
             "afternoon": "TARDE"
-        },
-        "back_home": "Volver al inicio"
+        }
     },
     "home": {
         "mantra_title": "Mantra del Día",

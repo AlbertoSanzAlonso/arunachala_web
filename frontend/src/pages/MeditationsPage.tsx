@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import BackButton from '../components/BackButton';
 import { API_BASE_URL } from '../config';
 import { Helmet } from 'react-helmet-async';
 import { PlayCircleIcon, PauseCircleIcon } from '@heroicons/react/24/solid';
@@ -65,9 +65,13 @@ const MeditationsPage: React.FC = () => {
 
             <Header />
 
-            <main className="flex-grow pt-32 pb-16">
-                <div className="max-w-7xl mx-auto px-6">
-                    <h1 className="text-4xl md:text-6xl font-headers text-forest text-center mb-6 uppercase tracking-wider">
+            <main className="flex-grow pt-32 pb-16 relative">
+                <div className="max-w-7xl mx-auto px-6 relative w-full">
+                    <div className="mb-8 md:mb-0 md:absolute md:top-0 md:left-2 z-20">
+                        <BackButton />
+                    </div>
+
+                    <h1 className="text-4xl md:text-6xl font-headers text-forest text-center mb-6 uppercase tracking-wider pt-12 md:pt-0">
                         {t('menu.meditations')}
                     </h1>
                     <p className="text-center text-xl text-bark/80 max-w-2xl mx-auto mb-16">
@@ -86,7 +90,11 @@ const MeditationsPage: React.FC = () => {
                                 <div key={meditation.id} className="bg-white rounded-3xl shadow-lg overflow-hidden border border-bone hover:shadow-xl transition-all duration-300 group">
                                     <div className="relative h-48 bg-matcha/20 flex items-center justify-center overflow-hidden">
                                         {meditation.thumbnail_url ? (
-                                            <img src={meditation.thumbnail_url} alt={meditation.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                            <img
+                                                src={meditation.thumbnail_url.startsWith('http') ? meditation.thumbnail_url : `${API_BASE_URL}${meditation.thumbnail_url}`}
+                                                alt={meditation.title}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
                                         ) : (
                                             <div className="absolute inset-0 bg-gradient-to-br from-forest/30 to-matcha/30" />
                                         )}

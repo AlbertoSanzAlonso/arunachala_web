@@ -111,6 +111,8 @@
         }
     },
     "common": {
+        "view_all": "Veure tots",
+        "back_home": "Tornar a l'inici",
         "days": {
             "monday": "Dilluns",
             "tuesday": "Dimarts",
@@ -123,8 +125,7 @@
         "times": {
             "morning": "MATÍ",
             "afternoon": "TARDA"
-        },
-        "back_home": "Tornar a l'inici"
+        }
     },
     "home": {
         "mantra_title": "Mantra del Dia",

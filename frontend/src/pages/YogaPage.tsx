@@ -9,6 +9,7 @@ import BackButton from '../components/BackButton';
 import FadeInSection from '../components/FadeInSection';
 import yogaHero from '../assets/images/yoga_hero.png';
 import { API_BASE_URL } from '../config';
+import BlogSection from '../components/BlogSection';
 
 // Lazy load heavy components for performance
 const YogaSchedule = lazy(() => import('../components/YogaSchedule'));
@@ -183,32 +184,17 @@ const YogaPage: React.FC = () => {
                     </FadeInSection>
                 </section>
 
-                <section ref={blogRef} className="bg-white py-32 md:py-48 border-t border-forest/5 scroll-mt-24 snap-start">
-                    <FadeInSection className="max-w-7xl mx-auto px-4 md:px-8">
-                        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6 text-center md:text-left">
-                            <div>
-                                <h2 className="text-3xl md:text-5xl font-headers text-forest mb-3 uppercase">{t('yoga.sections.blog')}</h2>
-                                <p className="text-bark/70 text-lg">{t('yoga.sections.blog_sub')}</p>
-                            </div>
-                            <button onClick={() => navigate('/blog')} className="hidden md:block text-forest font-bold hover:text-matcha transition-colors text-lg uppercase">
-                                {t('yoga.common.view_all_blog')} →
-                            </button>
-                        </div>
 
-                        {/* ... Blog Posts (Mocked for now, but following the same logic) */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                            {[1, 2, 3].map(i => (
-                                <article key={i} className="group cursor-pointer">
-                                    <div className="aspect-video bg-bone/50 rounded-2xl overflow-hidden mb-6 relative">
-                                        <div className="absolute inset-0 bg-forest/10 group-hover:bg-transparent transition-colors" />
-                                    </div>
-                                    <h3 className="text-2xl font-headers text-forest mb-3 group-hover:text-matcha transition-colors uppercase">Post {i}</h3>
-                                    <p className="text-bark/60 line-clamp-2 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
-                                    <span className="text-forest font-bold uppercase text-sm border-b-2 border-forest/20 hover:border-forest transition-all">{t('yoga.common.read_article')}</span>
-                                </article>
-                            ))}
-                        </div>
-                    </FadeInSection>
+                {/* Blog Section */}
+                <section ref={blogRef} className="scroll-mt-24 snap-start">
+                    <BlogSection
+                        category="yoga"
+                        limit={3}
+                        showViewAll={true}
+                        viewAllUrl="/blog/yoga"
+                        title={t('yoga.blog.title', 'Blog de Yoga')}
+                        subtitle={t('yoga.blog.subtitle', 'Artículos, consejos y reflexiones sobre la práctica del yoga')}
+                    />
                 </section>
             </main>
             <div className="snap-start" id="footer-snap">

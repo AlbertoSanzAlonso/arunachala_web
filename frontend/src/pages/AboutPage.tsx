@@ -7,7 +7,7 @@ import { AcademicCapIcon, SparklesIcon, HeartIcon } from '@heroicons/react/24/ou
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
-import instructorImg from '../assets/images/instructor.png';
+import instructorImg from '../assets/images/susana_portrait.webp';
 
 const AboutPage: React.FC = () => {
     const { t } = useTranslation();
@@ -50,7 +50,7 @@ const AboutPage: React.FC = () => {
                                     <img
                                         src={instructorImg}
                                         alt="Susana Pérez Gil"
-                                        className="w-full h-full object-cover grayscale-[20%] hover:grayscale-0 transition-all duration-700"
+                                        className="w-full h-full object-cover object-center grayscale-[20%] hover:grayscale-0 transition-all duration-700"
                                     />
                                 </div>
                             </motion.div>

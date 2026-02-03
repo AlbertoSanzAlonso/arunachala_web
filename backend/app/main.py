@@ -10,7 +10,7 @@ import os
 
 # Import the reviews router
 # Import routers
-from app.api import reviews, auth, gallery, schedules, yoga_classes, treatments, content, activities, upload
+from app.api import reviews, auth, gallery, schedules, yoga_classes, treatments, content, activities, upload, dashboard
 from app.routers import chat
 from fastapi.staticfiles import StaticFiles
 
@@ -47,6 +47,7 @@ app.include_router(treatments.router)
 app.include_router(content.router)
 app.include_router(activities.router)
 app.include_router(upload.router)
+app.include_router(dashboard.router)
 app.include_router(chat.router, prefix="/api", tags=["chat"])
 
 

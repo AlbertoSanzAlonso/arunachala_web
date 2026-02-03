@@ -91,6 +91,8 @@ class ClassSchedule(Base):
     start_time = Column(String, nullable=False) # "09:00"
     end_time = Column(String, nullable=False) # "10:30"
     is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     yoga_class = relationship("YogaClassDefinition", back_populates="schedules")
 
@@ -153,3 +155,14 @@ class Activity(Base):
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+class DashboardActivity(Base):
+    __tablename__ = "dashboard_activities"
+
+    id = Column(Integer, primary_key=True, index=True)
+    type = Column(String, nullable=False) # 'content', 'gallery', etc.
+    action = Column(String, nullable=False) # 'created', 'updated', 'deleted'
+    title = Column(String, nullable=False)
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+    entity_id = Column(Integer, nullable=True) # ID of the related entity

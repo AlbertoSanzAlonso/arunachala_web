@@ -12,6 +12,7 @@ import therapyHero from '../assets/images/gallery/therapy_sample.webp';
 import lotusFlower from '../assets/images/lotus_flower.png';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
+import BlogSection from '../components/BlogSection';
 
 // Lazy load heavy components
 const ImageSlider = lazy(() => import('../components/ImageSlider'));
@@ -271,40 +272,53 @@ const TherapiesPage: React.FC = () => {
                         </div>
 
                         {massages.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                                {massages.map((msg) => (
-                                    <motion.div
-                                        key={msg.id}
-                                        whileHover={{ y: -10 }}
-                                        onClick={() => setSelectedTreatment(msg)}
-                                        className="group cursor-pointer p-8 rounded-3xl bg-bone/30 border border-forest/10 hover:shadow-2xl transition-all duration-500 relative overflow-hidden"
-                                    >
-                                        <div className="absolute inset-0 bg-white/0 group-hover:bg-white/50 transition-colors duration-500" />
+                            <>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                                    {massages.slice(0, 3).map((msg) => (
+                                        <motion.div
+                                            key={msg.id}
+                                            whileHover={{ y: -10 }}
+                                            onClick={() => setSelectedTreatment(msg)}
+                                            className="group cursor-pointer p-8 rounded-3xl bg-bone/30 border border-forest/10 hover:shadow-2xl transition-all duration-500 relative overflow-hidden"
+                                        >
+                                            <div className="absolute inset-0 bg-white/0 group-hover:bg-white/50 transition-colors duration-500" />
 
-                                        {msg.image_url && (
-                                            <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden">
-                                                <img
-                                                    src={msg.image_url.startsWith('http') ? msg.image_url : `${API_BASE_URL}${msg.image_url}`}
-                                                    alt={getTranslated(msg, 'name', i18n.language)}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                                                />
+                                            {msg.image_url && (
+                                                <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden">
+                                                    <img
+                                                        src={msg.image_url.startsWith('http') ? msg.image_url : `${API_BASE_URL}${msg.image_url}`}
+                                                        alt={getTranslated(msg, 'name', i18n.language)}
+                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                                    />
+                                                </div>
+                                            )}
+
+                                            <h3 className="text-2xl font-headers text-forest mb-4 uppercase relative z-10">{getTranslated(msg, 'name', i18n.language)}</h3>
+                                            <p className="text-bark/80 mb-4 leading-relaxed line-clamp-3 relative z-10">{getTranslated(msg, 'excerpt', i18n.language) || getTranslated(msg, 'description', i18n.language)}</p>
+                                            {getTranslated(msg, 'benefits', i18n.language) && (
+                                                <p className="text-sm italic text-matcha font-bold mb-4 line-clamp-2 relative z-10">{getTranslated(msg, 'benefits', i18n.language)}</p>
+                                            )}
+                                            <div className="flex justify-between items-center mt-6 border-t border-forest/5 pt-4 relative z-10">
+                                                <span className="text-forest/60 text-sm font-bold">
+                                                    {msg.duration_min && msg.duration_min > 0 ? `${msg.duration_min} min` : ''}
+                                                </span>
+                                                <button className="text-forest font-bold group-hover:text-matcha transition-colors uppercase">{t('yoga.common.read_article')} →</button>
                                             </div>
-                                        )}
+                                        </motion.div>
+                                    ))}
+                                </div>
 
-                                        <h3 className="text-2xl font-headers text-forest mb-4 uppercase relative z-10">{getTranslated(msg, 'name', i18n.language)}</h3>
-                                        <p className="text-bark/80 mb-4 leading-relaxed line-clamp-3 relative z-10">{getTranslated(msg, 'excerpt', i18n.language) || getTranslated(msg, 'description', i18n.language)}</p>
-                                        {getTranslated(msg, 'benefits', i18n.language) && (
-                                            <p className="text-sm italic text-matcha font-bold mb-4 line-clamp-2 relative z-10">{getTranslated(msg, 'benefits', i18n.language)}</p>
-                                        )}
-                                        <div className="flex justify-between items-center mt-6 border-t border-forest/5 pt-4 relative z-10">
-                                            <span className="text-forest/60 text-sm font-bold">
-                                                {msg.duration_min && msg.duration_min > 0 ? `${msg.duration_min} min` : ''}
-                                            </span>
-                                            <button className="text-forest font-bold group-hover:text-matcha transition-colors uppercase">{t('yoga.common.read_article')} →</button>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </div>
+                                {massages.length > 3 && (
+                                    <div className="text-center mt-12">
+                                        <button
+                                            onClick={() => navigate('/terapias/masajes')}
+                                            className="px-8 py-4 bg-forest hover:bg-matcha text-white font-headers tracking-wide rounded-full transition-all duration-300 shadow-lg hover:shadow-xl uppercase text-lg"
+                                        >
+                                            {t('common.view_all')}
+                                        </button>
+                                    </div>
+                                )}
+                            </>
                         ) : (
                             <div className="text-center py-12 bg-bone/20 rounded-xl">
                                 <p className="text-bark/50 italic">{t('therapies.none.massages')}</p>
@@ -324,40 +338,53 @@ const TherapiesPage: React.FC = () => {
                         </div>
 
                         {therapies.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                                {therapies.map((thr) => (
-                                    <motion.div
-                                        key={thr.id}
-                                        whileHover={{ y: -10 }}
-                                        onClick={() => setSelectedTreatment(thr)}
-                                        className="group cursor-pointer p-8 rounded-3xl bg-white border border-forest/10 hover:shadow-2xl transition-all duration-500 relative overflow-hidden"
-                                    >
-                                        <div className="absolute inset-0 bg-white/0 group-hover:bg-bone/20 transition-colors duration-500" />
+                            <>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                                    {therapies.slice(0, 3).map((thr) => (
+                                        <motion.div
+                                            key={thr.id}
+                                            whileHover={{ y: -10 }}
+                                            onClick={() => setSelectedTreatment(thr)}
+                                            className="group cursor-pointer p-8 rounded-3xl bg-white border border-forest/10 hover:shadow-2xl transition-all duration-500 relative overflow-hidden"
+                                        >
+                                            <div className="absolute inset-0 bg-white/0 group-hover:bg-bone/20 transition-colors duration-500" />
 
-                                        {thr.image_url && (
-                                            <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden">
-                                                <img
-                                                    src={thr.image_url.startsWith('http') ? thr.image_url : `${API_BASE_URL}${thr.image_url}`}
-                                                    alt={getTranslated(thr, 'name', i18n.language)}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                                                />
+                                            {thr.image_url && (
+                                                <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden">
+                                                    <img
+                                                        src={thr.image_url.startsWith('http') ? thr.image_url : `${API_BASE_URL}${thr.image_url}`}
+                                                        alt={getTranslated(thr, 'name', i18n.language)}
+                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                                    />
+                                                </div>
+                                            )}
+
+                                            <h3 className="text-2xl font-headers text-forest mb-4 uppercase relative z-10">{getTranslated(thr, 'name', i18n.language)}</h3>
+                                            <p className="text-bark/80 mb-4 leading-relaxed line-clamp-3 relative z-10">{getTranslated(thr, 'excerpt', i18n.language) || getTranslated(thr, 'description', i18n.language)}</p>
+                                            {getTranslated(thr, 'benefits', i18n.language) && (
+                                                <p className="text-sm italic text-matcha font-bold mb-4 line-clamp-2 relative z-10">{getTranslated(thr, 'benefits', i18n.language)}</p>
+                                            )}
+                                            <div className="flex justify-between items-center mt-6 border-t border-forest/5 pt-4 relative z-10">
+                                                <span className="text-forest/60 text-sm font-bold">
+                                                    {thr.duration_min && thr.duration_min > 0 ? `${thr.duration_min} min` : ''}
+                                                </span>
+                                                <button className="text-forest font-bold group-hover:text-matcha transition-colors uppercase">{t('yoga.common.read_article')} →</button>
                                             </div>
-                                        )}
+                                        </motion.div>
+                                    ))}
+                                </div>
 
-                                        <h3 className="text-2xl font-headers text-forest mb-4 uppercase relative z-10">{getTranslated(thr, 'name', i18n.language)}</h3>
-                                        <p className="text-bark/80 mb-4 leading-relaxed line-clamp-3 relative z-10">{getTranslated(thr, 'excerpt', i18n.language) || getTranslated(thr, 'description', i18n.language)}</p>
-                                        {getTranslated(thr, 'benefits', i18n.language) && (
-                                            <p className="text-sm italic text-matcha font-bold mb-4 line-clamp-2 relative z-10">{getTranslated(thr, 'benefits', i18n.language)}</p>
-                                        )}
-                                        <div className="flex justify-between items-center mt-6 border-t border-forest/5 pt-4 relative z-10">
-                                            <span className="text-forest/60 text-sm font-bold">
-                                                {thr.duration_min && thr.duration_min > 0 ? `${thr.duration_min} min` : ''}
-                                            </span>
-                                            <button className="text-forest font-bold group-hover:text-matcha transition-colors uppercase">{t('yoga.common.read_article')} →</button>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </div>
+                                {therapies.length > 3 && (
+                                    <div className="text-center mt-12">
+                                        <button
+                                            onClick={() => navigate('/terapias/terapias-holisticas')}
+                                            className="px-8 py-4 bg-forest hover:bg-matcha text-white font-headers tracking-wide rounded-full transition-all duration-300 shadow-lg hover:shadow-xl uppercase text-lg"
+                                        >
+                                            {t('common.view_all')}
+                                        </button>
+                                    </div>
+                                )}
+                            </>
                         ) : (
                             <div className="text-center py-12 bg-white/50 rounded-xl">
                                 <p className="text-bark/50 italic">{t('therapies.none.therapies')}</p>
@@ -398,40 +425,15 @@ const TherapiesPage: React.FC = () => {
                 </section>
 
                 {/* Blog Section */}
-                <section ref={blogRef} className="py-32 md:py-48 bg-bone border-t border-forest/5 scroll-mt-24 snap-start">
-                    <FadeInSection className="max-w-7xl mx-auto px-8">
-                        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-                            <div>
-                                <h2 className="text-4xl md:text-6xl font-headers text-forest mb-3 uppercase">{t('therapies.sections.blog')}</h2>
-                                <p className="text-bark/70 text-lg">{t('therapies.sections.blog_sub')}</p>
-                            </div>
-                            <button onClick={() => navigate('/blog')} className="text-forest font-bold hover:text-matcha transition-colors text-lg uppercase">{t('yoga.common.view_all_blog')} →</button>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                            {/* Blog Posts should also be translated preferably, but for now we keep layout */}
-                            <div className="group cursor-pointer bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
-                                <div className="h-64 bg-forest/10 flex items-center justify-center">
-                                    <img src={lotusFlower} alt="" className="h-20 opacity-20 group-hover:scale-110 transition-transform duration-500" />
-                                </div>
-                                <div className="p-8">
-                                    <span className="text-xs font-bold text-matcha uppercase tracking-widest mb-2 block">Blog</span>
-                                    <h3 className="text-2xl font-headers text-forest mb-3 uppercase">...</h3>
-                                    <p className="text-bark/80 leading-relaxed">...</p>
-                                </div>
-                            </div>
-                            <div className="group cursor-pointer bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
-                                <div className="h-64 bg-forest/10 flex items-center justify-center">
-                                    <img src={lotusFlower} alt="" className="h-20 opacity-20 group-hover:scale-110 transition-transform duration-500" />
-                                </div>
-                                <div className="p-8">
-                                    <span className="text-xs font-bold text-matcha uppercase tracking-widest mb-2 block">Blog</span>
-                                    <h3 className="text-2xl font-headers text-forest mb-3 uppercase">...</h3>
-                                    <p className="text-bark/80 leading-relaxed">...</p>
-                                </div>
-                            </div>
-                        </div>
-
-                    </FadeInSection>
+                <section ref={blogRef} className="scroll-mt-24 snap-start">
+                    <BlogSection
+                        category="therapy"
+                        limit={3}
+                        showViewAll={true}
+                        viewAllUrl="/blog/therapy"
+                        title={t('therapies.blog.title', 'Blog de Terapias')}
+                        subtitle={t('therapies.blog.subtitle', 'Artículos sobre terapias holísticas, masajes y bienestar')}
+                    />
                 </section>
             </main>
             <div className="snap-start" id="footer-snap">

@@ -111,6 +111,8 @@
         }
     },
     "common": {
+        "view_all": "View all",
+        "back_home": "Back to home",
         "days": {
             "monday": "Monday",
             "tuesday": "Tuesday",
@@ -123,8 +125,7 @@
         "times": {
             "morning": "MORNING",
             "afternoon": "AFTERNOON"
-        },
-        "back_home": "Back to Home"
+        }
     },
     "home": {
         "mantra_title": "Mantra of the Day",

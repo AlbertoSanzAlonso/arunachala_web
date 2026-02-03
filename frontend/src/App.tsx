@@ -13,6 +13,8 @@ const BlogPage = lazy(() => import('./pages/BlogPage'));
 const BlogDetailPage = lazy(() => import('./pages/BlogDetailPage'));
 const YogaGalleryPage = lazy(() => import('./pages/YogaGalleryPage'));
 const TherapiesGalleryPage = lazy(() => import('./pages/TherapiesGalleryPage'));
+const AllMassagesPage = lazy(() => import('./pages/AllMassagesPage'));
+const AllTherapiesPage = lazy(() => import('./pages/AllTherapiesPage'));
 const ActivitiesPage = lazy(() => import('./pages/ActivitiesPage'));
 const OurSpacePage = lazy(() => import('./pages/OurSpacePage'));
 
@@ -58,6 +60,8 @@ const AppContent = () => {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/clases-de-yoga" element={<YogaPage />} />
                 <Route path="/terapias-y-masajes" element={<TherapiesPage />} />
+                <Route path="/terapias/masajes" element={<AllMassagesPage />} />
+                <Route path="/terapias/terapias-holisticas" element={<AllTherapiesPage />} />
                 <Route path="/blog" element={<BlogPage />} />
                 <Route path="/blog/yoga" element={<BlogPage />} />
                 <Route path="/blog/therapy" element={<BlogPage />} />
@@ -103,7 +107,7 @@ const AppContent = () => {
 function App() {
     return (
         <AuthProvider>
-            <BrowserRouter>
+            <BrowserRouter future={{ v7_relativeSplatPath: true }}>
                 <AppContent />
             </BrowserRouter>
         </AuthProvider>

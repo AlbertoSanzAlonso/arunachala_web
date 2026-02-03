@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
@@ -9,14 +9,12 @@ import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
-import ArticleModal from '../components/ArticleModal';
 
 interface Article {
     id: number;
     title: string;
     slug: string;
     excerpt: string;
-    body?: string; // Added body
     category: string;
     thumbnail_url: string | null;
     tags: string[];
@@ -24,71 +22,30 @@ interface Article {
     translations?: any;
 }
 
-const BlogPage: React.FC = () => {
+const BlogCategoryPage: React.FC = () => {
+    const { category } = useParams<{ category: string }>();
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
-    const location = useLocation();
     const [articles, setArticles] = useState<Article[]>([]);
-    const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState<string>('all');
     const [isLoading, setIsLoading] = useState(true);
 
-    // Modal State
-    const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    // Set initial category from URL path
     useEffect(() => {
-        const pathParts = location.pathname.split('/');
-        const categoryFromPath = pathParts[2]; // /blog/[category]
-
-        if (categoryFromPath && ['yoga', 'therapy'].includes(categoryFromPath)) {
-            setSelectedCategory(categoryFromPath);
-        } else {
-            setSelectedCategory('all');
+        if (category) {
+            fetchArticles();
         }
-    }, [location.pathname]);
-
-    useEffect(() => {
-        fetchArticles();
-    }, []);
-
-    useEffect(() => {
-        if (selectedCategory === 'all') {
-            setFilteredArticles(articles);
-        } else {
-            setFilteredArticles(articles.filter(a => a.category === selectedCategory));
-        }
-    }, [selectedCategory, articles]);
+    }, [category]);
 
     const fetchArticles = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/content?type=article&status=published`);
+            const response = await fetch(`${API_BASE_URL}/api/content?type=article&category=${category}&status=published`);
             if (response.ok) {
                 const data = await response.json();
                 setArticles(data);
-                setFilteredArticles(data);
             }
         } catch (error) {
             console.error('Error fetching articles:', error);
         } finally {
             setIsLoading(false);
-        }
-    };
-
-    const handleArticleClick = async (article: Article) => {
-        try {
-            // Unoptimistic UI: Show modal immediately with available info? 
-            // Better: fetch body first then show, or show skeleton? 
-            // Let's fetch quickly.
-            const response = await fetch(`${API_BASE_URL}/api/content/slug/${article.slug}`);
-            if (response.ok) {
-                const fullArticle = await response.json();
-                setSelectedArticle(fullArticle);
-                setIsModalOpen(true);
-            }
-        } catch (error) {
-            console.error("Error loading full article", error);
         }
     };
 
@@ -101,19 +58,38 @@ const BlogPage: React.FC = () => {
         });
     };
 
-    const getCategoryLabel = (category: string) => {
+    const getCategoryLabel = (cat: string) => {
         const labels: Record<string, string> = {
             yoga: t('blog.categories.yoga', 'Yoga'),
-            therapy: t('blog.categories.therapy', 'Terapias')
+            therapy: t('blog.categories.therapy', 'Terapias'),
+            general: t('blog.categories.general', 'General')
         };
-        return labels[category] || category;
+        return labels[cat] || cat;
+    };
+
+    const getCategoryTitle = () => {
+        const titles: Record<string, string> = {
+            yoga: t('blog.category_pages.yoga.title', 'Blog de Yoga'),
+            therapy: t('blog.category_pages.therapy.title', 'Blog de Terapias'),
+            general: t('blog.category_pages.general.title', 'Blog General')
+        };
+        return titles[category || ''] || t('blog.title', 'Blog');
+    };
+
+    const getCategorySubtitle = () => {
+        const subtitles: Record<string, string> = {
+            yoga: t('blog.category_pages.yoga.subtitle', 'Artículos, consejos y reflexiones sobre la práctica del yoga'),
+            therapy: t('blog.category_pages.therapy.subtitle', 'Artículos sobre terapias holísticas, masajes y bienestar'),
+            general: t('blog.category_pages.general.subtitle', 'Artículos sobre bienestar y vida consciente')
+        };
+        return subtitles[category || ''] || t('blog.subtitle', 'Artículos sobre yoga, meditación y bienestar');
     };
 
     return (
         <div className="font-body text-bark min-h-screen flex flex-col relative bg-bone">
             <Helmet>
-                <title>{t('blog.seo.title', 'Blog | Arunachala Yoga')}</title>
-                <meta name="description" content={t('blog.seo.description', 'Artículos sobre yoga, meditación y bienestar')} />
+                <title>{getCategoryTitle()} | Arunachala Yoga</title>
+                <meta name="description" content={getCategorySubtitle()} />
             </Helmet>
 
             <Header />
@@ -126,45 +102,31 @@ const BlogPage: React.FC = () => {
 
                     {/* Hero Section */}
                     <div className="text-center mb-16">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="inline-block mb-4"
+                        >
+                            <span className="bg-forest text-white px-6 py-2 rounded-full text-sm font-headers uppercase tracking-wider">
+                                {getCategoryLabel(category || '')}
+                            </span>
+                        </motion.div>
                         <motion.h1
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
                             className="text-4xl md:text-6xl font-headers text-forest mb-4 uppercase tracking-wider pt-12 md:pt-0"
                         >
-                            {selectedCategory === 'yoga'
-                                ? t('blog.yoga_title', 'Blog de Yoga')
-                                : selectedCategory === 'therapy'
-                                    ? t('blog.therapy_title', 'Blog de Terapias')
-                                    : t('blog.title', 'Blog')}
+                            {getCategoryTitle()}
                         </motion.h1>
                         <motion.p
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 }}
-                            className="text-xl text-bark/70 font-light"
+                            transition={{ delay: 0.2 }}
+                            className="text-xl text-bark/70 font-light max-w-3xl mx-auto"
                         >
-                            {selectedCategory === 'yoga'
-                                ? t('blog.yoga_subtitle', 'Artículos, consejos y reflexiones sobre la práctica del yoga')
-                                : selectedCategory === 'therapy'
-                                    ? t('blog.therapy_subtitle', 'Artículos sobre terapias holísticas, masajes y bienestar')
-                                    : t('blog.subtitle', 'Artículos sobre yoga, meditación y bienestar')}
+                            {getCategorySubtitle()}
                         </motion.p>
-                    </div>
-
-                    {/* Category Filter */}
-                    <div className="flex justify-center gap-4 mb-12 flex-wrap">
-                        {['all', 'yoga', 'therapy'].map((category) => (
-                            <button
-                                key={category}
-                                onClick={() => setSelectedCategory(category)}
-                                className={`px-6 py-2 rounded-full font-headers tracking-widest uppercase text-sm transition-all duration-300 ${selectedCategory === category
-                                    ? 'bg-forest text-white shadow-lg'
-                                    : 'bg-white text-bark border border-bark/20 hover:border-forest hover:text-forest'
-                                    }`}
-                            >
-                                {category === 'all' ? t('blog.all', 'Todos') : getCategoryLabel(category)}
-                            </button>
-                        ))}
                     </div>
 
                     {/* Articles Grid */}
@@ -172,19 +134,19 @@ const BlogPage: React.FC = () => {
                         <div className="text-center py-20">
                             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-forest"></div>
                         </div>
-                    ) : filteredArticles.length === 0 ? (
+                    ) : articles.length === 0 ? (
                         <div className="text-center py-20">
                             <p className="text-xl text-bark/60">{t('blog.no_articles', 'No hay artículos disponibles')}</p>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {filteredArticles.map((article, index) => (
+                            {articles.map((article, index) => (
                                 <motion.article
                                     key={article.id}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.1 }}
-                                    onClick={() => handleArticleClick(article)}
+                                    onClick={() => navigate(`/blog/${article.slug}`)}
                                     className="bg-white rounded-[2rem] overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group"
                                 >
                                     {/* Thumbnail */}
@@ -200,10 +162,6 @@ const BlogPage: React.FC = () => {
                                                 <TagIcon className="w-16 h-16 text-forest/30" />
                                             </div>
                                         )}
-                                        {/* Category Badge */}
-                                        <div className="absolute top-4 right-4 bg-forest/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-headers uppercase tracking-wider">
-                                            {getCategoryLabel(article.category)}
-                                        </div>
                                     </div>
 
                                     {/* Content */}
@@ -244,15 +202,9 @@ const BlogPage: React.FC = () => {
                 </div>
             </main>
 
-            <ArticleModal
-                article={selectedArticle}
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-            />
-
             <Footer />
         </div>
     );
 };
 
-export default BlogPage;
+export default BlogCategoryPage;

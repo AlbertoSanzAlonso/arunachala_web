@@ -75,6 +75,11 @@ async def create_massage(
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
+    # Check if massage with same name already exists
+    existing = db.query(MassageType).filter(MassageType.name == name).first()
+    if existing:
+        raise HTTPException(status_code=400, detail=f"Un masaje con el nombre '{name}' ya existe")
+    
     image_url = None
     if image:
         image_url = save_upload_file(image, subdirectory="treatments/massages")
@@ -92,9 +97,17 @@ async def create_massage(
         image_url=image_url,
         translations=json.loads(translations) if translations else None
     )
-    db.add(db_massage)
-    db.commit()
-    db.refresh(db_massage)
+    
+    try:
+        db.add(db_massage)
+        db.commit()
+        db.refresh(db_massage)
+    except Exception as e:
+        db.rollback()
+        # Delete uploaded image if commit failed
+        if image_url:
+            delete_file(image_url)
+        raise HTTPException(status_code=400, detail=f"Error al crear el masaje: {str(e)}")
     
     # Notify n8n for RAG update
     await notify_n8n_content_change(db_massage.id, "massage", "create")
@@ -228,6 +241,11 @@ async def create_therapy(
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
+    # Check if therapy with same name already exists
+    existing = db.query(TherapyType).filter(TherapyType.name == name).first()
+    if existing:
+        raise HTTPException(status_code=400, detail=f"Una terapia con el nombre '{name}' ya existe")
+    
     image_url = None
     if image:
         image_url = save_upload_file(image, subdirectory="treatments/therapies")
@@ -245,9 +263,17 @@ async def create_therapy(
         image_url=image_url,
         translations=json.loads(translations) if translations else None
     )
-    db.add(db_therapy)
-    db.commit()
-    db.refresh(db_therapy)
+    
+    try:
+        db.add(db_therapy)
+        db.commit()
+        db.refresh(db_therapy)
+    except Exception as e:
+        db.rollback()
+        # Delete uploaded image if commit failed
+        if image_url:
+            delete_file(image_url)
+        raise HTTPException(status_code=400, detail=f"Error al crear la terapia: {str(e)}")
     
     # Notify n8n for RAG update
     await notify_n8n_content_change(db_therapy.id, "therapy", "create")
