@@ -8,6 +8,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
+import { getImageUrl } from '../utils/imageUtils';
 
 interface Article {
     id: number;
@@ -167,7 +168,7 @@ const BlogDetailPage: React.FC = () => {
                             className="mb-12 rounded-[2rem] overflow-hidden shadow-xl"
                         >
                             <img
-                                src={article.thumbnail_url.startsWith('http') ? article.thumbnail_url : `${API_BASE_URL}${article.thumbnail_url}`}
+                                src={getImageUrl(article.thumbnail_url)}
                                 alt={translatedTitle}
                                 className="w-full h-auto"
                             />
@@ -236,7 +237,7 @@ const BlogDetailPage: React.FC = () => {
                                         <div className="h-32 bg-forest/10 overflow-hidden">
                                             {related.thumbnail_url ? (
                                                 <img
-                                                    src={related.thumbnail_url.startsWith('http') ? related.thumbnail_url : `${API_BASE_URL}${related.thumbnail_url}`}
+                                                    src={getImageUrl(related.thumbnail_url)}
                                                     alt={getTranslated(related, 'title', i18n.language)}
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                                 />

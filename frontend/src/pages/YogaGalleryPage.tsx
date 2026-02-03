@@ -7,6 +7,7 @@ import BackButton from '../components/BackButton';
 import FadeInSection from '../components/FadeInSection';
 import { API_BASE_URL } from '../config';
 import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { getImageUrl } from '../utils/imageUtils';
 
 const YogaGalleryPage: React.FC = () => {
     const { t } = useTranslation();
@@ -63,11 +64,12 @@ const YogaGalleryPage: React.FC = () => {
             <Header />
 
             <main className="flex-grow">
-                <section className="py-12 md:py-20 px-4 md:px-8 max-w-7xl mx-auto">
-                    <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6 text-center md:text-left">
-                        <BackButton to="/yoga" label={t('gallery.yoga.back')} />
-                        <h1 className="text-4xl md:text-6xl font-headers text-forest flex-grow uppercase">{t('gallery.yoga.title')}</h1>
-                        <div className="w-10 hidden md:block"></div>
+                <section className="py-12 md:py-20 px-4 md:px-8 max-w-7xl mx-auto relative">
+                    <div className="flex flex-col md:flex-row items-center justify-center mb-12 gap-6 text-center">
+                        <div className="md:absolute md:top-0 md:left-2 flex items-center h-full">
+                            <BackButton to="/clases-de-yoga" label={t('gallery.yoga.back')} className="mb-0" />
+                        </div>
+                        <h1 className="text-4xl md:text-6xl font-headers text-forest uppercase">{t('gallery.yoga.title')}</h1>
                     </div>
 
                     <FadeInSection>
@@ -94,7 +96,7 @@ const YogaGalleryPage: React.FC = () => {
                                         className="group relative aspect-square md:aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500"
                                     >
                                         <img
-                                            src={`${API_BASE_URL}${image.url}`}
+                                            src={getImageUrl(image.url)}
                                             alt={image.alt_text || 'Yoga practice'}
                                             className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                                             loading="lazy"
@@ -147,7 +149,7 @@ const YogaGalleryPage: React.FC = () => {
                             onClick={(e) => e.stopPropagation()}
                         >
                             <img
-                                src={`${API_BASE_URL}${images[selectedImageIndex].url}`}
+                                src={getImageUrl(images[selectedImageIndex].url)}
                                 alt={images[selectedImageIndex].alt_text || 'Yoga Gallery'}
                                 className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl border border-white/10"
                             />

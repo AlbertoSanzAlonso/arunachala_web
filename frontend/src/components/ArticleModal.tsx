@@ -4,6 +4,7 @@ import { XMarkIcon, CalendarIcon, TagIcon } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from '../config';
 import { useTranslation } from 'react-i18next';
 import { getTranslated } from '../utils/translate';
+import { getImageUrl } from '../utils/imageUtils';
 
 interface Article {
     id: number;
@@ -94,7 +95,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
                                 <div className="h-64 md:h-80 bg-forest/10 relative overflow-hidden">
                                     {article.thumbnail_url ? (
                                         <img
-                                            src={article.thumbnail_url.startsWith('http') ? article.thumbnail_url : `${API_BASE_URL}${article.thumbnail_url}`}
+                                            src={getImageUrl(article.thumbnail_url)}
                                             alt={translatedTitle}
                                             className="w-full h-full object-cover"
                                         />

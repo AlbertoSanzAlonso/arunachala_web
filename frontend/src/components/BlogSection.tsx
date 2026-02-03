@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { CalendarIcon, TagIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
+import { getImageUrl } from '../utils/imageUtils';
 import ArticleModal from './ArticleModal';
 
 interface Article {
@@ -162,7 +163,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                     <div className="h-48 bg-forest/10 overflow-hidden relative">
                                         {article.thumbnail_url ? (
                                             <img
-                                                src={article.thumbnail_url.startsWith('http') ? article.thumbnail_url : `${API_BASE_URL}${article.thumbnail_url}`}
+                                                src={getImageUrl(article.thumbnail_url)}
                                                 alt={getTranslated(article, 'title', i18n.language)}
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                             />
