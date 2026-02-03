@@ -12,14 +12,6 @@ interface ClassType {
     translations?: any;
 }
 
-interface ScheduleItem {
-    day: string;
-    time: string;
-    duration: string;
-    note?: string;
-    classInfo: ClassType;
-}
-
 const YogaSchedule: React.FC = () => {
     const { t, i18n } = useTranslation();
     const DAYS = React.useMemo(() => [

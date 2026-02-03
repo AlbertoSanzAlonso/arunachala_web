@@ -60,11 +60,11 @@ const Header: React.FC = () => {
                 className={`fixed top-0 right-0 h-full w-full md:w-96 z-40 bg-bark/95 backdrop-blur-md shadow-2xl transform transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col items-center justify-center`}
             >
                 <nav className="flex flex-col gap-10 text-center">
-                    <Link to="/nuestro-espacio" onClick={handleLinkClick} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.space', 'Nuestro Espacio')}</Link>
-                    <Link to="/blog" onClick={handleLinkClick} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">Blog</Link>
-                    <Link to="/actividades" onClick={handleLinkClick} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.activities')}</Link>
-                    <Link to="/#about" onClick={handleLinkClick} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.about')}</Link>
-                    <button onClick={() => { setIsMenuOpen(false); window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.contact')}</button>
+                    <button onClick={() => handleNavigation('/nuestro-espacio')} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.space', 'Nuestro Espacio')}</button>
+                    <button onClick={() => handleNavigation('/blog')} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">Blog</button>
+                    <button onClick={() => handleNavigation('/actividades')} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.activities')}</button>
+                    <button onClick={() => handleNavigation('/quienes-somos')} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.about')}</button>
+                    <button onClick={() => handleNavigation('/contacto')} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.contact')}</button>
 
                     {/* Mobile Language Switcher */}
                     <div className="flex gap-6 mt-8 md:hidden">

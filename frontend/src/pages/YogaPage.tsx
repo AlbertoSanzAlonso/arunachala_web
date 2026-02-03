@@ -46,7 +46,6 @@ const YogaPage: React.FC = () => {
     }, []);
 
     const scrollToSchedule = () => scheduleRef.current?.scrollIntoView({ behavior: 'smooth' });
-    const scrollToGallery = () => galleryRef.current?.scrollIntoView({ behavior: 'smooth' });
     const scrollToBlog = () => blogRef.current?.scrollIntoView({ behavior: 'smooth' });
 
     useEffect(() => {
@@ -167,7 +166,7 @@ const YogaPage: React.FC = () => {
                                 <ImageSlider images={galleryImages}>
                                     <div className="absolute bottom-5 right-5 md:bottom-8 md:right-8 pointer-events-auto z-30">
                                         <button
-                                            onClick={() => navigate('/galeria/yoga')}
+                                            onClick={() => navigate('/galeria/clases-de-yoga')}
                                             className="px-6 py-2 md:px-8 md:py-3 bg-black/30 hover:bg-white backdrop-blur-md border border-white/30 rounded-full text-white hover:text-forest font-headers tracking-wide transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2 group text-sm md:text-base uppercase"
                                         >
                                             {t('yoga.common.view_all_gallery')} <span className="text-xl leading-none mb-1">→</span>

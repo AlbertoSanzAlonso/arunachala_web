@@ -32,6 +32,8 @@ const TreatmentsManager = lazy(() => import('./pages/dashboard/TreatmentsManager
 const UserManager = lazy(() => import('./pages/dashboard/UserManager'));
 const AgentControl = lazy(() => import('./pages/dashboard/AgentControl'));
 const ActivityManager = lazy(() => import('./pages/dashboard/ActivityManager'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
 const ChatBot = lazy(() => import('./components/ChatBot'));
 
 const AppContent = () => {
@@ -51,13 +53,15 @@ const AppContent = () => {
             <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<HomePage />} />
-                <Route path="/yoga" element={<YogaPage />} />
-                <Route path="/masajes-y-terapias" element={<TherapiesPage />} />
+                <Route path="/clases-de-yoga" element={<YogaPage />} />
+                <Route path="/terapias-y-masajes" element={<TherapiesPage />} />
                 <Route path="/blog" element={<BlogPage />} />
-                <Route path="/galeria/yoga" element={<YogaGalleryPage />} />
-                <Route path="/galeria/masajes-y-terapias" element={<TherapiesGalleryPage />} />
+                <Route path="/galeria/clases-de-yoga" element={<YogaGalleryPage />} />
+                <Route path="/galeria/terapias-y-masajes" element={<TherapiesGalleryPage />} />
                 <Route path="/actividades" element={<ActivitiesPage />} />
                 <Route path="/nuestro-espacio" element={<OurSpacePage />} />
+                <Route path="/quienes-somos" element={<AboutPage />} />
+                <Route path="/contacto" element={<ContactPage />} />
 
                 {/* Auth Route */}
                 <Route path="/login" element={<LoginPage />} />

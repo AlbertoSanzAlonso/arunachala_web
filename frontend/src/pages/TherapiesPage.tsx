@@ -380,7 +380,7 @@ const TherapiesPage: React.FC = () => {
                                 <ImageSlider images={galleryImages}>
                                     <div className="absolute bottom-8 right-8 z-30 pointer-events-auto">
                                         <button
-                                            onClick={() => navigate('/galeria/masajes-y-terapias')}
+                                            onClick={() => navigate('/galeria/terapias-y-masajes')}
                                             className="px-8 py-3 bg-black/30 hover:bg-white backdrop-blur-md border border-white/30 rounded-full text-white hover:text-forest font-headers tracking-wide transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2 group uppercase"
                                         >
                                             {t('yoga.common.view_all_gallery')} <span className="text-xl leading-none mb-1">→</span>

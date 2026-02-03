@@ -219,6 +219,78 @@
         "description_1": "At Arunachala, we have created an environment specifically designed for calm and introspection. Our center is conceived not only as a place to practice yoga, but as a sanctuary to disconnect from outside noise and reconnect with yourself.",
         "description_2": "We have a diaphanous main room, bathed in natural light and equipped with high quality organic materials. The atmosphere, impregnated with soft aromas and silence, invites deep and meditative practice from the first moment you cross the door.",
         "no_images": "Images coming soon",
-        "location_title": "How to get there"
+        "location_title": "How to get there",
+        "transport": {
+            "tram_label": "Tram",
+            "tram_details": "Lines T1 – T2 (El Pedró)",
+            "bus_label": "Bus",
+            "bus_details": "Bus 57, 68, 94 or 95",
+            "metro_label": "Metro",
+            "metro_details": "Metro: Line 5 (Cornellà Centre)"
+        },
+        "illustrative_map_label": "Reference Map",
+        "open_gps": "Open in GPS"
+    },
+    "about": {
+        "title": "About Us",
+        "subtitle": "Susana Pérez Gil",
+        "mission": "Accompanying your path towards integral well-being",
+        "intro": "My name is Susana Pérez Gil. My mission for more than 25 years has been to accompany people on their path towards integral well-being, consciously integrating body, mind, and the emotional dimension.",
+        "path_title": "My Path: 25 years of learning and evolution",
+        "path_p1": "What began as a personal search for physical health and mental stability more than two decades ago was transformed into a deep journey of self-knowledge. My connection with India and its rich spiritual culture was the engine that impelled me to explore Yoga not only as exercise, but as a true leap in consciousness.",
+        "specialties_title": "Training and Specialties: The art of listening to the body",
+        "specialties_intro": "To offer you complete care, I have specialized in various disciplines that combine the physical with the energetic:",
+        "cat_manual": "Manual Therapies",
+        "cat_manual_desc": "Expert in Chiromassage, Lymphatic Drainage, Reflexology, and Acupressure.",
+        "cat_subtle": "Subtle Techniques",
+        "cat_subtle_desc": "Practitioner of Metamorphic Technique and Reiki, key tools for emotional balance.",
+        "cat_yoga": "Yoga Instruction",
+        "cat_yoga_desc": "Certified Yoga Teacher, with specific training to adapt the practice to different life stages.",
+        "approach": "My approach unites the benefits of massage with the depth of Yoga, using Sanskrit and mantras as a sacred bridge between breath and consciousness.",
+        "arunachala_title": "The Birth of Aruṇāchala",
+        "arunachala_p1": "The name of this space was born after a transformative experience on the Holy Mountain of Aruṇāchala (Tiruvannamalai, India). That ascent marked a before and after, giving identity to my dream: to create a refuge based on respect, active listening, and absolute presence.",
+        "quote": "\"A place where every practice and every session is an invitation to return to oneself.\"",
+        "cta_title": "How can I accompany you?",
+        "cta_p1": "At Yoga and Therapies Aruṇāchala, I offer you a well-being path designed to your measure. If you are looking for a space for conscious care where you can rediscover yourself, this is your place.",
+        "mantra": "Om Namaḥ Śivaya",
+        "seo": {
+            "title": "Susana Pérez Gil | About Us | Arunachala Yoga",
+            "description": "Meet Susana Pérez Gil, founder of Arunachala. Over 25 years of experience in Yoga, massage, and holistic therapies in Cornellà."
+        }
+    },
+    "contact_page": {
+        "title": "Contact",
+        "subtitle": "Have any questions? We are here to help you",
+        "form": {
+            "name": "Name",
+            "email": "Email",
+            "phone": "Phone",
+            "subject": "Subject",
+            "message": "Message",
+            "send": "Send Message",
+            "sending": "Sending...",
+            "success": "Message sent correctly. We will reply soon.",
+            "error": "There was an error sending the message. Please try again.",
+            "placeholders": {
+                "name": "Your name",
+                "email": "you@email.com",
+                "phone": "Your 9 digits",
+                "subject": "Reason for your message",
+                "message": "Tell us how we can help you..."
+            }
+        },
+        "info": {
+            "title": "Contact Information",
+            "address": "Carrer del Bruc, 44, 08940 Cornellà de Llobregat, Barcelona",
+            "phone_label": "Phone / WhatsApp",
+            "email_label": "Email",
+            "hours_label": "Hours",
+            "hours_desc": "Check our class and activity schedule.",
+            "quote": "A place where every practice and every session are an invitation to return to oneself."
+        },
+        "seo": {
+            "title": "Contact | Arunachala Yoga & Therapies Cornellà",
+            "description": "Contact Arunachala Yoga in Cornellà. Book your yoga class or therapy session. We are at Carrer del Bruc 44."
+        }
     }
 }

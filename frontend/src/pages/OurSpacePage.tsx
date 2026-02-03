@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeftIcon, ChevronRightIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
+import illustrativeMap from '../assets/images/mapa_ilustrativo.webp';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
@@ -17,7 +17,6 @@ interface GalleryImage {
 
 const OurSpacePage: React.FC = () => {
     const { t } = useTranslation();
-    const navigate = useNavigate();
     const [mainImage, setMainImage] = useState<GalleryImage | null>(null);
     const [sliderImages, setSliderImages] = useState<GalleryImage[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -44,10 +43,10 @@ const OurSpacePage: React.FC = () => {
         fetchImages();
     }, []);
 
-    const nextSlide = () => {
+    const nextSlide = useCallback(() => {
         if (sliderImages.length === 0) return;
         setCurrentIndex((prev) => (prev === sliderImages.length - 1 ? 0 : prev + 1));
-    };
+    }, [sliderImages.length]);
 
     const prevSlide = () => {
         if (sliderImages.length === 0) return;
@@ -58,7 +57,7 @@ const OurSpacePage: React.FC = () => {
         if (sliderImages.length <= 1) return;
         const interval = setInterval(nextSlide, 5000);
         return () => clearInterval(interval);
-    }, [sliderImages.length]);
+    }, [sliderImages.length, nextSlide]);
 
     return (
         <div className="font-body text-bark min-h-screen flex flex-col relative">
@@ -183,20 +182,60 @@ const OurSpacePage: React.FC = () => {
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="bg-white/50 p-4 rounded-2xl shadow-lg border border-white"
+                        className="bg-white/50 p-6 md:p-10 rounded-2xl shadow-lg border border-white"
                     >
-                        <h3 className="text-2xl font-headers text-forest text-center mb-6">{t('space.location_title', 'Cómo llegar')}</h3>
-                        <div className="w-full h-[400px] rounded-xl overflow-hidden bg-gray-200">
-                            <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2994.417382029013!2d2.0716613!3d41.3533816!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12a49954a5c54c33%3A0x1d3680236315f385!2sCarrer%20del%20Bruc%2C%2044%2C%2008940%20Cornell%C3%A0%20de%20Llobregat%2C%20Barcelona!5e0!3m2!1ses!2ses!4v1707000000000!5m2!1ses!2ses"
-                                width="100%"
-                                height="100%"
-                                style={{ border: 0 }}
-                                allowFullScreen
-                                loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
-                                title="Arunachala Location"
-                            ></iframe>
+                        <h3 className="text-3xl font-headers text-forest text-center mb-8">{t('space.location_title', 'Cómo llegar')}</h3>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 text-center">
+                            <div className="space-y-2 bg-bone/30 p-4 rounded-xl">
+                                <h4 className="font-headers text-matcha text-lg uppercase tracking-wider">{t('space.transport.tram_label')}</h4>
+                                <p className="text-bark/80">{t('space.transport.tram_details')}</p>
+                            </div>
+                            <div className="space-y-2 bg-bone/30 p-4 rounded-xl">
+                                <h4 className="font-headers text-matcha text-lg uppercase tracking-wider">{t('space.transport.bus_label')}</h4>
+                                <p className="text-bark/80">{t('space.transport.bus_details')}</p>
+                            </div>
+                            <div className="space-y-2 bg-bone/30 p-4 rounded-xl">
+                                <h4 className="font-headers text-matcha text-lg uppercase tracking-wider">{t('space.transport.metro_label')}</h4>
+                                <p className="text-bark/80">{t('space.transport.metro_details')}</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+                            {/* Illustrative Map */}
+                            <div className="relative group overflow-hidden rounded-xl border border-bone/50 shadow-md">
+                                <img
+                                    src={illustrativeMap}
+                                    alt="Mapa ilustrativo"
+                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                />
+                                <div className="absolute inset-x-0 bottom-0 bg-bark/60 backdrop-blur-sm p-3 text-white text-center font-headers text-sm uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                                    {t('space.illustrative_map_label', 'Mapa de referencia')}
+                                </div>
+                            </div>
+
+                            {/* Interactive Map */}
+                            <div className="w-full h-[300px] lg:h-auto rounded-xl overflow-hidden bg-gray-200 shadow-md border border-bone/50 relative group/map">
+                                <iframe
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2994.417382029013!2d2.0716613!3d41.3533816!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12a49954a5c54c33%3A0x1d3680236315f385!2sCarrer%20del%20Bruc%2C%2044%2C%2008940%20Cornell%C3%A0%20de%20Llobregat%2C%20Barcelona!5e0!3m2!1ses!2ses!4v1707000000000!5m2!1ses!2ses"
+                                    width="100%"
+                                    height="100%"
+                                    style={{ border: 0 }}
+                                    allowFullScreen
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                    title="Arunachala Location"
+                                ></iframe>
+                                <a
+                                    href="https://www.google.com/maps/dir/?api=1&destination=Arunachala+Yoga+Bruc+44+Cornella"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="absolute bottom-4 left-1/2 -translate-x-1/2 px-6 py-2 bg-forest text-white rounded-full font-headers text-sm tracking-widest hover:bg-matcha transition-all duration-300 shadow-xl flex items-center gap-2 opacity-90 hover:opacity-100 hover:scale-105 z-10"
+                                >
+                                    <MapPinIcon className="w-4 h-4" />
+                                    {t('space.open_gps', 'Abrir en GPS')}
+                                </a>
+                            </div>
                         </div>
                     </motion.div>
                 </div>

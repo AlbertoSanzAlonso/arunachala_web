@@ -113,7 +113,7 @@ const HomePage: React.FC = () => {
                     {/* Navigation Buttons */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-12 w-full text-center">
                         <Link
-                            to="/yoga"
+                            to="/clases-de-yoga"
                             className="group cursor-pointer p-6 md:p-8 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-bone/50"
                         >
                             <img src={omSymbol} alt="" aria-hidden="true" className="h-14 md:h-20 w-auto mb-3 md:mb-4 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
@@ -124,7 +124,7 @@ const HomePage: React.FC = () => {
                         </Link>
 
                         <Link
-                            to="/masajes-y-terapias"
+                            to="/terapias-y-masajes"
                             className="group cursor-pointer p-6 md:p-8 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-bone/50"
                         >
                             <img src={lotusFlower} alt="" aria-hidden="true" className="h-14 md:h-20 w-auto mb-3 md:mb-4 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />

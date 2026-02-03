@@ -219,6 +219,78 @@
         "description_1": "A Arunachala, hem creat un entorn dissenyat específicament per a la calma i la introspecció. El nostre centre està concebut no només com un lloc per practicar ioga, sinó com un santuari on desconnectar del soroll exterior i reconnectar amb tu mateix.",
         "description_2": "Disposem d'una sala principal diàfana, banyada per llum natural i equipada amb materials orgànics d'alta qualitat. L'ambient, impregnat d'aromes suaus i silenci, convida a la pràctica profunda i meditativa des del primer moment en què creues la porta.",
         "no_images": "Imatges properament",
-        "location_title": "Com arribar"
+        "location_title": "Com arribar",
+        "transport": {
+            "tram_label": "Tramvia",
+            "tram_details": "Línies T1 – T2 (El Pedró)",
+            "bus_label": "Autobús",
+            "bus_details": "Bus 57, 68, 94 o 95",
+            "metro_label": "Metro",
+            "metro_details": "Metro: Línia 5 (Cornellà Centre)"
+        },
+        "illustrative_map_label": "Mapa de referència",
+        "open_gps": "Obrir en GPS"
+    },
+    "about": {
+        "title": "Sobre Nosaltres",
+        "subtitle": "Susana Pérez Gil",
+        "mission": "Acompanyant el teu camí cap al benestar integral",
+        "intro": "Em dic Susana Pérez Gil. La meva missió des de fa més de 25 anys és acompanyar persones en el seu camí cap al benestar integral, integrant de forma conscient el cos, la ment i la dimensió emocional.",
+        "path_title": "El meu camí: 25 anys d'aprenentatge i evolució",
+        "path_p1": "El que va començar com una recerca personal de salut física i estabilitat mental fa més de dues dècades, es va transformar en un profund viatge d'autoconeixement. La meva connexió amb l'Índia i la seva rica cultura espiritual va ser el motor que em va impulsar a explorar el Ioga no només com a exercici, sinó com un veritable salt de consciència.",
+        "specialties_title": "Formació i Especialitats: L'art d'escoltar el cos",
+        "specialties_intro": "Per oferir-te una cura completa, m'he especialitzat en diverses disciplines que combinen el físic amb l'energètic:",
+        "cat_manual": "Teràpies Manuals",
+        "cat_manual_desc": "Experta en Quiromassatge, Drenatge Limfàtic, Reflexologia i Digitopressió.",
+        "cat_subtle": "Tècniques Subtils",
+        "cat_subtle_desc": "Practicant de Tècnica Metamòrfica i Reiki, eines clau per a l'equilibri emocional.",
+        "cat_yoga": "Instrucció de Ioga",
+        "cat_yoga_desc": "Professora de Ioga titulada, amb formació específica per adaptar la pràctica a diferents etapes vitals.",
+        "approach": "El meu enfocament uneix els beneficis del massatge amb la profunditat del Ioga, utilitzant el sànscrit i els mantres com un pont sagrat entre la respiració i la consciència.",
+        "arunachala_title": "El naixement d'Aruṇāchala",
+        "arunachala_p1": "El nom d'aquest espai va néixer després d'una experiència transformadora a la Muntanya Sagrada d'Aruṇāchala (Tiruvannamalai, Índia). Aquell ascens va marcar un abans i un després, donant identitat al meu somni: crear un refugi basat en el respecte, l'escolta activa i la presència absoluta.",
+        "quote": "\"Un lloc on cada pràctica i cada sessió són una invitació a tornar a un mateix.\"",
+        "cta_title": "Com puc acompanyar-te?",
+        "cta_p1": "A Ioga i Teràpies Aruṇāchala, t'ofereixo un camí de benestar dissenyat a la teva mida. Si busques un espai de cura conscient on retrobar-te, aquest és el teu lloc.",
+        "mantra": "Om Namaḥ Śivaya",
+        "seo": {
+            "title": "Susana Pérez Gil | Sobre Nosaltres | Ioga Arunachala",
+            "description": "Coneix la Susana Pérez Gil, fundadora d'Arunachala. Més de 25 anys d'experiència en Ioga, massatges i teràpies holístiques a Cornellà."
+        }
+    },
+    "contact_page": {
+        "title": "Contacte",
+        "subtitle": "Tens algun dubte? Som aquí per ajudar-te",
+        "form": {
+            "name": "Nom",
+            "email": "Email",
+            "phone": "Telèfon",
+            "subject": "Assumpte",
+            "message": "Missatge",
+            "send": "Enviar Missatge",
+            "sending": "Enviant...",
+            "success": "Missatge enviat correctament. Et respondrem aviat.",
+            "error": "Hi ha hagut un error en enviar el missatge. Si us plau, torna-ho a intentar.",
+            "placeholders": {
+                "name": "El teu nom",
+                "email": "tu@email.com",
+                "phone": "Els teus 9 dígits",
+                "subject": "Motiu del teu missatge",
+                "message": "Explica'ns en què et podem ajudar..."
+            }
+        },
+        "info": {
+            "title": "Informació de Contacte",
+            "address": "Carrer del Bruc, 44, 08940 Cornellà de Llobregat, Barcelona",
+            "phone_label": "Telèfon / WhatsApp",
+            "email_label": "Email",
+            "hours_label": "Horari",
+            "hours_desc": "Consulta el nostre horari de classes i activitats.",
+            "quote": "Un lloc on cada pràctica i cada sessió són una invitació a tornar a un mateix."
+        },
+        "seo": {
+            "title": "Contacte | Ioga i Teràpies Arunachala Cornellà",
+            "description": "Contacta amb Arunachala Ioga a Cornellà. Reserva la teva classe de ioga o sessió de teràpia. Som al Carrer del Bruc 44."
+        }
     }
 }

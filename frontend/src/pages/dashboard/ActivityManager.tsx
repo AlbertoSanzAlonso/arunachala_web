@@ -4,7 +4,6 @@ import Cropper from 'react-easy-crop';
 import { Point, Area } from 'react-easy-crop/types';
 import getCroppedImg from '../../utils/cropImage';
 import { API_BASE_URL } from '../../config';
-import lotusImage from '../../assets/images/lotus_flower.png';
 
 interface Activity {
     id: number;
