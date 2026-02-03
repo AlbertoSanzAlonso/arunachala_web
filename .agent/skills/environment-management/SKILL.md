@@ -53,3 +53,22 @@ npm install
 1.  **Do NOT create `backend/venv`**: If you see it, it is likely invalid or a mistake. Always default to the root `venv`.
 2.  **AbsolutePath Execution**: When in doubt, use absolute paths to the python executable in the root venv to ensure you are using the correct environment.
 3.  **Docker Conflicts**: The database runs in Docker. Ensure ports (usually 5432) are free or Docker is running correctly if DB connection fails.
+
+## 🔧 Environment Configuration (.env files)
+
+There are **EXACTLY TWO** required `.env` files in the project. Do NOT create one in the root.
+
+### 1. Backend Configuration (`backend/.env`)
+Used by FastAPI. Must contain:
+- `DATABASE_URL=postgresql://arunachala:arunachala1234@localhost:5432/arunachala_db` (Local development)
+- `SECRET_KEY`: For JWT tokens.
+- `ALGORITHM`: Encryption algorithm (e.g., HS256).
+
+### 2. Infrastructure Configuration (`infraestructura/.env`)
+Located in `root/infraestructura/`.
+Must contain:
+- `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`: For creating the DB container.
+- `NOCODB_PORT`: Port for the NocoDB dashboard.
+- `N8N_ENCRYPTION_KEY`, `GENERIC_TIMEZONE`: For n8n automation.
+
+**⚠️ IMPORTANT**: Never commit these files to Git. Use `.env.example` as a template.

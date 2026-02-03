@@ -1,14 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import {
     PencilSquareIcon,
     TrashIcon,
     PlusIcon,
-    DocumentTextIcon,
-    MusicalNoteIcon,
     MagnifyingGlassIcon,
     ChevronUpIcon,
     ChevronDownIcon,
@@ -17,7 +14,6 @@ import {
     SparklesIcon
 } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from '../../config';
-import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../hooks/useToast';
 import ToastNotification from '../../components/ToastNotification';
 import RichTextEditor from '../../components/RichTextEditor';
@@ -44,8 +40,6 @@ const TABS = [
 ];
 
 export default function ContentManager() {
-    const { t } = useTranslation();
-    const { login } = useAuth(); // Using context just in case we need auth actions
     const toast = useToast();
     const [contents, setContents] = useState<Content[]>([]);
     const [isLoading, setIsLoading] = useState(true);

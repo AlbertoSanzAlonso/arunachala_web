@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -32,13 +32,21 @@ const BlogDetailPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
 
-    useEffect(() => {
-        if (slug) {
-            fetchArticle();
+    const fetchRelatedArticles = useCallback(async (category: string, currentId: number) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/content?type=article&category=${category}&status=published`);
+            if (response.ok) {
+                const data = await response.json();
+                // Filter out current article and limit to 3
+                const related = data.filter((a: Article) => a.id !== currentId).slice(0, 3);
+                setRelatedArticles(related);
+            }
+        } catch (error) {
+            console.error('Error fetching related articles:', error);
         }
-    }, [slug]);
+    }, []);
 
-    const fetchArticle = async () => {
+    const fetchArticle = useCallback(async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/content/slug/${slug}`);
             if (response.ok) {
@@ -55,21 +63,13 @@ const BlogDetailPage: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [slug, navigate, fetchRelatedArticles]);
 
-    const fetchRelatedArticles = async (category: string, currentId: number) => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/content?type=article&category=${category}&status=published`);
-            if (response.ok) {
-                const data = await response.json();
-                // Filter out current article and limit to 3
-                const related = data.filter((a: Article) => a.id !== currentId).slice(0, 3);
-                setRelatedArticles(related);
-            }
-        } catch (error) {
-            console.error('Error fetching related articles:', error);
+    useEffect(() => {
+        if (slug) {
+            fetchArticle();
         }
-    };
+    }, [slug, fetchArticle]);
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);

@@ -45,6 +45,37 @@ Use this when you need to:
 - Use `react-helmet` (or similar) for document head management
 - Use `lighthouse` checks for performance/SEO/a11y validation
 
+## 🎨 Page Creation Standards
+To ensure consistency, SEO, ease of maintenance, and high performance:
+
+### 1. SEO & Metadata
+- **Tool**: Use `react-helmet-async`.
+- **Requirement**: Every page must define `<title>` and `<nav>` meta tags.
+- **URLs**: Spanish and SEO-friendly (e.g., `/terapias-y-masajes`).
+
+### 2. Performance & Lazy Loading
+- **Suspense**: Wrap heavy components in `React.lazy` and `<Suspense>`.
+- **Images**: Use `loading="lazy"` for below-the-fold images.
+- **Code Splitting**: Main route components should be lazy loaded in `App.tsx`.
+
+### 3. Accessibility (a11y)
+- **Semantic HTML**: Use proper tags (`<main>`, `<article>`, `<nav>`).
+- **Labels**: All interactive elements MUST have `aria-label` or visible text.
+- **Images**: Mandatory `alt` text.
+
+### 4. Code & Import Organization
+- **Imports**: Group imports: React/libs first, Components second, Assets/Config last.
+- **Clean Code**: Remove unused imports immediately.
+
+### 5. Mobile & Responsive Design
+- **Spacing**: Use generous padding/gap (`py-24`, `gap-8`).
+- **Typography**: Adjust font sizes (`text-3xl md:text-5xl`).
+
+### 6. UX & Animations
+- **Smooth Scroll**: Use `element.scrollIntoView({ behavior: 'smooth' })`.
+- **Transitions**: Use `<FadeInSection>` (framer-motion).
+- **Feedback**: Provide loading skeletons/spinners.
+
 ## Component structure
 ```typescript
 interface ComponentProps {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
@@ -26,7 +26,6 @@ interface Article {
 
 const BlogPage: React.FC = () => {
     const { t, i18n } = useTranslation();
-    const navigate = useNavigate();
     const location = useLocation();
     const [articles, setArticles] = useState<Article[]>([]);
     const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
