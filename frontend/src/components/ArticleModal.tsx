@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon, CalendarIcon, TagIcon } from '@heroicons/react/24/outline';
-import { API_BASE_URL } from '../config';
 import { useTranslation } from 'react-i18next';
 import { getTranslated } from '../utils/translate';
 import { getImageUrl } from '../utils/imageUtils';
