@@ -24,7 +24,7 @@ const AboutPage: React.FC = () => {
 
             <main className="flex-grow pt-32 pb-16 relative">
                 <div className="max-w-7xl mx-auto px-6 relative w-full">
-                    <div className="absolute top-0 left-0 md:left-2 z-20">
+                    <div className="mb-8 md:mb-0 md:absolute md:top-0 md:left-2 z-20">
                         <BackButton />
                     </div>
 
