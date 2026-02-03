@@ -4,14 +4,6 @@ import omSymbol from '../assets/images/om_symbol.png';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
 
-interface ClassType {
-    name: string;
-    description: string;
-    color: string;
-    age_range: string | null;
-    translations?: any;
-}
-
 const YogaSchedule: React.FC = () => {
     const { t, i18n } = useTranslation();
     const DAYS = React.useMemo(() => [
