@@ -74,11 +74,13 @@
         }
     },
     "menu": {
-        "home": "El Nostre Espai",
+        "home": "Inici",
         "yoga": "Classes de Ioga",
         "therapies": "Teràpies i Massatges",
+        "space": "El Nostre Espai",
         "about": "Sobre Nosaltres",
-        "contact": "Contacte"
+        "contact": "Contacte",
+        "activities": "Activitats"
     },
     "yoga": {
         "title": "IOGA",
@@ -193,5 +195,30 @@
                 }
             }
         }
+    },
+    "activities": {
+        "title": "Les Nostres Activitats",
+        "subtitle": "Cursos temporals, tallers intensius i esdeveniments especials dissenyats per al teu creixement.",
+        "seo": {
+            "title": "Activitats i Cursos | Arunachala",
+            "description": "Descobreix les nostres activitats actives, cursos temporals i esdeveniments especials a Arunachala."
+        },
+        "types": {
+            "taller": "Taller",
+            "curso": "Curs",
+            "evento": "Esdeveniment",
+            "retiro": "Retir"
+        },
+        "consult_price": "Consultar preu",
+        "more_soon": "Properes Activitats",
+        "stay_tuned": "Estem preparant nous retirs i tallers. Estigues al corrent."
+    },
+    "space": {
+        "title": "El Nostre Espai",
+        "subtitle": "Un refugi de pau a la ciutat",
+        "description_1": "A Arunachala, hem creat un entorn dissenyat específicament per a la calma i la introspecció. El nostre centre està concebut no només com un lloc per practicar ioga, sinó com un santuari on desconnectar del soroll exterior i reconnectar amb tu mateix.",
+        "description_2": "Disposem d'una sala principal diàfana, banyada per llum natural i equipada amb materials orgànics d'alta qualitat. L'ambient, impregnat d'aromes suaus i silenci, convida a la pràctica profunda i meditativa des del primer moment en què creues la porta.",
+        "no_images": "Imatges properament",
+        "location_title": "Com arribar"
     }
 }

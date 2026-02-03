@@ -4,7 +4,7 @@
 Full-stack web application for Arunachala Yoga studio with automated content generation and wellness tools.
 
 **Tech Stack**: FastAPI + React + PostgreSQL + Qdrant (RAG) + OpenAI + i18next  
-**Features**: Yoga scheduling, in-studio therapy booking, **AI RAG Chatbot**, multilingual support (ES/CA/EN), user management
+**Features**: Yoga scheduling, in-studio therapy booking, **Actividades**, **AI RAG Chatbot**, multilingual support (ES/CA/EN), user management
 
 ## 🏗️ Project Structure
 ```
@@ -268,7 +268,7 @@ The application includes a Retrieval-Augmented Generation chatbot for customer s
     - **LLM**: OpenAI `gpt-4o-mini` for responses and `text-embedding-3-small` for search.
 - **Admin Control**: The dashboard includes an "Agent Control" page to adjust tone, response length, and focus area.
 - **🔄 Auto-Knowledge Sync (n8n)**:
-    - **Trigger**: Every time a Yoga Class, Massage, or Therapy is Created/Updated/Deleted in the Dashboard, a Webhook (`backend/app/core/webhooks.py`) notifies n8n.
+    - **Trigger**: Every time a Yoga Class, Massage, Therapy or **Activity** is Created/Updated/Deleted in the Dashboard, a Webhook (`backend/app/core/webhooks.py`) notifies n8n.
     - **n8n Workflow**:
         1. **Receive Webhook**: Gets the `id` and `type` of the changed content.
         2. **Fetch Data**: Calls the Backend API to get the latest full details.

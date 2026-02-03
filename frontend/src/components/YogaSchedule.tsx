@@ -30,9 +30,23 @@ const YogaSchedule: React.FC = () => {
         t('common.days.friday')
     ], [t]);
 
-    const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>([]);
+    const [rawItems, setRawItems] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [activeDay, setActiveDay] = useState("");
+
+    // Map days from Spanish (DB default) to translated
+    const getTranslatedDay = (day: string) => {
+        const dayMap: any = {
+            "Lunes": t('common.days.monday'),
+            "Martes": t('common.days.tuesday'),
+            "Miércoles": t('common.days.wednesday'),
+            "Jueves": t('common.days.thursday'),
+            "Viernes": t('common.days.friday'),
+            "Sábado": t('common.days.saturday'),
+            "Domingo": t('common.days.sunday')
+        };
+        return dayMap[day] || day;
+    };
 
     useEffect(() => {
         if (!activeDay && DAYS[0]) setActiveDay(DAYS[0]);
@@ -44,43 +58,7 @@ const YogaSchedule: React.FC = () => {
                 const response = await fetch(`${API_BASE_URL}/api/schedules`);
                 if (response.ok) {
                     const data = await response.json();
-
-                    const mapped: ScheduleItem[] = data.map((item: any) => {
-                        const start = item.start_time;
-                        const end = item.end_time;
-                        const [h1, m1] = start.split(':').map(Number);
-                        const [h2, m2] = end.split(':').map(Number);
-                        const durationMinutes = (h2 * 60 + m2) - (h1 * 60 + m1);
-
-                        const yc = item.yoga_class || {
-                            name: item.class_name || 'Clase',
-                            description: '',
-                            translations: {}
-                        };
-
-                        // Map days from Spanish (DB default) to translated
-                        const dayMap: any = {
-                            "Lunes": t('common.days.monday'),
-                            "Martes": t('common.days.tuesday'),
-                            "Miércoles": t('common.days.wednesday'),
-                            "Jueves": t('common.days.thursday'),
-                            "Viernes": t('common.days.friday')
-                        };
-
-                        return {
-                            day: dayMap[item.day_of_week] || item.day_of_week,
-                            time: start,
-                            duration: `${durationMinutes} min`,
-                            note: item.note,
-                            classInfo: {
-                                name: getTranslated(yc, 'name', i18n.language),
-                                description: getTranslated(yc, 'description', i18n.language),
-                                color: yc.color,
-                                age_range: yc.age_range
-                            }
-                        };
-                    });
-                    setScheduleItems(mapped);
+                    setRawItems(data);
                 }
             } catch (error) {
                 console.error('Error fetching schedules:', error);
@@ -90,36 +68,36 @@ const YogaSchedule: React.FC = () => {
         };
 
         fetchSchedules();
-    }, [i18n.language, t]);
+        const interval = setInterval(fetchSchedules, 30000);
+        return () => clearInterval(interval);
+    }, []); // No need to refetch on language change now, as we translate on render
 
-    // Helper to render a block of classes
     const TimeBlock = ({
         label,
         rows,
         rangeStart,
         rangeEnd,
-        scheduleItems
     }: {
         label: string,
         rows: number,
         rangeStart: number,
         rangeEnd: number,
-        scheduleItems: ScheduleItem[]
     }) => {
         const totalMinutes = (rangeEnd - rangeStart) * 60;
 
         const getItemsForDay = (day: string) => {
-            return scheduleItems.filter(item => {
-                const [h, m] = item.time.split(':').map(Number);
+            return rawItems.filter(item => {
+                const [h, m] = item.start_time.split(':').map(Number);
                 const totalMin = h * 60 + m;
-                return item.day === day && totalMin >= rangeStart * 60 && totalMin < rangeEnd * 60;
+                return getTranslatedDay(item.day_of_week) === day && totalMin >= rangeStart * 60 && totalMin < rangeEnd * 60;
             });
         };
 
-        const getPositionStyle = (time: string, duration: string) => {
-            const [h, m] = time.split(':').map(Number);
-            const startMin = (h - rangeStart) * 60 + m;
-            const durationMin = parseInt(duration);
+        const getPositionStyle = (startTime: string, endTime: string) => {
+            const [h1, m1] = startTime.split(':').map(Number);
+            const [h2, m2] = endTime.split(':').map(Number);
+            const startMin = (h1 - rangeStart) * 60 + m1;
+            const durationMin = (h2 * 60 + m2) - (h1 * 60 + m1);
 
             return {
                 top: `${(startMin / totalMinutes) * 100}%`,
@@ -148,30 +126,36 @@ const YogaSchedule: React.FC = () => {
                         {DAYS.map(day => (
                             <div key={day} className="relative h-full">
                                 {getItemsForDay(day).map((item, index) => {
-                                    const classInfo = item.classInfo;
-                                    const style = getPositionStyle(item.time, item.duration);
+                                    const yc = item.yoga_class || { name: item.class_name, description: '', translations: {} };
+                                    const className = getTranslated(yc, 'name', i18n.language);
+                                    const classDesc = getTranslated(yc, 'description', i18n.language);
+                                    const style = getPositionStyle(item.start_time, item.end_time);
+                                    const [h1, m1] = item.start_time.split(':').map(Number);
+                                    const [h2, m2] = item.end_time.split(':').map(Number);
+                                    const durationMin = (h2 * 60 + m2) - (h1 * 60 + m1);
+
                                     return (
                                         <div
                                             key={`${day}-${index}`}
-                                            className={`absolute left-1 right-1 rounded-lg border-l-4 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer pointer-events-auto flex flex-col justify-center px-1 md:px-2 py-1 ${classInfo.color || 'bg-gray-100'}`}
+                                            className={`absolute left-1 right-1 rounded-lg border-l-4 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer pointer-events-auto flex flex-col justify-center px-1 md:px-2 py-1 ${yc.color || 'bg-gray-100'}`}
                                             style={style}
                                         >
                                             <div className="flex flex-col flex-1 min-w-0">
                                                 <div className="flex justify-between items-center mb-0.5">
-                                                    <span className="font-bold text-[10px] md:text-xs leading-none opacity-80">{item.time}</span>
-                                                    {classInfo.age_range && (
+                                                    <span className="font-bold text-[10px] md:text-xs leading-none opacity-80">{item.start_time}</span>
+                                                    {yc.age_range && (
                                                         <span className="text-[8px] md:text-[9px] uppercase font-bold tracking-tight bg-white/30 text-current px-1.5 py-0.5 rounded border border-current/10 flex-none ml-1">
-                                                            {classInfo.age_range}
+                                                            {yc.age_range}
                                                         </span>
                                                     )}
                                                 </div>
-                                                <span className="font-bold text-[11px] md:text-sm leading-tight line-clamp-2 min-w-0">{classInfo.name}</span>
+                                                <span className="font-bold text-[11px] md:text-sm leading-tight line-clamp-2 min-w-0">{className}</span>
                                                 {item.note && <span className="text-[8px] md:text-[9px] italic opacity-70 line-clamp-1">{item.note}</span>}
                                             </div>
                                             <div className="absolute z-50 left-1/2 -translate-x-1/2 bottom-full mb-2 w-48 md:w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-bark text-bone p-3 rounded-lg shadow-xl border border-bone/10 text-center pointer-events-none">
-                                                <h5 className="font-headers text-base md:text-lg text-matcha mb-1">{classInfo.name}</h5>
-                                                <p className="text-xs mb-2 opacity-90">{classInfo.description}</p>
-                                                <span className="text-xs font-mono">{item.duration}</span>
+                                                <h5 className="font-headers text-base md:text-lg text-matcha mb-1">{className}</h5>
+                                                <p className="text-xs mb-2 opacity-90">{classDesc}</p>
+                                                <span className="text-xs font-mono">{durationMin} min</span>
                                             </div>
                                         </div>
                                     );
@@ -185,7 +169,7 @@ const YogaSchedule: React.FC = () => {
     };
 
     const getItemsForDayMobile = (day: string) => {
-        return scheduleItems.filter(item => item.day === day).sort((a, b) => a.time.localeCompare(b.time));
+        return rawItems.filter(item => getTranslatedDay(item.day_of_week) === day).sort((a, b) => a.start_time.localeCompare(b.start_time));
     };
 
     if (isLoading) {
@@ -217,7 +201,6 @@ const YogaSchedule: React.FC = () => {
                     rows={2}
                     rangeStart={9}
                     rangeEnd={13}
-                    scheduleItems={scheduleItems}
                 />
 
                 <TimeBlock
@@ -225,7 +208,6 @@ const YogaSchedule: React.FC = () => {
                     rows={3}
                     rangeStart={15.5}
                     rangeEnd={21.5}
-                    scheduleItems={scheduleItems}
                 />
             </div>
 
@@ -246,20 +228,23 @@ const YogaSchedule: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col gap-4 animate-fade-in">
-                    {getItemsForDayMobile(activeDay).map((item, index) => {
-                        const classInfo = item.classInfo;
+                    {getItemsForDayMobile(activeDay).map((item: any, index: number) => {
+                        const yc = item.yoga_class || { name: item.class_name, description: '', translations: {} };
+                        const [h1, m1] = item.start_time.split(':').map(Number);
+                        const [h2, m2] = item.end_time.split(':').map(Number);
+                        const durationMin = (h2 * 60 + m2) - (h1 * 60 + m1);
                         return (
-                            <div key={index} className={`p-6 rounded-xl border-l-4 shadow-sm ${classInfo.color || 'bg-gray-100'} flex flex-col gap-2`}>
+                            <div key={index} className={`p-6 rounded-xl border-l-4 shadow-sm ${yc.color || 'bg-gray-100'} flex flex-col gap-2`}>
                                 <div className="flex justify-between items-center">
-                                    <span className="font-bold text-2xl">{item.time}</span>
+                                    <span className="font-bold text-2xl">{item.start_time}</span>
                                     <div className="flex flex-col items-end gap-1">
-                                        <span className="text-xs font-mono opacity-70 border border-current px-2 py-1 rounded-full">{item.duration}</span>
-                                        {classInfo.age_range && <span className="text-[10px] uppercase font-black tracking-widest bg-black/10 px-2 py-0.5 rounded">{classInfo.age_range}</span>}
+                                        <span className="text-xs font-mono opacity-70 border border-current px-2 py-1 rounded-full">{durationMin} min</span>
+                                        {yc.age_range && <span className="text-[10px] uppercase font-black tracking-widest bg-black/10 px-2 py-0.5 rounded">{yc.age_range}</span>}
                                     </div>
                                 </div>
-                                <h4 className="text-xl font-headers font-bold uppercase">{classInfo.name}</h4>
+                                <h4 className="text-xl font-headers font-bold uppercase">{getTranslated(yc, 'name', i18n.language)}</h4>
                                 {item.note && <p className="text-sm italic opacity-80 -mt-1">{item.note}</p>}
-                                <p className="text-sm opacity-90 leading-relaxed mt-1">{classInfo.description}</p>
+                                <p className="text-sm opacity-90 leading-relaxed mt-1">{getTranslated(yc, 'description', i18n.language)}</p>
                             </div>
                         );
                     })}

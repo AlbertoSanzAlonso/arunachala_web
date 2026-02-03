@@ -17,9 +17,7 @@ export const galleryService = {
     },
 
     upload: async (formData: FormData) => {
-        const response = await api.post<GalleryImage>('/gallery/upload', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const response = await api.post<GalleryImage>('/gallery/upload', formData);
         return response.data;
     },
 
@@ -37,6 +35,11 @@ export const galleryService = {
 
     crop: async (id: number, formData: FormData) => {
         const response = await api.put<GalleryImage>(`/gallery/${id}/crop`, formData);
+        return response.data;
+    },
+
+    update: async (id: number, data: Partial<GalleryImage>) => {
+        const response = await api.put<GalleryImage>(`/gallery/${id}`, data);
         return response.data;
     }
 };

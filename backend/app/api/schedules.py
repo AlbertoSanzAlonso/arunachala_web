@@ -16,6 +16,7 @@ class YogaClassBrief(BaseModel):
     color: str | None = None
     description: str | None = None
     age_range: str | None = None
+    translations: dict | None = None
 
     class Config:
         from_attributes = True

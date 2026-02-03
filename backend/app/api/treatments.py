@@ -7,6 +7,9 @@ from app.models.models import MassageType, TherapyType, User
 from app.api.auth import get_current_user
 from app.core.image_utils import save_upload_file, delete_file
 from app.core.webhooks import notify_n8n_content_change
+from app.core.translation_utils import auto_translate_background
+from app.core.database import get_db, SessionLocal
+from fastapi import BackgroundTasks
 import os
 import json
 
@@ -57,6 +60,7 @@ def get_massage(massage_id: int, db: Session = Depends(get_db)):
 
 @router.post("/massages", response_model=TreatmentResponse)
 async def create_massage(
+    background_tasks: BackgroundTasks,
     name: str = Form(...),
     excerpt: str = Form(None),
     description: str = Form(None),
@@ -95,11 +99,25 @@ async def create_massage(
     # Notify n8n for RAG update
     await notify_n8n_content_change(db_massage.id, "massage", "create")
     
+    # Auto-translate if no translations provided
+    if not translations and background_tasks:
+        fields = {"name": name, "excerpt": excerpt, "description": description, "benefits": benefits}
+        # Clean None values
+        fields = {k: v for k, v in fields.items() if v}
+        background_tasks.add_task(
+            auto_translate_background, 
+            SessionLocal, 
+            MassageType, 
+            db_massage.id, 
+            fields
+        )
+    
     return db_massage
 
 @router.put("/massages/{massage_id}", response_model=TreatmentResponse)
 async def update_massage(
     massage_id: int,
+    background_tasks: BackgroundTasks,
     name: str = Form(None),
     excerpt: str = Form(None),
     description: str = Form(None),
@@ -142,6 +160,18 @@ async def update_massage(
     # Notify n8n for RAG update
     await notify_n8n_content_change(db_massage.id, "massage", "update")
     
+    # Re-translate if fields changed and no new translations provided
+    if (name or excerpt or description or benefits) and not translations:
+        fields = {"name": db_massage.name, "excerpt": db_massage.excerpt, "description": db_massage.description, "benefits": db_massage.benefits}
+        fields = {k: v for k, v in fields.items() if v}
+        background_tasks.add_task(
+            auto_translate_background, 
+            SessionLocal, 
+            MassageType, 
+            db_massage.id, 
+            fields
+        )
+    
     return db_massage
 
 @router.delete("/massages/{massage_id}")
@@ -183,6 +213,7 @@ def get_therapy(therapy_id: int, db: Session = Depends(get_db)):
 
 @router.post("/therapies", response_model=TreatmentResponse)
 async def create_therapy(
+    background_tasks: BackgroundTasks,
     name: str = Form(...),
     excerpt: str = Form(None),
     description: str = Form(None),
@@ -221,11 +252,25 @@ async def create_therapy(
     # Notify n8n for RAG update
     await notify_n8n_content_change(db_therapy.id, "therapy", "create")
     
+    # Auto-translate if no translations provided
+    if not translations and background_tasks:
+        fields = {"name": name, "excerpt": excerpt, "description": description, "benefits": benefits}
+        # Clean None values
+        fields = {k: v for k, v in fields.items() if v}
+        background_tasks.add_task(
+            auto_translate_background, 
+            SessionLocal, 
+            TherapyType, 
+            db_therapy.id, 
+            fields
+        )
+    
     return db_therapy
 
 @router.put("/therapies/{therapy_id}", response_model=TreatmentResponse)
 async def update_therapy(
     therapy_id: int,
+    background_tasks: BackgroundTasks,
     name: str = Form(None),
     excerpt: str = Form(None),
     description: str = Form(None),
@@ -266,6 +311,18 @@ async def update_therapy(
     
     # Notify n8n for RAG update
     await notify_n8n_content_change(db_therapy.id, "therapy", "update")
+    
+    # Re-translate if fields changed and no new translations provided
+    if (name or excerpt or description or benefits) and not translations:
+        fields = {"name": db_therapy.name, "excerpt": db_therapy.excerpt, "description": db_therapy.description, "benefits": db_therapy.benefits}
+        fields = {k: v for k, v in fields.items() if v}
+        background_tasks.add_task(
+            auto_translate_background, 
+            SessionLocal, 
+            TherapyType, 
+            db_therapy.id, 
+            fields
+        )
     
     return db_therapy
 

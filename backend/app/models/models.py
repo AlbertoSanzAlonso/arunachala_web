@@ -45,6 +45,7 @@ class Content(Base):
     thumbnail_url = Column(String, nullable=True)
     seo_title = Column(String, nullable=True)
     seo_description = Column(String, nullable=True)
+    translations = Column(JSON, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -129,3 +130,21 @@ class AgentConfig(Base):
     system_instructions = Column(Text, nullable=True)
     is_active = Column(Boolean, default=True)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+class Activity(Base):
+    __tablename__ = "activities"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True, nullable=False)
+    description = Column(Text, nullable=True)
+    translations = Column(JSON, nullable=True)
+    type = Column(String, nullable=False) # 'curso', 'taller', 'evento', 'retiro'
+    start_date = Column(DateTime(timezone=True), nullable=True)
+    end_date = Column(DateTime(timezone=True), nullable=True)
+    location = Column(String, nullable=True) 
+    price = Column(String, nullable=True) 
+    image_url = Column(String, nullable=True)
+    slug = Column(String, unique=True, index=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())

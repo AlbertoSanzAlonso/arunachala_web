@@ -115,6 +115,39 @@ export const useGallery = (selectedCategory: GalleryCategory) => {
         }
     };
 
+    const toggleMainImage = async (id: number) => {
+        const image = images.find(img => img.id === id);
+        if (!image) return;
+
+        // Using simple text tagging convention: "[MAIN]" in alt_text
+        const isCurrentlyMain = image.alt_text?.includes('[MAIN]');
+
+        try {
+            if (!isCurrentlyMain) {
+                // Determine previous main and demote it
+                const previousMain = images.find(img => img.alt_text?.includes('[MAIN]'));
+                if (previousMain) {
+                    const newAlt = previousMain.alt_text.replace('[MAIN]', '').trim();
+                    const updatedPrev = await galleryService.update(previousMain.id, { alt_text: newAlt });
+                    setImages(prev => prev.map(img => img.id === updatedPrev.id ? updatedPrev : img));
+                }
+
+                // Promote new main
+                const newAlt = `${image.alt_text || ''} [MAIN]`.trim();
+                const updatedImage = await galleryService.update(id, { alt_text: newAlt });
+                setImages(prev => prev.map(img => img.id === updatedImage.id ? updatedImage : img));
+            } else {
+                // Demote if clicking same one (optional, maybe we want at least one main? User said "select the main one", usually means radio behavior)
+                // But allowing deselect is fine.
+                const newAlt = image.alt_text.replace('[MAIN]', '').trim();
+                const updatedImage = await galleryService.update(id, { alt_text: newAlt });
+                setImages(prev => prev.map(img => img.id === updatedImage.id ? updatedImage : img));
+            }
+        } catch (error) {
+            console.error('Error toggling main image:', error);
+        }
+    };
+
     return {
         images,
         setImages, // Exposed for local Reorder updates
@@ -126,6 +159,7 @@ export const useGallery = (selectedCategory: GalleryCategory) => {
         deleteImage,
         deleteMultipleImages,
         saveOrder,
-        cropImage
+        cropImage,
+        toggleMainImage
     };
 };

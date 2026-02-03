@@ -17,7 +17,8 @@ import {
     HeartIcon,
     ArrowRightOnRectangleIcon,
     ChatBubbleLeftRightIcon,
-    GlobeAltIcon
+    GlobeAltIcon,
+    SparklesIcon
 } from '@heroicons/react/24/outline';
 
 const navigation = [
@@ -26,6 +27,7 @@ const navigation = [
     { name: 'Contenido', href: '/dashboard/content', icon: DocumentTextIcon },
     { name: 'Tratamientos', href: '/dashboard/treatments', icon: HeartIcon },
     { name: 'Horarios', href: '/dashboard/schedule', icon: CalendarIcon },
+    { name: 'Actividades', href: '/dashboard/activities', icon: SparklesIcon },
     { name: 'Usuarios', href: '/dashboard/users', icon: UsersIcon },
     { name: 'Control de Agente', href: '/dashboard/agent', icon: ChatBubbleLeftRightIcon },
     { name: 'SEO & Google', href: '/dashboard/seo', icon: ChartBarIcon },

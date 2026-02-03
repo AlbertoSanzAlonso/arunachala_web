@@ -126,7 +126,7 @@ const YogaPage: React.FC = () => {
                         <nav className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 w-full max-w-md md:max-w-4xl px-2">
                             {[
                                 { title: t('yoga.buttons.schedule'), sub: t('yoga.buttons.schedule_sub'), action: scrollToSchedule, delay: 0.4 },
-                                { title: t('yoga.buttons.gallery'), sub: t('yoga.buttons.gallery_sub'), action: scrollToGallery, delay: 0.5 },
+                                { title: t('yoga.buttons.gallery'), sub: t('yoga.buttons.gallery_sub'), action: () => navigate('/nuestro-espacio'), delay: 0.5 },
                                 { title: t('yoga.buttons.blog'), sub: t('yoga.buttons.blog_sub'), action: scrollToBlog, delay: 0.6 }
                             ].map((btn, idx) => (
                                 <motion.button

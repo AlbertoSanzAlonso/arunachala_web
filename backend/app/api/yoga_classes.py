@@ -6,6 +6,9 @@ from app.core.database import get_db
 from app.models.models import YogaClassDefinition, User
 from app.api.auth import get_current_user
 from app.core.webhooks import notify_n8n_content_change
+from app.core.translation_utils import auto_translate_background
+from app.core.database import get_db, SessionLocal
+from fastapi import BackgroundTasks
 
 router = APIRouter(prefix="/api/yoga-classes", tags=["yoga-classes"])
 
@@ -57,6 +60,7 @@ def get_yoga_class(class_id: int, db: Session = Depends(get_db)):
 @router.post("", response_model=YogaClassResponse)
 async def create_yoga_class(
     class_data: YogaClassCreate,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -71,12 +75,25 @@ async def create_yoga_class(
     # Notify n8n for RAG update
     await notify_n8n_content_change(db_class.id, "yoga_class", "create")
     
+    # Auto-translate if no translations provided
+    if not class_data.translations and background_tasks:
+        fields = {"name": class_data.name, "description": class_data.description}
+        fields = {k: v for k, v in fields.items() if v}
+        background_tasks.add_task(
+            auto_translate_background, 
+            SessionLocal, 
+            YogaClassDefinition, 
+            db_class.id, 
+            fields
+        )
+    
     return db_class
 
 @router.put("/{class_id}", response_model=YogaClassResponse)
 async def update_yoga_class(
     class_id: int,
     class_data: YogaClassUpdate,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -87,7 +104,8 @@ async def update_yoga_class(
     if not db_class:
         raise HTTPException(status_code=404, detail="Class not found")
     
-    for key, value in class_data.model_dump(exclude_unset=True).items():
+    update_data = class_data.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
         setattr(db_class, key, value)
     
     db.commit()
@@ -95,6 +113,18 @@ async def update_yoga_class(
     
     # Notify n8n for RAG update
     await notify_n8n_content_change(db_class.id, "yoga_class", "update")
+    
+    # Re-translate if main fields changed and no new translations provided
+    if (class_data.name or class_data.description) and not class_data.translations:
+        fields = {"name": db_class.name, "description": db_class.description}
+        fields = {k: v for k, v in fields.items() if v}
+        background_tasks.add_task(
+            auto_translate_background, 
+            SessionLocal, 
+            YogaClassDefinition, 
+            db_class.id, 
+            fields
+        )
     
     return db_class
 

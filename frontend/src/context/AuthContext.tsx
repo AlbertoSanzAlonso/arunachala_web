@@ -101,7 +101,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRemainingTime(120);
     };
 
-    // Session Management
     // Session Management - Idle Detection
     useEffect(() => {
         if (!user || showSessionWarning) return;
@@ -110,28 +109,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const WARNING_DURATION = 2 * 60 * 1000;  // 2 minutes
         const IDLE_BEFORE_WARNING = SESSION_DURATION - WARNING_DURATION;
 
-        let warningTimeout: any;
+        let warningTimeout: NodeJS.Timeout;
 
         const startWarning = () => {
             setShowSessionWarning(true);
-            setRemainingTime(WARNING_DURATION / 1000); // 120 seconds
+            setRemainingTime(WARNING_DURATION / 1000);
         };
 
         const resetIdleTimer = () => {
+            if (showSessionWarning) return; // Don't reset if we are already in warning mode
             clearTimeout(warningTimeout);
             warningTimeout = setTimeout(startWarning, IDLE_BEFORE_WARNING);
         };
 
-        const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+        const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'mousemove'];
 
         // Initialize timer
         resetIdleTimer();
 
         // Listen for activity
-        events.forEach(event => window.addEventListener(event, resetIdleTimer));
+        const throttledReset = () => {
+            resetIdleTimer();
+        };
+
+        events.forEach(event => window.addEventListener(event, throttledReset));
 
         return () => {
-            events.forEach(event => window.removeEventListener(event, resetIdleTimer));
+            events.forEach(event => window.removeEventListener(event, throttledReset));
             clearTimeout(warningTimeout);
         };
     }, [user, showSessionWarning]);

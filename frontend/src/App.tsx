@@ -12,7 +12,8 @@ const TherapiesPage = lazy(() => import('./pages/TherapiesPage'));
 const BlogPage = lazy(() => import('./pages/BlogPage'));
 const YogaGalleryPage = lazy(() => import('./pages/YogaGalleryPage'));
 const TherapiesGalleryPage = lazy(() => import('./pages/TherapiesGalleryPage'));
-const EventsPage = lazy(() => import('./pages/EventsPage'));
+const ActivitiesPage = lazy(() => import('./pages/ActivitiesPage'));
+const OurSpacePage = lazy(() => import('./pages/OurSpacePage'));
 
 // Dashboard Pages
 const LoginPage = lazy(() => import('./pages/LoginPage'));
@@ -30,6 +31,7 @@ const ClassTypeManager = lazy(() => import('./pages/dashboard/ClassTypeManager')
 const TreatmentsManager = lazy(() => import('./pages/dashboard/TreatmentsManager'));
 const UserManager = lazy(() => import('./pages/dashboard/UserManager'));
 const AgentControl = lazy(() => import('./pages/dashboard/AgentControl'));
+const ActivityManager = lazy(() => import('./pages/dashboard/ActivityManager'));
 const ChatBot = lazy(() => import('./components/ChatBot'));
 
 const AppContent = () => {
@@ -54,7 +56,8 @@ const AppContent = () => {
                 <Route path="/blog" element={<BlogPage />} />
                 <Route path="/galeria/yoga" element={<YogaGalleryPage />} />
                 <Route path="/galeria/masajes-y-terapias" element={<TherapiesGalleryPage />} />
-                <Route path="/eventos" element={<EventsPage />} />
+                <Route path="/actividades" element={<ActivitiesPage />} />
+                <Route path="/nuestro-espacio" element={<OurSpacePage />} />
 
                 {/* Auth Route */}
                 <Route path="/login" element={<LoginPage />} />
@@ -76,6 +79,7 @@ const AppContent = () => {
                         <Route path="treatments" element={<TreatmentsManager />} />
                         <Route path="users" element={<UserManager />} />
                         <Route path="agent" element={<AgentControl />} />
+                        <Route path="activities" element={<ActivityManager />} />
                     </Route>
                 </Route>
             </Routes>

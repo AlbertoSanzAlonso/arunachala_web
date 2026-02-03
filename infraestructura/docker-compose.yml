@@ -43,6 +43,8 @@ services:
       - QDRANT_URL=${QDRANT_URL}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      - NODE_FUNCTION_ALLOW_BUILTIN=crypto,fs,os,path
+      - NODE_FUNCTION_ALLOW_EXTERNAL=*
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:

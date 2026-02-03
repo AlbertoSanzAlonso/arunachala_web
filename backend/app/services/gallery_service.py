@@ -104,3 +104,15 @@ class GalleryService:
         self.db.commit()
         self.db.refresh(image)
         return image
+
+    def update_image(self, image_id: int, alt_text: str = None) -> Gallery:
+        image = self.db.query(Gallery).filter(Gallery.id == image_id).first()
+        if not image:
+            raise HTTPException(status_code=404, detail="Image not found")
+        
+        if alt_text is not None:
+            image.alt_text = alt_text
+            
+        self.db.commit()
+        self.db.refresh(image)
+        return image

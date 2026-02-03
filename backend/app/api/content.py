@@ -6,6 +6,9 @@ from app.core.database import get_db
 from app.models.models import Content, User
 from app.api.auth import get_current_user
 from app.core.webhooks import notify_n8n_content_change
+from app.core.translation_utils import auto_translate_background
+from app.core.database import get_db, SessionLocal
+from fastapi import BackgroundTasks
 
 router = APIRouter(prefix="/api/content", tags=["content"])
 
@@ -17,6 +20,7 @@ class ContentBase(BaseModel):
     thumbnail_url: Optional[str] = None
     seo_title: Optional[str] = None
     seo_description: Optional[str] = None
+    translations: Optional[dict] = None
 
 class ContentCreate(ContentBase):
     pass
@@ -29,6 +33,7 @@ class ContentUpdate(BaseModel):
     thumbnail_url: Optional[str] = None
     seo_title: Optional[str] = None
     seo_description: Optional[str] = None
+    translations: Optional[dict] = None
 
 class ContentResponse(ContentBase):
     id: int
@@ -54,6 +59,7 @@ def get_content(content_id: int, db: Session = Depends(get_db)):
 @router.post("", response_model=ContentResponse)
 async def create_content(
     content_data: ContentCreate,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -68,6 +74,18 @@ async def create_content(
     # Notify n8n for RAG update if published
     if db_content.status == "published":
         await notify_n8n_content_change(db_content.id, db_content.type, "create")
+    
+    # Auto-translate if no translations provided
+    if not content_data.translations and background_tasks:
+        fields = {"title": content_data.title, "body": content_data.body}
+        fields = {k: v for k, v in fields.items() if v}
+        background_tasks.add_task(
+            auto_translate_background, 
+            SessionLocal, 
+            Content, 
+            db_content.id, 
+            fields
+        )
         
     return db_content
 
@@ -75,6 +93,7 @@ async def create_content(
 async def update_content(
     content_id: int,
     content_data: ContentUpdate,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -94,6 +113,18 @@ async def update_content(
     # Notify n8n for RAG update if published
     if db_content.status == "published":
         await notify_n8n_content_change(db_content.id, db_content.type, "update")
+    
+    # Re-translate if main fields changed and no new translations provided
+    if (content_data.title or content_data.body) and not content_data.translations:
+        fields = {"title": db_content.title, "body": db_content.body}
+        fields = {k: v for k, v in fields.items() if v}
+        background_tasks.add_task(
+            auto_translate_background, 
+            SessionLocal, 
+            Content, 
+            db_content.id, 
+            fields
+        )
         
     return db_content
 

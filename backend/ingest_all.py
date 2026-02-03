@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from app.core.database import SessionLocal
-from app.models.models import YogaClassDefinition, ClassSchedule, MassageType, TherapyType, Content
+from app.models.models import YogaClassDefinition, ClassSchedule, MassageType, TherapyType, Content, Activity
 
 # Configuration
 load_dotenv()
@@ -42,12 +42,24 @@ def ensure_collection():
     except Exception as e:
         print(f"Error checking/creating collection: {e}")
 
-def ingest_item(content: str, source: str, metadata: dict = None):
-    print(f"Ingesting from source: {source}...")
+import hashlib
+
+def get_qdrant_id(item_type: str, item_id: int):
+    """Genera el mismo ID que n8n usando hash MD5."""
+    seed = f"{item_type}_{item_id}"
+    return hashlib.md5(seed.encode()).hexdigest()
+
+def ingest_item(content: str, source: str, item_type: str, item_id: int, metadata: dict = None):
+    print(f"Ingesting {item_type} {item_id} from source: {source}...")
     vector = get_embedding(content)
-    point_id = str(uuid.uuid4())
+    point_id = get_qdrant_id(item_type, item_id)
     
-    payload = {"content": content, "source": source}
+    payload = {
+        "content": content, 
+        "source": source,
+        "type": item_type,
+        "updated_at": uuid.uuid4().hex # Temporal timestamp reference
+    }
     if metadata:
         payload.update(metadata)
         
@@ -79,28 +91,36 @@ def main():
             schedule_text = ", ".join([f"{s.day_of_week} {s.start_time}-{s.end_time}" for s in schedules])
             
             content = f"Clase de Yoga: {yc.name}\nDescripción: {yc.description}\nHorarios: {schedule_text if schedule_text else 'Consultar disponibilidad'}"
-            ingest_item(content, source="yoga_page", metadata={"type": "yoga_class", "id": yc.id})
+            ingest_item(content, source="yoga_page", item_type="yoga_class", item_id=yc.id, metadata={"id": yc.id})
 
         # 2. Massages
         print("Processing Massages...")
         massages = db.query(MassageType).all()
         for m in massages:
             content = f"Masaje: {m.name}\nDescripción: {m.description}\nBeneficios: {m.benefits}\nDuración: {m.duration_min} min"
-            ingest_item(content, source="therapies_page", metadata={"type": "massage", "id": m.id})
+            ingest_item(content, source="therapies_page", item_type="massage", item_id=m.id, metadata={"id": m.id})
 
         # 3. Therapies
         print("Processing Therapies...")
         therapies = db.query(TherapyType).all()
         for t in therapies:
             content = f"Terapia Holística: {t.name}\nDescripción: {t.description}\nBeneficios: {t.benefits}\nDuración: {t.duration_min} min"
-            ingest_item(content, source="therapies_page", metadata={"type": "therapy", "id": t.id})
+            ingest_item(content, source="therapies_page", item_type="therapy", item_id=t.id, metadata={"id": t.id})
 
         # 4. Articles / Content
         print("Processing Published Articles...")
         articles = db.query(Content).filter(Content.status == "published").all()
         for art in articles:
             content = f"Artículo: {art.title}\n{art.body}"
-            ingest_item(content, source="blog", metadata={"type": "article", "id": art.id})
+            ingest_item(content, source="blog", item_type="content", item_id=art.id, metadata={"id": art.id})
+
+        # 5. Activities (New)
+        print("Processing Activities...")
+        activities = db.query(Activity).filter(Activity.is_active == True).all()
+        for act in activities:
+            date_info = f"Fecha: {act.start_date.strftime('%d/%m/%Y %H:%M')}" if act.start_date else "Fecha a consultar"
+            content = f"Actividad/Curso: {act.title}\nTipo: {act.type}\n{date_info}\nLugar: {act.location if act.location else 'Centro Arunachala'}\nPrecio: {act.price if act.price else 'Consultar'}\nDescripción: {act.description}"
+            ingest_item(content, source="activities_page", item_type="activity", item_id=act.id, metadata={"id": act.id})
 
         # 5. General Center Info (Static)
         print("Processing General Info...")
@@ -112,7 +132,7 @@ Email: info@arunachala.com (o el formulario de la web).
 El centro ofrece un ambiente calmado y acogedor ideal para la práctica meditativa y sanación corporal.
 Ofrecemos clases de Hatha Yoga, Vinyasa Flow, Yoga para niños y mujeres embarazadas. También terapias como Reiki, Flores de Bach y diversos tipos de masajes (Ayurvédico, Tailandés, etc).
         """.strip()
-        ingest_item(general_info, source="about_us")
+        ingest_item(general_info, source="about_us", item_type="static", item_id=0)
 
         print("Ingestion completed successfully!")
 

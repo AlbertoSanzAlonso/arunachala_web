@@ -26,6 +26,9 @@ class ReorderItem(BaseModel):
 class BulkDelete(BaseModel):
     ids: List[int]
 
+class UpdateGalleryItem(BaseModel):
+    alt_text: Optional[str] = None
+
 # Dependency Helper
 def get_service(db: Session = Depends(get_db)) -> GalleryService:
     return GalleryService(db)
@@ -79,3 +82,11 @@ async def update_cropped_image(
     service: GalleryService = Depends(get_service),
 ):
     return service.crop_update_image(image_id, file)
+
+@router.put("/{image_id}", response_model=GalleryResponse)
+def update_image_details(
+    image_id: int,
+    data: UpdateGalleryItem,
+    service: GalleryService = Depends(get_service)
+):
+    return service.update_image(image_id, alt_text=data.alt_text)

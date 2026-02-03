@@ -74,11 +74,13 @@
         }
     },
     "menu": {
-        "home": "Our Space",
+        "home": "Home",
         "yoga": "Yoga Classes",
         "therapies": "Therapies & Massages",
+        "space": "Our Space",
         "about": "About Us",
-        "contact": "Contact"
+        "contact": "Contact",
+        "activities": "Activities"
     },
     "yoga": {
         "title": "YOGA",
@@ -193,5 +195,30 @@
                 }
             }
         }
+    },
+    "activities": {
+        "title": "Our Activities",
+        "subtitle": "Temporary courses, intensive workshops and special events designed for your growth.",
+        "seo": {
+            "title": "Activities and Courses | Arunachala",
+            "description": "Discover our active activities, temporary courses and special events at Arunachala."
+        },
+        "types": {
+            "taller": "Workshop",
+            "curso": "Course",
+            "evento": "Event",
+            "retiro": "Retreat"
+        },
+        "consult_price": "Consult price",
+        "more_soon": "Upcoming Activities",
+        "stay_tuned": "We are preparing new retreats and workshops. Stay tuned."
+    },
+    "space": {
+        "title": "Our Space",
+        "subtitle": "A haven of peace in the city",
+        "description_1": "At Arunachala, we have created an environment specifically designed for calm and introspection. Our center is conceived not only as a place to practice yoga, but as a sanctuary to disconnect from outside noise and reconnect with yourself.",
+        "description_2": "We have a diaphanous main room, bathed in natural light and equipped with high quality organic materials. The atmosphere, impregnated with soft aromas and silence, invites deep and meditative practice from the first moment you cross the door.",
+        "no_images": "Images coming soon",
+        "location_title": "How to get there"
     }
 }
