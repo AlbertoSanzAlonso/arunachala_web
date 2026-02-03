@@ -60,16 +60,18 @@ const YogaGalleryPage: React.FC = () => {
     };
 
     return (
-        <div className="font-body text-bark min-h-screen flex flex-col pt-24 bg-bone">
+        <div className="font-body text-bark min-h-screen flex flex-col bg-bone">
             <Header />
 
-            <main className="flex-grow">
-                <section className="py-12 md:py-20 px-4 md:px-8 max-w-7xl mx-auto relative">
-                    <div className="flex flex-col md:flex-row items-center justify-center mb-12 gap-6 text-center">
-                        <div className="md:absolute md:top-0 md:left-2 flex items-center h-full">
-                            <BackButton to="/clases-de-yoga" label={t('gallery.yoga.back')} className="mb-0" />
-                        </div>
-                        <h1 className="text-4xl md:text-6xl font-headers text-forest uppercase">{t('gallery.yoga.title')}</h1>
+            <main className="flex-grow pt-32 pb-16 relative">
+                <div className="max-w-7xl mx-auto px-4 md:px-8 relative w-full">
+                    {/* Back Button matching Blog styles */}
+                    <div className="mb-8 md:mb-0 md:absolute md:top-0 md:left-8 z-20">
+                        <BackButton to="/clases-de-yoga" label={t('gallery.yoga.back')} />
+                    </div>
+
+                    <div className="text-center mb-16">
+                        <h1 className="text-4xl md:text-6xl font-headers text-forest uppercase pt-12 md:pt-0">{t('gallery.yoga.title')}</h1>
                     </div>
 
                     <FadeInSection>
@@ -97,7 +99,7 @@ const YogaGalleryPage: React.FC = () => {
                                     >
                                         <img
                                             src={getImageUrl(image.url)}
-                                            alt={image.alt_text || 'Yoga practice'}
+                                            alt={image.alt_text || t('gallery.yoga.title')}
                                             className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                                             loading="lazy"
                                         />
@@ -119,7 +121,7 @@ const YogaGalleryPage: React.FC = () => {
                             </div>
                         )}
                     </FadeInSection>
-                </section>
+                </div>
             </main>
 
             {/* Lightbox */}
@@ -150,7 +152,7 @@ const YogaGalleryPage: React.FC = () => {
                         >
                             <img
                                 src={getImageUrl(images[selectedImageIndex].url)}
-                                alt={images[selectedImageIndex].alt_text || 'Yoga Gallery'}
+                                alt={images[selectedImageIndex].alt_text || t('gallery.yoga.title')}
                                 className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl border border-white/10"
                             />
                         </motion.div>

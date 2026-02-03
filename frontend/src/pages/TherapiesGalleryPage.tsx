@@ -61,7 +61,7 @@ const TherapiesGalleryPage: React.FC = () => {
     };
 
     return (
-        <div className="font-body text-bark min-h-screen flex flex-col pt-24 bg-bone">
+        <div className="font-body text-bark min-h-screen flex flex-col bg-bone">
             <Helmet>
                 <title>{t('gallery.therapies.title')} | Arunachala</title>
                 <meta name="description" content={t('gallery.therapies.subtitle')} />
@@ -69,13 +69,15 @@ const TherapiesGalleryPage: React.FC = () => {
 
             <Header />
 
-            <main className="flex-grow">
-                <section className="py-12 md:py-20 px-4 md:px-8 max-w-7xl mx-auto relative">
-                    <div className="flex flex-col md:flex-row items-center justify-center mb-12 gap-6 text-center">
-                        <div className="md:absolute md:top-0 md:left-2 flex items-center h-full">
-                            <BackButton to="/terapias-y-masajes" label={t('gallery.therapies.back')} className="mb-0" />
-                        </div>
-                        <h1 className="text-4xl md:text-6xl font-headers text-forest uppercase">{t('gallery.therapies.title')}</h1>
+            <main className="flex-grow pt-32 pb-16 relative">
+                <div className="max-w-7xl mx-auto px-4 md:px-8 relative w-full">
+                    {/* Back Button matching Blog styles */}
+                    <div className="mb-8 md:mb-0 md:absolute md:top-0 md:left-8 z-20">
+                        <BackButton to="/terapias-y-masajes" label={t('gallery.therapies.back')} />
+                    </div>
+
+                    <div className="text-center mb-16">
+                        <h1 className="text-4xl md:text-6xl font-headers text-forest uppercase pt-12 md:pt-0">{t('gallery.therapies.title')}</h1>
                     </div>
 
                     <FadeInSection>
@@ -125,7 +127,7 @@ const TherapiesGalleryPage: React.FC = () => {
                             </div>
                         )}
                     </FadeInSection>
-                </section>
+                </div>
             </main>
 
             {/* Lightbox */}
