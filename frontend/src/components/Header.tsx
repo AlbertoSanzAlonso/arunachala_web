@@ -62,6 +62,7 @@ const Header: React.FC = () => {
                 <nav className="flex flex-col gap-10 text-center">
                     <button onClick={() => handleNavigation('/nuestro-espacio')} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.space', 'Nuestro Espacio')}</button>
                     <button onClick={() => handleNavigation('/blog')} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">Blog</button>
+                    <button onClick={() => handleNavigation('/meditaciones')} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.meditations')}</button>
                     <button onClick={() => handleNavigation('/actividades')} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.activities')}</button>
                     <button onClick={() => handleNavigation('/quienes-somos')} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.about')}</button>
                     <button onClick={() => handleNavigation('/contacto')} className="text-bone font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.contact')}</button>

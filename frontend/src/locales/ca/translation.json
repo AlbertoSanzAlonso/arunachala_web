@@ -292,5 +292,67 @@
             "title": "Contacte | Ioga i Teràpies Arunachala Cornellà",
             "description": "Contacta amb Arunachala Ioga a Cornellà. Reserva la teva classe de ioga o sessió de teràpia. Som al Carrer del Bruc 44."
         }
+    },
+    "blog": {
+        "title": "Blog",
+        "subtitle": "Articles sobre ioga, meditació i benestar",
+        "section_title": "Últimes Publicacions",
+        "all": "Tots",
+        "no_articles": "No hi ha articles disponibles",
+        "back_to_blog": "Tornar al Blog",
+        "related_articles": "Articles Relacionats",
+        "read_more": "Llegir més",
+        "view_all": "Veure Tots els Articles",
+        "categories": {
+            "yoga": "Ioga",
+            "therapy": "Teràpies",
+            "general": "General"
+        },
+        "seo": {
+            "title": "Blog | Arunachala Ioga i Teràpies",
+            "description": "Descobreix articles sobre ioga, meditació, teràpies holístiques i benestar al nostre blog."
+        }
+    },
+    "legal": {
+        "title": "Avís Legal",
+        "subtitle": "Informació legal i condicions d'ús del lloc web",
+        "last_updated": "Última actualització",
+        "seo": {
+            "title": "Avís Legal | Arunachala Ioga i Teràpies",
+            "description": "Avís legal i condicions d'ús del lloc web d'Arunachala Ioga i Teràpies a Cornellà de Llobregat."
+        },
+        "sections": {
+            "identification": {
+                "title": "Identificació",
+                "company": "Titular",
+                "company_value": "Susana Pérez Gil - Arunachala Ioga i Teràpies",
+                "cif": "NIF",
+                "cif_value": "[Número d'identificació fiscal]",
+                "address": "Adreça",
+                "address_value": "Passatge de Mateu Oliva 3, baixos, 08940 Cornellà de Llobregat, Barcelona",
+                "email": "Email",
+                "phone": "Telèfon"
+            },
+            "object": {
+                "title": "Objecte del Lloc Web",
+                "content": "Aquest lloc web ofereix informació sobre les classes de ioga, teràpies holístiques i massatges d'Arunachala. En utilitzar aquest web, acceptes les condicions d'ús aquí establertes."
+            },
+            "conditions": {
+                "title": "Condicions d'Ús",
+                "content": "L'usuari es compromet a utilitzar el lloc web de forma adequada i conforme a la llei, sense difondre continguts inapropiats ni realitzar accions que puguin danyar el funcionament del web."
+            },
+            "property": {
+                "title": "Propietat Intel·lectual",
+                "content": "Tots els continguts d'aquest lloc web (textos, imatges, logotips, disseny) són propietat d'Arunachala. Pots visualitzar-los per a ús personal, però no pots reproduir-los, distribuir-los o modificar-los sense autorització."
+            },
+            "liability": {
+                "title": "Limitació de Responsabilitat",
+                "content": "Arunachala s'esforça per mantenir la informació actualitzada i correcta, però no es responsabilitza de possibles errors o omissions en els continguts, ni d'interrupcions temporals en el servei."
+            },
+            "law": {
+                "title": "Legislació Aplicable",
+                "content": "Aquest avís legal es regeix per la legislació espanyola. Qualsevol disputa es resoldrà als tribunals de Barcelona."
+            }
+        }
     }
 }

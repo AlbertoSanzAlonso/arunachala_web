@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
+from datetime import datetime
 from app.core.database import get_db
 from app.models.models import Content, User
 from app.api.auth import get_current_user
@@ -9,17 +10,45 @@ from app.core.webhooks import notify_n8n_content_change
 from app.core.translation_utils import auto_translate_background
 from app.core.database import get_db, SessionLocal
 from fastapi import BackgroundTasks
+import re
+from unidecode import unidecode
 
 router = APIRouter(prefix="/api/content", tags=["content"])
+
+def generate_slug(title: str, db: Session, content_id: Optional[int] = None) -> str:
+    """Generate a unique slug from title"""
+    # Convert to lowercase and replace spaces with hyphens
+    slug = unidecode(title.lower())
+    slug = re.sub(r'[^\w\s-]', '', slug)
+    slug = re.sub(r'[-\s]+', '-', slug)
+    slug = slug.strip('-')
+    
+    # Check if slug exists
+    base_slug = slug
+    counter = 1
+    while True:
+        existing = db.query(Content).filter(Content.slug == slug)
+        if content_id:
+            existing = existing.filter(Content.id != content_id)
+        if not existing.first():
+            break
+        slug = f"{base_slug}-{counter}"
+        counter += 1
+    
+    return slug
 
 class ContentBase(BaseModel):
     title: str
     body: Optional[str] = None
+    excerpt: Optional[str] = None
     type: str # article, mantra, etc
+    category: Optional[str] = None  # 'yoga', 'therapy', 'general'
     status: str = "draft"
     thumbnail_url: Optional[str] = None
+    media_url: Optional[str] = None
     seo_title: Optional[str] = None
     seo_description: Optional[str] = None
+    tags: Optional[List[str]] = None
     translations: Optional[dict] = None
 
 class ContentCreate(ContentBase):
@@ -28,26 +57,50 @@ class ContentCreate(ContentBase):
 class ContentUpdate(BaseModel):
     title: Optional[str] = None
     body: Optional[str] = None
+    excerpt: Optional[str] = None
     type: Optional[str] = None
+    category: Optional[str] = None
     status: Optional[str] = None
     thumbnail_url: Optional[str] = None
+    media_url: Optional[str] = None
     seo_title: Optional[str] = None
     seo_description: Optional[str] = None
+    tags: Optional[List[str]] = None
     translations: Optional[dict] = None
 
 class ContentResponse(ContentBase):
     id: int
+    slug: str
     author_id: Optional[int]
+    created_at: datetime
+    updated_at: Optional[datetime]
 
     class Config:
         from_attributes = True
 
+
 @router.get("", response_model=List[ContentResponse])
-def get_contents(type: Optional[str] = None, db: Session = Depends(get_db)):
+def get_contents(
+    type: Optional[str] = None,
+    category: Optional[str] = None,
+    status: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
     query = db.query(Content)
     if type:
         query = query.filter(Content.type == type)
-    return query.all()
+    if category:
+        query = query.filter(Content.category == category)
+    if status:
+        query = query.filter(Content.status == status)
+    return query.order_by(Content.created_at.desc()).all()
+
+@router.get("/slug/{slug}", response_model=ContentResponse)
+def get_content_by_slug(slug: str, db: Session = Depends(get_db)):
+    db_content = db.query(Content).filter(Content.slug == slug).first()
+    if not db_content:
+        raise HTTPException(status_code=404, detail="Content not found")
+    return db_content
 
 @router.get("/{content_id}", response_model=ContentResponse)
 def get_content(content_id: int, db: Session = Depends(get_db)):
@@ -66,7 +119,18 @@ async def create_content(
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    db_content = Content(**content_data.model_dump(), author_id=current_user.id)
+    # Generate slug from title
+    slug = generate_slug(content_data.title, db)
+    
+    # Convert tags list to JSON if provided
+    tags_json = content_data.tags if content_data.tags else None
+    
+    db_content = Content(
+        **content_data.model_dump(exclude={'tags'}),
+        slug=slug,
+        tags=tags_json,
+        author_id=current_user.id
+    )
     db.add(db_content)
     db.commit()
     db.refresh(db_content)
@@ -77,7 +141,11 @@ async def create_content(
     
     # Auto-translate if no translations provided
     if not content_data.translations and background_tasks:
-        fields = {"title": content_data.title, "body": content_data.body}
+        fields = {
+            "title": content_data.title,
+            "body": content_data.body,
+            "excerpt": content_data.excerpt
+        }
         fields = {k: v for k, v in fields.items() if v}
         background_tasks.add_task(
             auto_translate_background, 
@@ -104,8 +172,17 @@ async def update_content(
     if not db_content:
         raise HTTPException(status_code=404, detail="Content not found")
     
-    for key, value in content_data.model_dump(exclude_unset=True).items():
+    # Update slug if title changed
+    if content_data.title and content_data.title != db_content.title:
+        db_content.slug = generate_slug(content_data.title, db, content_id)
+    
+    # Update fields
+    for key, value in content_data.model_dump(exclude_unset=True, exclude={'tags'}).items():
         setattr(db_content, key, value)
+    
+    # Update tags if provided
+    if content_data.tags is not None:
+        db_content.tags = content_data.tags
     
     db.commit()
     db.refresh(db_content)
@@ -115,8 +192,12 @@ async def update_content(
         await notify_n8n_content_change(db_content.id, db_content.type, "update")
     
     # Re-translate if main fields changed and no new translations provided
-    if (content_data.title or content_data.body) and not content_data.translations:
-        fields = {"title": db_content.title, "body": db_content.body}
+    if (content_data.title or content_data.body or content_data.excerpt) and not content_data.translations:
+        fields = {
+            "title": db_content.title,
+            "body": db_content.body,
+            "excerpt": db_content.excerpt
+        }
         fields = {k: v for k, v in fields.items() if v}
         background_tasks.add_task(
             auto_translate_background, 

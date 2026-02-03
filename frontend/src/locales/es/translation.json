@@ -80,7 +80,8 @@
         "space": "Nuestro Espacio",
         "about": "Sobre Nosotros",
         "contact": "Contacto",
-        "activities": "Actividades"
+        "activities": "Actividades",
+        "meditations": "Meditaciones"
     },
     "yoga": {
         "title": "YOGA",
@@ -291,6 +292,82 @@
         "seo": {
             "title": "Contacto | Yoga y Terapias Arunachala Cornellà",
             "description": "Contacta con Arunachala Yoga en Cornellà. Reserva tu clase de yoga o sesión de terapia. Estamos en Carrer del Bruc 44."
+        }
+    },
+    "blog": {
+        "title": "Blog",
+        "subtitle": "Artículos sobre yoga, meditación y bienestar",
+        "section_title": "Últimas Publicaciones",
+        "all": "Todos",
+        "no_articles": "No hay artículos disponibles",
+        "back_to_blog": "Volver al Blog",
+        "related_articles": "Artículos Relacionados",
+        "read_more": "Leer más",
+        "view_all": "Ver Todos los Artículos",
+        "categories": {
+            "yoga": "Yoga",
+            "therapy": "Terapias",
+            "general": "General"
+        },
+        "category_pages": {
+            "yoga": {
+                "title": "Blog de Yoga",
+                "subtitle": "Artículos, consejos y reflexiones sobre la práctica del yoga"
+            },
+            "therapy": {
+                "title": "Blog de Terapias",
+                "subtitle": "Artículos sobre terapias holísticas, masajes y bienestar"
+            },
+            "general": {
+                "title": "Blog General",
+                "subtitle": "Artículos sobre bienestar y vida consciente"
+            }
+        },
+        "seo": {
+            "title": "Blog | Arunachala Yoga y Terapias",
+            "description": "Descubre artículos sobre yoga, meditación, terapias holísticas y bienestar en nuestro blog."
+        }
+    },
+    "legal": {
+        "title": "Aviso Legal",
+        "subtitle": "Información legal y condiciones de uso del sitio web",
+        "last_updated": "Última actualización",
+        "seo": {
+            "title": "Aviso Legal | Arunachala Yoga y Terapias",
+            "description": "Aviso legal y condiciones de uso del sitio web de Arunachala Yoga y Terapias en Cornellà de Llobregat."
+        },
+        "sections": {
+            "identification": {
+                "title": "Identificación",
+                "company": "Titular",
+                "company_value": "Susana Pérez Gil - Arunachala Yoga y Terapias",
+                "cif": "NIF",
+                "cif_value": "[Número de identificación fiscal]",
+                "address": "Dirección",
+                "address_value": "Pasaje de Mateu Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona",
+                "email": "Email",
+                "phone": "Teléfono"
+            },
+            "object": {
+                "title": "Objeto del Sitio Web",
+                "content": "Este sitio web ofrece información sobre las clases de yoga, terapias holísticas y masajes de Arunachala. Al utilizar esta web, aceptas las condiciones de uso aquí establecidas."
+            },
+            "conditions": {
+                "title": "Condiciones de Uso",
+                "content": "El usuario se compromete a usar el sitio web de forma adecuada y conforme a la ley, sin difundir contenidos inapropiados ni realizar acciones que puedan dañar el funcionamiento de la web."
+            },
+            "property": {
+                "title": "Propiedad Intelectual",
+                "content": "Todos los contenidos de este sitio web (textos, imágenes, logotipos, diseño) son propiedad de Arunachala. Puedes visualizarlos para uso personal, pero no puedes reproducirlos, distribuirlos o modificarlos sin autorización."
+            },
+            "liability": {
+                "title": "Limitación de Responsabilidad",
+                "content": "Arunachala se esfuerza por mantener la información actualizada y correcta, pero no se responsabiliza de posibles errores u omisiones en los contenidos, ni de interrupciones temporales en el servicio."
+            },
+            "law": {
+                "title": "Legislación Aplicable",
+                "content": "Este aviso legal se rige por la legislación española. Cualquier disputa se resolverá en los tribunales de Barcelona."
+            }
         }
     }
 }

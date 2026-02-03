@@ -292,5 +292,67 @@
             "title": "Contact | Arunachala Yoga & Therapies Cornellà",
             "description": "Contact Arunachala Yoga in Cornellà. Book your yoga class or therapy session. We are at Carrer del Bruc 44."
         }
+    },
+    "blog": {
+        "title": "Blog",
+        "subtitle": "Articles about yoga, meditation and wellness",
+        "section_title": "Latest Posts",
+        "all": "All",
+        "no_articles": "No articles available",
+        "back_to_blog": "Back to Blog",
+        "related_articles": "Related Articles",
+        "read_more": "Read more",
+        "view_all": "View All Articles",
+        "categories": {
+            "yoga": "Yoga",
+            "therapy": "Therapies",
+            "general": "General"
+        },
+        "seo": {
+            "title": "Blog | Arunachala Yoga & Therapies",
+            "description": "Discover articles about yoga, meditation, holistic therapies and wellness on our blog."
+        }
+    },
+    "legal": {
+        "title": "Legal Notice",
+        "subtitle": "Legal information and terms of use of the website",
+        "last_updated": "Last updated",
+        "seo": {
+            "title": "Legal Notice | Arunachala Yoga & Therapies",
+            "description": "Legal notice and terms of use of the Arunachala Yoga & Therapies website in Cornellà de Llobregat."
+        },
+        "sections": {
+            "identification": {
+                "title": "Identification",
+                "company": "Owner",
+                "company_value": "Susana Pérez Gil - Arunachala Yoga & Therapies",
+                "cif": "Tax ID",
+                "cif_value": "[Tax identification number]",
+                "address": "Address",
+                "address_value": "Passatge de Mateu Oliva 3, ground floor, 08940 Cornellà de Llobregat, Barcelona",
+                "email": "Email",
+                "phone": "Phone"
+            },
+            "object": {
+                "title": "Purpose of the Website",
+                "content": "This website offers information about Arunachala's yoga classes, holistic therapies and massages. By using this website, you accept the terms of use established here."
+            },
+            "conditions": {
+                "title": "Terms of Use",
+                "content": "The user agrees to use the website appropriately and in accordance with the law, without disseminating inappropriate content or performing actions that may damage the operation of the website."
+            },
+            "property": {
+                "title": "Intellectual Property",
+                "content": "All contents of this website (texts, images, logos, design) are property of Arunachala. You may view them for personal use, but you may not reproduce, distribute or modify them without authorization."
+            },
+            "liability": {
+                "title": "Limitation of Liability",
+                "content": "Arunachala strives to keep the information up-to-date and correct, but is not responsible for possible errors or omissions in the contents, nor for temporary service interruptions."
+            },
+            "law": {
+                "title": "Applicable Law",
+                "content": "This legal notice is governed by Spanish legislation. Any dispute will be resolved in the courts of Barcelona."
+            }
+        }
     }
 }

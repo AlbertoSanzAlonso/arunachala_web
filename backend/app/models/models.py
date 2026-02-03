@@ -26,6 +26,7 @@ class ContentType(str, enum.Enum):
     MANTRA = "mantra"
     SERVICE = "service"
     ANNOUNCEMENT = "announcement"
+    MEDITATION = "meditation"
 
 class ContentStatus(str, enum.Enum):
     DRAFT = "draft"
@@ -39,12 +40,16 @@ class Content(Base):
     title = Column(String, index=True, nullable=False)
     slug = Column(String, unique=True, index=True)
     body = Column(Text, nullable=True)
+    excerpt = Column(String, nullable=True)  # Short description for listing
     type = Column(String, nullable=False)  # ContentType
+    category = Column(String, nullable=True)  # 'yoga', 'therapy', 'general'
     status = Column(String, default=ContentStatus.DRAFT)
     author_id = Column(Integer, ForeignKey("users.id"))
     thumbnail_url = Column(String, nullable=True)
+    media_url = Column(String, nullable=True) # For audio/video files
     seo_title = Column(String, nullable=True)
     seo_description = Column(String, nullable=True)
+    tags = Column(JSON, nullable=True)  # Array of tags
     translations = Column(JSON, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

@@ -10,6 +10,7 @@ const HomePage = lazy(() => import('./pages/HomePage'));
 const YogaPage = lazy(() => import('./pages/YogaPage'));
 const TherapiesPage = lazy(() => import('./pages/TherapiesPage'));
 const BlogPage = lazy(() => import('./pages/BlogPage'));
+const BlogDetailPage = lazy(() => import('./pages/BlogDetailPage'));
 const YogaGalleryPage = lazy(() => import('./pages/YogaGalleryPage'));
 const TherapiesGalleryPage = lazy(() => import('./pages/TherapiesGalleryPage'));
 const ActivitiesPage = lazy(() => import('./pages/ActivitiesPage'));
@@ -34,6 +35,8 @@ const AgentControl = lazy(() => import('./pages/dashboard/AgentControl'));
 const ActivityManager = lazy(() => import('./pages/dashboard/ActivityManager'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
+const LegalNoticePage = lazy(() => import('./pages/LegalNoticePage'));
+const MeditationsPage = lazy(() => import('./pages/MeditationsPage'));
 const ChatBot = lazy(() => import('./components/ChatBot'));
 
 const AppContent = () => {
@@ -56,12 +59,18 @@ const AppContent = () => {
                 <Route path="/clases-de-yoga" element={<YogaPage />} />
                 <Route path="/terapias-y-masajes" element={<TherapiesPage />} />
                 <Route path="/blog" element={<BlogPage />} />
+                <Route path="/blog/yoga" element={<BlogPage />} />
+                <Route path="/blog/therapy" element={<BlogPage />} />
+                <Route path="/blog/general" element={<BlogPage />} />
+                <Route path="/blog/:slug" element={<BlogDetailPage />} />
                 <Route path="/galeria/clases-de-yoga" element={<YogaGalleryPage />} />
                 <Route path="/galeria/terapias-y-masajes" element={<TherapiesGalleryPage />} />
                 <Route path="/actividades" element={<ActivitiesPage />} />
                 <Route path="/nuestro-espacio" element={<OurSpacePage />} />
                 <Route path="/quienes-somos" element={<AboutPage />} />
                 <Route path="/contacto" element={<ContactPage />} />
+                <Route path="/aviso-legal" element={<LegalNoticePage />} />
+                <Route path="/meditaciones" element={<MeditationsPage />} />
 
                 {/* Auth Route */}
                 <Route path="/login" element={<LoginPage />} />

@@ -10,7 +10,7 @@ import os
 
 # Import the reviews router
 # Import routers
-from app.api import reviews, auth, gallery, schedules, yoga_classes, treatments, content, activities
+from app.api import reviews, auth, gallery, schedules, yoga_classes, treatments, content, activities, upload
 from app.routers import chat
 from fastapi.staticfiles import StaticFiles
 
@@ -22,15 +22,16 @@ from app.core.config import settings
 app = FastAPI(title="Arunachala API")
 
 # Configure CORS
-origins = settings.ALLOWED_ORIGINS
-if isinstance(origins, str):
-    # Handle comma-separated string from environment variables
-    origins = [o.strip() for o in origins.split(',')]
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8000",
+    "https://arunachala-web.vercel.app"
+]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -45,6 +46,7 @@ app.include_router(yoga_classes.router)
 app.include_router(treatments.router)
 app.include_router(content.router)
 app.include_router(activities.router)
+app.include_router(upload.router)
 app.include_router(chat.router, prefix="/api", tags=["chat"])
 
 
