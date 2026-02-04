@@ -139,14 +139,14 @@ async def create_activity(
 
     new_activity = Activity(
         title=title,
-        description=description,
+        description=description or "",
         translations=json.loads(translations) if translations else None,
         activity_data=json.loads(activity_data) if activity_data else None,
         type=type,
         start_date=start_dt,
         end_date=end_dt,
-        location=location,
-        price=price,
+        location=location or "",
+        price=price or "",
         image_url=image_url,
         slug=slug,
         is_active=is_active
@@ -257,7 +257,7 @@ async def delete_activity(
         delete_file(activity.image_url)
 
     # Notify RAG system BEFORE deleting
-    await notify_n8n_content_change(activity_id, "activity", "delete", db=db)
+    await notify_n8n_content_change(activity_id, "activity", "delete", db=db, entity=activity)
     
     db.delete(activity)
     db.commit()

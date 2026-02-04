@@ -57,14 +57,18 @@ The dashboard includes an "Agent Control" page to adjust:
 -   Response length
 -   Focus area
 
-### Sync Status Monitoring
-- **API Endpoint**: `GET /api/rag/sync-status`
-  - Shows vectorization status for all content types
-  - Displays sync percentage and items needing reindex
-  
-- **Sync Logs**: `GET /api/rag/sync-logs`
-  - Recent sync operations with filtering
-  - Error messages for debugging
+### Dashboard RAG Knowledge Center
+The Agent Control page now features a visual "RAG Knowledge Center":
+- **Real-time Monitoring**: Progress bars showing synchronization percentage per category.
+- **Categorized Sync**: "Sincronizar" buttons that appear only when items need reindexing.
+- **Global Commands**: "Sincronizar Todo lo Pendiente" and "Forzar Reindexación Completa".
+- **Status API**: Communicates with `GET /api/rag/sync-status` and `POST /api/rag/sync`.
+
+### API Endpoints
+- **`GET /api/rag/sync-status`**: Consolidates statistics for the dashboard.
+- **`POST /api/rag/sync`**: Trigger background sync for category or all items.
+- **`POST /api/rag/sync-callback`**: n8n reports success/failure here.
+- **`GET /api/rag/sync-logs`**: Recent operations history.
 
 ### Manual Sync Script
 ```bash

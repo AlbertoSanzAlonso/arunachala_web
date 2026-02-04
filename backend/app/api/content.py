@@ -322,7 +322,7 @@ async def delete_content(
         delete_media_file(db_content.media_url)
     
     # Notify n8n
-    await notify_n8n_content_change(db_content.id, db_content.type, "delete", db=db)
+    await notify_n8n_content_change(db_content.id, db_content.type, "delete", db=db, entity=db_content)
     
     # Log to dashboard activity before deleting
     from app.models.models import DashboardActivity

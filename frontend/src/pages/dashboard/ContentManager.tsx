@@ -17,6 +17,7 @@ import { API_BASE_URL } from '../../config';
 import { useToast } from '../../hooks/useToast';
 import ToastNotification from '../../components/ToastNotification';
 import RichTextEditor from '../../components/RichTextEditor';
+import PageLoader from '../../components/PageLoader';
 
 interface Content {
     id: number;
@@ -43,6 +44,7 @@ export default function ContentManager() {
     const toast = useToast();
     const [contents, setContents] = useState<Content[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
     const [currentTab, setCurrentTab] = useState('all');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingContent, setEditingContent] = useState<Content | null>(null);
@@ -180,6 +182,7 @@ export default function ContentManager() {
 
     const confirmDelete = async () => {
         setDeleteModalState(prev => ({ ...prev, isOpen: false }));
+        setIsSaving(true);
 
         if (deleteModalState.type === 'single' && deleteModalState.id) {
             try {
@@ -204,9 +207,12 @@ export default function ContentManager() {
             } catch (error) {
                 console.error(error);
                 toast.error('Error al conectar con el servidor');
+            } finally {
+                setIsSaving(false);
             }
         } else if (deleteModalState.type === 'bulk') {
             try {
+                setIsSaving(true);
                 const token = sessionStorage.getItem('access_token');
                 const deletePromises = Array.from(selectedIds).map(id =>
                     fetch(`${API_BASE_URL}/api/content/${id}`, {
@@ -223,6 +229,8 @@ export default function ContentManager() {
             } catch (error) {
                 console.error(error);
                 toast.error('Error al eliminar algunos elementos');
+            } finally {
+                setIsSaving(false);
             }
         }
     };
@@ -379,6 +387,7 @@ export default function ContentManager() {
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsSaving(true);
 
         // Validate required fields
         if (!formData.title || formData.title.trim() === '') {
@@ -420,6 +429,8 @@ export default function ContentManager() {
         } catch (error) {
             console.error(error);
             toast.error('Error al conectar con el servidor');
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -429,6 +440,7 @@ export default function ContentManager() {
 
     return (
         <>
+            {isSaving && <PageLoader />}
             <ToastNotification toasts={toast.toasts} onRemove={toast.removeToast} />
             <div className="px-4 sm:px-6 lg:px-8">
                 <div className="sm:flex sm:items-center">
@@ -874,9 +886,10 @@ export default function ContentManager() {
                                                 </button>
                                                 <button
                                                     type="submit"
-                                                    className="inline-flex justify-center rounded-md border border-transparent bg-forest px-4 py-2 text-sm font-medium text-white hover:bg-forest/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2"
+                                                    disabled={isSaving || uploading || isGeneratingImage}
+                                                    className="inline-flex justify-center rounded-md border border-transparent bg-forest px-6 py-2 text-sm font-medium text-white hover:bg-forest/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 disabled:opacity-50"
                                                 >
-                                                    Guardar
+                                                    {isSaving ? 'Guardando...' : (editingContent ? 'Guardar Cambios' : 'Crear Contenido')}
                                                 </button>
                                             </div>
                                         </form>

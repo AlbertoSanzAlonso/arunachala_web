@@ -15,6 +15,7 @@ from app.models.models import (
     RAGSyncLog, YogaClassDefinition, MassageType, 
     TherapyType, Content, Activity
 )
+from app.core.webhooks import notify_n8n_content_change
 
 router = APIRouter(prefix="/api/rag", tags=["RAG Sync"])
 
@@ -38,6 +39,13 @@ class SyncStatusResponse(BaseModel):
     contents: Dict
     activities: Dict
     total_needs_reindex: int
+
+
+class SyncTriggerRequest(BaseModel):
+    """Request to trigger synchronization"""
+    # 'yoga', 'massage', 'therapy', 'content', 'activity', 'all'
+    sync_type: str = 'all'
+    force: bool = False
 
 
 @router.post("/sync-callback")
@@ -84,10 +92,13 @@ async def rag_sync_callback(
     
     entity = db.query(Model).filter(Model.id == request.entity_id).first()
     if not entity:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"{request.entity_type} #{request.entity_id} not found"
-        )
+        # If entity is gone, it's likely it was just deleted. 
+        # We don't want to 404 and break n8n or show errors in console.
+        return {
+            "success": True,
+            "message": f"{request.entity_type} #{request.entity_id} not found in DB (likely deleted). Callback accepted.",
+            "status": "skipped"
+        }
     
     # Update RAG tracking fields
     if request.status == 'success':
@@ -141,6 +152,13 @@ async def get_sync_status(db: Session = Depends(get_db)):
     content_stats = get_stats(Content)
     activity_stats = get_stats(Activity)
     
+    # Count active sync operations (pending or processing logs in the last 5 mins)
+    from datetime import timedelta
+    active_syncs = db.query(RAGSyncLog).filter(
+        RAGSyncLog.status.in_(['pending', 'processing']),
+        RAGSyncLog.created_at >= datetime.now() - timedelta(minutes=5)
+    ).count()
+    
     total_needs_reindex = (
         yoga_stats['needs_reindex'] +
         massage_stats['needs_reindex'] +
@@ -148,14 +166,15 @@ async def get_sync_status(db: Session = Depends(get_db)):
         content_stats['needs_reindex'] +
         activity_stats['needs_reindex']
     )
-    
+
     return {
         "yoga_classes": yoga_stats,
         "massage_types": massage_stats,
         "therapy_types": therapy_stats,
         "contents": content_stats,
         "activities": activity_stats,
-        "total_needs_reindex": total_needs_reindex
+        "total_needs_reindex": total_needs_reindex,
+        "processing_count": active_syncs
     }
 
 
@@ -198,4 +217,68 @@ async def get_sync_logs(
             }
             for log in logs
         ]
+    }
+
+
+@router.post("/sync")
+async def trigger_rag_sync(
+    request: SyncTriggerRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Mananually trigger RAG synchronization for specific types or all content.
+    """
+    
+    model_map = {
+        'yoga': (YogaClassDefinition, 'yoga_class'),
+        'massage': (MassageType, 'massage'),
+        'therapy': (TherapyType, 'therapy'),
+        'content': (Content, 'content'),
+        'activity': (Activity, 'activity'),
+    }
+    
+    types_to_sync = []
+    if request.sync_type == 'all':
+        types_to_sync = list(model_map.keys())
+    elif request.sync_type in model_map:
+        types_to_sync = [request.sync_type]
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid sync_type: {request.sync_type}"
+        )
+    
+    sync_total = 0
+    
+    for s_type in types_to_sync:
+        Model, webhook_type = model_map[s_type]
+        
+        query = db.query(Model)
+        
+        if not request.force:
+            query = query.filter(Model.needs_reindex == True)
+        
+        # Only active items
+        if hasattr(Model, 'is_active'):
+            query = query.filter(Model.is_active == True)
+        elif hasattr(Model, 'status'):
+            query = query.filter(Model.status == 'published')
+            
+        entities = query.all()
+        
+        for entity in entities:
+            # We don't await this to avoid timeout on large batches, 
+            # notify_n8n_content_change already handles async background task
+            await notify_n8n_content_change(
+                content_id=entity.id,
+                content_type=webhook_type,
+                action='update',
+                db=db
+            )
+            sync_total += 1
+    
+    return {
+        "success": True,
+        "triggered_count": sync_total,
+        "message": f"Triggered sync for {sync_total} items"
     }

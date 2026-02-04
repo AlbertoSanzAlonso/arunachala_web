@@ -214,6 +214,42 @@
 
 ---
 
+### 11. **rag_sync_log** ✅ (NUEVA)
+**Propósito**: Historial completo de sincronizaciones con el sistema RAG (Qdrant)
+**Registros**: Variable
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| id | integer | PK |
+| entity_type | varchar | (yoga_class/massage/therapy/content/activity) |
+| entity_id | integer | ID del elemento en su tabla respectiva |
+| action | varchar | (create/update/delete) |
+| status | varchar | (pending/processing/success/failed) |
+| vector_id | varchar | ID asignado en Qdrant |
+| error_message | text | Mensaje en caso de fallo |
+| sync_metadata | jsonb | Detalles técnicos de la operación |
+| webhook_sent_at | timestamp | Hora de envío a n8n |
+| vectorized_at | timestamp | Hora de confirmación de éxito |
+| created_at | timestamp | |
+| updated_at | timestamp | |
+
+**Estado**: ✅ Correcta e implementada
+
+---
+
+## 🤖 Sistema RAG 2.0 (Sincronización)
+
+Se han añadido campos de seguimiento a todas las tablas que alimentan el conocimiento de la IA (2, 4, 6, 7 y 9):
+
+| Campo | Tipo | Propósito |
+|---|---|---|
+| **vector_id** | varchar | ID único del fragmento en Qdrant |
+| **vectorized_at** | timestamp | Última vez que se sincronizó con éxito |
+| **needs_reindex** | boolean | Flag que indica si hay cambios pendientes por enviar a la IA |
+
+---
+
+
 ## 🔍 Análisis y Recomendaciones
 
 ### ✅ **Puntos Fuertes**
@@ -295,9 +331,10 @@ La tabla `dashboard_activities` es básica. Podrías considerar:
 | gallery | 48 kB | 0 |
 | schedules | 48 kB | 5 |
 | activities | 40 kB | 0 |
+| rag_sync_log | 32 kB | >20 |
 | dashboard_activities | 24 kB | 0 |
 
-**Total**: ~544 kB (muy eficiente)
+**Total**: ~576 kB (muy eficiente)
 
 ---
 

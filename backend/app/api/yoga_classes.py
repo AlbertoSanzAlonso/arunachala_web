@@ -67,7 +67,11 @@ async def create_yoga_class(
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    db_class = YogaClassDefinition(**class_data.model_dump())
+    data = class_data.model_dump()
+    if 'description' in data and data['description'] is None:
+        data['description'] = ""
+    
+    db_class = YogaClassDefinition(**data)
     db.add(db_class)
     db.commit()
     db.refresh(db_class)
@@ -142,7 +146,7 @@ async def delete_yoga_class(
         raise HTTPException(status_code=404, detail="Class not found")
     
     # Notify n8n BEFORE delete for reference if needed, or just action
-    await notify_n8n_content_change(db_class.id, "yoga_class", "delete", db=db)
+    await notify_n8n_content_change(db_class.id, "yoga_class", "delete", db=db, entity=db_class)
     
     db.delete(db_class)
     db.commit()

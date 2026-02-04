@@ -89,9 +89,9 @@ async def create_massage(
 
     db_massage = MassageType(
         name=name,
-        excerpt=excerpt,
-        description=description,
-        benefits=benefits,
+        excerpt=excerpt or "",
+        description=description or "",
+        benefits=benefits or "",
         duration_min=duration_min,
         is_active=is_active,
         image_url=image_url,
@@ -159,9 +159,9 @@ async def update_massage(
 
     # Update other fields if provided
     if name is not None: db_massage.name = name
-    if excerpt is not None: db_massage.excerpt = excerpt
-    if description is not None: db_massage.description = description
-    if benefits is not None: db_massage.benefits = benefits
+    if excerpt is not None: db_massage.excerpt = excerpt or ""
+    if description is not None: db_massage.description = description or ""
+    if benefits is not None: db_massage.benefits = benefits or ""
     if duration_min is not None: 
         db_massage.duration_min = None if duration_min == 0 else duration_min
     if is_active is not None: db_massage.is_active = is_active
@@ -205,7 +205,8 @@ async def delete_massage(
         delete_file(db_massage.image_url)
     
     # Notify n8n
-    await notify_n8n_content_change(db_massage.id, "massage", "delete", db=db)
+    # Notify n8n with entity before it's gone
+    await notify_n8n_content_change(db_massage.id, "massage", "delete", db=db, entity=db_massage)
     
     db.delete(db_massage)
     db.commit()
@@ -255,9 +256,9 @@ async def create_therapy(
 
     db_therapy = TherapyType(
         name=name,
-        excerpt=excerpt,
-        description=description,
-        benefits=benefits,
+        excerpt=excerpt or "",
+        description=description or "",
+        benefits=benefits or "",
         duration_min=duration_min,
         is_active=is_active,
         image_url=image_url,
@@ -324,9 +325,9 @@ async def update_therapy(
         db_therapy.image_url = save_upload_file(image, subdirectory="treatments/therapies")
 
     if name is not None: db_therapy.name = name
-    if excerpt is not None: db_therapy.excerpt = excerpt
-    if description is not None: db_therapy.description = description
-    if benefits is not None: db_therapy.benefits = benefits
+    if excerpt is not None: db_therapy.excerpt = excerpt or ""
+    if description is not None: db_therapy.description = description or ""
+    if benefits is not None: db_therapy.benefits = benefits or ""
     if duration_min is not None: 
         db_therapy.duration_min = None if duration_min == 0 else duration_min
     if is_active is not None: db_therapy.is_active = is_active
@@ -370,7 +371,8 @@ async def delete_therapy(
         delete_file(db_therapy.image_url)
     
     # Notify n8n
-    await notify_n8n_content_change(db_therapy.id, "therapy", "delete", db=db)
+    # Notify n8n with entity before it's gone
+    await notify_n8n_content_change(therapy_id, "therapy", "delete", db=db, entity=db_therapy)
     
     db.delete(db_therapy)
     db.commit()
