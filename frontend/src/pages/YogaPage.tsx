@@ -110,7 +110,7 @@ const YogaPage: React.FC = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8 }}
-                            className="text-6xl md:text-9xl font-headers text-white mb-6 md:mb-8 tracking-wide drop-shadow-lg mt-8 md:mt-0 uppercase"
+                            className="text-6xl md:text-9xl font-headers text-white mb-6 md:mb-8 tracking-wide drop-shadow-lg mt-8 md:mt-32 uppercase"
                         >
                             {t('yoga.title')}
                         </motion.h1>
