@@ -4,7 +4,6 @@ import { PencilIcon, TrashIcon, UserPlusIcon, MagnifyingGlassIcon } from '@heroi
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { API_BASE_URL } from '../../config';
 import { useAuth } from '../../context/AuthContext';
-import PageLoader from '../../components/PageLoader';
 
 interface User {
     id: number;
@@ -20,7 +19,6 @@ export default function UserManager() {
     const [users, setUsers] = useState<User[]>([]);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [isSaving, setIsSaving] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -103,7 +101,6 @@ export default function UserManager() {
     const handleUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedUser) return;
-        setIsSaving(true);
 
         const token = sessionStorage.getItem('access_token');
         try {
@@ -129,14 +126,11 @@ export default function UserManager() {
         } catch (error) {
             console.error('Error updating user:', error);
             alert('Error al actualizar usuario');
-        } finally {
-            setIsSaving(false);
         }
     };
 
     const handleDelete = async () => {
         if (!selectedUser) return;
-        setIsSaving(true);
 
         const token = sessionStorage.getItem('access_token');
         try {
@@ -160,8 +154,6 @@ export default function UserManager() {
         } catch (error) {
             console.error('Error deleting user:', error);
             alert('Error al eliminar usuario');
-        } finally {
-            setIsSaving(false);
         }
     };
 
@@ -181,7 +173,6 @@ export default function UserManager() {
 
     return (
         <div>
-            {isSaving && <PageLoader />}
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto">
                     <h1 className="text-2xl font-semibold leading-6 text-gray-900">Gestión de Usuarios</h1>
@@ -366,10 +357,9 @@ export default function UserManager() {
                                 </button>
                                 <button
                                     type="submit"
-                                    disabled={isSaving}
-                                    className="rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 disabled:opacity-50"
+                                    className="rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700"
                                 >
-                                    {isSaving ? 'Guardando...' : 'Guardar'}
+                                    Guardar
                                 </button>
                             </div>
                         </form>
@@ -391,19 +381,17 @@ export default function UserManager() {
                             <div className="flex justify-end gap-3">
                                 <button
                                     type="button"
-                                    disabled={isSaving}
                                     onClick={() => setShowDeleteConfirm(false)}
-                                    className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                                    className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                                 >
                                     Cancelar
                                 </button>
                                 <button
                                     type="button"
-                                    disabled={isSaving}
                                     onClick={handleDelete}
-                                    className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                                    className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
                                 >
-                                    {isSaving ? 'Eliminando...' : 'Eliminar'}
+                                    Eliminar
                                 </button>
                             </div>
                         </div>

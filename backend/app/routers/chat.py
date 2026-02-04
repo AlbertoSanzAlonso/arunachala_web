@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy import text
 from pydantic import BaseModel
 from typing import List, Optional
 import os
@@ -13,13 +12,9 @@ router = APIRouter()
 from groq import Groq
 import google.generativeai as genai
 from sqlalchemy.orm import Session
-from app.core.database import get_db, engine
+from app.models.models import AgentConfig, User
+from app.core.database import get_db
 from app.api.auth import get_current_user
-from app.models.models import (
-    AgentConfig, User, YogaClassDefinition, 
-    MassageType, TherapyType, Content, Activity,
-    RAGSyncLog
-)
 
 # --- Configurations ---
 QDRANT_HOST = os.getenv("QDRANT_HOST", "localhost")
@@ -370,7 +365,6 @@ async def ingest_data(secret: str, content: str, source: str):
 @router.post("/chat-memory-reset")
 async def reset_rag_memory(
     request: ResetRequest,
-    db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """
@@ -379,46 +373,22 @@ async def reset_rag_memory(
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
         
-    print(f"\n--- 🛠️ DEBUG RESET START: scope={request.scope} ---")
     if not qdrant_client:
-        print("❌ Qdrant client not available")
         raise HTTPException(status_code=503, detail="Qdrant service not available")
 
     try:
         if request.scope == "all":
-            print(f"🚀 Starting TOTAL RAG Reset")
             # Recreate the entire collection
             try:
-                print(f"  - Deleting Qdrant collection: {COLLECTION_NAME}")
                 qdrant_client.delete_collection(COLLECTION_NAME)
-            except Exception as q_err:
-                print(f"  - Collection delete warning: {q_err}")
-            
-            print(f"  - Creating fresh Qdrant collection")
+            except:
+                pass
             qdrant_client.create_collection(
                 collection_name=COLLECTION_NAME,
                 vectors_config=models.VectorParams(size=1536, distance=models.Distance.COSINE)
             )
-            
-            # Reset tracking in DB using a direct connection for maximum reliability
-            print(f"  - Opening direct connection for SQL Reset")
-            with engine.connect() as conn:
-                with conn.begin():
-                    tables = ['yoga_classes', 'massage_types', 'therapy_types', 'contents', 'activities']
-                    for table in tables:
-                        print(f"    * Executing UPDATE on {table}")
-                        res = conn.execute(text(f"UPDATE {table} SET vector_id = NULL, vectorized_at = NULL, needs_reindex = TRUE"))
-                        print(f"    * Result for {table}: {res.rowcount} rows affected.")
-                    
-                    # Cancel all active logs
-                    print(f"  - Cancelling active sync logs")
-                    res_logs = conn.execute(text("UPDATE rag_sync_log SET status = 'failed', error_message = 'Cancelado por reinicio de memoria' WHERE status IN ('pending', 'processing')"))
-                    print(f"    * Result for logs: {res_logs.rowcount} logs cancelled.")
-            
-            print(f"✅ Total RAG Reset Completed Successfully")
         else:
-            # Partial Reset
-            print(f"🚀 Starting PARTIAL RAG Reset (scope={request.scope})")
+            # Delete points by type filter
             qdrant_client.delete(
                 collection_name=COLLECTION_NAME,
                 points_selector=models.FilterSelector(
@@ -432,36 +402,8 @@ async def reset_rag_memory(
                     )
                 )
             )
-            
-            # Reset tracking in DB for specific table
-            table_map = {
-                'yoga_class': 'yoga_classes',
-                'massage': 'massage_types',
-                'therapy': 'therapy_types',
-                'content': 'contents',
-                'activity': 'activities'
-            }
-            
-            target_table = table_map.get(request.scope)
-            if target_table:
-                print(f"  - Resetting table: {target_table}")
-                with engine.connect() as conn:
-                    with conn.begin():
-                        res = conn.execute(text(f"UPDATE {target_table} SET vector_id = NULL, vectorized_at = NULL, needs_reindex = TRUE"))
-                        print(f"    * Result for {target_table}: {res.rowcount} rows affected.")
-                        
-                        # Cancel active logs for this specific type
-                        webhook_type = request.scope if request.scope != 'yoga_class' else 'yoga_class'
-                        res_logs = conn.execute(text("UPDATE rag_sync_log SET status = 'failed', error_message = 'Cancelado por reinicio parcial' WHERE status IN ('pending', 'processing') AND entity_type = :t"), {"t": webhook_type})
-                        print(f"    * Result for logs ({webhook_type}): {res_logs.rowcount} logs cancelled.")
-            else:
-                print(f"  - No table mapping found for scope: {request.scope}")
         
-        print(f"🏁 🏁 🏁 DEBUG RESET ENDED SUCCESSFUL\n")
-        return {"status": "success", "message": f"Memory and Database for {request.scope} reset successfully"}
-
+        return {"status": "success", "message": f"Memory for {request.scope} reset successfully"}
     except Exception as e:
-        print(f"❌ ❌ ❌ Error resetting RAG memory: {e}")
-        import traceback
-        traceback.print_exc()
+        print(f"Error resetting RAG memory: {e}")
         raise HTTPException(status_code=500, detail=str(e))

@@ -79,7 +79,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     </div>
 
                     {/* Hero Section */}
-                    <div className="flex flex-col items-center mb-16 pt-16">
+                    <div className="flex flex-col items-center mb-16">
                         <motion.h1
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}

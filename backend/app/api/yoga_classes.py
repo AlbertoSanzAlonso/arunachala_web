@@ -67,17 +67,13 @@ async def create_yoga_class(
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    data = class_data.model_dump()
-    if 'description' in data and data['description'] is None:
-        data['description'] = ""
-    
-    db_class = YogaClassDefinition(**data)
+    db_class = YogaClassDefinition(**class_data.model_dump())
     db.add(db_class)
     db.commit()
     db.refresh(db_class)
     
     # Notify n8n for RAG update
-    await notify_n8n_content_change(db_class.id, "yoga_class", "create", db=db)
+    await notify_n8n_content_change(db_class.id, "yoga_class", "create")
     
     # Auto-translate if no translations provided
     if not class_data.translations and background_tasks:
@@ -116,7 +112,7 @@ async def update_yoga_class(
     db.refresh(db_class)
     
     # Notify n8n for RAG update
-    await notify_n8n_content_change(db_class.id, "yoga_class", "update", db=db)
+    await notify_n8n_content_change(db_class.id, "yoga_class", "update")
     
     # Re-translate if main fields changed and no new translations provided
     if (class_data.name or class_data.description) and not class_data.translations:
@@ -146,7 +142,7 @@ async def delete_yoga_class(
         raise HTTPException(status_code=404, detail="Class not found")
     
     # Notify n8n BEFORE delete for reference if needed, or just action
-    await notify_n8n_content_change(db_class.id, "yoga_class", "delete", db=db, entity=db_class)
+    await notify_n8n_content_change(db_class.id, "yoga_class", "delete")
     
     db.delete(db_class)
     db.commit()

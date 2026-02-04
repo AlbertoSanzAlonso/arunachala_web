@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { PlusIcon, PencilIcon, TrashIcon, ClockIcon, CalendarIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import VisualScheduleEditor from './VisualScheduleEditor';
 import { API_BASE_URL } from '../../config';
-import PageLoader from '../../components/PageLoader';
 
 interface YogaClassBrief {
     id: number;
@@ -36,7 +35,6 @@ export default function ScheduleManager() {
     const [showVisualEditor, setShowVisualEditor] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [scheduleToDelete, setScheduleToDelete] = useState<number | null>(null);
-    const [isSaving, setIsSaving] = useState(false);
     const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [formData, setFormData] = useState({
@@ -87,7 +85,6 @@ export default function ScheduleManager() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
-        setIsSaving(true);
         const token = sessionStorage.getItem('access_token');
 
         // Calculate end_time based on start_time and duration
@@ -134,8 +131,6 @@ export default function ScheduleManager() {
         } catch (error) {
             console.error('Error saving schedule:', error);
             setError('Error de conexión al servidor');
-        } finally {
-            setIsSaving(false);
         }
     };
 
@@ -147,7 +142,6 @@ export default function ScheduleManager() {
     const handleDeleteConfirm = async () => {
         if (!scheduleToDelete) return;
 
-        setIsSaving(true);
         const token = sessionStorage.getItem('access_token');
 
         try {
@@ -168,8 +162,6 @@ export default function ScheduleManager() {
         } catch (error) {
             console.error('Error deleting schedule:', error);
             alert('Error al eliminar el horario');
-        } finally {
-            setIsSaving(false);
         }
     };
 
@@ -228,7 +220,6 @@ export default function ScheduleManager() {
 
     return (
         <div>
-            {isSaving && <PageLoader />}
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto">
                     <div className="flex items-center gap-4 mb-2">
@@ -424,10 +415,9 @@ export default function ScheduleManager() {
                                 </button>
                                 <button
                                     type="submit"
-                                    disabled={isSaving}
-                                    className="rounded-md bg-primary-600 px-6 py-2 text-sm font-medium text-white hover:bg-primary-700 shadow-sm disabled:opacity-50"
+                                    className="rounded-md bg-primary-600 px-6 py-2 text-sm font-medium text-white hover:bg-primary-700 shadow-sm"
                                 >
-                                    {isSaving ? 'Guardando...' : (editingSchedule ? 'Actualizar' : 'Añadir')}
+                                    {editingSchedule ? 'Actualizar' : 'Añadir'}
                                 </button>
                             </div>
                         </form>
@@ -460,10 +450,9 @@ export default function ScheduleManager() {
                                 <button
                                     type="button"
                                     onClick={handleDeleteConfirm}
-                                    disabled={isSaving}
-                                    className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                                    className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
                                 >
-                                    {isSaving ? 'Eliminando...' : 'Eliminar'}
+                                    Eliminar
                                 </button>
                             </div>
                         </div>

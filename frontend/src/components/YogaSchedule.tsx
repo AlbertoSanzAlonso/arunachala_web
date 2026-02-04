@@ -37,68 +37,24 @@ const YogaSchedule: React.FC = () => {
     }, [DAYS, activeDay]);
 
     useEffect(() => {
-        const fetchAllScheduleData = async () => {
+        const fetchSchedules = async () => {
             try {
-                const [schedulesRes, activitiesRes] = await Promise.all([
-                    fetch(`${API_BASE_URL}/api/schedules`),
-                    fetch(`${API_BASE_URL}/api/activities`)
-                ]);
-
-                let combinedItems: any[] = [];
-
-                if (schedulesRes.ok) {
-                    const schedulesData = await schedulesRes.json();
-                    combinedItems = [...schedulesData];
+                const response = await fetch(`${API_BASE_URL}/api/schedules`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setRawItems(data);
                 }
-
-                if (activitiesRes.ok) {
-                    const activitiesData = await activitiesRes.json();
-                    // Filter for active 'curso' types
-                    const courses = activitiesData.filter((a: any) => a.type === 'curso' && a.is_active);
-
-                    courses.forEach((course: any) => {
-                        if (course.activity_data && course.activity_data.schedule) {
-                            course.activity_data.schedule.forEach((session: any) => {
-                                // Calculate end time based on duration
-                                let duration = session.duration || 60;
-                                const [h, m] = session.time.split(':').map(Number);
-                                const totalMin = h * 60 + m + duration;
-                                const endH = Math.floor(totalMin / 60) % 24;
-                                const endM = totalMin % 60;
-                                const endTime = `${endH.toString().padStart(2, '0')}:${endM.toString().padStart(2, '0')}`;
-
-                                combinedItems.push({
-                                    id: `course-${course.id}-${session.day}-${session.time}`, // Virtual ID
-                                    start_time: session.time,
-                                    end_time: endTime,
-                                    day_of_week: session.day,
-                                    class_name: course.title,
-                                    yoga_class: {
-                                        name: course.title,
-                                        description: course.description,
-                                        translations: course.translations,
-                                        color: 'bg-indigo-50 border-indigo-200 text-indigo-900', // Distinct style for courses
-                                        age_range: 'CURSO'
-                                    },
-                                    note: 'Curso / Taller'
-                                });
-                            });
-                        }
-                    });
-                }
-
-                setRawItems(combinedItems);
             } catch (error) {
-                console.error('Error fetching schedule data:', error);
+                console.error('Error fetching schedules:', error);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchAllScheduleData();
-        const interval = setInterval(fetchAllScheduleData, 30000);
+        fetchSchedules();
+        const interval = setInterval(fetchSchedules, 30000);
         return () => clearInterval(interval);
-    }, []);
+    }, []); // No need to refetch on language change now, as we translate on render
 
     const TimeBlock = ({
         label,

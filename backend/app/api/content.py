@@ -228,7 +228,7 @@ async def create_content(
     
     # Notify n8n for RAG update if published
     if db_content.status == "published":
-        await notify_n8n_content_change(db_content.id, db_content.type, "create", db=db)
+        await notify_n8n_content_change(db_content.id, db_content.type, "create")
     
     # Auto-translate if no translations provided
     if not content_data.translations and background_tasks:
@@ -284,7 +284,7 @@ async def update_content(
     
     # Notify n8n for RAG update if published
     if db_content.status == "published":
-        await notify_n8n_content_change(db_content.id, db_content.type, "update", db=db)
+        await notify_n8n_content_change(db_content.id, db_content.type, "update")
     
     # Re-translate if main fields changed and no new translations provided
     if (content_data.title or content_data.body or content_data.excerpt) and not content_data.translations:
@@ -322,7 +322,7 @@ async def delete_content(
         delete_media_file(db_content.media_url)
     
     # Notify n8n
-    await notify_n8n_content_change(db_content.id, db_content.type, "delete", db=db, entity=db_content)
+    await notify_n8n_content_change(db_content.id, db_content.type, "delete")
     
     # Log to dashboard activity before deleting
     from app.models.models import DashboardActivity

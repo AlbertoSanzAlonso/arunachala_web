@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PlusIcon, PencilIcon, TrashIcon, TagIcon, CalendarIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from '../../config';
-import PageLoader from '../../components/PageLoader';
 
 interface YogaClass {
     id: number;
@@ -28,7 +27,6 @@ export default function ClassTypeManager() {
     const navigate = useNavigate();
     const [classes, setClasses] = useState<YogaClass[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [isSaving, setIsSaving] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [editingClass, setEditingClass] = useState<YogaClass | null>(null);
     const [formData, setFormData] = useState({
@@ -67,7 +65,6 @@ export default function ClassTypeManager() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsSaving(true);
         const token = sessionStorage.getItem('access_token');
 
         try {
@@ -98,8 +95,6 @@ export default function ClassTypeManager() {
         } catch (error) {
             console.error('Error saving class:', error);
             alert('Error al guardar el tipo de clase');
-        } finally {
-            setIsSaving(false);
         }
     };
 
@@ -111,7 +106,6 @@ export default function ClassTypeManager() {
     const handleDeleteConfirm = async () => {
         if (!classToDelete) return;
 
-        setIsSaving(true);
         const token = sessionStorage.getItem('access_token');
 
         try {
@@ -134,8 +128,6 @@ export default function ClassTypeManager() {
         } catch (error) {
             console.error('Error deleting class:', error);
             alert('Error al eliminar el tipo de clase');
-        } finally {
-            setIsSaving(false);
         }
     };
 
@@ -167,7 +159,6 @@ export default function ClassTypeManager() {
 
     return (
         <div>
-            {isSaving && <PageLoader />}
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto">
                     <div className="flex items-center gap-4 mb-2">
@@ -323,10 +314,9 @@ export default function ClassTypeManager() {
                                 </button>
                                 <button
                                     type="submit"
-                                    disabled={isSaving}
-                                    className="rounded-md bg-primary-600 px-6 py-2 text-sm font-medium text-white hover:bg-primary-700 shadow-sm disabled:opacity-50"
+                                    className="rounded-md bg-primary-600 px-6 py-2 text-sm font-medium text-white hover:bg-primary-700 shadow-sm"
                                 >
-                                    {isSaving ? 'Guardando...' : (editingClass ? 'Actualizar Clase' : 'Crear Clase')}
+                                    {editingClass ? 'Actualizar Clase' : 'Crear Clase'}
                                 </button>
                             </div>
                         </form>
@@ -359,10 +349,9 @@ export default function ClassTypeManager() {
                                 <button
                                     type="button"
                                     onClick={handleDeleteConfirm}
-                                    disabled={isSaving}
-                                    className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                                    className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
                                 >
-                                    {isSaving ? 'Eliminando...' : 'Eliminar'}
+                                    Eliminar
                                 </button>
                             </div>
                         </div>

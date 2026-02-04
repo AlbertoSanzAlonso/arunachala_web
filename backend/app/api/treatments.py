@@ -89,9 +89,9 @@ async def create_massage(
 
     db_massage = MassageType(
         name=name,
-        excerpt=excerpt or "",
-        description=description or "",
-        benefits=benefits or "",
+        excerpt=excerpt,
+        description=description,
+        benefits=benefits,
         duration_min=duration_min,
         is_active=is_active,
         image_url=image_url,
@@ -110,7 +110,7 @@ async def create_massage(
         raise HTTPException(status_code=400, detail=f"Error al crear el masaje: {str(e)}")
     
     # Notify n8n for RAG update
-    await notify_n8n_content_change(db_massage.id, "massage", "create", db=db)
+    await notify_n8n_content_change(db_massage.id, "massage", "create")
     
     # Auto-translate if no translations provided
     if not translations and background_tasks:
@@ -159,9 +159,9 @@ async def update_massage(
 
     # Update other fields if provided
     if name is not None: db_massage.name = name
-    if excerpt is not None: db_massage.excerpt = excerpt or ""
-    if description is not None: db_massage.description = description or ""
-    if benefits is not None: db_massage.benefits = benefits or ""
+    if excerpt is not None: db_massage.excerpt = excerpt
+    if description is not None: db_massage.description = description
+    if benefits is not None: db_massage.benefits = benefits
     if duration_min is not None: 
         db_massage.duration_min = None if duration_min == 0 else duration_min
     if is_active is not None: db_massage.is_active = is_active
@@ -171,7 +171,7 @@ async def update_massage(
     db.refresh(db_massage)
     
     # Notify n8n for RAG update
-    await notify_n8n_content_change(db_massage.id, "massage", "update", db=db)
+    await notify_n8n_content_change(db_massage.id, "massage", "update")
     
     # Re-translate if fields changed and no new translations provided
     if (name or excerpt or description or benefits) and not translations:
@@ -205,8 +205,7 @@ async def delete_massage(
         delete_file(db_massage.image_url)
     
     # Notify n8n
-    # Notify n8n with entity before it's gone
-    await notify_n8n_content_change(db_massage.id, "massage", "delete", db=db, entity=db_massage)
+    await notify_n8n_content_change(db_massage.id, "massage", "delete")
     
     db.delete(db_massage)
     db.commit()
@@ -256,9 +255,9 @@ async def create_therapy(
 
     db_therapy = TherapyType(
         name=name,
-        excerpt=excerpt or "",
-        description=description or "",
-        benefits=benefits or "",
+        excerpt=excerpt,
+        description=description,
+        benefits=benefits,
         duration_min=duration_min,
         is_active=is_active,
         image_url=image_url,
@@ -277,7 +276,7 @@ async def create_therapy(
         raise HTTPException(status_code=400, detail=f"Error al crear la terapia: {str(e)}")
     
     # Notify n8n for RAG update
-    await notify_n8n_content_change(db_therapy.id, "therapy", "create", db=db)
+    await notify_n8n_content_change(db_therapy.id, "therapy", "create")
     
     # Auto-translate if no translations provided
     if not translations and background_tasks:
@@ -325,9 +324,9 @@ async def update_therapy(
         db_therapy.image_url = save_upload_file(image, subdirectory="treatments/therapies")
 
     if name is not None: db_therapy.name = name
-    if excerpt is not None: db_therapy.excerpt = excerpt or ""
-    if description is not None: db_therapy.description = description or ""
-    if benefits is not None: db_therapy.benefits = benefits or ""
+    if excerpt is not None: db_therapy.excerpt = excerpt
+    if description is not None: db_therapy.description = description
+    if benefits is not None: db_therapy.benefits = benefits
     if duration_min is not None: 
         db_therapy.duration_min = None if duration_min == 0 else duration_min
     if is_active is not None: db_therapy.is_active = is_active
@@ -337,7 +336,7 @@ async def update_therapy(
     db.refresh(db_therapy)
     
     # Notify n8n for RAG update
-    await notify_n8n_content_change(db_therapy.id, "therapy", "update", db=db)
+    await notify_n8n_content_change(db_therapy.id, "therapy", "update")
     
     # Re-translate if fields changed and no new translations provided
     if (name or excerpt or description or benefits) and not translations:
@@ -371,8 +370,7 @@ async def delete_therapy(
         delete_file(db_therapy.image_url)
     
     # Notify n8n
-    # Notify n8n with entity before it's gone
-    await notify_n8n_content_change(therapy_id, "therapy", "delete", db=db, entity=db_therapy)
+    await notify_n8n_content_change(db_therapy.id, "therapy", "delete")
     
     db.delete(db_therapy)
     db.commit()

@@ -20,87 +20,9 @@ const AgentControl: React.FC = () => {
     const [resetScope, setResetScope] = useState<string | null>(null);
     const [resetLoading, setResetLoading] = useState(false);
 
-    // RAG Status State
-    const [ragStatus, setRagStatus] = useState<any>(null);
-    const [syncLoading, setSyncLoading] = useState<string | null>(null); // null, 'all', 'yoga', etc.
-    const [suppressPolling, setSuppressPolling] = useState(false);
-
     useEffect(() => {
         fetchConfig();
-        fetchRagStatus();
     }, []);
-
-    // AUTO-POLLING LOGIC for real-time updates
-    useEffect(() => {
-        let interval: any = null;
-        let lastRefreshTimeout: any = null;
-
-        if (suppressPolling) return; // Do nothing if polling is suppressed
-
-        const isSyncing = syncLoading !== null || (ragStatus && ragStatus.processing_count > 0);
-
-        if (isSyncing) {
-            interval = setInterval(() => {
-                fetchRagStatus();
-            }, 2500);
-        } else if (ragStatus?.processing_count === 0) {
-            // Perform one final refresh after 2 seconds when sync finishes to be 100% sure
-            lastRefreshTimeout = setTimeout(() => {
-                fetchRagStatus();
-            }, 2000);
-        }
-
-        return () => {
-            if (interval) clearInterval(interval);
-            if (lastRefreshTimeout) clearTimeout(lastRefreshTimeout);
-        };
-    }, [syncLoading, ragStatus?.processing_count, suppressPolling]);
-
-    const fetchRagStatus = async () => {
-        try {
-            // Add timestamp to prevent browser caching
-            const response = await fetch(`${API_BASE_URL}/api/rag/sync-status?t=${Date.now()}`);
-            if (response.ok) {
-                const data = await response.json();
-                setRagStatus(data);
-            }
-        } catch (error) {
-            console.error("Failed to fetch RAG status", error);
-        }
-    };
-
-    const handleSync = async (type: string, force: boolean = false) => {
-        setSyncLoading(type);
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/rag/sync`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sync_type: type, force })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                const friendlyType = {
-                    'all': 'todo el contenido',
-                    'yoga': 'las clases de yoga',
-                    'massage': 'los masajes',
-                    'therapy': 'las terapias',
-                    'content': 'los artículos del blog',
-                    'activity': 'las actividades'
-                }[type] || 'el contenido';
-
-                setMessage(`¡Hecho! Se está actualizando la memoria con ${friendlyType}. El progreso aparecerá abajo.`);
-                // Refresh immediately
-                fetchRagStatus();
-            } else {
-                setMessage("Hubo un problema al intentar actualizar la memoria.");
-            }
-        } catch (error) {
-            setMessage("Error de conexión. Por favor, inténtalo de nuevo.");
-        } finally {
-            setSyncLoading(null);
-        }
-    };
 
     const fetchConfig = async () => {
         try {
@@ -196,65 +118,11 @@ const AgentControl: React.FC = () => {
             });
 
             if (response.ok) {
-                const successMessages: Record<string, string> = {
-                    'all': '¡Borrado total completado! La IA ha olvidado todo y ahora es una hoja en blanco.',
-                    'yoga_class': 'Hecho. La IA ya no recuerda nada sobre las clases de yoga.',
-                    'massage': 'Se ha limpiado el conocimiento sobre los masajes.',
-                    'therapy': 'La IA ha olvidado todo lo relacionado con las terapias.',
-                    'content': 'He borrado los artículos del blog de la memoria de la IA.',
-                    'activity': 'Se han eliminado las actividades del conocimiento de la IA.'
-                };
-
-                setMessage(successMessages[resetScope] || 'La memoria ha sido reiniciada correctamente.');
+                setMessage(`Memoria (${resetScope}) reiniciada correctamente. La IA ya no recordará esa información.`);
                 setShowResetModal(false);
                 setResetStep(1);
-
-                // OPTIMISTIC UPDATE: Set relevant vectorized count to 0 immediately
-                if (ragStatus) {
-                    const newStatus = { ...ragStatus };
-                    newStatus.processing_count = 0;
-
-                    // SUPPRESS POLLING for 5 seconds to let DB stabilize
-                    setSuppressPolling(true);
-                    setTimeout(() => setSuppressPolling(false), 5000);
-
-                    if (resetScope === 'all') {
-                        Object.keys(newStatus).forEach(key => {
-                            if (newStatus[key] && typeof newStatus[key] === 'object' && newStatus[key].total !== undefined) {
-                                newStatus[key].vectorized = 0;
-                                newStatus[key].sync_percentage = 0;
-                                newStatus[key].needs_reindex = newStatus[key].total;
-                            }
-                        });
-                        newStatus.total_needs_reindex = Object.keys(newStatus)
-                            .filter(k => typeof newStatus[k] === 'object' && newStatus[k].total !== undefined)
-                            .reduce((sum, k) => (sum as number) + (newStatus[k].total as number), 0);
-                    } else {
-                        const tableMap: Record<string, string> = {
-                            'yoga_class': 'yoga_classes',
-                            'massage': 'massage_types',
-                            'therapy': 'therapy_types',
-                            'content': 'contents',
-                            'activity': 'activities'
-                        };
-                        const targetKey = tableMap[resetScope];
-                        if (targetKey && newStatus[targetKey]) {
-                            newStatus[targetKey].vectorized = 0;
-                            newStatus[targetKey].sync_percentage = 0;
-                            newStatus[targetKey].needs_reindex = newStatus[targetKey].total;
-                            // Recalculate total needs reindex
-                            newStatus.total_needs_reindex = Object.keys(newStatus)
-                                .filter(k => typeof newStatus[k] === 'object' && newStatus[k].total !== undefined)
-                                .reduce((sum, k) => (sum as number) + (newStatus[k].needs_reindex !== undefined ? newStatus[k].needs_reindex : (newStatus[k].total || 0)), 0);
-                        }
-                    }
-                    setRagStatus(newStatus);
-                }
-
-                // Still fetch to be safe after a short delay
-                setTimeout(fetchRagStatus, 4000);
             } else {
-                setMessage("No se pudo completar el reinicio de memoria.");
+                setMessage("Error al reiniciar la memoria.");
             }
         } catch (error) {
             setMessage("Error de conexión al reiniciar.");
@@ -443,7 +311,7 @@ const AgentControl: React.FC = () => {
                         onClick={() => setShowResetModal(true)}
                         className="px-6 py-3 bg-red-50 text-red-600 font-medium rounded-xl hover:bg-red-100 transition-all"
                     >
-                        Reiniciar Memoria de la IA
+                        Reiniciar Memoria (RAG)
                     </button>
                     <button
                         type="submit"
@@ -455,101 +323,6 @@ const AgentControl: React.FC = () => {
                 </div>
 
             </form>
-
-            {/* KNOWLEDGE CENTER */}
-            <div className="mt-12 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                        <div>
-                            <h2 className="text-xl font-headers text-bark">Centro de Conocimiento</h2>
-                            <p className="text-gray-500 text-sm">Gestiona la sincronización entre la base de datos y la memoria de la IA.</p>
-                        </div>
-                        {ragStatus?.processing_count > 0 && (
-                            <div className="flex items-center gap-2 bg-matcha/10 px-3 py-1 rounded-full border border-matcha/20 animate-pulse">
-                                <div className="w-2 h-2 bg-matcha rounded-full animate-bounce" />
-                                <span className="text-[10px] font-bold text-forest uppercase tracking-wider">Actualizando...</span>
-                            </div>
-                        )}
-                    </div>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            setRagStatus(null);
-                            fetchRagStatus();
-                        }}
-                        className="p-2 text-gray-400 hover:text-forest transition-colors"
-                        title="Actualizar estado"
-                    >
-                        <svg className={`w-5 h-5 ${syncLoading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                    </button>
-                </div>
-
-                {ragStatus ? (
-                    <div className="space-y-6">
-                        {/* Summary Grid */}
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                            {[
-                                { id: 'yoga', label: 'Yoga', data: ragStatus.yoga_classes, color: 'matcha' },
-                                { id: 'massage', label: 'Masajes', data: ragStatus.massage_types, color: 'matcha' },
-                                { id: 'therapy', label: 'Terapias', data: ragStatus.therapy_types, color: 'matcha' },
-                                { id: 'content', label: 'Blog', data: ragStatus.contents, color: 'bark' },
-                                { id: 'activity', label: 'Actividades', data: ragStatus.activities, color: 'matcha' },
-                            ].map((item) => (
-                                <div key={item.id} className="p-4 rounded-xl bg-gray-50 border border-gray-100">
-                                    <span className="block text-xs font-bold text-gray-400 uppercase mb-1">{item.label}</span>
-                                    <div className="flex items-end justify-between">
-                                        <span className="text-2xl font-bold text-bark">{item.data.vectorized}</span>
-                                        <span className="text-xs text-gray-400">/ {item.data.total}</span>
-                                    </div>
-                                    <div className="mt-2 h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
-                                        <div
-                                            className={`h-full bg-${item.color} transition-all duration-1000`}
-                                            style={{ width: `${item.data.sync_percentage}%` }}
-                                        />
-                                    </div>
-                                    {item.data.needs_reindex > 0 && (
-                                        <button
-                                            onClick={() => handleSync(item.id)}
-                                            disabled={syncLoading !== null}
-                                            className="mt-3 w-full py-1 text-[10px] font-bold bg-white border border-gray-200 rounded hover:border-forest hover:text-forest transition-all disabled:opacity-50"
-                                        >
-                                            {syncLoading === item.id ? 'Sincronizando...' : `Sincronizar ${item.data.needs_reindex}`}
-                                        </button>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Control Actions */}
-                        <div className="flex flex-wrap gap-4 pt-4 border-t border-gray-50">
-                            <button
-                                onClick={() => handleSync('all')}
-                                disabled={syncLoading !== null}
-                                className="px-6 py-2 bg-bark text-white rounded-xl text-sm font-medium hover:bg-bark/90 transition-all shadow-sm disabled:opacity-50"
-                            >
-                                {syncLoading === 'all' ? 'Procesando...' : 'Sincronizar Todo lo Pendiente'}
-                            </button>
-                            <button
-                                onClick={() => {
-                                    if (window.confirm("¿Estás seguro? Esto enviará TODA la base de datos a n8n de nuevo.")) {
-                                        handleSync('all', true);
-                                    }
-                                }}
-                                disabled={syncLoading !== null}
-                                className="px-6 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-all disabled:opacity-50"
-                            >
-                                Forzar Reindexación Completa
-                            </button>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="py-8 text-center text-gray-400 italic">
-                        Cargando estado de sincronización...
-                    </div>
-                )}
-            </div>
 
             {/* Panic Reset Modal */}
             {showResetModal && (
@@ -570,7 +343,6 @@ const AgentControl: React.FC = () => {
                                         { id: 'massage', label: 'Masajes', color: 'bg-matcha' },
                                         { id: 'therapy', label: 'Terapias', color: 'bg-matcha' },
                                         { id: 'content', label: 'Blog/Artículos', color: 'bg-bark' },
-                                        { id: 'activity', label: 'Actividades', color: 'bg-blue-600' },
                                     ].map(cat => (
                                         <button
                                             key={cat.id}

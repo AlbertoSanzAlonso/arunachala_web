@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeftIcon, CloudArrowUpIcon, LockClosedIcon } from '@heroicons/react/24/outline'; // Added Lock icon
+import { ChevronLeftIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline';
 import omSymbol from '../../assets/images/om_symbol.png';
 import { API_BASE_URL } from '../../config';
 
@@ -17,7 +17,6 @@ interface ScheduleItem {
     time: string;
     duration: number; // in minutes
     classInfo: ClassType;
-    isCourse?: boolean;
 }
 
 const API_URL = API_BASE_URL;
@@ -85,11 +84,10 @@ export default function VisualScheduleEditor({ onBack }: { onBack: () => void })
                         day: item.day_of_week,
                         time: item.start_time,
                         duration,
-                        isCourse: item.id < 0 || item.is_course, // Check for negative ID or flag
                         classInfo: item.yoga_class || {
                             name: item.class_name || 'Clase',
-                            color: item.id < 0 ? 'bg-sky-100 border-sky-300 text-sky-900 border-l-4' : 'bg-emerald-100 border-emerald-300 text-emerald-800',
-                            age_range: item.id < 0 ? "CURSO" : null
+                            color: 'bg-emerald-100 border-emerald-300 text-emerald-800',
+                            age_range: null
                         }
                     };
                 });
@@ -182,9 +180,6 @@ export default function VisualScheduleEditor({ onBack }: { onBack: () => void })
     }, [interaction]);
 
     const handleDragStart = (e: React.MouseEvent | React.TouchEvent, id: number, time: string, duration: number, block: any, rect: DOMRect) => {
-        // Prevent interaction for courses (negative IDs)
-        if (id < 0) return;
-
         // For mouse events or if explicitly triggered
         const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
 
@@ -195,8 +190,6 @@ export default function VisualScheduleEditor({ onBack }: { onBack: () => void })
     };
 
     const handleResizeStart = (e: React.MouseEvent | React.TouchEvent, id: number, time: string, duration: number, block: any, rect: DOMRect) => {
-        if (id < 0) return;
-
         const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
 
         lastInteractionState.current = JSON.parse(JSON.stringify(itemsRef.current));
@@ -257,10 +250,7 @@ export default function VisualScheduleEditor({ onBack }: { onBack: () => void })
         const currentItems = itemsRef.current;
 
         try {
-            // Filter only editable items (positive IDs)
-            const editableItems = currentItems.filter(item => item.id > 0);
-
-            for (const item of editableItems) {
+            for (const item of currentItems) {
                 const [h, m] = item.time.split(':').map(Number);
                 const endTotal = h * 60 + m + item.duration;
                 const endH = Math.floor(endTotal / 60) % 24;
@@ -394,8 +384,6 @@ function VisualTimeBlock({ block, items, onDragStart, onResizeStart, isInteracti
     };
 
     const handleTouchStart = (e: React.TouchEvent, item: any) => {
-        if (item.id < 0) return; // Ignore course touches
-
         const clientY = e.touches[0].clientY;
 
         // Clear any existing timer
@@ -461,8 +449,6 @@ function VisualTimeBlock({ block, items, onDragStart, onResizeStart, isInteracti
                                     return startA < endB && endA > startB;
                                 });
 
-                                const isLocked = item.id < 0;
-
                                 return (
                                     <div
                                         key={item.id}
@@ -470,10 +456,8 @@ function VisualTimeBlock({ block, items, onDragStart, onResizeStart, isInteracti
                                         onTouchStart={(e) => handleTouchStart(e, item)}
                                         onTouchMove={cancelTouch}
                                         onTouchEnd={cancelTouch}
-                                        className={`absolute left-1 right-1 rounded-lg border-l-4 shadow-sm flex flex-col justify-center px-2 py-1 select-none hover:shadow-md z-20 group transition-all 
-                                            ${!isLocked ? 'cursor-move' : 'cursor-default opacity-90'}
-                                            ${isInteracting && !isLocked ? 'duration-0 scale-105 shadow-xl z-50 ring-2 ring-primary-400' : 'duration-500 ease-in-out'}
-                                            ${conflict
+                                        className={`absolute left-1 right-1 rounded-lg border-l-4 shadow-sm flex flex-col justify-center px-2 py-1 cursor-move select-none hover:shadow-md z-20 group transition-all ${isInteracting ? 'duration-0 scale-105 shadow-xl z-50 ring-2 ring-primary-400' : 'duration-500 ease-in-out'
+                                            } ${conflict
                                                 ? 'bg-red-50 border-red-500 ring-2 ring-red-500 ring-inset opacity-90'
                                                 : (item.classInfo.color || 'bg-gray-100')
                                             }`}
@@ -483,10 +467,7 @@ function VisualTimeBlock({ block, items, onDragStart, onResizeStart, isInteracti
                                             <div className="absolute inset-0 bg-red-600/10 rounded-lg pointer-events-none animate-pulse" />
                                         )}
                                         <div className="flex justify-between items-center mb-0.5 pointer-events-none">
-                                            <div className="flex items-center gap-1">
-                                                {isLocked && <LockClosedIcon className="h-3 w-3 text-current opacity-50" />}
-                                                <span className={`font-bold text-[10px] lg:text-xs leading-none ${conflict ? 'text-red-700' : ''}`}>{item.time}</span>
-                                            </div>
+                                            <span className={`font-bold text-[10px] lg:text-xs leading-none ${conflict ? 'text-red-700' : ''}`}>{item.time}</span>
                                             <div className="flex gap-1 items-center">
                                                 {item.classInfo.age_range && (
                                                     <span className="text-[7px] lg:text-[8px] font-black uppercase bg-black/10 px-1 rounded truncate max-w-[40px]">
@@ -498,15 +479,13 @@ function VisualTimeBlock({ block, items, onDragStart, onResizeStart, isInteracti
                                         </div>
                                         <span className={`font-medium text-[10px] lg:text-sm leading-tight line-clamp-2 pointer-events-none ${conflict ? 'text-red-900' : ''}`}>{item.classInfo.name}</span>
 
-                                        {!isLocked && (
-                                            <div
-                                                onMouseDown={(e) => onResizeStart(e, item.id, item.time, item.duration, block, containerRef.current!.getBoundingClientRect())}
-                                                onTouchStart={(e) => { e.stopPropagation(); }}
-                                                className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize hover:bg-black/5 flex items-center justify-center group-hover:bg-black/10 transition-colors"
-                                            >
-                                                <div className={`w-8 h-0.5 rounded-full ${conflict ? 'bg-red-400' : 'bg-black/20'}`} />
-                                            </div>
-                                        )}
+                                        <div
+                                            onMouseDown={(e) => onResizeStart(e, item.id, item.time, item.duration, block, containerRef.current!.getBoundingClientRect())}
+                                            onTouchStart={(e) => { e.stopPropagation(); /* Resizing on mobile not prioritized but prevent drag start */ }}
+                                            className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize hover:bg-black/5 flex items-center justify-center group-hover:bg-black/10 transition-colors"
+                                        >
+                                            <div className={`w-8 h-0.5 rounded-full ${conflict ? 'bg-red-400' : 'bg-black/20'}`} />
+                                        </div>
                                     </div>
                                 );
                             })}

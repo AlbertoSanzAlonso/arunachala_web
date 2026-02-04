@@ -144,8 +144,8 @@ export default function DashboardHome() {
                     <p className="text-gray-500 text-center py-4">No hay actividad reciente</p>
                 ) : (
                     <ul className="divide-y divide-gray-200">
-                        {activities.map((activity, index) => (
-                            <li key={`${activity.type}-${activity.id}-${index}`} className="py-4 flex justify-between">
+                        {activities.map((activity) => (
+                            <li key={`${activity.type}-${activity.id}`} className="py-4 flex justify-between">
                                 <span className="text-gray-700">{activity.title}</span>
                                 <span className="text-gray-500 text-sm">{formatTimeAgo(activity.timestamp)}</span>
                             </li>
