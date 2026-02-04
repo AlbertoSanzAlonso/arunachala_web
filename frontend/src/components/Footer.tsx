@@ -69,10 +69,10 @@ const Footer: React.FC = () => {
                 <div className="col-span-1 flex flex-col gap-6 items-center text-center lg:h-full lg:justify-between">
                     <h3 className="text-2xl font-headers tracking-widest text-transparent select-none hidden md:block" aria-hidden="true">_</h3>
                     <div className="flex gap-6">
-                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label={t('footer.labels.instagram')} className="text-bone/70 hover:text-matcha hover:scale-110 transition-all duration-300">
+                        <a href="https://www.instagram.com/yogayterapiasarunachala/" target="_blank" rel="noopener noreferrer" aria-label={t('footer.labels.instagram')} className="text-bone/70 hover:text-matcha hover:scale-110 transition-all duration-300">
                             <InstagramIcon className="w-6 h-6" aria-hidden="true" />
                         </a>
-                        <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" aria-label={t('footer.labels.youtube')} className="text-bone/70 hover:text-matcha hover:scale-110 transition-all duration-300">
+                        <a href="https://www.youtube.com/@yogayterapiasarunachala2252" target="_blank" rel="noopener noreferrer" aria-label={t('footer.labels.youtube')} className="text-bone/70 hover:text-matcha hover:scale-110 transition-all duration-300">
                             <YoutubeIcon className="w-6 h-6" aria-hidden="true" />
                         </a>
                         <a href="https://spotify.com" target="_blank" rel="noopener noreferrer" aria-label={t('footer.labels.spotify')} className="text-bone/70 hover:text-matcha hover:scale-110 transition-all duration-300">
