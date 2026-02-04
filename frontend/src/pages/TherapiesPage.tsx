@@ -208,7 +208,7 @@ const TherapiesPage: React.FC = () => {
 
             <main className="flex-grow bg-bone">
                 {/* Hero Section */}
-                <div className="relative w-full min-h-[100vh] md:min-h-0 md:h-[80vh] flex items-center justify-center overflow-hidden snap-start">
+                <div className="relative w-full min-h-[100vh] md:min-h-0 md:h-[90vh] flex items-center justify-center overflow-hidden snap-start">
                     <div
                         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
                         style={{ backgroundImage: `url(${therapyHero})` }}

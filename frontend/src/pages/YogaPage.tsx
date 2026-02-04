@@ -96,7 +96,7 @@ const YogaPage: React.FC = () => {
             )}
 
             <main className="flex-grow bg-bone">
-                <div id="top" className="relative w-full min-h-[100vh] md:min-h-0 md:h-[80vh] flex items-center justify-center overflow-hidden snap-start" role="banner">
+                <div id="top" className="relative w-full min-h-[100vh] md:min-h-0 md:h-[90vh] flex items-center justify-center overflow-hidden snap-start" role="banner">
                     <div className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${yogaHero})` }} aria-hidden="true">
                         <div className="absolute inset-0 bg-black/50" />
                     </div>
@@ -150,7 +150,7 @@ const YogaPage: React.FC = () => {
                     </div>
                 </div>
 
-                <section ref={scheduleRef} className="bg-white py-32 md:py-48 scroll-mt-24 snap-start relative">
+                <section ref={scheduleRef} className="bg-white py-16 md:py-24 scroll-mt-24 snap-start relative">
                     <FadeInSection className="max-w-7xl mx-auto px-4 md:px-8">
                         <Suspense fallback={<SectionLoader />}>
                             <YogaSchedule />
