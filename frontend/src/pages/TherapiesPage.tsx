@@ -8,7 +8,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
 import FadeInSection from '../components/FadeInSection';
-import therapyHero from '../assets/images/gallery/therapy_sample.webp';
+import therapyHero from '../assets/images/massage_hero.webp';
 import lotusFlower from '../assets/images/lotus_flower.png';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';

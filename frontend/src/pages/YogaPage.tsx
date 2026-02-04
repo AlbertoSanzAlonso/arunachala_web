@@ -7,7 +7,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
 import FadeInSection from '../components/FadeInSection';
-import yogaHero from '../assets/images/yoga_hero.png';
+import yogaHero from '../assets/images/yoga_hero.webp';
 import { API_BASE_URL } from '../config';
 import BlogSection from '../components/BlogSection';
 import { getImageUrl } from '../utils/imageUtils';
