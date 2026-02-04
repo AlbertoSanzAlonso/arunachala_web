@@ -51,6 +51,10 @@ class Content(Base):
     seo_description = Column(String, nullable=True)
     tags = Column(JSON, nullable=True)  # Array of tags
     translations = Column(JSON, nullable=True)
+    # RAG sync fields
+    vector_id = Column(String, nullable=True)
+    vectorized_at = Column(DateTime(timezone=True), nullable=True)
+    needs_reindex = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -77,6 +81,10 @@ class YogaClassDefinition(Base):
     translations = Column(JSON, nullable=True) # { "ca": { "name": "...", "description": "..." }, "en": {...} }
     color = Column(String, nullable=True) # Tailwind class like 'bg-forest/20'
     age_range = Column(String, nullable=True) # Optional note or age
+    # RAG sync fields
+    vector_id = Column(String, nullable=True)
+    vectorized_at = Column(DateTime(timezone=True), nullable=True)
+    needs_reindex = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     schedules = relationship("ClassSchedule", back_populates="yoga_class")
@@ -110,6 +118,10 @@ class MassageType(Base):
     duration_min = Column(Integer, nullable=True)
     image_url = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
+    # RAG sync fields
+    vector_id = Column(String, nullable=True)
+    vectorized_at = Column(DateTime(timezone=True), nullable=True)
+    needs_reindex = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class TherapyType(Base):
@@ -124,6 +136,10 @@ class TherapyType(Base):
     duration_min = Column(Integer, nullable=True)
     image_url = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
+    # RAG sync fields
+    vector_id = Column(String, nullable=True)
+    vectorized_at = Column(DateTime(timezone=True), nullable=True)
+    needs_reindex = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class AgentConfig(Base):
@@ -154,6 +170,10 @@ class Activity(Base):
     activity_data = Column(JSON, nullable=True)
     slug = Column(String, unique=True, index=True)
     is_active = Column(Boolean, default=True)
+    # RAG sync fields
+    vector_id = Column(String, nullable=True)
+    vectorized_at = Column(DateTime(timezone=True), nullable=True)
+    needs_reindex = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -167,3 +187,20 @@ class DashboardActivity(Base):
     title = Column(String, nullable=False)
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
     entity_id = Column(Integer, nullable=True) # ID of the related entity
+
+class RAGSyncLog(Base):
+    """Tracks RAG synchronization operations for all vectorized content"""
+    __tablename__ = "rag_sync_log"
+
+    id = Column(Integer, primary_key=True, index=True)
+    entity_type = Column(String, nullable=False)  # 'yoga_class', 'massage', 'therapy', 'content', 'activity'
+    entity_id = Column(Integer, nullable=False)
+    action = Column(String, nullable=False)  # 'create', 'update', 'delete'
+    vector_id = Column(String, nullable=True)  # ID in Qdrant
+    status = Column(String, nullable=False, default='pending')  # 'pending', 'processing', 'success', 'failed'
+    error_message = Column(Text, nullable=True)
+    webhook_sent_at = Column(DateTime(timezone=True), nullable=True)
+    vectorized_at = Column(DateTime(timezone=True), nullable=True)
+    metadata = Column(JSON, nullable=True)  # Additional info (model used, language, etc.)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
