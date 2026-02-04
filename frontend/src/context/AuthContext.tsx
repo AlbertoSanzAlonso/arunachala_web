@@ -16,7 +16,7 @@ interface AuthContextType {
     isLoading: boolean;
     showSessionWarning: boolean;
     remainingTime: number;
-    extendSession: () => void;
+    extendSession: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -96,9 +96,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    const extendSession = () => {
-        setShowSessionWarning(false);
-        setRemainingTime(120);
+    const extendSession = async () => {
+        try {
+            const token = sessionStorage.getItem('access_token');
+            if (token) {
+                const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    sessionStorage.setItem('access_token', data.access_token);
+                    setShowSessionWarning(false);
+                    setRemainingTime(120);
+                } else {
+                    logout("Tu sesión ha expirado.");
+                }
+            } else {
+                logout();
+            }
+        } catch (error) {
+            console.error('Error refreshing token:', error);
+            logout("Error de conexión durante la renovación de sesión.");
+        }
     };
 
     // Session Management - Idle Detection

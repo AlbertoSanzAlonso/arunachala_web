@@ -208,7 +208,13 @@
             "taller": "Taller",
             "curso": "Curs",
             "evento": "Esdeveniment",
-            "retiro": "Retir"
+            "retiro": "Retir",
+            "sugerencia": "Suggeriment"
+        },
+        "sections": {
+            "courses": "Cursos",
+            "events": "Tallers i Esdeveniments",
+            "suggestions": "Suggeriments"
         },
         "consult_price": "Consultar preu",
         "more_soon": "Properes Activitats",

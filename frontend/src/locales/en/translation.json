@@ -208,7 +208,13 @@
             "taller": "Workshop",
             "curso": "Course",
             "evento": "Event",
-            "retiro": "Retreat"
+            "retiro": "Retreat",
+            "sugerencia": "Suggestion"
+        },
+        "sections": {
+            "courses": "Courses",
+            "events": "Workshops and Events",
+            "suggestions": "Suggestions"
         },
         "consult_price": "Consult price",
         "more_soon": "Upcoming Activities",

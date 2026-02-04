@@ -49,3 +49,6 @@ arunachala_web/
 - **AI Image Generation**: Fixed routing conflicts (422 error), switched to GET method, improved specific error handling.
 - **Dashboard**: Implemented `DashboardActivity` for tracking deleted content.
 - **Skills Refactor**: Moved monolithic `AGENTS.md` content into granular skills.
+## 🔐 Credentials
+- **Test User**: `albertosanzdev@gmail.com`
+- **Password**: `Albertito_23`

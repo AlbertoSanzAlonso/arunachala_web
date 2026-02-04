@@ -1,3 +1,4 @@
+
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import PageLoader from './components/PageLoader';
@@ -109,7 +110,7 @@ const AppContent = () => {
 function App() {
     return (
         <AuthProvider>
-            <BrowserRouter future={{ v7_relativeSplatPath: true }}>
+            <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
                 <AppContent />
             </BrowserRouter>
         </AuthProvider>

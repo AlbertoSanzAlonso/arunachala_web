@@ -3,9 +3,10 @@ from sqlalchemy.orm import Session
 from typing import List
 from pydantic import BaseModel
 from app.core.database import get_db
-from app.models.models import ClassSchedule, User
+from app.models.models import ClassSchedule, User, Activity
 from app.api.auth import get_current_user
 from app.core.webhooks import notify_n8n_content_change
+from app.core.schedule_utils import check_global_overlap
 
 router = APIRouter(prefix="/api/schedules", tags=["schedules"])
 
@@ -43,26 +44,11 @@ class ScheduleUpdate(BaseModel):
 class ScheduleResponse(ScheduleBase):
     id: int
     yoga_class: YogaClassBrief | None = None
+    is_course: bool = False
+    course_type: str | None = None # 'curso', 'taller' etc
 
     class Config:
         from_attributes = True
-
-def check_schedule_overlap(db: Session, day: str, start: str, end: str, exclude_id: int = None):
-    """
-    Check if a new schedule overlaps with existing ones.
-    Overlap exists if: (StartA < EndB) AND (EndA > StartB)
-    """
-    query = db.query(ClassSchedule).filter(
-        ClassSchedule.day_of_week == day,
-        ClassSchedule.is_active == True,
-        ClassSchedule.start_time < end,
-        ClassSchedule.end_time > start
-    )
-    
-    if exclude_id:
-        query = query.filter(ClassSchedule.id != exclude_id)
-        
-    return query.first()
 
 # Endpoints
 @router.get("", response_model=List[ScheduleResponse])
@@ -70,12 +56,95 @@ def get_schedules(
     db: Session = Depends(get_db),
     active_only: bool = True
 ):
-    """Get all class schedules"""
+    """Get all class schedules (including Courses)"""
+    response_items = []
+
+    # 1. Standard Classes
     query = db.query(ClassSchedule)
     if active_only:
         query = query.filter(ClassSchedule.is_active == True)
-    schedules = query.order_by(ClassSchedule.day_of_week, ClassSchedule.start_time).all()
-    return schedules
+    
+    # Sort logic helpers
+    days_map = {
+        "Lunes": 0, "Martes": 1, "Miércoles": 2, "Jueves": 3, 
+        "Viernes": 4, "Sábado": 5, "Domingo": 6
+    }
+    
+    schedules = query.all()
+    
+    for s in schedules:
+        # Convert SQLAlchemy model to Pydantic compatible dict/object
+        # The response_model handles the conversion from the ORM object automatically 
+        # but since we are mixing types, let's let Pydantic do its job later by returning a list of objects options
+        # However, to mix them in a single list, they need to verify against `ScheduleResponse`
+        response_items.append(ScheduleResponse.from_orm(s))
+
+    # 2. Courses (Activity type='curso')
+    activities_query = db.query(Activity).filter(Activity.type == 'curso')
+    if active_only:
+        activities_query = activities_query.filter(Activity.is_active == True)
+        
+    courses = activities_query.all()
+    
+    for course in courses:
+        if not course.activity_data or 'schedule' not in course.activity_data:
+            continue
+            
+        sessions = course.activity_data['schedule'] # [{day, time, duration}]
+        if not isinstance(sessions, list):
+            continue
+
+        for idx, session in enumerate(sessions):
+            if 'day' not in session or 'time' not in session:
+                continue
+
+            # Calculate end_time
+            try:
+                h, m = map(int, session['time'].split(':'))
+                duration = int(session.get('duration', 60))
+                total_min = h * 60 + m + duration
+                end_h = (total_min // 60) % 24
+                end_m = total_min % 60
+                end_time = f"{end_h:02d}:{end_m:02d}"
+            except:
+                continue
+            
+            # Generate a consistent negative ID to avoid collision with real DB IDs
+            fake_id = - (course.id * 1000 + idx)
+            
+            # Specific styling for courses
+            course_color = "bg-primary-50 border-primary-300 text-primary-900 border-l-4" 
+            
+            brief = YogaClassBrief(
+                id=0, # Dummy ID
+                name=course.title,
+                color=course_color,
+                description=course.description,
+                age_range="CURSO", # Badge
+                translations=course.translations
+            )
+            
+            item = ScheduleResponse(
+                id=fake_id,
+                class_id=None,
+                class_name=course.title,
+                day_of_week=session['day'],
+                start_time=session['time'],
+                end_time=end_time,
+                is_active=course.is_active,
+                is_course=True,
+                course_type=course.type,
+                yoga_class=brief
+            )
+            response_items.append(item)
+            
+    # Sort primarily by Day, then by Start Time
+    def sort_key(item):
+        day_idx = days_map.get(item.day_of_week, 7)
+        return (day_idx, item.start_time)
+
+    response_items.sort(key=sort_key)
+    return response_items
 
 @router.get("/{schedule_id}", response_model=ScheduleResponse)
 def get_schedule(
@@ -83,6 +152,11 @@ def get_schedule(
     db: Session = Depends(get_db)
 ):
     """Get a specific schedule by ID"""
+    if schedule_id < 0:
+        # It's a virtual course schedule, we can't really "get" it individually by ID easily
+        # unless we parse the ID logic. For now, deny.
+        raise HTTPException(status_code=404, detail="Virtual schedules cannot be fetched individually")
+
     schedule = db.query(ClassSchedule).filter(ClassSchedule.id == schedule_id).first()
     if not schedule:
         raise HTTPException(status_code=404, detail="Schedule not found")
@@ -99,21 +173,18 @@ async def create_schedule(
         raise HTTPException(status_code=403, detail="Not authorized")
     
     # Check for overlap
-    overlap = check_schedule_overlap(
+    overlap = check_global_overlap(
         db, 
         schedule_data.day_of_week, 
         schedule_data.start_time, 
-        schedule_data.end_time
+        schedule_data.end_time,
+        exclude_type='schedule'
     )
     
-    if overlap:
-        name = overlap.class_name
-        if overlap.yoga_class:
-            name = overlap.yoga_class.name
-        
+    if overlap.exists:
         raise HTTPException(
             status_code=400, 
-            detail=f"Conflicto de horario: Ya existe la clase '{name or 'Sin nombre'}' de {overlap.start_time} a {overlap.end_time}."
+            detail=f"Conflicto de horario: Ya existe '{overlap.name}' de {overlap.start} a {overlap.end}."
         )
 
     new_schedule = ClassSchedule(
@@ -154,15 +225,17 @@ async def update_schedule(
     new_start = schedule_data.start_time or schedule.start_time
     new_end = schedule_data.end_time or schedule.end_time
     
-    overlap = check_schedule_overlap(db, new_day, new_start, new_end, exclude_id=schedule_id)
-    if overlap:
-        name = overlap.class_name
-        if overlap.yoga_class:
-            name = overlap.yoga_class.name
-            
+    overlap = check_global_overlap(
+        db, 
+        new_day, new_start, new_end, 
+        exclude_type='schedule', 
+        exclude_id=schedule_id
+    )
+    
+    if overlap.exists:
         raise HTTPException(
             status_code=400, 
-            detail=f"Conflicto de horario: Ya existe la clase '{name or 'Sin nombre'}' de {overlap.start_time} a {overlap.end_time}."
+            detail=f"Conflicto de horario: Ya existe '{overlap.name}' de {overlap.start} a {overlap.end}."
         )
     
     # Update fields
@@ -210,4 +283,3 @@ async def delete_schedule(
         await notify_n8n_content_change(class_id, "yoga_class", "update")
     
     return {"message": "Schedule deleted successfully"}
-

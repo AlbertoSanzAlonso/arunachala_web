@@ -151,6 +151,7 @@ class Activity(Base):
     location = Column(String, nullable=True) 
     price = Column(String, nullable=True) 
     image_url = Column(String, nullable=True)
+    activity_data = Column(JSON, nullable=True)
     slug = Column(String, unique=True, index=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

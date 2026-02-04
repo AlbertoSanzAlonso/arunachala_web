@@ -209,7 +209,13 @@
             "taller": "Taller",
             "curso": "Curso",
             "evento": "Evento",
-            "retiro": "Retiro"
+            "retiro": "Retiro",
+            "sugerencia": "Sugerencia"
+        },
+        "sections": {
+            "courses": "Cursos",
+            "events": "Talleres y Eventos",
+            "suggestions": "Sugerencias"
         },
         "consult_price": "Consultar precio",
         "more_soon": "Próximas Actividades",
