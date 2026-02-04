@@ -201,6 +201,6 @@ class RAGSyncLog(Base):
     error_message = Column(Text, nullable=True)
     webhook_sent_at = Column(DateTime(timezone=True), nullable=True)
     vectorized_at = Column(DateTime(timezone=True), nullable=True)
-    metadata = Column(JSON, nullable=True)  # Additional info (model used, language, etc.)
+    sync_metadata = Column(JSON, nullable=True)  # Additional info (model used, language, etc.)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

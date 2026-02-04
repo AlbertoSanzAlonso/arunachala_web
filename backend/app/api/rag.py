@@ -62,7 +62,7 @@ async def rag_sync_callback(
                 log_entry.vectorized_at = datetime.now()
             
             if request.metadata:
-                log_entry.metadata = request.metadata
+                log_entry.sync_metadata = request.metadata
             
             db.commit()
     

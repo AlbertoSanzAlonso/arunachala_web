@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS rag_sync_log (
     error_message TEXT,
     webhook_sent_at TIMESTAMP,
     vectorized_at TIMESTAMP,
-    metadata JSONB,  -- Para guardar info adicional (modelo usado, idioma, etc.)
+    sync_metadata JSONB,  -- Para guardar info adicional (modelo usado, idioma, etc.)
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
