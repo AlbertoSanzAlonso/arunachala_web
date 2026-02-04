@@ -355,5 +355,57 @@
                 "content": "This legal notice is governed by Spanish legislation. Any dispute will be resolved in the courts of Barcelona."
             }
         }
+    },
+    "privacy": {
+        "title": "Privacy Policy",
+        "subtitle": "Information on how we treat your personal data",
+        "intro": "In compliance with Regulation (EU) 2016/679 of the European Parliament and of the Council of 27 April 2016 (GDPR) and Organic Law 3/2018, of 5 December, on the Protection of Personal Data and guarantee of digital rights (LOPDGDD), we inform you about how we treat your personal data.",
+        "last_updated": "Last updated",
+        "seo": {
+            "title": "Privacy Policy | Arunachala Yoga & Therapies",
+            "description": "Privacy policy and protection of personal data of Arunachala Yoga & Therapies in Cornellà de Llobregat."
+        },
+        "sections": {
+            "responsible": {
+                "title": "1. Data Controller",
+                "content": "Owner: Susana Pérez Gil - Arunachala Yoga & Therapies\nTax ID: [Tax identification number]\nAddress: Pasaje de Mateu Oliva 3, ground floor, 08940 Cornellà de Llobregat, Barcelona\nEmail: yogayterapiasarunachala@gmail.com\nPhone: +34 678 481 971"
+            },
+            "data": {
+                "title": "2. What data do we collect?",
+                "content": "We may collect the following personal data:\n\n- Contact details: name, surname, email, phone number\n- Booking data: information about booked classes or sessions\n- Health data: medical information relevant to therapies (only with your explicit consent)"
+            },
+            "purpose": {
+                "title": "3. What do we use your data for?",
+                "content": "We use your data for:\n\n- Class and booking management: organizing and confirming your attendance at yoga classes and therapy sessions\n- Communication: responding to your inquiries and sending you information about our services\n- Commercial information: sending you news, promotions or events (only if you give us your consent)\n- Therapeutic attention: adapting sessions to your health needs (only necessary data and with your consent)"
+            },
+            "legal_base": {
+                "title": "4. Legal basis for treatment",
+                "content": "We treat your data based on:\n\n- Execution of a contract: to manage your booking or registration in our services\n- Consent: to send commercial communications or treat health data\n- Legitimate interest: to improve our services"
+            },
+            "recipients": {
+                "title": "5. Who do we share your data with?",
+                "content": "We do not sell or transfer your data to third parties. It could only be shared with:\n\n- Service providers: email, booking management or payment platforms (under confidentiality agreements)\n- Authorities: when legally required"
+            },
+            "retention": {
+                "title": "6. How long do we keep your data?",
+                "content": "We keep your data while:\n\n- You maintain an active relationship with us (as a student or client)\n- Until you request its deletion\n- During the legally required time (tax data: 6 years)"
+            },
+            "rights": {
+                "title": "7. Your rights",
+                "content": "You have the right to:\n\n- Access your personal data\n- Rectify inaccurate or incomplete data\n- Delete your data when no longer necessary\n- Object to the processing of your data\n- Limit the processing in certain circumstances\n- Portability of your data to another controller\n- Withdraw consent at any time\n\nTo exercise your rights, send us an email to: yogayterapiasarunachala@gmail.com\n\nYou can also file a complaint with the Spanish Data Protection Agency (www.aepd.es)."
+            },
+            "security": {
+                "title": "8. Security of your data",
+                "content": "We have adopted appropriate security measures to protect your personal data against unauthorized access, loss or alteration."
+            },
+            "minors": {
+                "title": "9. Minors' data",
+                "content": "We do not intentionally collect data from children under 14 without the consent of their parents or guardians. If you are a parent and think your child has provided us with data, please contact us."
+            },
+            "updates": {
+                "title": "10. Changes in the privacy policy",
+                "content": "We may update this privacy policy. We recommend you review it periodically. The last update date appears at the beginning of this document."
+            }
+        }
     }
 }

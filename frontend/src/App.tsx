@@ -38,6 +38,7 @@ const ActivityManager = lazy(() => import('./pages/dashboard/ActivityManager'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const LegalNoticePage = lazy(() => import('./pages/LegalNoticePage'));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const MeditationsPage = lazy(() => import('./pages/MeditationsPage'));
 const ChatBot = lazy(() => import('./components/ChatBot'));
 
@@ -74,6 +75,7 @@ const AppContent = () => {
                 <Route path="/quienes-somos" element={<AboutPage />} />
                 <Route path="/contacto" element={<ContactPage />} />
                 <Route path="/aviso-legal" element={<LegalNoticePage />} />
+                <Route path="/politica-de-privacidad" element={<PrivacyPolicyPage />} />
                 <Route path="/meditaciones" element={<MeditationsPage />} />
 
                 {/* Auth Route */}

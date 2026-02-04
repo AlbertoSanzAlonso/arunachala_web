@@ -370,5 +370,57 @@
                 "content": "Este aviso legal se rige por la legislación española. Cualquier disputa se resolverá en los tribunales de Barcelona."
             }
         }
+    },
+    "privacy": {
+        "title": "Política de Privacidad",
+        "subtitle": "Información sobre cómo tratamos tus datos personales",
+        "intro": "En cumplimiento del Reglamento (UE) 2016/679 del Parlamento Europeo y del Consejo de 27 de abril de 2016 (RGPD) y la Ley Orgánica 3/2018, de 5 de diciembre, de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD), te informamos sobre cómo tratamos tus datos personales.",
+        "last_updated": "Última actualización",
+        "seo": {
+            "title": "Política de Privacidad | Arunachala Yoga y Terapias",
+            "description": "Política de privacidad y protección de datos personales de Arunachala Yoga y Terapias en Cornellà de Llobregat."
+        },
+        "sections": {
+            "responsible": {
+                "title": "1. Responsable del tratamiento",
+                "content": "Titular: Susana Pérez Gil - Arunachala Yoga y Terapias\nNIF: [Número de identificación fiscal]\nDirección: Pasaje de Mateu Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona\nEmail: yogayterapiasarunachala@gmail.com\nTeléfono: +34 678 481 971"
+            },
+            "data": {
+                "title": "2. ¿Qué datos recogemos?",
+                "content": "Podemos recoger los siguientes datos personales:\n\n- Datos de contacto: nombre, apellidos, email, teléfono\n- Datos de reserva: información sobre las clases o sesiones reservadas\n- Datos de salud: información médica relevante para las terapias (solo con tu consentimiento explícito)"
+            },
+            "purpose": {
+                "title": "3. ¿Para qué usamos tus datos?",
+                "content": "Utilizamos tus datos para:\n\n- Gestión de clases y reservas: organizar y confirmar tu asistencia a clases de yoga y sesiones de terapia\n- Comunicación: responder a tus consultas y enviarte información sobre nuestros servicios\n- Información comercial: enviarte novedades, promociones o eventos (solo si nos das tu consentimiento)\n- Atención terapéutica: adaptar las sesiones a tus necesidades de salud (solo datos necesarios y con tu consentimiento)"
+            },
+            "legal_base": {
+                "title": "4. Base legal del tratamiento",
+                "content": "Tratamos tus datos basándonos en:\n\n- Ejecución de un contrato: para gestionar tu reserva o inscripción en nuestros servicios\n- Consentimiento: para enviar comunicaciones comerciales o tratar datos de salud\n- Interés legítimo: para mejorar nuestros servicios"
+            },
+            "recipients": {
+                "title": "5. ¿Con quién compartimos tus datos?",
+                "content": "No vendemos ni cedemos tus datos a terceros. Únicamente podrían ser compartidos con:\n\n- Proveedores de servicios: plataformas de email, gestión de reservas o pagos (bajo acuerdos de confidencialidad)\n- Autoridades: cuando sea legalmente obligatorio"
+            },
+            "retention": {
+                "title": "6. ¿Cuánto tiempo conservamos tus datos?",
+                "content": "Conservamos tus datos mientras:\n\n- Mantengas una relación activa con nosotros (como alumno/a o cliente)\n- Hasta que solicites su supresión\n- Durante el tiempo legalmente exigido (datos fiscales: 6 años)"
+            },
+            "rights": {
+                "title": "7. Tus derechos",
+                "content": "Tienes derecho a:\n\n- Acceder a tus datos personales\n- Rectificar datos inexactos o incompletos\n- Suprimir tus datos cuando ya no sean necesarios\n- Oponerte al tratamiento de tus datos\n- Limitar el tratamiento en determinadas circunstancias\n- Portabilidad de tus datos a otro responsable\n- Retirar el consentimiento en cualquier momento\n\nPara ejercer tus derechos, envíanos un email a: yogayterapiasarunachala@gmail.com\n\nTambién puedes presentar una reclamación ante la Agencia Española de Protección de Datos (www.aepd.es)."
+            },
+            "security": {
+                "title": "8. Seguridad de tus datos",
+                "content": "Hemos adoptado medidas de seguridad apropiadas para proteger tus datos personales contra acceso no autorizado, pérdida o alteración."
+            },
+            "minors": {
+                "title": "9. Datos de menores",
+                "content": "No recogemos intencionadamente datos de menores de 14 años sin el consentimiento de sus padres o tutores. Si eres padre/madre y crees que tu hijo/a nos ha proporcionado datos, contacta con nosotros."
+            },
+            "updates": {
+                "title": "10. Cambios en la política de privacidad",
+                "content": "Podemos actualizar esta política de privacidad. Te recomendamos revisarla periódicamente. La fecha de última actualización aparece al inicio de este documento."
+            }
+        }
     }
 }

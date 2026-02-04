@@ -61,7 +61,7 @@ const Footer: React.FC = () => {
                     <h3 className="text-2xl font-headers tracking-widest text-transparent select-none hidden md:block" aria-hidden="true">_</h3>
                     <ul className="flex flex-col gap-3 text-sm text-bone/70">
                         <li><Link to="/aviso-legal" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone transition-colors">{t('footer.labels.legal')}</Link></li>
-                        <li><Link to="#" className="hover:text-bone transition-colors">{t('footer.labels.privacy')}</Link></li>
+                        <li><Link to="/politica-de-privacidad" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone transition-colors">{t('footer.labels.privacy')}</Link></li>
                     </ul>
                 </div>
 
