@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -9,6 +9,7 @@ import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
+import { getImageUrl } from '../utils/imageUtils';
 
 interface Article {
     id: number;
@@ -29,13 +30,7 @@ const BlogCategoryPage: React.FC = () => {
     const [articles, setArticles] = useState<Article[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        if (category) {
-            fetchArticles();
-        }
-    }, [category]);
-
-    const fetchArticles = async () => {
+    const fetchArticles = useCallback(async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/content?type=article&category=${category}&status=published`);
             if (response.ok) {
@@ -47,7 +42,13 @@ const BlogCategoryPage: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [category]);
+
+    useEffect(() => {
+        if (category) {
+            fetchArticles();
+        }
+    }, [category, fetchArticles]);
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -153,7 +154,7 @@ const BlogCategoryPage: React.FC = () => {
                                     <div className="h-48 bg-forest/10 overflow-hidden relative">
                                         {article.thumbnail_url ? (
                                             <img
-                                                src={article.thumbnail_url.startsWith('http') ? article.thumbnail_url : `${API_BASE_URL}${article.thumbnail_url}`}
+                                                src={getImageUrl(article.thumbnail_url)}
                                                 alt={getTranslated(article, 'title', i18n.language)}
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                             />

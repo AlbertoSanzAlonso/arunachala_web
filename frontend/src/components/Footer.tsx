@@ -50,8 +50,8 @@ const Footer: React.FC = () => {
                     <h3 className="text-2xl font-headers tracking-widest text-transparent select-none hidden md:block" aria-hidden="true">_</h3>
                     <ul className="flex flex-col gap-3 text-sm text-bone/70">
                         <li><Link to="/" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">{t('footer.labels.home')}</Link></li>
-                        <li><Link to="/yoga" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">{t('footer.labels.yoga')}</Link></li>
-                        <li><Link to="/masajes-y-terapias" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">{t('footer.labels.therapies')}</Link></li>
+                        <li><Link to="/clases-de-yoga" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">{t('footer.labels.yoga')}</Link></li>
+                        <li><Link to="/terapias-y-masajes" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">{t('footer.labels.therapies')}</Link></li>
                         <li><span className="opacity-50">{t('footer.labels.blog')}</span></li>
                     </ul>
                 </div>
