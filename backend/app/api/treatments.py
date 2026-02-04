@@ -110,7 +110,7 @@ async def create_massage(
         raise HTTPException(status_code=400, detail=f"Error al crear el masaje: {str(e)}")
     
     # Notify n8n for RAG update
-    await notify_n8n_content_change(db_massage.id, "massage", "create")
+    await notify_n8n_content_change(db_massage.id, "massage", "create", db=db)
     
     # Auto-translate if no translations provided
     if not translations and background_tasks:
@@ -171,7 +171,7 @@ async def update_massage(
     db.refresh(db_massage)
     
     # Notify n8n for RAG update
-    await notify_n8n_content_change(db_massage.id, "massage", "update")
+    await notify_n8n_content_change(db_massage.id, "massage", "update", db=db)
     
     # Re-translate if fields changed and no new translations provided
     if (name or excerpt or description or benefits) and not translations:
@@ -205,7 +205,7 @@ async def delete_massage(
         delete_file(db_massage.image_url)
     
     # Notify n8n
-    await notify_n8n_content_change(db_massage.id, "massage", "delete")
+    await notify_n8n_content_change(db_massage.id, "massage", "delete", db=db)
     
     db.delete(db_massage)
     db.commit()
@@ -276,7 +276,7 @@ async def create_therapy(
         raise HTTPException(status_code=400, detail=f"Error al crear la terapia: {str(e)}")
     
     # Notify n8n for RAG update
-    await notify_n8n_content_change(db_therapy.id, "therapy", "create")
+    await notify_n8n_content_change(db_therapy.id, "therapy", "create", db=db)
     
     # Auto-translate if no translations provided
     if not translations and background_tasks:
@@ -336,7 +336,7 @@ async def update_therapy(
     db.refresh(db_therapy)
     
     # Notify n8n for RAG update
-    await notify_n8n_content_change(db_therapy.id, "therapy", "update")
+    await notify_n8n_content_change(db_therapy.id, "therapy", "update", db=db)
     
     # Re-translate if fields changed and no new translations provided
     if (name or excerpt or description or benefits) and not translations:
@@ -370,7 +370,7 @@ async def delete_therapy(
         delete_file(db_therapy.image_url)
     
     # Notify n8n
-    await notify_n8n_content_change(db_therapy.id, "therapy", "delete")
+    await notify_n8n_content_change(db_therapy.id, "therapy", "delete", db=db)
     
     db.delete(db_therapy)
     db.commit()

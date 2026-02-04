@@ -73,7 +73,7 @@ async def create_yoga_class(
     db.refresh(db_class)
     
     # Notify n8n for RAG update
-    await notify_n8n_content_change(db_class.id, "yoga_class", "create")
+    await notify_n8n_content_change(db_class.id, "yoga_class", "create", db=db)
     
     # Auto-translate if no translations provided
     if not class_data.translations and background_tasks:
@@ -112,7 +112,7 @@ async def update_yoga_class(
     db.refresh(db_class)
     
     # Notify n8n for RAG update
-    await notify_n8n_content_change(db_class.id, "yoga_class", "update")
+    await notify_n8n_content_change(db_class.id, "yoga_class", "update", db=db)
     
     # Re-translate if main fields changed and no new translations provided
     if (class_data.name or class_data.description) and not class_data.translations:
@@ -142,7 +142,7 @@ async def delete_yoga_class(
         raise HTTPException(status_code=404, detail="Class not found")
     
     # Notify n8n BEFORE delete for reference if needed, or just action
-    await notify_n8n_content_change(db_class.id, "yoga_class", "delete")
+    await notify_n8n_content_change(db_class.id, "yoga_class", "delete", db=db)
     
     db.delete(db_class)
     db.commit()

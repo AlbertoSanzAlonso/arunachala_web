@@ -156,7 +156,7 @@ async def create_activity(
     db.refresh(new_activity)
     
     # Notify RAG system (n8n)
-    await notify_n8n_content_change(new_activity.id, "activity", "create")
+    await notify_n8n_content_change(new_activity.id, "activity", "create", db=db)
     
     # Auto-translate if no translations provided
     if not translations and background_tasks:
@@ -224,7 +224,7 @@ async def update_activity(
     db.refresh(activity)
     
     # Notify RAG system (n8n)
-    await notify_n8n_content_change(activity.id, "activity", "update")
+    await notify_n8n_content_change(activity.id, "activity", "update", db=db)
     
     # Re-translate if main fields changed and no new translations provided
     if (title or description) and not translations:
@@ -257,7 +257,7 @@ async def delete_activity(
         delete_file(activity.image_url)
 
     # Notify RAG system BEFORE deleting
-    await notify_n8n_content_change(activity_id, "activity", "delete")
+    await notify_n8n_content_change(activity_id, "activity", "delete", db=db)
     
     db.delete(activity)
     db.commit()
