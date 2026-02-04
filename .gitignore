@@ -76,4 +76,3 @@ backend/static/
 backend/app/static/
 backend/docker/postgres_data/
 backend/docker/postgres_data/
-infraestructura/qdrant_data/
