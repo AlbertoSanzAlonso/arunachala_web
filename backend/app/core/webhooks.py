@@ -15,10 +15,10 @@ async def notify_n8n_content_change(
     db: Optional[Session] = None, # Kept for backward compatibility but using SessionLocal
     entity: Optional[Any] = None
 ):
-    \"\"\"
+    """
     Notifica a n8n cuando cualquier contenido del dashboard cambia.
     También registra la operación en rag_sync_log para tracking.
-    \"\"\"
+    """
     # Create log entry using a fresh session to avoid transaction conflicts
     log_id = None
     internal_db = SessionLocal()

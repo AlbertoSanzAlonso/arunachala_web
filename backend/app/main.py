@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
 load_dotenv()
-# Reload trigger for env vars
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,8 +7,6 @@ from app.core.database import engine, Base
 from app.models import models
 import os
 
-# Import the reviews router
-# Import routers
 from app.api import reviews, auth, gallery, schedules, yoga_classes, treatments, content, activities, upload, dashboard, rag
 from app.routers import chat
 from fastapi.staticfiles import StaticFiles
@@ -53,7 +50,6 @@ app.include_router(rag.router)  # RAG sync endpoints
 
 
 # Mount Static Files (for uploaded images)
-# Calculate absolute path to avoid CWD issues - point to /backend/static/
 import os
 static_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static")
 if not os.path.exists(static_dir):

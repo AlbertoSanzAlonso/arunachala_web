@@ -9,6 +9,7 @@
 postgres_data/
 n8n_data/
 nocodb_data/
+infraestructura/qdrant_data/
 
 # --- SISTEMA ---
 .DS_Store
