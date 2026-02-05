@@ -23,6 +23,7 @@ const AgentControl: React.FC = () => {
     // RAG Status State
     const [ragStatus, setRagStatus] = useState<any>(null);
     const [syncLoading, setSyncLoading] = useState<string | null>(null); // null, 'all', 'yoga', etc.
+    const [lastSyncTime, setLastSyncTime] = useState<number>(0);
     const [suppressPolling, setSuppressPolling] = useState(false);
 
     useEffect(() => {
@@ -33,28 +34,36 @@ const AgentControl: React.FC = () => {
     // AUTO-POLLING LOGIC for real-time updates
     useEffect(() => {
         let interval: any = null;
-        let lastRefreshTimeout: any = null;
 
-        if (suppressPolling) return; // Do nothing if polling is suppressed
+        if (suppressPolling) return;
 
-        const isSyncing = syncLoading !== null || (ragStatus && ragStatus.processing_count > 0);
+        const now = Date.now();
+        const recentlyTriggered = now - lastSyncTime < 30000; // 30 seconds buffer
+        const isProcessing = ragStatus && ragStatus.processing_count > 0;
 
-        if (isSyncing) {
+        // Poll if we are explicitly loading, processing, or recently triggered sync
+        const shouldPoll = syncLoading !== null || isProcessing || recentlyTriggered;
+
+        if (shouldPoll) {
             interval = setInterval(() => {
                 fetchRagStatus();
-            }, 2500);
-        } else if (ragStatus?.processing_count === 0) {
-            // Perform one final refresh after 2 seconds when sync finishes to be 100% sure
-            lastRefreshTimeout = setTimeout(() => {
-                fetchRagStatus();
-            }, 2000);
+            }, 3000);
         }
 
         return () => {
             if (interval) clearInterval(interval);
-            if (lastRefreshTimeout) clearTimeout(lastRefreshTimeout);
         };
-    }, [syncLoading, ragStatus?.processing_count, suppressPolling]);
+    }, [syncLoading, ragStatus?.processing_count, suppressPolling, lastSyncTime]);
+
+    // Extra refresh when sync finishes
+    useEffect(() => {
+        if (ragStatus && ragStatus.processing_count === 0 && syncLoading === null) {
+            const timeout = setTimeout(() => {
+                fetchRagStatus();
+            }, 2000);
+            return () => clearTimeout(timeout);
+        }
+    }, [ragStatus?.processing_count, syncLoading]);
 
     const fetchRagStatus = async () => {
         try {
@@ -90,6 +99,7 @@ const AgentControl: React.FC = () => {
                 }[type] || 'el contenido';
 
                 setMessage(`¡Hecho! Se está actualizando la memoria con ${friendlyType}. El progreso aparecerá abajo.`);
+                setLastSyncTime(Date.now());
                 // Refresh immediately
                 fetchRagStatus();
             } else {
@@ -464,7 +474,7 @@ const AgentControl: React.FC = () => {
                             <h2 className="text-xl font-headers text-bark">Centro de Conocimiento</h2>
                             <p className="text-gray-500 text-sm">Gestiona la sincronización entre la base de datos y la memoria de la IA.</p>
                         </div>
-                        {ragStatus?.processing_count > 0 && (
+                        {(ragStatus?.processing_count > 0 || syncLoading !== null || (Date.now() - lastSyncTime < 30000)) && (
                             <div className="flex items-center gap-2 bg-matcha/10 px-3 py-1 rounded-full border border-matcha/20 animate-pulse">
                                 <div className="w-2 h-2 bg-matcha rounded-full animate-bounce" />
                                 <span className="text-[10px] font-bold text-forest uppercase tracking-wider">Actualizando...</span>
