@@ -13,8 +13,9 @@ from datetime import datetime
 from app.core.database import get_db
 from app.models.models import (
     RAGSyncLog, YogaClassDefinition, MassageType, 
-    TherapyType, Content, Activity
+    TherapyType, Content, Activity, User
 )
+from app.api.auth import get_current_user
 from app.core.webhooks import notify_n8n_content_change
 
 router = APIRouter(prefix="/api/rag", tags=["RAG Sync"])
@@ -46,6 +47,12 @@ class SyncTriggerRequest(BaseModel):
     # 'yoga', 'massage', 'therapy', 'content', 'activity', 'all'
     sync_type: str = 'all'
     force: bool = False
+
+
+class ResetMemoryRequest(BaseModel):
+    """Request to reset/clear memory"""
+    # 'all', 'yoga_class', 'massage', 'therapy', 'content', 'activity'
+    scope: str = 'all'
 
 
 @router.post("/sync-callback")
@@ -281,4 +288,73 @@ async def trigger_rag_sync(
         "success": True,
         "triggered_count": sync_total,
         "message": f"Triggered sync for {sync_total} items"
+    }
+
+
+@router.post("/chat-memory-reset")
+async def chat_memory_reset(
+    request: ResetMemoryRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Reset RAG memory for specific scope or all content.
+    This marks all content in the scope as requiring reindex and resets vector IDs.
+    It also notifies n8n to DELETE vectors from the vector store.
+    """
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permisos para realizar esta acción"
+        )
+
+    model_map = {
+        'yoga_class': (YogaClassDefinition, 'yoga_class'),
+        'massage': (MassageType, 'massage'),
+        'therapy': (TherapyType, 'therapy'),
+        'content': (Content, 'content'),
+        'activity': (Activity, 'activity'),
+    }
+
+    scopes_to_reset = []
+    if request.scope == 'all':
+        scopes_to_reset = list(model_map.keys())
+    elif request.scope in model_map:
+        scopes_to_reset = [request.scope]
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid scope: {request.scope}"
+        )
+
+    total_reset = 0
+    for s_scope in scopes_to_reset:
+        Model, webhook_type = model_map[s_scope]
+        
+        # Get all entities that have been vectorized
+        entities = db.query(Model).all()
+        
+        for entity in entities:
+            # Notify n8n to DELETE from vector store if it has a vector_id
+            if entity.vector_id:
+                await notify_n8n_content_change(
+                    content_id=entity.id,
+                    content_type=webhook_type,
+                    action='delete',
+                    db=db,
+                    entity=entity
+                )
+            
+            # Reset fields in DB
+            entity.vector_id = None
+            entity.vectorized_at = None
+            entity.needs_reindex = True
+            total_reset += 1
+
+    db.commit()
+
+    return {
+        "success": True,
+        "reset_count": total_reset,
+        "message": f"Memory reset for {total_reset} items in scope '{request.scope}'"
     }

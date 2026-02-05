@@ -186,7 +186,7 @@ const AgentControl: React.FC = () => {
         setResetLoading(true);
         try {
             const token = sessionStorage.getItem('access_token');
-            const response = await fetch(`${API_BASE_URL}/api/chat-memory-reset`, {
+            const response = await fetch(`${API_BASE_URL}/api/rag/chat-memory-reset`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -494,7 +494,7 @@ const AgentControl: React.FC = () => {
                                 { id: 'yoga', label: 'Yoga', data: ragStatus.yoga_classes, color: 'matcha' },
                                 { id: 'massage', label: 'Masajes', data: ragStatus.massage_types, color: 'matcha' },
                                 { id: 'therapy', label: 'Terapias', data: ragStatus.therapy_types, color: 'matcha' },
-                                { id: 'content', label: 'Blog', data: ragStatus.contents, color: 'bark' },
+                                { id: 'content', label: 'Blog', data: ragStatus.contents, color: 'matcha' },
                                 { id: 'activity', label: 'Actividades', data: ragStatus.activities, color: 'matcha' },
                             ].map((item) => (
                                 <div key={item.id} className="p-4 rounded-xl bg-gray-50 border border-gray-100">
