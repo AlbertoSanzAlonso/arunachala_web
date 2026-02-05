@@ -209,7 +209,13 @@
             "taller": "Taller",
             "curso": "Curso",
             "evento": "Evento",
-            "retiro": "Retiro"
+            "retiro": "Retiro",
+            "sugerencia": "Sugerencia"
+        },
+        "sections": {
+            "courses": "Cursos",
+            "events": "Talleres y Eventos",
+            "suggestions": "Sugerencias"
         },
         "consult_price": "Consultar precio",
         "more_soon": "Próximas Actividades",
@@ -258,6 +264,11 @@
         "seo": {
             "title": "Susana Pérez Gil | Sobre Nosotros | Yoga Arunachala",
             "description": "Conoce a Susana Pérez Gil, fundadora de Arunachala. Más de 25 años de experiencia en Yoga, masajes y terapias holísticas en Cornellà."
+        },
+        "instagram": {
+            "title": "Conecta con nosotros",
+            "subtitle": "Síguenos en Instagram para ver nuestro día a día",
+            "follow": "Seguir a @yogayterapiasarunachala"
         }
     },
     "contact_page": {

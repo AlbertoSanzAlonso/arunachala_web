@@ -46,6 +46,10 @@ arunachala_web/
 ```
 
 ## 📝 Recent Updates (2025-02-04)
-- **AI Image Generation**: Fixed routing conflicts (422 error), switched to GET method, improved specific error handling.
-- **Dashboard**: Implemented `DashboardActivity` for tracking deleted content.
-- **Skills Refactor**: Moved monolithic `AGENTS.md` content into granular skills.
+- **RAG Sync System 2.0**: Implemented robust tracking with `rag_sync_log` table, automatic synchronization with n8n (bidirectional), and a new RAG Knowledge Center in the Agent Dashboard for monitoring.
+- **RAG Stability Improvements**: Fixed "JSON parameter needs to be valid JSON" errors by ensuring no null values in text fields. Improved webhook reliability by using independent DB sessions and passing entity data (vector_id) before deletion to avoid 404s.
+- **UX Blocking Loader**: Implemented a global `PageLoader` (rotating lotus) across all dashboard managers (Treatments, Classes, Schedule, Activities, Users, Content) to prevent duplicate submissions and double-click errors.
+- **AI Image Generation**: Switched to GET method, improved error handling, and integrated with the new content manager flow.
+## 🔐 Credentials
+- **Test User**: `albertosanzdev@gmail.com`
+- **Password**: `Albertito_23`

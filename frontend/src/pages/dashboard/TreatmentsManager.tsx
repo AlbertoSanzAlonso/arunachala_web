@@ -5,6 +5,7 @@ import { Point, Area } from 'react-easy-crop/types';
 import getCroppedImg from '../../utils/cropImage';
 import { API_BASE_URL } from '../../config';
 import lotusImage from '../../assets/images/lotus_flower.png';
+import PageLoader from '../../components/PageLoader';
 
 interface TreatmentType {
     id: number;
@@ -23,6 +24,7 @@ export default function TreatmentsManager() {
     const [activeTab, setActiveTab] = useState<'massages' | 'therapies'>('massages');
     const [items, setItems] = useState<TreatmentType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [editingItem, setEditingItem] = useState<TreatmentType | null>(null);
 
@@ -113,6 +115,7 @@ export default function TreatmentsManager() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsSaving(true);
         const token = sessionStorage.getItem('access_token');
         const endpoint = activeTab === 'massages' ? 'massages' : 'therapies';
 
@@ -174,6 +177,8 @@ export default function TreatmentsManager() {
         } catch (error) {
             console.error('Error saving item:', error);
             alert('Error al guardar');
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -185,6 +190,7 @@ export default function TreatmentsManager() {
     const handleDeleteConfirm = async () => {
         if (!itemToDelete) return;
 
+        setIsSaving(true);
         const token = sessionStorage.getItem('access_token');
         const endpoint = activeTab === 'massages' ? 'massages' : 'therapies';
 
@@ -208,6 +214,8 @@ export default function TreatmentsManager() {
         } catch (error) {
             console.error('Error deleting item:', error);
             alert('Error al eliminar');
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -246,6 +254,8 @@ export default function TreatmentsManager() {
 
     return (
         <div>
+            {isSaving && <PageLoader />}
+
             {/* Cropper Modal */}
             {isCropping && imageSrc && (
                 <div className="fixed inset-0 z-[70] bg-black bg-opacity-80 flex flex-col items-center justify-center p-4">
@@ -519,9 +529,10 @@ export default function TreatmentsManager() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="rounded-md bg-primary-600 px-6 py-2 text-sm font-medium text-white hover:bg-primary-700 shadow-sm"
+                                    disabled={isSaving}
+                                    className="rounded-md bg-primary-600 px-6 py-2 text-sm font-medium text-white hover:bg-primary-700 shadow-sm disabled:opacity-50"
                                 >
-                                    {editingItem ? 'Actualizar' : 'Crear'}
+                                    {isSaving ? 'Guardando...' : (editingItem ? 'Actualizar' : 'Crear')}
                                 </button>
                             </div>
                         </form>
@@ -554,9 +565,10 @@ export default function TreatmentsManager() {
                                 <button
                                     type="button"
                                     onClick={handleDeleteConfirm}
-                                    className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+                                    disabled={isSaving}
+                                    className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
                                 >
-                                    Eliminar
+                                    {isSaving ? 'Eliminando...' : 'Eliminar'}
                                 </button>
                             </div>
                         </div>
