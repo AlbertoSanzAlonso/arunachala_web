@@ -316,7 +316,18 @@
         "related_articles": "Artículos Relacionados",
         "read_more": "Leer más",
         "view_all": "Ver Todos los Artículos",
+        "search": {
+            "placeholder": "Buscar artículos...",
+            "no_results": "No se encontraron artículos",
+            "advanced_search": "Búsqueda avanzada"
+        },
+        "filter": {
+            "category": "Categoría",
+            "date": "Fecha",
+            "tags": "Etiquetas"
+        },
         "categories": {
+            "all": "Todos",
             "yoga": "Yoga",
             "therapy": "Terapias",
             "general": "General"

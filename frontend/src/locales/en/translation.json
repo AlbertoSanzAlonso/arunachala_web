@@ -304,7 +304,18 @@
         "related_articles": "Related Articles",
         "read_more": "Read more",
         "view_all": "View All Articles",
+        "search": {
+            "placeholder": "Search articles...",
+            "no_results": "No articles found",
+            "advanced_search": "Advanced Search"
+        },
+        "filter": {
+            "category": "Category",
+            "date": "Date",
+            "tags": "Tags"
+        },
         "categories": {
+            "all": "All",
             "yoga": "Yoga",
             "therapy": "Therapies",
             "general": "General"

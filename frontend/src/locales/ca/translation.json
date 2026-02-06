@@ -304,7 +304,18 @@
         "related_articles": "Articles Relacionats",
         "read_more": "Llegir més",
         "view_all": "Veure Tots els Articles",
+        "search": {
+            "placeholder": "Cerca articles...",
+            "no_results": "No s'han trobat articles",
+            "advanced_search": "Cerca avançada"
+        },
+        "filter": {
+            "category": "Categoria",
+            "date": "Data",
+            "tags": "Etiquetes"
+        },
         "categories": {
+            "all": "Tots",
             "yoga": "Ioga",
             "therapy": "Teràpies",
             "general": "General"

@@ -94,7 +94,7 @@ def search_knowledge_base(query: str, limit: int = 3):
         search_result = qdrant_client.query_points(
             collection_name=COLLECTION_NAME,
             query=query_vector,
-            limit=5  # Increased limit to get more context
+            limit=3  # Reduced limit to save tokens and avoid Rate Limits
         ).points
         return search_result
     except Exception as e:
@@ -260,6 +260,7 @@ async def chat_endpoint(request: ChatRequest, db: Session = Depends(get_db)):
     
 IDIOMA DE RESPUESTA:
  - **Debes responder SIEMPRE en {target_lang}**.
+ - Si el usuario habla en {target_lang}, TODA tu respuesta (y las citas del contexto) deben ser en {target_lang}. TRADUCE cualquier información recuperada si está en otro idioma.
  - Saluda usando un saludo apropiado en {target_lang} (ej: 'Namasté' es universal, pero el resto en {target_lang}).
     
 PERSONALIDAD Y ESTILO:
@@ -268,17 +269,48 @@ PERSONALIDAD Y ESTILO:
 - Emojis: {emoji_instruction}
 - Objetivo: {focus_instruction}
 
-INSTRUCCIONES EXTRA DEL ADMINISTRADOR:
+INSTRUCCIONES EXTRA DEL ADMINISTRADOR (ATENCIÓN: Si estas instrucciones incluyen frases o saludos en español, TRADÚCELAS al {target_lang} antes de usarlas):
 {extra_instructions}
 
 CONTEXTO DE LA WEB (RAG):
 {context_text}
 
-INSTRUCCIONES DE USO DE CONTEXTO:
-- Usa la información del CONTEXTO DE LA WEB para responder las dudas del usuario.
-- NO menciones las fuentes ni cites documentos explícitamente (ej: "Según el documento X..."). Integra la información de forma natural en tu respuesta.
-- Si no sabes la respuesta basada en el contexto, puedes usar tu conocimiento general sobre yoga/bienestar, pero prioriza el contexto del centro.
-- Si mencionas horarios o precios, sé preciso basándote únicamente en el contexto provisto.
+ INSTRUCCIONES DE USO DE CONTEXTO:
+ - Usa la información del CONTEXTO DE LA WEB para responder las dudas del usuario.
+ - **IMPORTANTE**: Si el contexto está en español y {target_lang} es otro idioma, TRADÚCELO sobre la marcha. 
+ - **CITAS TEXTUALES**: Si el usuario pide "la primera línea" o una cita, y el original es español, TRADUCE LA CITA al {target_lang}. No cites en español.
+ - NUNCA respondas con fragmentos en español si el usuario habla en otro idioma (salvo nombres propios o términos sánscritos).
+ - NO menciones las fuentes ni cites documentos explícitamente (ej: "Según el documento X..."). Integra la información de forma natural en tu respuesta.
+ - Si no sabes la respuesta basada en el contexto, puedes usar tu conocimiento general sobre yoga/bienestar, pero prioriza el contexto del centro.
+ - Si mencionas horarios o precios, sé preciso basándote únicamente en el contexto provisto.
+
+EJEMPLOS DE COMPORTAMIENTO ESPERADO (User Language != Context Language):
+---------------------------------------------------------------------
+Caso 1: Usuario pregunta en Inglés, Contexto en Español.
+User: "What is the price?"
+Context: "El precio es 10 euros."
+Assistant Correcto: "The price is 10 euros." 
+Assistant INCORRECTO: "The price is '10 euros' (El precio es 10 euros)." (NO MOSTRAR EL ORIGINAL)
+
+Caso 2: Usuario pide CITA TEXTUAL en Inglés.
+User: "What is the first line?"
+Context: "En un lugar de la Mancha..."
+Assistant Correcto: "The first line is: 'In a place of La Mancha...'" (SOLO TRADUCCIÓN)
+Assistant INCORRECTO: "The first line is: 'En un lugar de la Mancha...'" (PROHIBIDO CITAR EN IDIOMA INCORRECTO)
+Assistant INCORRECTO: "'En un lugar de la Mancha...' which means 'In a place...'" (NO MOSTRAR AMBOS)
+
+Caso 3: Despedida Ritual / Instrucción Admin.
+Instruction: "Termina con: 'Que el sol te ilumine'."
+Assistant Correcto: "May the sun illuminate you." (SOLO TRADUCCIÓN)
+Assistant INCORRECTO: "May the sun illuminate you. Que el sol te ilumine." (NO DUPLICAR)
+---------------------------------------------------------------------
+
+--- DIRECTRIZ SUPREMA DE IDIOMA ({target_lang}) ---
+1. EL IDIOMA DEL USUARIO ES: {target_lang}.
+2. TU RESPUESTA DEBE SER 100% EN {target_lang}.
+3. **PROHIBIDO** INCLUIR TEXTO EN ESPAÑOL (ni siquiera entre paréntesis o comillas). SIEMPRE TRADUCE TODO.
+4. Si las instrucciones del administrador o el contexto contienen frases en español, TRADÚCELAS INVISIBLEMENTE y muestra solo el resultado en {target_lang}.
+5. SI LA DESPEDIDA RITUAL ESTÁ EN ESPAÑOL, TRADÚCELA O ELIMÍNALA. (Ej: NO DIGAS "Que el sol...", DI "May the sun...").
 """
 
     # 4. Prepare messages
@@ -293,26 +325,8 @@ INSTRUCCIONES DE USO DE CONTEXTO:
                 # Meta-data first (empty sources to hide them)
                 yield f"data: {json.dumps({'sources': []})}\n\n"
                 
-                if groq_client:
-                    stream = groq_client.chat.completions.create(
-                        model="llama-3.3-70b-versatile",
-                        messages=api_messages,
-                        temperature=0.7,
-                        stream=True
-                    )
-                    for chunk in stream:
-                        if chunk.choices[0].delta.content:
-                            yield f"data: {json.dumps({'content': chunk.choices[0].delta.content})}\n\n"
-                
-                elif gemini_model:
-                    # Gemini streaming is slightly different
-                    prompt = "\n".join([f"{m['role']}: {m['content']}" for m in api_messages])
-                    response = gemini_model.generate_content(prompt, stream=True)
-                    for chunk in response:
-                        if chunk.text:
-                            yield f"data: {json.dumps({'content': chunk.text})}\n\n"
-
-                elif openai_client:
+                # Priority: OpenAI -> Gemini -> Groq
+                if openai_client:
                     stream = openai_client.chat.completions.create(
                         model="gpt-4o-mini",
                         messages=api_messages,
@@ -321,6 +335,25 @@ INSTRUCCIONES DE USO DE CONTEXTO:
                     )
                     for chunk in stream:
                         if chunk.choices and chunk.choices[0].delta.content:
+                            yield f"data: {json.dumps({'content': chunk.choices[0].delta.content})}\n\n"
+
+                elif gemini_model:
+                    # Gemini streaming is slightly different
+                    prompt = "\n".join([f"{m['role']}: {m['content']}" for m in api_messages])
+                    response = gemini_model.generate_content(prompt, stream=True)
+                    for chunk in response:
+                        if chunk.text:
+                            yield f"data: {json.dumps({'content': chunk.text})}\n\n"
+
+                elif groq_client:
+                    stream = groq_client.chat.completions.create(
+                        model="llama-3.3-70b-versatile",
+                        messages=api_messages,
+                        temperature=0.7,
+                        stream=True
+                    )
+                    for chunk in stream:
+                        if chunk.choices[0].delta.content:
                             yield f"data: {json.dumps({'content': chunk.choices[0].delta.content})}\n\n"
                 
                 yield "data: [DONE]\n\n"
