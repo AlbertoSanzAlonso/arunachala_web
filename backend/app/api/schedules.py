@@ -130,7 +130,7 @@ async def create_schedule(
     db.refresh(new_schedule)
     
     if new_schedule.class_id:
-        await notify_n8n_content_change(new_schedule.class_id, "yoga_class", "update")
+        await notify_n8n_content_change(new_schedule.class_id, "yoga_class", "update", db=db)
     
     return new_schedule
 
@@ -183,7 +183,7 @@ async def update_schedule(
     db.refresh(schedule)
     
     if schedule.class_id:
-        await notify_n8n_content_change(schedule.class_id, "yoga_class", "update")
+        await notify_n8n_content_change(schedule.class_id, "yoga_class", "update", db=db)
     
     return schedule
 
@@ -207,7 +207,7 @@ async def delete_schedule(
     db.commit()
     
     if class_id:
-        await notify_n8n_content_change(class_id, "yoga_class", "update")
+        await notify_n8n_content_change(class_id, "yoga_class", "update", db=db)
     
     return {"message": "Schedule deleted successfully"}
 

@@ -631,9 +631,9 @@ export default function ContentManager() {
                                     </thead>
                                     <tbody className="divide-y divide-gray-200 bg-white">
                                         {isLoading ? (
-                                            <tr><td colSpan={5} className="text-center py-4">Cargando...</td></tr>
+                                            <tr><td colSpan={6} className="text-center py-4">Cargando...</td></tr>
                                         ) : filteredContents.length === 0 ? (
-                                            <tr><td colSpan={5} className="text-center py-4 text-gray-500">No hay contenido en esta sección.</td></tr>
+                                            <tr><td colSpan={6} className="text-center py-4 text-gray-500">No hay contenido en esta sección.</td></tr>
                                         ) : (
                                             filteredContents.map((item) => (
                                                 <tr key={item.id} className={selectedIds.has(item.id) ? 'bg-gray-50' : undefined}>

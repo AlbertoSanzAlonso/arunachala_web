@@ -26,32 +26,32 @@ const Footer: React.FC = () => {
     const { t } = useTranslation();
 
     return (
-        <footer className="bg-bark text-bone font-light">
+        <footer className="bg-[#5c6b3c] text-[#F5F5DC] font-light transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-8 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
 
                 {/* Brand & Address */}
                 <div className="md:col-span-1 flex flex-col gap-6 text-center">
-                    <h3 className="text-2xl font-headers tracking-widest text-matcha">ARUNACHALA</h3>
-                    <address className="not-italic text-bone/80 leading-relaxed text-sm">
+                    <h3 className="text-2xl font-headers tracking-widest text-[#F5F5DC] font-bold">ARUNACHALA</h3>
+                    <address className="not-italic text-[#F5F5DC]/90 leading-relaxed text-sm">
                         Pasaje de Mateu Oliva 3, bajos<br />
                         (junto Plaza Pallars)<br />
                         08940 Cornellà de Llobregat<br />
                         Barcelona
                     </address>
-                    <p className="text-bone/80 text-sm">
-                        <a href="mailto:yogayterapiasarunachala@gmail.com" className="hover:text-matcha transition-colors">yogayterapiasarunachala@gmail.com</a>
+                    <p className="text-[#F5F5DC]/80 text-sm">
+                        <a href="mailto:yogayterapiasarunachala@gmail.com" className="hover:text-[#becf81] transition-colors">yogayterapiasarunachala@gmail.com</a>
                         <br />
-                        <a href="tel:+34678481971" className="hover:text-matcha transition-colors">Tel. 678 481 971</a>
+                        <a href="tel:+34678481971" className="hover:text-[#becf81] transition-colors">Tel. 678 481 971</a>
                     </p>
                 </div>
 
                 {/* Sitemap */}
                 <div className="col-span-1 flex flex-col gap-6 text-center">
                     <h3 className="text-2xl font-headers tracking-widest text-transparent select-none hidden md:block" aria-hidden="true">_</h3>
-                    <ul className="flex flex-col gap-3 text-sm text-bone/70">
-                        <li><Link to="/" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">{t('footer.labels.home')}</Link></li>
-                        <li><Link to="/clases-de-yoga" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">{t('footer.labels.yoga')}</Link></li>
-                        <li><Link to="/terapias-y-masajes" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone hover:translate-x-1 transition-all inline-block">{t('footer.labels.therapies')}</Link></li>
+                    <ul className="flex flex-col gap-3 text-sm text-[#F5F5DC]/80">
+                        <li><Link to="/" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.home')}</Link></li>
+                        <li><Link to="/clases-de-yoga" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.yoga')}</Link></li>
+                        <li><Link to="/terapias-y-masajes" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.therapies')}</Link></li>
                         <li><span className="opacity-50">{t('footer.labels.blog')}</span></li>
                     </ul>
                 </div>
@@ -59,9 +59,9 @@ const Footer: React.FC = () => {
                 {/* Legal */}
                 <div className="col-span-1 flex flex-col gap-6 text-center">
                     <h3 className="text-2xl font-headers tracking-widest text-transparent select-none hidden md:block" aria-hidden="true">_</h3>
-                    <ul className="flex flex-col gap-3 text-sm text-bone/70">
-                        <li><Link to="/aviso-legal" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone transition-colors">{t('footer.labels.legal')}</Link></li>
-                        <li><Link to="/politica-de-privacidad" onClick={() => window.scrollTo(0, 0)} className="hover:text-bone transition-colors">{t('footer.labels.privacy')}</Link></li>
+                    <ul className="flex flex-col gap-3 text-sm text-[#F5F5DC]/80">
+                        <li><Link to="/aviso-legal" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] transition-colors">{t('footer.labels.legal')}</Link></li>
+                        <li><Link to="/politica-de-privacidad" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] transition-colors">{t('footer.labels.privacy')}</Link></li>
                     </ul>
                 </div>
 
@@ -69,13 +69,13 @@ const Footer: React.FC = () => {
                 <div className="col-span-1 flex flex-col gap-6 items-center text-center lg:h-full lg:justify-between">
                     <h3 className="text-2xl font-headers tracking-widest text-transparent select-none hidden md:block" aria-hidden="true">_</h3>
                     <div className="flex gap-6">
-                        <a href="https://www.instagram.com/yogayterapiasarunachala/" target="_blank" rel="noopener noreferrer" aria-label={t('footer.labels.instagram')} className="text-bone/70 hover:text-matcha hover:scale-110 transition-all duration-300">
+                        <a href="https://www.instagram.com/yogayterapiasarunachala/" target="_blank" rel="noopener noreferrer" aria-label={t('footer.labels.instagram')} className="text-[#F5F5DC]/80 hover:text-[#becf81] hover:scale-110 transition-all duration-300">
                             <InstagramIcon className="w-6 h-6" aria-hidden="true" />
                         </a>
-                        <a href="https://www.youtube.com/@yogayterapiasarunachala2252" target="_blank" rel="noopener noreferrer" aria-label={t('footer.labels.youtube')} className="text-bone/70 hover:text-matcha hover:scale-110 transition-all duration-300">
+                        <a href="https://www.youtube.com/@yogayterapiasarunachala2252" target="_blank" rel="noopener noreferrer" aria-label={t('footer.labels.youtube')} className="text-[#F5F5DC]/80 hover:text-[#becf81] hover:scale-110 transition-all duration-300">
                             <YoutubeIcon className="w-6 h-6" aria-hidden="true" />
                         </a>
-                        <a href="https://spotify.com" target="_blank" rel="noopener noreferrer" aria-label={t('footer.labels.spotify')} className="text-bone/70 hover:text-matcha hover:scale-110 transition-all duration-300">
+                        <a href="https://spotify.com" target="_blank" rel="noopener noreferrer" aria-label={t('footer.labels.spotify')} className="text-[#F5F5DC]/80 hover:text-[#becf81] hover:scale-110 transition-all duration-300">
                             <SpotifyIcon className="w-6 h-6" aria-hidden="true" />
                         </a>
                     </div>
@@ -84,8 +84,8 @@ const Footer: React.FC = () => {
             </div>
 
             {/* Copyright Bar */}
-            <div className="w-full bg-black/20 py-6 text-center border-t border-bone/10">
-                <p className="text-xs text-bone/40 uppercase tracking-widest">
+            <div className="w-full bg-black/20 py-6 text-center border-t border-[#F5F5DC]/10">
+                <p className="text-xs text-[#F5F5DC]/40 uppercase tracking-widest">
                     &copy; {new Date().getFullYear()} Arunachala Web. {t('footer.rights')}
                 </p>
             </div>

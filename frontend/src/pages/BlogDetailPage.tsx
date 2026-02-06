@@ -9,6 +9,8 @@ import Footer from '../components/Footer';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
 import { getImageUrl } from '../utils/imageUtils';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Article {
     id: number;
@@ -90,6 +92,22 @@ const BlogDetailPage: React.FC = () => {
         return labels[category] || category;
     };
 
+    const cleanContent = (content: string) => {
+        if (!content) return '';
+        // Replace literal escaped newlines with actual newlines
+        // Also handle double escaping just in case
+        let cleaned = content
+            .replace(/\\n/g, '\n')
+            .replace(/\\\\n/g, '\n')
+            .replace(/\\"/g, '"');
+
+        // Remove the first H1 (# Title) if it exists at the start of the content (AI Generated)
+        // This allows us to use our own H1 component title for ALL articles (Manual & AI)
+        cleaned = cleaned.replace(/^#\s+.+(\n|$)/, '').trim();
+
+        return cleaned;
+    };
+
     if (isLoading) {
         return (
             <div className="font-body text-bark min-h-screen flex flex-col relative bg-bone">
@@ -137,7 +155,7 @@ const BlogDetailPage: React.FC = () => {
                         </span>
                     </div>
 
-                    {/* Title */}
+                    {/* RESTORED TITLE */}
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -192,9 +210,18 @@ const BlogDetailPage: React.FC = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 }}
-                        className="prose prose-lg max-w-none mb-12"
-                        dangerouslySetInnerHTML={{ __html: translatedBody }}
-                    />
+                        className="mb-12"
+                    >
+                        <div className="prose prose-lg prose-forest max-w-none">
+                            {/<[a-z][\s\S]*>/i.test(translatedBody || '') ? (
+                                <div dangerouslySetInnerHTML={{ __html: cleanContent(translatedBody) }} />
+                            ) : (
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                    {cleanContent(translatedBody)}
+                                </ReactMarkdown>
+                            )}
+                        </div>
+                    </motion.div>
 
                     {/* Tags */}
                     {article.tags && article.tags.length > 0 && (

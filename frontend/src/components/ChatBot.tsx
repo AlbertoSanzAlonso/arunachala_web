@@ -4,6 +4,7 @@ import { ChatBubbleLeftRightIcon, XMarkIcon, PaperAirplaneIcon, BookmarkIcon } f
 import puter from '@heyputer/puter.js';
 import omSymbol from '../assets/images/om_symbol.png';
 import { API_BASE_URL } from '../config';
+import { useTranslation } from 'react-i18next';
 
 interface Message {
     id: number;
@@ -15,18 +16,38 @@ interface Message {
     isStreaming?: boolean;
 }
 
-const INITIAL_MESSAGE: Message = {
-    id: 0,
-    text: "¡Namasté! 🙏 Bienvenido a Arunachala. Soy tu asistente virtual. ¿En qué puedo ayudarte hoy? Puedes preguntarme sobre horarios, clases de yoga, o terapias.",
-    isUser: false,
-    timestamp: new Date(),
-    role: 'assistant'
-};
+// Eliminated INITIAL_MESSAGE constant to use dynamic state
+
 
 const ChatBot: React.FC = () => {
+    const { i18n, t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [isActive, setIsActive] = useState(true);
-    const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
+
+    // Initial state with translation
+    const [messages, setMessages] = useState<Message[]>([{
+        id: 0,
+        text: t('chatbot.welcome', "¡Namasté! 🙏 Bienvenido a Arunachala. Soy tu asistente virtual. ¿En qué puedo ayudarte hoy? Puedes preguntarme sobre horarios, clases de yoga, o terapias."), // Fallback
+        isUser: false,
+        timestamp: new Date(),
+        role: 'assistant'
+    }]);
+
+    // Update welcome message on language change
+    useEffect(() => {
+        setMessages(prev => {
+            if (prev.length > 0 && prev[0].id === 0) {
+                const newWelcome = t('chatbot.welcome');
+                // Only update if text changed to avoid loops
+                if (prev[0].text !== newWelcome) {
+                    const newMessages = [...prev];
+                    newMessages[0] = { ...newMessages[0], text: newWelcome };
+                    return newMessages;
+                }
+            }
+            return prev;
+        });
+    }, [i18n.language, t]);
     const [inputValue, setInputValue] = useState("");
     const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -96,12 +117,15 @@ const ChatBot: React.FC = () => {
             }));
             apiMessages.push({ role: 'user', content: userText });
 
+            console.log("Creating chat request with language:", i18n.language);
+
             const response = await fetch(`${API_BASE_URL}/api/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     messages: apiMessages,
-                    stream: true
+                    stream: true,
+                    language: i18n.language
                 }),
             });
 
@@ -205,7 +229,7 @@ const ChatBot: React.FC = () => {
                 >
                     <ChatBubbleLeftRightIcon className="w-8 h-8" />
                     <span className="absolute left-full ml-3 bg-white text-[#5c6b3c] text-xs font-bold py-2 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md border border-[#becf81]/20 pointer-events-none">
-                        ¿Cómo puedo ayudarte? ✨
+                        {t('chatbot.tooltip', "¿Cómo puedo ayudarte? ✨")}
                     </span>
                     <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
                 </motion.button>
@@ -236,7 +260,7 @@ const ChatBot: React.FC = () => {
                                     <div className="flex items-center gap-1.5 mt-1">
                                         <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.8)]"></span>
                                         <span className="text-white/90 text-[11px] font-medium tracking-wide flex items-center gap-1 uppercase">
-                                            Namasté 🙏 Online
+                                            {t('chatbot.status', "Namasté 🙏 Online")}
                                         </span>
                                     </div>
                                 </div>
@@ -266,19 +290,6 @@ const ChatBot: React.FC = () => {
                                     >
                                         <div className="whitespace-pre-wrap">{msg.text}</div>
                                         {msg.isStreaming && <span className="inline-block w-1.5 h-4 ml-1 bg-[#becf81] animate-pulse rounded-full align-middle"></span>}
-
-                                        {msg.sources && msg.sources.length > 0 && (
-                                            <div className="mt-3 pt-2 border-t border-gray-100/50 flex flex-wrap gap-2">
-                                                <span className="text-[10px] uppercase font-bold text-gray-400 block w-full mb-1 flex items-center gap-1">
-                                                    <BookmarkIcon className="w-3 h-3" /> Fuentes consultadas:
-                                                </span>
-                                                {msg.sources.map((s, idx) => (
-                                                    <span key={idx} className="px-2 py-0.5 bg-gray-100 text-gray-500 rounded text-[9px] font-medium border border-gray-200">
-                                                        {s}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        )}
                                     </div>
                                     <span className={`text-[10px] mt-1.5 text-gray-400 px-1 font-medium ${msg.isUser ? 'mr-1' : 'ml-1'}`}>
                                         {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -305,7 +316,7 @@ const ChatBot: React.FC = () => {
                                     type="text"
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
-                                    placeholder="Escribe tu pregunta..."
+                                    placeholder={t('chatbot.placeholder', "Escribe tu pregunta...")}
                                     className="w-full bg-gray-50 text-gray-800 rounded-2xl py-4 pl-5 pr-14 text-sm focus:outline-none focus:ring-2 focus:ring-[#becf81]/30 focus:bg-white border-gray-100 focus:border-[#becf81] transition-all shadow-inner"
                                 />
                                 <button
@@ -317,7 +328,7 @@ const ChatBot: React.FC = () => {
                                 </button>
                             </form>
                             <p className="text-[10px] text-center text-gray-400 mt-3 font-medium tracking-tight">
-                                ✨ Inteligencia Artificial entrenada para Arunachala ✨
+                                {t('chatbot.ai_notice', "✨ Inteligencia Artificial entrenada para Arunachala ✨")}
                             </p>
                         </div>
                     </motion.div>

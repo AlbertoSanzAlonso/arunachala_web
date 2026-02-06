@@ -97,7 +97,7 @@ const OurSpacePage: React.FC = () => {
 
                             <div className="flex items-center gap-2 text-forest font-bold pt-4">
                                 <MapPinIcon className="w-6 h-6" />
-                                <span>Carrer del Bruc, 44, 08940 Cornellà de Llobregat</span>
+                                <span>Passatge de Mateu Oliva, 3, 08940 Cornellà de Llobregat</span>
                             </div>
                         </motion.div>
 
@@ -217,7 +217,7 @@ const OurSpacePage: React.FC = () => {
                             {/* Interactive Map */}
                             <div className="w-full h-[300px] lg:h-auto rounded-xl overflow-hidden bg-gray-200 shadow-md border border-bone/50 relative group/map">
                                 <iframe
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2994.417382029013!2d2.0716613!3d41.3533816!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12a49954a5c54c33%3A0x1d3680236315f385!2sCarrer%20del%20Bruc%2C%2044%2C%2008940%20Cornell%C3%A0%20de%20Llobregat%2C%20Barcelona!5e0!3m2!1ses!2ses!4v1707000000000!5m2!1ses!2ses"
+                                    src="https://maps.google.com/maps?q=Passatge+de+Mateu+Oliva,+3,+Cornellà+de+Llobregat&t=&z=15&ie=UTF8&iwloc=&output=embed"
                                     width="100%"
                                     height="100%"
                                     style={{ border: 0 }}
@@ -227,7 +227,7 @@ const OurSpacePage: React.FC = () => {
                                     title="Arunachala Location"
                                 ></iframe>
                                 <a
-                                    href="https://www.google.com/maps/dir/?api=1&destination=Arunachala+Yoga+Bruc+44+Cornella"
+                                    href="https://maps.app.goo.gl/ErMhKHkMgKhoLMPK6"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="absolute bottom-4 left-1/2 -translate-x-1/2 px-6 py-2 bg-forest text-white rounded-full font-headers text-sm tracking-widest hover:bg-matcha transition-all duration-300 shadow-xl flex items-center gap-2 opacity-90 hover:opacity-100 hover:scale-105 z-10"

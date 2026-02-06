@@ -33,12 +33,9 @@ class Settings(BaseSettings):
         return v
     
     # Storage Configuration (local vs cloudinary)
-    STORAGE_TYPE: str = "local" # Options: "local", "cloudinary"
+
     
-    # Cloudinary Configuration
-    CLOUDINARY_CLOUD_NAME: Optional[str] = None
-    CLOUDINARY_API_KEY: Optional[str] = None
-    CLOUDINARY_API_SECRET: Optional[str] = None
+
 
     # Frontend
     FRONTEND_URL: str = "http://localhost:3000"

@@ -282,7 +282,7 @@
         },
         "info": {
             "title": "Informació de Contacte",
-            "address": "Carrer del Bruc, 44, 08940 Cornellà de Llobregat, Barcelona",
+            "address": "Passatge de Mateu Oliva, 3, 08940 Cornellà de Llobregat, Barcelona",
             "phone_label": "Telèfon / WhatsApp",
             "email_label": "Email",
             "hours_label": "Horari",
@@ -407,5 +407,12 @@
                 "content": "Podem actualitzar aquesta política de privadesa. Et recomanem revisar-la periòdicament. La data d'última actualització apareix a l'inici d'aquest document."
             }
         }
+    },
+    "chatbot": {
+        "welcome": "Namasté! 🙏 Benvingut a Arunachala. Soc el teu assistent virtual. En què et puc ajudar avui? Pots preguntar-me sobre horaris, classes de ioga o teràpies.",
+        "placeholder": "Escriu la teva pregunta...",
+        "tooltip": "Com puc ajudar-te? ✨",
+        "status": "Namasté 🙏 En línia",
+        "ai_notice": "✨ Intel·ligència Artificial entrenada per Arunachala ✨"
     }
 }

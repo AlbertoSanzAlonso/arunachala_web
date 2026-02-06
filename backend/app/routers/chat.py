@@ -57,10 +57,11 @@ class ChatMessage(BaseModel):
 class ChatRequest(BaseModel):
     messages: List[ChatMessage]
     stream: bool = False
+    language: str = "es"  # Nuevo campo: idioma del usuario
 
 class ChatResponse(BaseModel):
     response: str
-    sources: Optional[List[str]] = None
+    sources: Optional[List[str]] = None # Deprecated but kept for compatibility
 
 class ResetRequest(BaseModel):
     scope: str  # 'all', 'yoga_class', 'massage', 'therapy', 'content'
@@ -93,7 +94,7 @@ def search_knowledge_base(query: str, limit: int = 3):
         search_result = qdrant_client.query_points(
             collection_name=COLLECTION_NAME,
             query=query_vector,
-            limit=limit
+            limit=5  # Increased limit to get more context
         ).points
         return search_result
     except Exception as e:
@@ -105,11 +106,35 @@ def format_context(search_results):
     if not search_results:
         return ""
     
-    context = "\n\n".join([
-        f"--- Información Relevante (Fuente: {res.payload.get('source', 'Web')}) ---\n{res.payload.get('content', '')}"
-        for res in search_results
-    ])
-    return context
+    context_parts = []
+    for res in search_results:
+        payload = res.payload
+        meta = payload.get('metadata', {})
+        
+        # Try to find title in root payload, then in metadata dict (title or name)
+        title = payload.get('title') or meta.get('title') or meta.get('name') or 'Sin Título'
+        
+        # Try to find content
+        content = payload.get('content', '')
+        # Fallback to description if content is empty
+        if not content:
+            content = payload.get('description') or meta.get('description', '')
+            
+        # Try to find source
+        source = payload.get('source') or meta.get('source') or 'Base de Conocimiento Interna'
+        
+        # Try to find type
+        type_ = payload.get('type') or meta.get('type') or 'general'
+        
+        context_parts.append(f"""
+--- DOCUMENTO ENCONTRADO ({type_}) ---
+TÍTULO: {title}
+CONTENIDO O DESCRIPCIÓN:
+{content}
+--------------------------------------
+""")
+    
+    return "\n".join(context_parts)
 
 
 # --- Endpoints ---
@@ -219,10 +244,26 @@ async def chat_endpoint(request: ChatRequest, db: Session = Depends(get_db)):
     sources = list(set([doc.payload.get('source', 'unknown') for doc in retrieved_docs])) if retrieved_docs else []
     
     # 3. Construct System Prompt
+    # Map language codes
+    lang_map = {
+        "es": "Español",
+        "en": "English",
+        "ca": "Català (Catalán)",
+        "fr": "Français",
+        "de": "Deutsch"
+    }
+    target_lang = lang_map.get(request.language[:2], "Español")
+    print(f"🌍 DEBUG LANG: Request='{request.language}' -> Target='{target_lang}'")
+
+    # 3. Construct System Prompt
     system_prompt = f"""Eres Arunachala Bot, el asistente virtual del centro de Yoga y Terapias 'Arunachala' en Cornellà.
     
+IDIOMA DE RESPUESTA:
+ - **Debes responder SIEMPRE en {target_lang}**.
+ - Saluda usando un saludo apropiado en {target_lang} (ej: 'Namasté' es universal, pero el resto en {target_lang}).
+    
 PERSONALIDAD Y ESTILO:
-- Tono: {tone}. (Namasté 🙏).
+- Tono: {tone}.
 - Longitud: {length_instruction}
 - Emojis: {emoji_instruction}
 - Objetivo: {focus_instruction}
@@ -230,12 +271,14 @@ PERSONALIDAD Y ESTILO:
 INSTRUCCIONES EXTRA DEL ADMINISTRADOR:
 {extra_instructions}
 
-CONTEXTO DE LA WEB:
+CONTEXTO DE LA WEB (RAG):
 {context_text}
 
-Usa la INFO DE CONTEXTO para responder. Si no sabes algo, sé honesto y sugiere contactar.
-Si el contexto está vacío, responde amablemente sobre yoga.
-Si mencionas horarios o precios, sé preciso basándote en el contexto.
+INSTRUCCIONES DE USO DE CONTEXTO:
+- Usa la información del CONTEXTO DE LA WEB para responder las dudas del usuario.
+- NO menciones las fuentes ni cites documentos explícitamente (ej: "Según el documento X..."). Integra la información de forma natural en tu respuesta.
+- Si no sabes la respuesta basada en el contexto, puedes usar tu conocimiento general sobre yoga/bienestar, pero prioriza el contexto del centro.
+- Si mencionas horarios o precios, sé preciso basándote únicamente en el contexto provisto.
 """
 
     # 4. Prepare messages
@@ -247,8 +290,8 @@ Si mencionas horarios o precios, sé preciso basándote en el contexto.
     if request.stream:
         async def stream_generator():
             try:
-                # Meta-data first (sources)
-                yield f"data: {json.dumps({'sources': sources})}\n\n"
+                # Meta-data first (empty sources to hide them)
+                yield f"data: {json.dumps({'sources': []})}\n\n"
                 
                 if groq_client:
                     stream = groq_client.chat.completions.create(
@@ -311,7 +354,7 @@ Si mencionas horarios o precios, sé preciso basándote en el contexto.
             else:
                 raise HTTPException(status_code=500, detail="No AI provider configured")
             
-            return ChatResponse(response=ai_response, sources=sources)
+            return ChatResponse(response=ai_response, sources=[])
         except Exception as e:
             print(f"Error calling AI: {e}")
             raise HTTPException(status_code=500, detail=f"Error generating AI response: {str(e)}")

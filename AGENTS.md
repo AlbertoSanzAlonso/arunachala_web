@@ -47,9 +47,28 @@ arunachala_web/
 
 ## 📝 Recent Updates (2025-02-04)
 - **RAG Sync System 2.0**: Implemented robust tracking with `rag_sync_log` table, automatic synchronization with n8n (bidirectional), and a new RAG Knowledge Center in the Agent Dashboard for monitoring.
-- **RAG Stability Improvements**: Fixed "JSON parameter needs to be valid JSON" errors by ensuring no null values in text fields. Improved webhook reliability by using independent DB sessions and passing entity data (vector_id) before deletion to avoid 404s.
+- **RAG Stability Improvements**: 
+    - Fixed "JSON parameter needs to be valid JSON" by ensuring no null values in text fields. 
+    - Improved webhook reliability by using independent DB sessions and passing entity data (vector_id) before deletion to avoid 404s.
+    - Updated `rag.py` to support `article` alias for `content` entity types, resolving n8n "Unknown entity type" errors.
+    - Fixed Docker networking: Backend now accessible via `http://172.17.0.1:8000` from n8n containers.
+- **Auto-Image & Memory**:
+    - **Automatic RAG Activation**: Publishing content (`status='published'`) now reliably triggers n8n sync automatically.
+    - **Remote Image Download**: Remote `thumbnail_url`s (e.g. from AI) are now auto-downloaded to `/static/articles/` with SEO-friendly filenames upon saving. Download headers updated to mimic real browsers ("Mozilla/5.0") to prevent 403 blocks from external providers.
 - **UX Blocking Loader**: Implemented a global `PageLoader` (rotating lotus) across all dashboard managers (Treatments, Classes, Schedule, Activities, Users, Content) to prevent duplicate submissions and double-click errors.
 - **AI Image Generation**: Switched to GET method, improved error handling, and integrated with the new content manager flow.
 ## 🔐 Credentials
 - **Test User**: `albertosanzdev@gmail.com`
 - **Password**: `Albertito_23`
+
+## 📝 Recent Updates (2026-02-06)
+- **Multilingual Chatbot & Design**:
+    - **Dynamic Language Support**: Chatbot now detects and switches language instantly (ES/CA/EN), updating greetings and interface texts via `useTranslation`.
+    - **Backend Integration**: Language context is sent to backend, ensuring AI responses match the user's selected language. removed source citations from chat responses for cleaner output.
+    - **Translation Fixes**: Corrected broken JSON structures in locale files (`es/translation.json`, `ca/translation.json`, `en/translation.json`) to fix build errors.
+- **Backend Image Optimization**:
+    - **WebP Conversion**: Implemented automatic conversion of remote images to WebP format in `webhooks.py` when saving articles, improving performance and SEO.
+- **UI/UX Redesign (Header & Footer)**:
+    - **New Palette**: Updated Header and Footer to use the brand's primary Olive Green (`#5c6b3c`) background and Bone/Beige (`#F5F5DC`) text.
+    - **Logo Styling**: Replaced transparent logo with `logo_icon.webp`, styled as a circular avatar with bone-colored border (`rounded-full border-[#F5F5DC]`).
+    - **Mobile Menu**: Aligned mobile menu colors with the new design theme.

@@ -7,7 +7,7 @@ from app.core.database import engine, Base
 from app.models import models
 import os
 
-from app.api import reviews, auth, gallery, schedules, yoga_classes, treatments, content, activities, upload, dashboard, rag
+from app.api import reviews, auth, gallery, schedules, yoga_classes, treatments, content, activities, upload, dashboard, rag, legacy
 from app.routers import chat
 from fastapi.staticfiles import StaticFiles
 
@@ -19,12 +19,16 @@ from app.core.config import settings
 app = FastAPI(title="Arunachala API")
 
 # Configure CORS
-origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:8000",
-    "https://arunachala-web.vercel.app"
-]
+if settings.ALLOWED_ORIGINS:
+    origins = settings.ALLOWED_ORIGINS
+else:
+    origins = [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3000",
+        "http://localhost:8000",
+        "https://arunachala-web.vercel.app"
+    ]
 
 app.add_middleware(
     CORSMiddleware,
@@ -45,6 +49,7 @@ app.include_router(content.router)
 app.include_router(activities.router)
 app.include_router(upload.router)
 app.include_router(dashboard.router)
+app.include_router(legacy.router) # handle /api/article alias
 app.include_router(chat.router, prefix="/api", tags=["chat"])
 app.include_router(rag.router)  # RAG sync endpoints
 

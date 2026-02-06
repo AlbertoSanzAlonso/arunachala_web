@@ -46,7 +46,6 @@ class Content(Base):
     status = Column(String, default=ContentStatus.DRAFT)
     author_id = Column(Integer, ForeignKey("users.id"))
     thumbnail_url = Column(String, nullable=True)
-    media_url = Column(String, nullable=True) # For audio/video files
     seo_title = Column(String, nullable=True)
     seo_description = Column(String, nullable=True)
     tags = Column(JSON, nullable=True)  # Array of tags

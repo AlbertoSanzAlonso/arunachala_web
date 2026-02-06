@@ -55,6 +55,12 @@ class ResetMemoryRequest(BaseModel):
     scope: str = 'all'
 
 
+class SyncItemRequest(BaseModel):
+    """Request to sync a single item"""
+    id: int
+    type: str  # 'yoga', 'massage', 'therapy', 'content', 'activity'
+
+
 @router.post("/sync-callback")
 async def rag_sync_callback(
     request: SyncCallbackRequest,
@@ -87,6 +93,7 @@ async def rag_sync_callback(
         'massage': MassageType,
         'therapy': TherapyType,
         'content': Content,
+        'article': Content,  # Alias for content/article type
         'activity': Activity,
     }
     
@@ -288,6 +295,54 @@ async def trigger_rag_sync(
         "success": True,
         "triggered_count": sync_total,
         "message": f"Triggered sync for {sync_total} items"
+    }
+
+
+@router.post("/sync-item")
+async def trigger_single_item_sync(
+    request: SyncItemRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Manually trigger RAG synchronization for a SINGLE item by ID.
+    Perfect for immediate indexing after creation.
+    """
+    model_map = {
+        'yoga': (YogaClassDefinition, 'yoga_class'),
+        'massage': (MassageType, 'massage'),
+        'therapy': (TherapyType, 'therapy'),
+        'content': (Content, 'content'),
+        'activity': (Activity, 'activity'),
+    }
+    
+    if request.type not in model_map:
+         raise HTTPException(
+             status_code=status.HTTP_400_BAD_REQUEST,
+             detail=f"Invalid type: {request.type}. Valid types: {list(model_map.keys())}"
+         )
+         
+    Model, webhook_type = model_map[request.type]
+    entity = db.query(Model).filter(Model.id == request.id).first()
+    
+    if not entity:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail=f"{request.type} #{request.id} not found"
+        )
+        
+    # Trigger webhook
+    await notify_n8n_content_change(
+        content_id=entity.id,
+        content_type=webhook_type,
+        action='update',
+        db=db,
+        entity=entity
+    )
+    
+    return {
+        "success": True, 
+        "message": f"Triggered sync for {request.type} #{request.id}",
+        "webhook_type": webhook_type
     }
 
 

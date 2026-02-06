@@ -17,8 +17,28 @@ export const getTranslated = (obj: any, field: string, lang: string | undefined 
         }
     }
 
-    if (translations && translations[shortLang] && translations[shortLang][field]) {
-        return translations[shortLang][field];
+    if (translations && translations[shortLang]) {
+        // Direct match
+        if (translations[shortLang][field]) {
+            return translations[shortLang][field];
+        }
+
+        // Aliases mapping
+        const aliases: Record<string, string[]> = {
+            'title': ['name', 'header'],
+            'body': ['content', 'description'],
+            'excerpt': ['summary', 'short_description'],
+            'name': ['title']
+        };
+
+        // Check aliases
+        if (aliases[field]) {
+            for (const alias of aliases[field]) {
+                if (translations[shortLang][alias]) {
+                    return translations[shortLang][alias];
+                }
+            }
+        }
     }
 
     // Fallback to the main field value

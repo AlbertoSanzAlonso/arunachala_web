@@ -17,6 +17,8 @@ import shutil
 import httpx
 from unidecode import unidecode
 from urllib.parse import quote
+from io import BytesIO
+from PIL import Image
 
 router = APIRouter(prefix="/api/content", tags=["content"])
 
@@ -42,27 +44,6 @@ def generate_slug(title: str, db: Session, content_id: Optional[int] = None) -> 
     
     return slug
 
-def delete_media_file(media_url: str) -> bool:
-    """Delete a media file from storage given its URL"""
-    if not media_url:
-        return False
-    
-    try:
-        # Extract filename from URL (e.g., "/static/audio/filename.mp3" -> "filename.mp3")
-        if media_url.startswith("/static/audio/"):
-            filename = media_url.replace("/static/audio/", "")
-            file_path = os.path.join("static", "audio", filename)
-            
-            if os.path.exists(file_path):
-                os.remove(file_path)
-                print(f"Deleted media file: {file_path}")
-                return True
-        return False
-    except Exception as e:
-        print(f"Error deleting media file: {e}")
-        return False
-
-
 class ContentBase(BaseModel):
     title: str
     body: Optional[str] = None
@@ -71,7 +52,6 @@ class ContentBase(BaseModel):
     category: Optional[str] = None  # 'yoga', 'therapy', 'general'
     status: str = "draft"
     thumbnail_url: Optional[str] = None
-    media_url: Optional[str] = None
     seo_title: Optional[str] = None
     seo_description: Optional[str] = None
     tags: Optional[List[str]] = None
@@ -88,7 +68,6 @@ class ContentUpdate(BaseModel):
     category: Optional[str] = None
     status: Optional[str] = None
     thumbnail_url: Optional[str] = None
-    media_url: Optional[str] = None
     seo_title: Optional[str] = None
     seo_description: Optional[str] = None
     tags: Optional[List[str]] = None
@@ -200,18 +179,81 @@ def get_content(content_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Content not found")
     return db_content
 
+async def download_remote_image(url: str, slug: str) -> Optional[str]:
+    """
+    Downloads an image from a remote URL and saves it locally.
+    Returns the local relative path or None if failed.
+    """
+    if not url or not url.startswith(('http://', 'https://')):
+        return None
+        
+    try:
+        # Define storage path
+        base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        save_dir = os.path.join(base_path, "static", "articles")
+        os.makedirs(save_dir, exist_ok=True)
+        
+        # Always save as WebP
+        filename = f"{slug}-{uuid.uuid4().hex[:8]}.webp"
+        file_path = os.path.join(save_dir, filename)
+        
+        print(f"Downloading image from {url} to {file_path} (converting to WebP)")
+        
+        async with httpx.AsyncClient(follow_redirects=True) as client:
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+                "Accept": "image/webp,image/apng,image/*,*/*;q=0.8"
+            }
+            response = await client.get(url, headers=headers, timeout=30.0)
+            
+            if response.status_code == 200:
+                # Convert to WebP using Pillow
+                try:
+                    image_data = BytesIO(response.content)
+                    with Image.open(image_data) as img:
+                        # Convert to RGB if necessary (e.g. from RGBA png)
+                        if img.mode in ("RGBA", "P"): 
+                            img = img.convert("RGB")
+                        
+                        # Save optimized WebP
+                        img.save(file_path, "WEBP", quality=80, optimize=True)
+                        
+                    return f"/static/articles/{filename}"
+                except Exception as img_err:
+                    print(f"Image conversion failed: {img_err}, saving original bytes")
+                    # Fallback: save original content if conversion fails, but rename extension match content if possible
+                    # Revert to original extension logic if Pillow fails
+                    with open(file_path, "wb") as f:
+                        f.write(response.content)
+                    return f"/static/articles/{filename}"
+            else:
+                print(f"Failed to download image: Status {response.status_code}")
+                return None
+                
+    except Exception as e:
+        print(f"Error downloading image: {e}")
+        return None
+
 @router.post("", response_model=ContentResponse)
 async def create_content(
     content_data: ContentCreate,
     background_tasks: BackgroundTasks,
-    current_user: User = Depends(get_current_user),
+    # current_user: User = Depends(get_current_user),  # Disabled for/n8n automation
     db: Session = Depends(get_db)
 ):
+    # Mock user for automation if needed, or handle author_id logic
+    current_user_id = 1 # Admin/System user ID default
     # if current_user.role != "admin":
     #     raise HTTPException(status_code=403, detail="Not authorized")
     
     # Generate slug from title
     slug = generate_slug(content_data.title, db)
+    
+    # Handle image download if it's a remote URL
+    if content_data.thumbnail_url and content_data.thumbnail_url.startswith('http'):
+        local_path = await download_remote_image(content_data.thumbnail_url, slug)
+        if local_path:
+            content_data.thumbnail_url = local_path
     
     # Convert tags list to JSON if provided
     tags_json = content_data.tags if content_data.tags else None
@@ -220,7 +262,7 @@ async def create_content(
         **content_data.model_dump(exclude={'tags'}),
         slug=slug,
         tags=tags_json,
-        author_id=current_user.id
+        author_id=current_user_id
     )
     db.add(db_content)
     db.commit()
@@ -228,6 +270,7 @@ async def create_content(
     
     # Notify n8n for RAG update if published
     if db_content.status == "published":
+        print(f"Triggering RAG sync for new content #{db_content.id}")
         await notify_n8n_content_change(db_content.id, db_content.type, "create", db=db)
     
     # Auto-translate if no translations provided
@@ -264,12 +307,19 @@ async def update_content(
         raise HTTPException(status_code=404, detail="Content not found")
     
     # Update slug if title changed
+    current_slug = db_content.slug
     if content_data.title and content_data.title != db_content.title:
-        db_content.slug = generate_slug(content_data.title, db, content_id)
+        current_slug = generate_slug(content_data.title, db, content_id)
+        db_content.slug = current_slug
     
-    # Delete old audio file if media_url is being changed
-    if content_data.media_url is not None and db_content.media_url and content_data.media_url != db_content.media_url:
-        delete_media_file(db_content.media_url)
+    # Handle image download if it's a NEW remote URL
+    if content_data.thumbnail_url and content_data.thumbnail_url.startswith('http'):
+        if content_data.thumbnail_url != db_content.thumbnail_url:
+            local_path = await download_remote_image(content_data.thumbnail_url, current_slug)
+            if local_path:
+                content_data.thumbnail_url = local_path
+
+
     
     # Update fields
     for key, value in content_data.model_dump(exclude_unset=True, exclude={'tags'}).items():
@@ -284,6 +334,7 @@ async def update_content(
     
     # Notify n8n for RAG update if published
     if db_content.status == "published":
+        print(f"Triggering RAG sync for updated content #{db_content.id}")
         await notify_n8n_content_change(db_content.id, db_content.type, "update", db=db)
     
     # Re-translate if main fields changed and no new translations provided
@@ -317,9 +368,7 @@ async def delete_content(
     if not db_content:
         raise HTTPException(status_code=404, detail="Content not found")
     
-    # Delete associated media file if exists
-    if db_content.media_url:
-        delete_media_file(db_content.media_url)
+
     
     # Notify n8n
     await notify_n8n_content_change(db_content.id, db_content.type, "delete", db=db, entity=db_content)

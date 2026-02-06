@@ -4,6 +4,8 @@ import { XMarkIcon, CalendarIcon, TagIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import { getTranslated } from '../utils/translate';
 import { getImageUrl } from '../utils/imageUtils';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Article {
     id: number;
@@ -16,7 +18,6 @@ interface Article {
     tags: string[];
     created_at: string;
     translations?: any;
-    // SEO fields might be optional or not needed for the modal view primarily
     seo_title?: string | null;
     seo_description?: string | null;
 }
@@ -52,6 +53,20 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
             general: t('blog.categories.general', 'General')
         };
         return labels[category] || category;
+    };
+
+    const cleanContent = (content: string) => {
+        if (!content) return '';
+        let cleaned = content
+            .replace(/\\n/g, '\n')
+            .replace(/\\\\n/g, '\n')
+            .replace(/\\"/g, '"');
+
+        // Remove the first H1 (# Title) if it exists at the start of the content (AI Generated)
+        // This allows us to use our own H2 component title for ALL articles (Manual & AI)
+        cleaned = cleaned.replace(/^#\s+.+(\n|$)/, '').trim();
+
+        return cleaned;
     };
 
     return (
@@ -109,14 +124,17 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
                                         <span className="inline-block bg-forest/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-headers uppercase tracking-wider mb-3">
                                             {getCategoryLabel(article.category)}
                                         </span>
-                                        <h2 className="text-3xl md:text-4xl font-headers leading-tight shadow-black drop-shadow-lg">
-                                            {translatedTitle}
-                                        </h2>
+                                        {/* REMOVED DUPLICATE TITLE IN OVERLAY */}
                                     </div>
                                 </div>
 
                                 {/* Content */}
                                 <div className="p-6 md:p-10 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                                    {/* RESTORED TITLE UNDER IMAGE */}
+                                    <h2 className="text-3xl md:text-4xl font-headers text-forest mb-6 leading-tight">
+                                        {translatedTitle}
+                                    </h2>
+
                                     {/* Meta Info */}
                                     <div className="flex items-center gap-4 text-sm text-bark/60 mb-6 pb-6 border-b border-gray-100">
                                         <div className="flex items-center gap-1">
@@ -133,10 +151,15 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
                                     )}
 
                                     {/* Body */}
-                                    <div
-                                        className="prose prose-lg max-w-none text-bark/80"
-                                        dangerouslySetInnerHTML={{ __html: translatedBody || '' }}
-                                    />
+                                    <div className="prose prose-lg prose-forest max-w-none text-bark/80">
+                                        {/<[a-z][\s\S]*>/i.test(translatedBody || '') ? (
+                                            <div dangerouslySetInnerHTML={{ __html: cleanContent(translatedBody) }} />
+                                        ) : (
+                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                {cleanContent(translatedBody)}
+                                            </ReactMarkdown>
+                                        )}
+                                    </div>
 
                                     {/* Tags */}
                                     {article.tags && article.tags.length > 0 && (

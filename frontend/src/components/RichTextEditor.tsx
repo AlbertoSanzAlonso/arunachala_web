@@ -44,7 +44,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeh
     return (
         <div className={`rich-text-editor ${className || ''}`}>
             <ReactQuill
-                ref={quillRef}
                 theme="snow"
                 value={value}
                 onChange={onChange}
