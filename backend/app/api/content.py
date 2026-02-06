@@ -230,8 +230,12 @@ async def download_remote_image(url: str, slug: str) -> Optional[str]:
                 print(f"Failed to download image: Status {response.status_code}")
                 return None
                 
+                return None
+                
     except Exception as e:
-        print(f"Error downloading image: {e}")
+        print(f"🔥 CRITICAL ERROR downloading image: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 @router.post("", response_model=ContentResponse)
@@ -249,11 +253,17 @@ async def create_content(
     # Generate slug from title
     slug = generate_slug(content_data.title, db)
     
+    print(f"🚀 CREATE PROCESS: Slug='{slug}', Thumb='{content_data.thumbnail_url}'")
+
     # Handle image download if it's a remote URL
-    if content_data.thumbnail_url and content_data.thumbnail_url.startswith('http'):
+    if content_data.thumbnail_url and content_data.thumbnail_url.startswith(('http://', 'https://')):
+        print(f"🖼️ Found remote URL, downloading...")
         local_path = await download_remote_image(content_data.thumbnail_url, slug)
         if local_path:
+            print(f"✅ Image downloaded: {local_path}")
             content_data.thumbnail_url = local_path
+        else:
+            print(f"⚠️ Image download FAILED. Keeping original URL.")
     
     # Convert tags list to JSON if provided
     tags_json = content_data.tags if content_data.tags else None

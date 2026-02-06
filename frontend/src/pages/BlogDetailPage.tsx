@@ -224,24 +224,57 @@ const BlogDetailPage: React.FC = () => {
                     </motion.div>
 
                     {/* Tags */}
-                    {article.tags && article.tags.length > 0 && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5 }}
-                            className="flex flex-wrap gap-3 mb-12 pt-8 border-t border-bark/10"
-                        >
-                            <TagIcon className="w-5 h-5 text-bark/40" />
-                            {article.tags.map((tag, idx) => (
-                                <span
-                                    key={idx}
-                                    className="px-4 py-2 bg-white text-bark/70 rounded-full text-sm hover:bg-forest hover:text-white transition-colors cursor-pointer"
-                                >
-                                    #{tag}
-                                </span>
-                            ))}
-                        </motion.div>
-                    )}
+                    {(() => {
+                        // Manual translation logic for tags to ensure reliability
+                        const currentLang = i18n.language?.split('-')[0] || 'es';
+
+                        // Parse translations if string (common issue with some DB/API responses)
+                        let translations = article.translations;
+                        if (typeof translations === 'string') {
+                            try {
+                                translations = JSON.parse(translations);
+                            } catch (e) {
+                                console.error("Error parsing translations:", e);
+                                translations = null;
+                            }
+                        }
+
+                        let currentTags = article.tags;
+
+                        // Check if translations exist and have tags for current language
+                        if (
+                            translations &&
+                            translations[currentLang] &&
+                            Array.isArray(translations[currentLang].tags) &&
+                            translations[currentLang].tags.length > 0
+                        ) {
+                            currentTags = translations[currentLang].tags;
+                        }
+
+                        console.log('BlogDetail Debug - Lang:', currentLang, 'Tags:', currentTags);
+
+                        if (!currentTags || currentTags.length === 0) return null;
+
+                        return (
+                            <motion.div
+                                key={currentLang}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.5 }}
+                                className="flex flex-wrap gap-3 mb-12 pt-8 border-t border-bark/10"
+                            >
+                                <TagIcon className="w-5 h-5 text-bark/40" />
+                                {currentTags.map((tag: string, idx: number) => (
+                                    <span
+                                        key={idx}
+                                        className="px-4 py-2 bg-white text-bark/70 rounded-full text-sm hover:bg-forest hover:text-white transition-colors cursor-pointer"
+                                    >
+                                        #{tag}
+                                    </span>
+                                ))}
+                            </motion.div>
+                        );
+                    })()}
 
                     {/* Related Articles */}
                     {relatedArticles.length > 0 && (

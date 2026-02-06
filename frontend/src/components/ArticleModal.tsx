@@ -162,18 +162,39 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
                                     </div>
 
                                     {/* Tags */}
-                                    {article.tags && article.tags.length > 0 && (
-                                        <div className="flex flex-wrap gap-2 mt-8 pt-8 border-t border-gray-100">
-                                            {article.tags.map((tag, idx) => (
-                                                <span
-                                                    key={idx}
-                                                    className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs"
-                                                >
-                                                    #{tag}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    )}
+                                    {(() => {
+                                        const lang = i18n.language?.split('-')[0] || 'es';
+                                        let translations = article?.translations;
+                                        // Handle string formatted translations
+                                        if (typeof translations === 'string') {
+                                            try {
+                                                translations = JSON.parse(translations);
+                                            } catch (e) {
+                                                // ignore error
+                                            }
+                                        }
+
+                                        let displayTags = article?.tags || [];
+
+                                        if (translations && translations[lang] && Array.isArray(translations[lang].tags)) {
+                                            displayTags = translations[lang].tags;
+                                        }
+
+                                        if (!displayTags || displayTags.length === 0) return null;
+
+                                        return (
+                                            <div className="flex flex-wrap gap-2 mt-8 pt-8 border-t border-gray-100">
+                                                {displayTags.map((tag: string, idx: number) => (
+                                                    <span
+                                                        key={idx}
+                                                        className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs"
+                                                    >
+                                                        #{tag}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        );
+                                    })()}
                                 </div>
                             </Dialog.Panel>
                         </Transition.Child>

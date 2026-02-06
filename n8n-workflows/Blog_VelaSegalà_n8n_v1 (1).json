@@ -1,0 +1,1598 @@
+{
+  "name": "Blog Clínica Dental Vela Segalà",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 10 * * 1,3,5"
+            }
+          ]
+        }
+      },
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        -432
+      ],
+      "id": "c4ad2458-5d05-41c6-a672-52e75ccad618"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "chatgpt-4o-latest"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 4000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        -512
+      ],
+      "id": "23654aaf-8e96-4ede-8743-e8af42dd18cd",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "AhpdBpnSkDaCJ0J3",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "\n\n## Flujo principal de generación de imagen con Banana Pro\n\n\n",
+        "height": 256,
+        "width": 1008,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        912,
+        -832
+      ],
+      "id": "c0e5ad22-8c10-47db-b3a1-38807e08b70a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Obtener todos los items\nconst items = $input.all();\n\n// Recorrer todos los items y devolver un array transformado\n\nreturn items.map(item => {\n\n  // Intentar leer el campo \"output\" dentro del JSON del item\n  \n  let content = item.json.output;\n  \n  // Si no existe el campo \"output\", lanzar un error para evitar continuar con datos incompletos\n  \n  if (!content) {\n    throw new Error('No se encontró el campo output en la respuesta de OpenAI');\n  }\n\n  // Limpiar backticks y espacios\n  let cleaned = content.replace(/```json\\n?/g, '').replace(/```/g, '').trim();\n\n  // Reemplazar saltos de línea y tabulaciones problemáticas\n  cleaned = cleaned.replace(/[\\u0000-\\u001F]+/g, ' '); // elimina caracteres de control\n\n  // Intentar parsear JSON\n  let parsed;\n  try {\n    parsed = JSON.parse(cleaned);\n  } catch (error) {\n    throw new Error('No se pudo parsear el JSON de OpenAI: ' + error.message + '\\nContenido: ' + cleaned);\n  }\n\n  // Validar campos requeridos\n  \n  if (!parsed.title || !parsed.slug || !parsed.content) {\n    throw new Error('La respuesta de OpenAI no tiene los campos requeridos');\n  }\n\n  // Generar ID único\n  const generateId = () => 'id-' + Date.now() + '-' + Math.floor(Math.random() * 10000);\n\n  // Formatear payload\n  const payload = {\n    id: generateId(),\n    title: parsed.title,\n    slug: parsed.slug,\n    content: parsed.content,\n    excerpt: parsed.excerpt || parsed.content.substring(0, 150) + '...',\n    featuredImage: null,\n    categories: parsed.categories || ['Salud Bucodental'],\n    tags: parsed.tags || ['Consejos', 'Prevención'],\n    metaTitle: parsed.metaTitle || parsed.title,\n    metaDescription: parsed.metaDescription || parsed.excerpt,\n    publishStatus: 'DRAFT',\n    publishAt: new Date().toISOString(),\n    imagePrompt: parsed.imagePrompt || 'clinica dental moderna profesional',\n    imagePromptStyle: parsed.imagePromptStyle || '',\n    createdAt: new Date().toISOString(),\n    updatedAt: new Date().toISOString()\n  };\n\n  return { json: payload };\n});\n"
+      },
+      "name": "JSON Parse",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        704,
+        -688
+      ],
+      "id": "5c8c0729-b396-4d6e-91f5-75480fd9f372"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1392,
+        -752
+      ],
+      "id": "54978f52-be5a-4318-9b5d-bb0ac53af022",
+      "name": "5 seg wait",
+      "webhookId": "cb7bd28e-f7db-4c3a-8139-d7c26a9d2055"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"CLINIC_NAME\": \"Vela-Segalà\",\n  \"DEFAULT_CITY\": \"Viladecans\",\n  \"API_ENDPOINT\": \"https://tu-api.com/posts\",   \n  \"EMAIL\": \"admin@velasegala.com\",\n  \"keywords\": [             \n    \"implantes dentales viladecans\",\n    \"dentista viladecans\",\n    \"ortodoncia invisible viladecans\",\n    \"blanqueamiento dental viladecans\",\n    \"cuidados después de ortodoncia invisible\",\n    \"prevención de caries en niños\", \n    \"blanqueamiento dental: mitos y verdades\", \n    \"urgencias dentales más comunes\", \n    \"consejos para mantener encías sanas\", \n    \"cuándo llevar a tu hijo al dentista\",\n    \"bruxismo: causas y tratamiento\", \n    \"prótesis dentales: tipos y ventajas\", \n    \"higiene dental diaria: guía completa\" \n  ],\n  \"visualStyles\": [\n    {\n      \"name\": \"Fotografico-lifestyle\",\n      \"description\": \"Fotografía de pacientes sonrientes, luz natural/cálida, expresiones felices, ambiente relajado y humano\",\n      \"mood\": \"Humano y aspiracional\"\n    },\n    {\n      \"name\": \"Clinico-minimalista\",\n      \"description\": \"Fotografía profesional con iluminación suave, fondos blancos/neutros, enfoque nítido en elementos dentales, estética clínica moderna\",\n      \"mood\": \"Profesional y confiable\"\n    },\n    {\n      \"name\": \"Retratos profesionales\",\n      \"description\": \"Retratos del equipo dental con iluminación suave, fondo neutro, expresiones amables y cercanas\",\n      \"mood\": \"Confiable y humano\"\n    },\n    {\n      \"name\": \"Ilustracion educativa\",\n      \"description\": \"Ilustraciones simplificadas tipo infografía, colores limpios (azul y verde menta), iconografía clara de dientes y procedimientos\",\n      \"mood\": \"Educativo y accesible\"\n    },\n    {\n      \"name\": \"Luz natural calida\",\n      \"description\": \"Fotografía de espacios de la clínica con luz natural o emulada, tonos cálidos, sensación de confort y bienvenida, profundidad de campo baja\",\n      \"mood\": \"Cálido y acogedor\"\n    },\n    {\n      \"name\": \"Detalles-macro\",\n      \"description\": \"Primeros planos de instrumental, implantes o materiales dentales, alta precisión y enfoque técnico\",\n      \"mood\": \"técnico y detallista\"\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -32,
+        -432
+      ],
+      "id": "34881450-688f-4e66-9029-f937b68dee55",
+      "name": "Config_Clinica"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "prompt": "=Ilustración profesional hiperrealista 8K para artículo de blog de clínica dental sobre:\n\nArtículo: {{ $('JSON Parse').item.json.title }}\n\nDescripción: {{ $('JSON Parse').item.json.imagePrompt }}\n\nESTILO: {{ $('JSON Parse').item.json.imagePromptStyle }}\n\nSPECS TÉCNICAS:\n\nTamaño: 1024x1024\nCalidad: estándar\nComposición: Minimalista, un solo punto focal\nClaridad: La imagen debe ser comprensible en 2-3 segundos\n\nDIRECTRICES POR ESTILO:\n[Fotografico-lifestyle]\nEscenas naturales con pacientes sonriendo, luz natural suave, tonos cálidos dorados, profundidad de campo media, ambiente relajado. Mostrar solo sonrisas/dientes o partes no identificables de personas, NUNCA rostros completos.\n\n[Clinico-minimalista]\nFondos blancos/neutros, iluminación uniforme de estudio, enfoque ultra nítido, paleta blanco + azul claro + gris, composición simétrica, instrumental esterilizado.\n\n[Retratos profesionales]\nFondo neutro, iluminación softbox favorecedora, encuadre hombros arriba, uniformes blancos/azul claro, postura profesional cercana. NO rostros identificables completos.\n\n[Ilustracion educativa]\nEstilo infográfico vectorial, iconografía clara (dientes, cepillos), paleta azul claro + verde menta + blanco + coral suave, composición tipo diagrama, formas geométricas simples.\n\n[Luz natural calida]\nInteriores clínica con luz día, tonos dorados/beige, profundidad de campo baja, bokeh cálido, ambiente acogedor y confortable.\n\n[Detalles-macro]\nMacro extremo (1:1), enfoque ultra nítido, profundidad muy baja, sujetos: instrumental/implantes/brackets, iluminación técnica, paleta metálica/blanca, brillos controlados.\n\nPALETA GENERAL:\n\nBase: Blanco, azul claro dental (#E8F4F8), gris claro (#F5F5F5)\nAcentos: Beige/dorado tenue (lifestyle), verde menta (#B8E6D5), azul cielo (#D4E9F7)\nEvitar: Colores saturados u oscuros\n\nRESTRICCIONES:\n\nNO incluir texto, marcas, logos, nombres comerciales.\n\nPERMITIDO:\n\nSonrisas o personas mostrando dientes limpios\nManos enguantadas (látex blanco/azul)\nInstrumental dental genérico, implantes o brackets abstractos\nCepillos genéricos, hilo dental sin marca\nSuperficies limpias y claras\nPlantas suaves o luz natural según estilo\n\nLIMITACIONES DE ELEMENTOS:\n\nIncluir máximo 2-3 elementos principales para no saturar la imagen\nPriorizar claridad y minimalismo\nNo es necesario mostrar todos los elementos permitidos, escoger los más representativos\n\nCOMPOSICIÓN:\n\nRegla de tercios, punto focal en intersecciones\nBalance visual equilibrado\nContraste: elemento principal destaca sobre fondo\nEspacio seguro alrededor del punto focal, evitar saturación\n\nOBJETIVO:\nImagen profesional que transmita confianza, profesionalismo y calidez de clínica dental moderna. Minimalista, clara, comprensible en 3 segundos, funcional como encabezado de blog, sin texto/marcas/rostros identificables.",
+        "model": "dall-e-3",
+        "responseFormat": "imageUrl",
+        "options": {
+          "quality": "standard",
+          "size": "1024x1024"
+        },
+        "requestOptions": {}
+      },
+      "name": "DALLE_Fallback",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        -528
+      ],
+      "id": "0acfac2a-e564-46a5-a3a7-4aabefa2c80a",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "openAiApi": {
+          "id": "aPjvqrgg0Htws0Sb",
+          "name": "OpenAi account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.kie.ai/api/v1/jobs/recordInfo?taskId={{ $json.data.taskId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "contentType": "=json",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "nano-banana-pro"
+            },
+            {
+              "name": "input.aspect_ratio",
+              "value": "1:1"
+            },
+            {
+              "name": "input.resolution",
+              "value": "1K"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1568,
+        -752
+      ],
+      "id": "caa763a1-812b-41c7-b4ff-78242da5d19d",
+      "name": "GET_BananaPro_URL",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "913cY34dLDiRsUQQ",
+          "name": "velasegalaimg"
+        },
+        "httpBearerAuth": {
+          "id": "KufTEBQYNQam7iiG",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"nano-banana-pro\",\n  \"input\": {\n    \"prompt\": \"{{ $json.imagePrompt }}\",\n    \"aspect_ratio\": \"1:1\",\n    \"resolution\": \"1K\",\n    \"output_format\": \"jpg\"\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1200,
+        -736
+      ],
+      "id": "de07c7eb-47cd-4c02-ac9c-6c13ee0eb463",
+      "name": "IMG_BananaPro_Request",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "913cY34dLDiRsUQQ",
+          "name": "velasegalaimg"
+        },
+        "httpBearerAuth": {
+          "id": "KufTEBQYNQam7iiG",
+          "name": "Bearer Auth account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8e802977-3b99-4596-b4e5-e0836d6b84c9",
+                    "leftValue": "={{ $json.data.state }}",
+                    "rightValue": "waiting",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "waiting"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.data.state }}",
+                    "rightValue": "=success",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "66c3d679-9836-4e20-9894-918fe7ddd183"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "success"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c0ebcb84-c88b-4c16-8d89-e914bc941a83",
+                    "leftValue": "={{ $json.data.state }}",
+                    "rightValue": "fail",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "fail"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1744,
+        -768
+      ],
+      "id": "a14a24e5-19ba-47d7-b41a-505b0c7a515a",
+      "name": "IMG_Check_Status"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Eres un experto en redacción SEO especializado en clínicas dentales en Viladecans, Barcelona.\n\nTAREA:\nCrear un artículo de blog optimizado para SEO sobre: {{ $json.keyword }}\n\nOBJETIVO CLAVE:\nGenerar un artículo PROFUNDO, ÚTIL y EXTENSO que posicione en Google y genere confianza real en la clínica Vela-Segalà.\n\n========================\nREGLAS CRÍTICAS DE LONGITUD (OBLIGATORIAS)\n========================\n- El artículo completo DEBE tener mínimo 1.500 palabras reales.\n- Cada sección H2 (##) DEBE tener mínimo 300 palabras.\n- Cada subsección H3 (###) DEBE tener mínimo 150 palabras.\n- NO finalices la respuesta hasta cumplir estos mínimos.\n- La profundidad del contenido es más importante que la brevedad.\n\n========================\nREQUISITOS DEL ARTÍCULO\n========================\n\n1. Título SEO (50-60 caracteres):\n   - Usa \"Viladecans\" solo si encaja de forma natural.\n   - Prioriza claridad y atractivo.\n\n2. Slug:\n   - minúsculas, separado por guiones, máximo 5 palabras.\n\n3. Excerpt:\n   - 150-160 caracteres, atractivo y centrado en el beneficio.\n\n4. Contenido (1500+ palabras):\n   - Markdown\n   - Párrafos de máximo 3-4 líneas\n   - Listas cuando ayuden a la legibilidad\n\n5. Estructura:\n   - Introducción (100-150 palabras)\n   - 5-6 secciones H2\n   - Varias H3 por sección\n   - Sección FAQ con 5 preguntas reales\n   - Conclusión con CTA clara\n\n6. Keywords obligatorias (integradas de forma natural):\n   - \"Viladecans\"\n   - \"clínica dental\"\n   - \"Vela-Segalà\"\n\n7. SEO:\n   - Keyword principal en título, primer párrafo, un H2 y meta description.\n   - Densidad natural (1-2%)\n   - Sugerir enlaces internos (sin URLs).\n\n8. Tono:\n   - Profesional, cercano, empático.\n   - Explicaciones simples de conceptos técnicos.\n   - Sin alarmismo.\n\n========================\nCATEGORÍAS (elige 1-2):\n========================\nSalud Bucodental | Tratamientos | Ortodoncia | Higiene Dental | Estética Dental\n\n========================\nETIQUETAS (elige 2-4):\n========================\nOrtodoncia | Invisalign | Retenedores | Cuidados | Consejos | Prevención\n\n========================\nESTILO VISUAL DE LA IMAGEN\n========================\n- Nombre: {{ $json.selectedStyleName }}\n- Descripción: {{ $json.selectedStyleDescription }}\n- Ambiente: {{ $json.selectedStyleMood }}\n\n========================\nFORMATO DE RESPUESTA (OBLIGATORIO)\n========================\n\nResponde en JSON válido. \nPrioriza la profundidad del contenido incluso si el contenido es largo.\n\nFormato exacto:\n\n{\n  \"title\": \"\",\n  \"slug\": \"\",\n  \"excerpt\": \"\",\n  \"content\": \"# Título principal en H1\\n\\nIntroducción...\\n\\n## Sección...\\n\\nContenido...\\n\\n### Subsección...\\n\\nMás contenido...\\n\\n## FAQ\\n\\n### ¿Pregunta?\\n\\nRespuesta.\\n\\n## Conclusión\\n\\nResumen + CTA\",\n  \"categories\": [],\n  \"tags\": [],\n  \"metaTitle\": \"\",\n  \"metaDescription\": \"\",\n  \"imagePrompt\": \"\",\n  \"imagePromptStyle\": \"Nombre, Descripción y ambiente del estilo visual\"\n}\n\n========================\nRESTRICCIONES CRÍTICAS\n========================\n✓ No incluyas ningún texto fuera del JSON.\n✓ No acortes contenido.\n✓ No resumas en exceso.\n✓ No uses relleno artificial, usa contenido útil real.\n✓ El contenido debe leerse como escrito por un odontólogo real.\n\nOBJETIVO FINAL:\nCrear contenido largo, profundo y de alta calidad que posicione y convierta.\n\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        384,
+        -688
+      ],
+      "id": "8fd91d57-4ba6-4e05-9f91-f9f61db14512",
+      "name": "CONTENT_GPT_Gen"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Primer item del input del nodo anterior\nconst imageResponse = $input.first().json;\n\n// Parserar 'data.resultJson' de string objeto\nconst resultJson = JSON.parse(imageResponse.data.resultJson);\n\n// Obtener la primera URL de la lista\nconst imageUrl = resultJson.resultUrls[0];\n\n// Retornar un array de items con formato JSON \n// Solo URL de la imagen bajo la propiedad 'image_url'\nreturn [{\n  json: {\n    image_url: imageUrl\n  }\n}];"
+      },
+      "name": "URL_Extract_Banana",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        -736
+      ],
+      "id": "4ebeb9c5-3686-4200-b8ce-ab2ad85c8c9e"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Obtener el primer item del input\nconst imageData = $input.first().json;\n\n// Retornar un objeto JSON con la URL de la imagen o null si no existe\nreturn [{\n  json: {\n    image_url: imageData.url || null\n  }\n}];"
+      },
+      "name": "URL_Extract_DALLE",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        -496
+      ],
+      "id": "328c96d1-713d-4a57-b1ea-d34cdde21d4b"
+    },
+    {
+      "parameters": {
+        "functionCode": "const imageUrl = $input.first().json.image_url;\nconst previousData = $('JSON Parse').item.json;\n\nreturn [{\n  json: {\n    ...previousData,\n    featuredImage: imageUrl  // ← Corregido: ahora es featuredImage\n  }\n}];"
+      },
+      "name": "Attach_Image_URL",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        2192,
+        -624
+      ],
+      "id": "e06b5184-f3b4-45c9-a34d-7030711049a4"
+    },
+    {
+      "parameters": {
+        "content": "\n\n## 2️⃣ GENERACIÓN DE CONTENIDO Y PARSEO A JSON\n\n\n\n```\n✍️ CREACIÓN DEL ARTÍCULO\n- GPT genera contenido completo en JSON:\n  · Título SEO-optimizado (50-60 chars)\n  · Contenido en formato Markdown\n  · Meta descripción (150-160 chars)\n  · Keyword + Estilo visual seleccionados\n  · Prompt para generación de imagen\n  · Categories y Tags\n  · Slug optimizado\n  \n- JSON Parse: Convierte respuesta a objeto\n  · Valida estructura JSON\n  · Extrae todos los campos\n```\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n## 📝 CAMPOS GENERADOS\n\n```\n{\n  \"title\": \"Título SEO\",\n  \"slug\": \"slug-optimizado\",\n  \"excerpt\": \"Resumen atractivo\",\n  \"content\": \"# Título\\n\\n## Sección...\",  // MARKDOWN\n  \"categories\": [\"Cat1\", \"Cat2\"],\n  \"tags\": [\"Tag1\", \"Tag2\"],\n  \"metaTitle\": \"Meta title SEO\",\n  \"metaDescription\": \"Meta description SEO\",\n  \"imagePrompt\": \"Descripción para imagen\",\n  \"imagePromptStyle\": \"Estilo visual aplicado\"\n}\n```\n\n",
+        "height": 1040,
+        "width": 752,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        144,
+        -1088
+      ],
+      "id": "f0d1e8a4-ae3c-439f-9454-90766aa3c91b",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n## Flujo secundario generación de imagen DALL-E (Fallback)\n\n\n\n",
+        "height": 272,
+        "width": 1008,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        912,
+        -576
+      ],
+      "id": "f7f1de54-2f75-4f66-80c7-484b85dadc96",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "\n\n\n## 4️⃣ EXTRACCIÓN Y ADJUNTADO DE URL EN JSON\n\n\n\n```\n🔗 PREPARAR PAYLOAD FINAL\n- Recibe URL desde Banana o DALL-E\n- Mergea con datos del artículo\n- Añade campo: featuredImage\n- JSON completo listo para backend\n```\n",
+        "height": 1024,
+        "width": 400,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1936,
+        -1072
+      ],
+      "id": "4b42b956-74ad-4090-9d4b-4fc9aefa0315",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "\n\n## 1️⃣ DISPARADOR Y CONFIGURACIÓN INICIAL\n\n\n\n```\n🚀 INICIO DEL FLUJO\n- Trigger: Schedule/Webhook/Manual\n- Config_Clinica: Carga configuración base\n  · Datos clínica (nombre, ciudad)\n  · Keywords disponibles\n  · Estilos visuales\n  · API endpoint\n```\n\n\n",
+        "height": 784,
+        "width": 432
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        -832
+      ],
+      "id": "b758b8b3-32c7-47bb-96a6-5f509cf62042",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "\n\n## 5️⃣ ENVÍO AL BACKEND Y AVISO POR MAIL\n\n\n\n```\n📤 PUBLICACIÓN Y NOTIFICACIÓN\n- Enviar_Backend: POST al CMS\n  · Crea artículo (draft/published)\n  \n- Notificar_Email: Aviso de resultado\n  · ✅ Éxito: \"Artículo publicado\"\n  · ❌ Error: Detalles del fallo",
+        "height": 896,
+        "width": 512,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        4144,
+        -944
+      ],
+      "id": "2c547726-9a1f-4fcb-8dce-b173eb4f0554",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "# 📋 Generación Artículos Vela-Segalá\n\n---\n\n## 🔄 DIAGRAMA COMPLETO DEL FLUJO\n```\n1. Trigger → Config_Clinica\n            ↓\n2. GPT_Generar_Articulo → JSON Parse\n            ↓\n3. IMG_BananaPro_Request\n            ↓\n   IMG_Check_Status\n            ↓\n   ┌──[success]──→ Pull_BananaPro_URL → Extraer_URL_Banana ──┐\n   │                                                            │\n   └──[fail]────→ IMG_DALLE_Fallback → Extraer_URL_DALLE ─────┤\n                                                                ↓\n4.                                                      Merge_Image_JSON\n                                                                ↓\n5.                                                      Enviar_Backend\n                                                                ↓\n                                                        Notificar_Email\n```\n\n---\n\n## ⚠️ PUNTOS CRÍTICOS\n```\n❗ IMPORTANTE\n- Validación llamadas a las APIs de KIE AI y Open AI\n- Prompt DALL-E: máximo 4000 caracteres\n- BananaPro puede tardar → implentado timeout\n- Validación de ID y slug para la base de datos\n- Nodo Set \"Config_Clínica\" para modificar variables\n```\n\n## ⚠️ CREDENCIALES REQUERIDAS\n```\n- API de Open AI\n- API de KIE AI\n- Correo electrónico\n- Cuenta PostgressDB\n```\n\n```\n- AuthorID no resuelto \n ```",
+        "height": 1136,
+        "width": 816
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1136,
+        -1184
+      ],
+      "id": "37702bbd-721a-4653-9cce-cbc37b264799",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "\n\n## 3️⃣ GENERACIÓN DE IMAGEN\n\n### 3.1 FLUJO PRINCIPAL - BANANA PRO\n\n\n```\n🍌 BANANA PRO (Principal)\n1. Request: Envía prompt de imagen\n2. Check Status: Loop verificando estado\n   - success → continuar\n   - waiting → esperar y reintentar\n   - fail → activar fallback\n3. Pull URL: GET request para obtener enlace\n4. Extraer: Normaliza formato a {image_url}\n```",
+        "height": 352,
+        "width": 1008
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        912,
+        -1184
+      ],
+      "id": "dd3ac24c-4fb9-4e1d-bc68-9c75b1733964",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "\n\n\n### 3.2 FLUJO SECUNDARIO - DALL-E (FALLBACK)\n\n\n```\n🎨 DALL-E (Respaldo)\n- Se activa solo si BananaPro falla\n- Genera imagen 1024x1024\n- Prompt optimizado (<4000 chars)\n- Extraer: Normaliza formato a {image_url}\n```\n",
+        "height": 256,
+        "width": 1008
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        912,
+        -304
+      ],
+      "id": "00a21a71-2749-402d-9b7e-8dfa08d841a8",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Acceso a la memoria global\nconst data = $getWorkflowStaticData('global');\n\n// Listas de keywords y estilo\nconst keywords = $input.first().json.keywords;\nconst visualStyles = $input.first().json.visualStyles;\n\n// Inicializar array de usadas si no existe\nif (!data.usedKeywords) {\n  data.usedKeywords = [];\n}\n\n// ROTACIÓN KEYWORDS\n// Filtro keywords sin usar\nlet available = keywords.filter(k => !data.usedKeywords.includes(k));\n\n// Reinicio de lista si se usaron todas\nif (available.length === 0) {\n  data.usedKeywords = [];\n  available = [...keywords];\n}\n\n// Elegir una keyword aleatoria\nconst selected = available[Math.floor(Math.random() * available.length)];\n\n// Guardar como usada\ndata.usedKeywords.push(selected);\n\n// LIMPIEZA DE LA PALABRA CLAVE PARA PROMPT DE IMAGEN\n// Eliminar \"viladecans\"\nconst wordToRemove = /viladecans/gi;\n\n// Nueva variable 'imageKeyword'\nconst imageKeyword = selected.replace(wordToRemove, '').trim();\n\n// SELECCIONIÓN ESTILO VISUAL ALEATORIO\nconst randomStyle = visualStyles[Math.floor(Math.random() * visualStyles.length)];\n\nreturn [\n  { \n    json: { \n      keyword: selected,\n      imageKeyword: imageKeyword,\n      selectedStyleName: randomStyle.name,\n      selectedStyleDescription: randomStyle.description,\n      selectedStyleMood: randomStyle.mood,\n      usedKeywords: data.usedKeywords\n    } \n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        -688
+      ],
+      "id": "972bda1a-44ed-4725-9ada-96539caef806",
+      "name": "Metadata_selector"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT COUNT(*) AS count FROM \"Post\" WHERE slug = '{{ $json.slug }}';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2432,
+        -624
+      ],
+      "id": "f371b780-156f-4512-a7e2-4dfa174b50d9",
+      "name": "DB_Slug_check",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "postgres": {
+          "id": "sHncj1kr9zrUnHKj",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT COUNT(*) AS count FROM \"Post\" WHERE slug = '{{ $('NewSlug_GEN').item.json.output[0].content[0].text }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3616,
+        -256
+      ],
+      "id": "0afaf990-4694-4d14-b779-454696be8c88",
+      "name": "DB_NewSlug_Check",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "postgres": {
+          "id": "sHncj1kr9zrUnHKj",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const originalItem = $('Merge').first().json; \n\n// Función para generar la nueva ID\nconst generateId = () => 'id-' + Date.now() + '-' + Math.floor(Math.random() * 10000);\nconst newId = generateId();\n\n// Crear el objeto final: Tomar todos los datos del artículo,\n// y sobreescribir el campo 'id' con el nuevo valor.\n\nconst finalItem = {\n    ...originalItem, // Copia todos los campos\n    id: newId,       // Sobrescribe el ID\n};\n\n// Devolver el ítem completo con el nuevo ID\nreturn [{ json: finalItem }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3888,
+        -448
+      ],
+      "id": "d10ec25b-7706-4102-859f-e9b70bd0a33d",
+      "name": "New_ID_Gen"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Retornamos el json original tras la validación\n\nconst originalItem = $('Merge').first().json; \n\nreturn [{ json: originalItem }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3888,
+        -640
+      ],
+      "id": "87db3a9a-71b4-4f6d-83ee-306d145fa304",
+      "name": "Unique_ID_OK"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a3ebb7ba-8807-4211-a744-a80717e850af",
+              "leftValue": "={{ $json.id_count }}",
+              "rightValue": "0",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3568,
+        -624
+      ],
+      "id": "3e8e2615-4c64-463f-8d29-56742faac381",
+      "name": "DB_ID_Decission"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e6956e07-49f9-4b0b-a341-40a7458d350e",
+              "leftValue": "=\n{{ parseInt($json.count) }}",
+              "rightValue": "=0",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2672,
+        -624
+      ],
+      "id": "a5055ec9-f6e4-48bb-a044-2e69bcb736af",
+      "name": "DB_Slug_check_Decission",
+      "notesInFlow": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "Post",
+          "mode": "list",
+          "cachedResultName": "Post"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "title": "={{ $json.title }}",
+            "slug": "={{ $json.slug }}",
+            "content": "={{ $json.content }}",
+            "excerpt": "={{ $json.excerpt }}",
+            "featuredImage": "={{ $json.featuredImage }}",
+            "metaTitle": "={{ $json.metaTitle }}",
+            "metaDescription": "={{ $json.metaDescription }}",
+            "updatedAt": "2025-12-09T13:13:36",
+            "id": "={{ $json.id }}",
+            "publishAt": "={{ $json.publishAt }}",
+            "publishStatus": "={{ $json.publishStatus }}",
+            "createdAt": "2025-12-09T13:22:21"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "slug",
+              "displayName": "slug",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "excerpt",
+              "displayName": "excerpt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "featuredImage",
+              "displayName": "featuredImage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "metaTitle",
+              "displayName": "metaTitle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "metaDescription",
+              "displayName": "metaDescription",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "publishStatus",
+              "displayName": "publishStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "options",
+              "canBeUsedToMatch": true,
+              "options": [
+                {
+                  "name": "SCHEDULED",
+                  "value": "SCHEDULED"
+                },
+                {
+                  "name": "PUBLISHED",
+                  "value": "PUBLISHED"
+                },
+                {
+                  "name": "DRAFT",
+                  "value": "DRAFT"
+                }
+              ]
+            },
+            {
+              "id": "publishAt",
+              "displayName": "publishAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "createdAt",
+              "displayName": "createdAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "updatedAt",
+              "displayName": "updatedAt",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "authorId",
+              "displayName": "authorId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4208,
+        -544
+      ],
+      "id": "8b6222d8-ecf3-4894-94c5-c8989c8bad34",
+      "name": "DB_Insert",
+      "credentials": {
+        "postgres": {
+          "id": "sHncj1kr9zrUnHKj",
+          "name": "Postgres account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Genera un slug SEO-friendly ÚNICO para: \"{{ $('Attach_Image_URL').item.json.title }}\"\n\nREGLAS OBLIGATORIAS:\n✓ Solo letras minúsculas y guiones (a-z y -)\n✓ NO usar números\n✓ NO usar caracteres especiales\n✓ NO usar \"qualidad\" (debe ser \"calidad\")\n✓ NO usar mayúsculas\n✓ Máximo 50 caracteres\n✓ Debe ser SIGNIFICATIVAMENTE diferente a los anteriores\n\n⛔ SLUGS YA USADOS - NO REPETIR NI CREAR VARIACIONES MÍNIMAS:\n{{ $json.failedSlugs.join('\\n') }}\n\nIMPORTANTE: \n- Busca sinónimos o enfoques diferentes\n- No solo cambies el orden de las palabras\n- Sé creativo pero relevante al título\n\nResponde SOLO el slug, sin texto adicional."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        3056,
+        -256
+      ],
+      "id": "e7a5b341-a83c-4070-86cb-61345a9c8ea5",
+      "name": "NewSlug_GEN",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "credentials": {
+        "openAiApi": {
+          "id": "AhpdBpnSkDaCJ0J3",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e6956e07-49f9-4b0b-a341-40a7458d350e",
+              "leftValue": "=\n{{ $json.count }}",
+              "rightValue": "=0",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2592,
+        -272
+      ],
+      "id": "39352c05-07b1-47e8-bb92-f1f5dd7e116d",
+      "name": "New_Slug_Decission",
+      "alwaysOutputData": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT COUNT(id) AS id_count\nFROM \"Post\"\nWHERE id = '{{ $('Attach_Image_URL').item.json.id }}';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3376,
+        -624
+      ],
+      "id": "547724e1-8788-448c-b5a0-9f674007a761",
+      "name": "DB_ID_Check",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "postgres": {
+          "id": "sHncj1kr9zrUnHKj",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "\n\n\n## 4️⃣ VALIDACIÓN DE CAMPOS ÚNICOS (SLUG Y ID) Y GENERACIÓN DE NUEVOS VALORES PARA LOS REPETIDOS\n\n\n\n```\n🔄 FLUJO RESUMIDO:\n- Validar campos sensibles (slug y ID) contra la base de datos.\n- Si los valores son únicos, continuar con el payload original.\n- Si el slug ya existe:\n* Generar un nuevo slug mediante un agente especializado.\n* Volver a comprobar en la base de datos.\n* Registrar los slugs repetidos en una lista para que el agente los excluya en futuras generaciones.\n- Comprobar la ID en la base de datos:\n* Si ya existe, generar una nueva ID única.\n```\n",
+        "height": 992,
+        "width": 1776,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2352,
+        -1040
+      ],
+      "id": "023272d6-5825-4e6d-9497-0a0ba9d6c764",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3184,
+        -624
+      ],
+      "id": "80ac5455-83b2-469a-b6e4-69b2962468a0",
+      "name": "Merge",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $node[\"Config_Clinica\"].json.EMAIL }}",
+        "toEmail": "={{ $node[\"Config_Clinica\"].json.EMAIL }}",
+        "subject": "Nuevo artículo de blog creado",
+        "emailFormat": "text",
+        "text": "=❌ Error al crear imagen del artículo\n\nNo se pudo generar la imagen debido a saldo insuficiente en la API de KIE AI (Banana Pro).\n\n📋 Detalles del intento:\nTítulo: {{ $('JSON Parse').item.json.title }}\n\n🔄 Acción alternativa:\nSe generará una imagen con DALL-E para poder publicar el artículo.\n\n💳 Acción requerida:\nRevise su cuenta de KIE AI para continuar generando imágenes con Banana Pro.\n\n🔗 Panel de administración:\nhttps://velasegala-web-emc8.vercel.app/admin",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        960,
+        -528
+      ],
+      "id": "f72f093d-3b6f-4f1f-8902-a592766f93a3",
+      "name": "Mail_ERROR_BananaPro",
+      "webhookId": "3e9e06ea-9be7-48fe-bc37-a05f86fffeb5",
+      "credentials": {
+        "smtp": {
+          "id": "VjV7xWjRo6qFjypR",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $node[\"Config_Clinica\"].json.EMAIL }}",
+        "toEmail": "={{ $node[\"Config_Clinica\"].json.EMAIL }}",
+        "subject": "Nuevo artículo de blog creado",
+        "emailFormat": "text",
+        "text": "=❌❌ Error crítico al crear el artículo\n\nTítulo: {{ $('JSON Parse').item.json.title }}\n\n⚠️ Ambas APIs de generación de imágenes fallaron:\n- KIE AI (Banana Pro): Saldo insuficiente\n- DALL-E: Error en generación\n\n🛑 El artículo NO fue publicado por falta de imagen.\n\n💳 Recargue KIE AI o revise DALL-E para continuar.\n\nPanel: https://velasegala-web-emc8.vercel.app/admin",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1664,
+        -448
+      ],
+      "id": "fbdfe83d-27f7-4f37-b34a-1d5dbd10dde2",
+      "name": "Mail_ERROR_Imagen",
+      "webhookId": "3e9e06ea-9be7-48fe-bc37-a05f86fffeb5",
+      "credentials": {
+        "smtp": {
+          "id": "VjV7xWjRo6qFjypR",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Retornamos Slug original tras ser comprobado\n\nconst originalItem = $('Attach_Image_URL').first().json; \n\nreturn [{ json: originalItem }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2944,
+        -640
+      ],
+      "id": "e247817f-6347-41fe-ba3b-478ffafa224f",
+      "name": "Slug_valido"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Item original con Slug antiguo\n\nconst originalItem = $('Attach_Image_URL').first().json; \n\n// Nuevo Slug generado por agente\n\nconst newSlug = $('NewSlug_GEN').first().json.output[0].content[0].text;\n\n// Crear el objeto final: Tomar todos los datos del artículo\n// y sobreescribir campo 'Slug' con el nuevo valor.\n\nconst finalItem = {\n    ...originalItem, // Copia todos los campos (title, slug, failedSlugs, etc.)\n    slug: newSlug,   // Sobrescribe el Slug\n};\n\n// Devolver el ítem completo para que vuelva a la comprobación SQL\nreturn [{ json: finalItem }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2944,
+        -464
+      ],
+      "id": "c7e590ba-3bac-41d1-940a-bedbb0fd4926",
+      "name": "Slug_corregido"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Tomar lista actual de slugs fallidos o iniciar vacía\nconst currentList = $('FailedSlug_list').first().json.failedSlugs || [];\n\n// Tomar nuevo slug generado\nconst newFailedSlug = $('NewSlug_GEN').first().json.output[0].content[0].text;\n\n// Retornar lista actualizada con el nuevo slug\nreturn { json: { failedSlugs: [...currentList, newFailedSlug] } };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3376,
+        -256
+      ],
+      "id": "ac7102dc-9c15-4190-89d9-423b930d6242",
+      "name": "Add_FailedSlug"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener el slug del primer item del nodo 'Attach_Image_URL'\nconst invalidSlug = $('Attach_Image_URL').first().json.slug;\n\ntry {\n  // Intentar recuperar la lista de slugs fallidos del nodo 'Add_FailedSlug'\n  const existingList = $('Add_FailedSlug').last().json.failedSlugs;\n  \n  // Si la lista existe y tiene elementos, devolverla tal cual\n  if (Array.isArray(existingList) && existingList.length > 0) {\n    return {\n      json: {\n        failedSlugs: existingList\n      }\n    };\n  }\n} catch (error) {\n  // Ignorar errores si 'Add_FailedSlug' no existe o la propiedad no está definida\n  // Nota: Aquí se podría mejorar para no depender de try/catch\n}\n\n// Si no hay lista previa, crear una nueva con el slug actual\nreturn {\n  json: {\n    failedSlugs: [invalidSlug]\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2864,
+        -256
+      ],
+      "id": "11cdc4c1-38b8-42c1-97e1-07c975943e63",
+      "name": "FailedSlug_list"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        560,
+        -512
+      ],
+      "id": "322d1e54-96a0-42ae-b175-609723a6b4ec",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $node[\"Config_Clinica\"].json.EMAIL }}",
+        "toEmail": "={{ $node[\"Config_Clinica\"].json.EMAIL }}",
+        "subject": "Error en la creación del artículo para el blog de Vela Segalà",
+        "emailFormat": "text",
+        "text": "=Asunto: ❌ Error en workflow {{ $json.workflow.name }}\n\nSe produjo un error en el nodo: {{ $json.node.name }}\n\nMensaje:\n{{ $json.error.message }}\n\nRevisa la ejecución:\nhttps://tuservidor.com/execution/{{ $json.execution.id }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        736,
+        -512
+      ],
+      "id": "4839b374-b387-45c2-a71a-4700b6abf1ee",
+      "name": "Mail_ERROR",
+      "webhookId": "0de98004-f56d-4e3a-a026-d3d12702ee72",
+      "credentials": {
+        "smtp": {
+          "id": "VjV7xWjRo6qFjypR",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Obtener todos los items del nodo anterior\nconst items = $input.all();\n\nreturn items.map(item => {\n  const title = item.json.title || \"Sin título\";\n  const imageDescription = item.json.imagePrompt || \"\";\n  const imageStyle = item.json.imagePromptStyle || \"\";\n\n  // Generar prompt multilínea\n  let imagePrompt = `\nIlustración profesional hiperrealista 8K para artículo de blog de clínica dental sobre:\n\nArtículo: ${title}\nDescripción: ${imageDescription}\nEstilo: ${imageStyle}\n\nSPECS TÉCNICAS:\n\nTamaño: 1024x1024\nCalidad: estándar\nComposición: Minimalista, un solo punto focal\nClaridad: La imagen debe ser comprensible en 2-3 segundos\n\nDIRECTRICES POR ESTILO:\n[Fotografico-lifestyle]\nEscenas naturales con pacientes sonriendo, luz natural suave, tonos cálidos dorados, profundidad de campo media, ambiente relajado. Mostrar solo sonrisas/dientes o partes no identificables de personas, NUNCA rostros completos.\n\n[Clinico-minimalista]\nFondos blancos/neutros, iluminación uniforme de estudio, enfoque ultra nítido, paleta blanco + azul claro + gris, composición simétrica, instrumental esterilizado.\n\n[Retratos profesionales]\nFondo neutro, iluminación softbox favorecedora, encuadre hombros arriba, uniformes blancos/azul claro, postura profesional cercana. NO rostros identificables completos.\n\n[Ilustracion educativa]\nEstilo infográfico vectorial, iconografía clara (dientes, cepillos), paleta azul claro + verde menta + blanco + coral suave, composición tipo diagrama, formas geométricas simples.\n\n[Luz natural calida]\nInteriores clínica con luz día, tonos dorados/beige, profundidad de campo baja, bokeh cálido, ambiente acogedor y confortable.\n\n[Detalles-macro]\nMacro extremo (1:1), enfoque ultra nítido, profundidad muy baja, sujetos: instrumental/implantes/brackets, iluminación técnica, paleta metálica/blanca, brillos controlados.\n\nPALETA GENERAL:\n\nBase: Blanco, azul claro dental (#E8F4F8), gris claro (#F5F5F5)\nAcentos: Beige/dorado tenue (lifestyle), verde menta (#B8E6D5), azul cielo (#D4E9F7)\nEvitar: Colores saturados u oscuros\n\nRESTRICCIONES:\n\nNO incluir texto, marcas, logos, nombres comerciales.\n\nPERMITIDO:\n\nSonrisas o personas mostrando dientes limpios\nManos enguantadas (látex blanco/azul)\nInstrumental dental genérico, implantes o brackets abstractos\nCepillos genéricos, hilo dental sin marca\nSuperficies limpias y claras\nPlantas suaves o luz natural según estilo\n\nLIMITACIONES DE ELEMENTOS:\n\nIncluir máximo 2-3 elementos principales para no saturar la imagen\nPriorizar claridad y minimalismo\nNo es necesario mostrar todos los elementos permitidos, escoger los más representativos\n\nCOMPOSICIÓN:\n\nRegla de tercios, punto focal en intersecciones\nBalance visual equilibrado\nContraste: elemento principal destaca sobre fondo\nEspacio seguro alrededor del punto focal, evitar saturación\n\nOBJETIVO:\nImagen profesional que transmita confianza, profesionalismo y calidez de clínica dental moderna. Minimalista, clara, comprensible en 3 segundos, funcional como encabezado de blog, sin texto/marcas/rostros identificables.\n  `.trim();\n\n  // Escapar saltos de línea y comillas dobles para JSON-friendly\n  const escapedPrompt = imagePrompt\n    .replace(/\\r?\\n/g, \"\\\\n\")\n    .replace(/\"/g, '\\\\\"');\n\n  // Retornar solo el prompt listo para usar en HTTP Request\n  return { json: { imagePrompt: escapedPrompt } };\n});\n\n"
+      },
+      "name": "ImagePromptGEN",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        992,
+        -736
+      ],
+      "id": "254cef10-f070-4319-97c2-c324ca072c14"
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $node[\"Config_Clinica\"].json.EMAIL }}",
+        "toEmail": "={{ $node[\"Config_Clinica\"].json.EMAIL }}",
+        "subject": "Nuevo artículo de blog creado",
+        "emailFormat": "text",
+        "text": "=✅ Nuevo artículo creado: \n\nTítulo:  {{ $json.title }}\nSlug: {{ $json.slug }}\nEstado DRAFT (revisar antes de publicar)\n\nVer en: https://velasegala-web-emc8.vercel.app/admin",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        4432,
+        -592
+      ],
+      "id": "9c2063ee-af8d-49df-b240-ff144c47ac53",
+      "name": "Mail_Notification_SUCESS",
+      "webhookId": "3e9e06ea-9be7-48fe-bc37-a05f86fffeb5",
+      "credentials": {
+        "smtp": {
+          "id": "VjV7xWjRo6qFjypR",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $node[\"Config_Clinica\"].json.EMAIL }}",
+        "toEmail": "={{ $node[\"Config_Clinica\"].json.EMAIL }}",
+        "subject": "Nuevo artículo de blog creado",
+        "emailFormat": "text",
+        "text": "=❌❌ Error al publicar el artículo\n\nTítulo: {{ $('JSON Parse').item.json.title }}\n\n⚠️ Problema al tratar de insertar en la base de datos.\n\n🛑 El artículo NO fue publicado un fallo en la inserción.\n\nPanel: https://velasegala-web-emc8.vercel.app/admin",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        4432,
+        -416
+      ],
+      "id": "9e8abe35-fbff-4bdc-a992-ad88c66d7b49",
+      "name": "Mail_Notification_FAIL",
+      "webhookId": "3e9e06ea-9be7-48fe-bc37-a05f86fffeb5",
+      "credentials": {
+        "smtp": {
+          "id": "VjV7xWjRo6qFjypR",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Config_Clinica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "CONTENT_GPT_Gen",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON Parse": {
+      "main": [
+        [
+          {
+            "node": "ImagePromptGEN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5 seg wait": {
+      "main": [
+        [
+          {
+            "node": "GET_BananaPro_URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config_Clinica": {
+      "main": [
+        [
+          {
+            "node": "Metadata_selector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DALLE_Fallback": {
+      "main": [
+        [
+          {
+            "node": "URL_Extract_DALLE",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mail_ERROR_Imagen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET_BananaPro_URL": {
+      "main": [
+        [
+          {
+            "node": "IMG_Check_Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IMG_BananaPro_Request": {
+      "main": [
+        [
+          {
+            "node": "5 seg wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mail_ERROR_BananaPro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IMG_Check_Status": {
+      "main": [
+        [
+          {
+            "node": "5 seg wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "URL_Extract_Banana",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mail_ERROR_BananaPro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CONTENT_GPT_Gen": {
+      "main": [
+        [
+          {
+            "node": "JSON Parse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "URL_Extract_Banana": {
+      "main": [
+        [
+          {
+            "node": "Attach_Image_URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "URL_Extract_DALLE": {
+      "main": [
+        [
+          {
+            "node": "Attach_Image_URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach_Image_URL": {
+      "main": [
+        [
+          {
+            "node": "DB_Slug_check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Metadata_selector": {
+      "main": [
+        [
+          {
+            "node": "CONTENT_GPT_Gen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB_Slug_check": {
+      "main": [
+        [
+          {
+            "node": "DB_Slug_check_Decission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB_NewSlug_Check": {
+      "main": [
+        [
+          {
+            "node": "New_Slug_Decission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New_ID_Gen": {
+      "main": [
+        [
+          {
+            "node": "DB_Insert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unique_ID_OK": {
+      "main": [
+        [
+          {
+            "node": "DB_Insert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB_ID_Decission": {
+      "main": [
+        [
+          {
+            "node": "Unique_ID_OK",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "New_ID_Gen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB_Slug_check_Decission": {
+      "main": [
+        [
+          {
+            "node": "Slug_valido",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "FailedSlug_list",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB_Insert": {
+      "main": [
+        [
+          {
+            "node": "Mail_Notification_SUCESS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mail_Notification_FAIL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NewSlug_GEN": {
+      "main": [
+        [
+          {
+            "node": "Add_FailedSlug",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New_Slug_Decission": {
+      "main": [
+        [
+          {
+            "node": "Slug_corregido",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "FailedSlug_list",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB_ID_Check": {
+      "main": [
+        [
+          {
+            "node": "DB_ID_Decission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "DB_ID_Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mail_ERROR_BananaPro": {
+      "main": [
+        [
+          {
+            "node": "DALLE_Fallback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slug_valido": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slug_corregido": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Add_FailedSlug": {
+      "main": [
+        [
+          {
+            "node": "DB_NewSlug_Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FailedSlug_list": {
+      "main": [
+        [
+          {
+            "node": "NewSlug_GEN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Mail_ERROR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ImagePromptGEN": {
+      "main": [
+        [
+          {
+            "node": "IMG_BananaPro_Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mail_Notification_SUCESS": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a81a2982-31e7-4f83-b968-72e57f6c92c5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "778185f8160c44f386bdfeeafaf57a78ec12a7e55dbb0cd1d2446ccf5be83f9f"
+  },
+  "id": "S8chtB92LcOtnXST",
+  "tags": [
+    {
+      "updatedAt": "2025-12-05T10:00:19.164Z",
+      "createdAt": "2025-12-05T10:00:19.164Z",
+      "id": "01em6CQIvdBlsXPT",
+      "name": "vela segala"
+    },
+    {
+      "updatedAt": "2025-12-06T07:56:03.546Z",
+      "createdAt": "2025-12-06T07:56:03.546Z",
+      "id": "AplFK851BrKwB80S",
+      "name": "clinica dental"
+    }
+  ]
+}
