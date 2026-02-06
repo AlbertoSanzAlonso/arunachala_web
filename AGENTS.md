@@ -72,3 +72,14 @@ arunachala_web/
     - **New Palette**: Updated Header and Footer to use the brand's primary Olive Green (`#5c6b3c`) background and Bone/Beige (`#F5F5DC`) text.
     - **Logo Styling**: Replaced transparent logo with `logo_icon.webp`, styled as a circular avatar with bone-colored border (`rounded-full border-[#F5F5DC]`).
     - **Mobile Menu**: Aligned mobile menu colors with the new design theme.
+
+## 📝 Recent Updates (2026-02-07)
+- **Advanced Blog Features**:
+    - **Smart Search Component**: Created `BlogSearch.tsx` with unified search capabilities:
+        - **Autocomplete**: Real-time suggestions when typing.
+        - **Hierarchical Date Filter**: Filter by Year -> Month (YYYY-MM).
+        - **Tag Cloud**: Dynamic, selectable tag cloud filter (based on translated tags).
+        - **Category Tabs**: Integrated category navigation (Yoga/Therapy/All).
+    - **Pagination**: Implemented client-side pagination (9 items per page) with auto-scroll to top on navigation.
+    - **Tag Translations**: Fixed issue where tags were not displaying in the selected language. Now all tags (List, Detail, Modal) respect `i18n.language`.
+    - **Backend Improvements**: Cleaned up legacy `sqlite` remnants to ensure strict PostgreSQL usage.
