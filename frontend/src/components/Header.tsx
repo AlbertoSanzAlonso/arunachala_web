@@ -36,12 +36,25 @@ const Header: React.FC = () => {
 
                 <div className="flex items-center gap-4">
                     {/* Language Switcher Mini */}
-                    <div className="flex gap-2 text-sm font-medium text-[#F5F5DC] mr-2 z-50">
-                        <button onClick={() => changeLanguage('es')} className={`hover:text-matcha ${i18n.language.startsWith('es') ? 'font-bold underline' : ''}`}>ES</button>
-                        <span className="text-gray-300">|</span>
-                        <button onClick={() => changeLanguage('ca')} className={`hover:text-matcha ${i18n.language.startsWith('ca') ? 'font-bold underline' : ''}`}>CA</button>
-                        <span className="text-gray-300">|</span>
-                        <button onClick={() => changeLanguage('en')} className={`hover:text-matcha ${i18n.language.startsWith('en') ? 'font-bold underline' : ''}`}>EN</button>
+                    <div className="flex items-center bg-[#4a5730]/50 backdrop-blur-sm rounded-full p-1 border border-[#F5F5DC]/20 mr-2 z-50">
+                        <button
+                            onClick={() => changeLanguage('es')}
+                            className={`transition-all duration-300 rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold tracking-wide ${i18n.language.startsWith('es') ? 'bg-[#F5F5DC] text-[#5c6b3c] shadow-sm transform scale-105' : 'text-[#F5F5DC] hover:text-white/90 hover:bg-white/10'}`}
+                        >
+                            ES
+                        </button>
+                        <button
+                            onClick={() => changeLanguage('ca')}
+                            className={`transition-all duration-300 rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold tracking-wide ${i18n.language.startsWith('ca') ? 'bg-[#F5F5DC] text-[#5c6b3c] shadow-sm transform scale-105' : 'text-[#F5F5DC] hover:text-white/90 hover:bg-white/10'}`}
+                        >
+                            CA
+                        </button>
+                        <button
+                            onClick={() => changeLanguage('en')}
+                            className={`transition-all duration-300 rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold tracking-wide ${i18n.language.startsWith('en') ? 'bg-[#F5F5DC] text-[#5c6b3c] shadow-sm transform scale-105' : 'text-[#F5F5DC] hover:text-white/90 hover:bg-white/10'}`}
+                        >
+                            EN
+                        </button>
                     </div>
 
                     <button

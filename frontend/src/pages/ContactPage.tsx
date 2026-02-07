@@ -78,7 +78,7 @@ const ContactPage: React.FC = () => {
                                         </div>
                                         <div>
                                             <h3 className="font-headers text-forest text-lg uppercase tracking-wide">{t('contact_page.info.phone_label')}</h3>
-                                            <p className="text-bark/80 text-xl font-medium tracking-wider">685 410 248</p>
+                                            <p className="text-bark/80 text-xl font-medium tracking-wider">+34 678 48 19 71</p>
                                         </div>
                                     </div>
 
@@ -134,7 +134,7 @@ const ContactPage: React.FC = () => {
                             </div>
 
                             <a
-                                href="https://wa.me/34685410248"
+                                href="https://wa.me/34678481971"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="w-full sm:w-auto py-4 px-8 bg-[#25D366] text-white rounded-2xl font-headers text-lg tracking-wider uppercase hover:bg-[#20bd5a] hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-green-200/50 flex items-center justify-center gap-3"

@@ -262,23 +262,11 @@
     "contact_page": {
         "title": "Contact",
         "subtitle": "Have any questions? We are here to help you",
-        "form": {
-            "name": "Name",
-            "email": "Email",
-            "phone": "Phone",
-            "subject": "Subject",
-            "message": "Message",
-            "send": "Send Message",
-            "sending": "Sending...",
-            "success": "Message sent correctly. We will reply soon.",
-            "error": "There was an error sending the message. Please try again.",
-            "placeholders": {
-                "name": "Your name",
-                "email": "you@email.com",
-                "phone": "Your 9 digits",
-                "subject": "Reason for your message",
-                "message": "Tell us how we can help you..."
-            }
+        "whatsapp": {
+            "title": "Let's chat on WhatsApp",
+            "description": "Do you prefer a more direct approach? Message us on WhatsApp to answer your questions or book your appointment instantly.",
+            "button": "Open WhatsApp Chat",
+            "note": "We will be happy to answer you as soon as possible."
         },
         "info": {
             "title": "Contact Information",

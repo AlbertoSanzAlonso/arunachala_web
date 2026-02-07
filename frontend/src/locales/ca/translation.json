@@ -262,23 +262,11 @@
     "contact_page": {
         "title": "Contacte",
         "subtitle": "Tens algun dubte? Som aquí per ajudar-te",
-        "form": {
-            "name": "Nom",
-            "email": "Email",
-            "phone": "Telèfon",
-            "subject": "Assumpte",
-            "message": "Missatge",
-            "send": "Enviar Missatge",
-            "sending": "Enviant...",
-            "success": "Missatge enviat correctament. Et respondrem aviat.",
-            "error": "Hi ha hagut un error en enviar el missatge. Si us plau, torna-ho a intentar.",
-            "placeholders": {
-                "name": "El teu nom",
-                "email": "tu@email.com",
-                "phone": "Els teus 9 dígits",
-                "subject": "Motiu del teu missatge",
-                "message": "Explica'ns en què et podem ajudar..."
-            }
+        "whatsapp": {
+            "title": "Parlem per WhatsApp",
+            "description": "Prefereixes un tracte més directe? Escriu-nos per WhatsApp per resoldre dubtes o reservar la teva cita a l'instant.",
+            "button": "Obrir Xat de WhatsApp",
+            "note": "Et respondrem encantats al més aviat possible."
         },
         "info": {
             "title": "Informació de Contacte",
