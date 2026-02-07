@@ -39,7 +39,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeh
         'emoji' // Add emoji format
     ];
 
-    const quillRef = React.useRef<ReactQuill>(null);
+
 
     return (
         <div className={`rich-text-editor ${className || ''}`}>

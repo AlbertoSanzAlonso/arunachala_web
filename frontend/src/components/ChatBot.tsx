@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChatBubbleLeftRightIcon, XMarkIcon, PaperAirplaneIcon, BookmarkIcon } from '@heroicons/react/24/outline';
+import { ChatBubbleLeftRightIcon, XMarkIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 import puter from '@heyputer/puter.js';
 import omSymbol from '../assets/images/om_symbol.png';
 import { API_BASE_URL } from '../config';

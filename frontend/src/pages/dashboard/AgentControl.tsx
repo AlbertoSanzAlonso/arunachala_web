@@ -88,7 +88,7 @@ const AgentControl: React.FC = () => {
             });
 
             if (response.ok) {
-                const data = await response.json();
+                await response.json();
                 const friendlyType = {
                     'all': 'todo el contenido',
                     'yoga': 'las clases de yoga',

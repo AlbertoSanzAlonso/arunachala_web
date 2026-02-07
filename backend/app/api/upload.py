@@ -7,6 +7,16 @@ import shutil
 import uuid
 from pydub import AudioSegment
 import aiofiles
+import re
+from unidecode import unidecode
+from typing import Optional
+
+def slugify(text: str) -> str:
+    """Helper to convert text to SEO friendly slug"""
+    text = unidecode(text).lower()
+    text = re.sub(r'[^\w\s-]', '', text)
+    text = re.sub(r'[-\s]+', '-', text)
+    return text.strip('-')
 
 router = APIRouter(prefix="/api/upload", tags=["upload"])
 
@@ -82,6 +92,7 @@ import io
 async def upload_image(
     file: UploadFile = File(...),
     folder: str = "articles",
+    title: Optional[str] = None,
     current_user: User = Depends(get_current_user)
 ):
     # if current_user.role != "admin":
@@ -99,7 +110,17 @@ async def upload_image(
     os.makedirs(target_dir, exist_ok=True)
 
     try:
-        file_id = str(uuid.uuid4())
+        # Generate SEO friendly filename
+        # Use title if provided, otherwise original filename (without extension)
+        original_base_name = os.path.splitext(file.filename)[0]
+        base_name = slugify(title if title else original_base_name)
+        
+        # If result is empty after slugifying, fallback to generic
+        if not base_name:
+            base_name = "image"
+            
+        # Add 8 chars of UUID to ensure uniqueness even with same titles
+        file_id = f"{base_name}-{uuid.uuid4().hex[:8]}"
         final_filename = f"{file_id}.webp"
         final_path = os.path.join(target_dir, final_filename)
 

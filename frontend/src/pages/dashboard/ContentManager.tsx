@@ -362,7 +362,8 @@ export default function ContentManager() {
         try {
             const token = sessionStorage.getItem('access_token');
             const folder = formData.type === 'meditation' ? 'meditations' : 'articles';
-            const response = await fetch(`${API_BASE_URL}/api/upload/image?folder=${folder}`, {
+            const titleParam = formData.title ? `&title=${encodeURIComponent(formData.title)}` : '';
+            const response = await fetch(`${API_BASE_URL}/api/upload/image?folder=${folder}${titleParam}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`

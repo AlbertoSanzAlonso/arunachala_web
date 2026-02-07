@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment, useMemo } from 'react';
 import { Combobox, Listbox, Transition } from '@headlessui/react';
-import { MagnifyingGlassIcon, CalendarIcon, FunnelIcon, CheckIcon, XMarkIcon, TagIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, CalendarIcon, CheckIcon, XMarkIcon, TagIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import { getTranslated } from '../utils/translate';
 import { Article } from '../types/blog';
@@ -183,8 +183,8 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
                                 key={cat.id}
                                 onClick={() => setSelectedCategory(cat.id)}
                                 className={`flex-1 md:flex-none px-6 py-2.5 rounded-lg text-sm font-headers uppercase tracking-wider transition-all duration-300 ${selectedCategory === cat.id
-                                        ? 'bg-white text-forest shadow-sm ring-1 ring-black/5'
-                                        : 'text-bark/50 hover:text-bark/80 hover:bg-white/50'
+                                    ? 'bg-white text-forest shadow-sm ring-1 ring-black/5'
+                                    : 'text-bark/50 hover:text-bark/80 hover:bg-white/50'
                                     }`}
                             >
                                 {cat.name}
@@ -314,8 +314,8 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
                                             key={tag}
                                             onClick={() => toggleTag(tag)}
                                             className={`px-3 py-1.5 rounded-full text-sm transition-all duration-200 border ${isActive
-                                                    ? 'bg-forest text-white border-forest shadow-md'
-                                                    : 'bg-white text-bark/60 border-bark/10 hover:border-forest/30 hover:text-forest'
+                                                ? 'bg-forest text-white border-forest shadow-md'
+                                                : 'bg-white text-bark/60 border-bark/10 hover:border-forest/30 hover:text-forest'
                                                 }`}
                                         >
                                             #{tag}

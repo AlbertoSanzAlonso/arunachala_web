@@ -106,7 +106,13 @@ async def generate_image(
         # Create directory if it doesn't exist
         # Use absolute path relative to this file to be safe
         base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        save_dir = os.path.join(base_path, "static", folder)
+        
+        # Unified path logic: articles go to gallery/articles
+        target_subpath = folder
+        if folder == "articles":
+            target_subpath = "gallery/articles"
+            
+        save_dir = os.path.join(base_path, "static", target_subpath)
         os.makedirs(save_dir, exist_ok=True)
         
         # Generate filename
@@ -141,7 +147,7 @@ async def generate_image(
             print(f"Image saved to: {file_path}")
                 
         # Return relative URL
-        return {"url": f"/static/{folder}/{filename}"}
+        return {"url": f"/static/{target_subpath}/{filename}"}
         
     except HTTPException as he:
         raise he
@@ -190,7 +196,8 @@ async def download_remote_image(url: str, slug: str) -> Optional[str]:
     try:
         # Define storage path
         base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        save_dir = os.path.join(base_path, "static", "articles")
+        # Unified path: static/gallery/articles
+        save_dir = os.path.join(base_path, "static", "gallery", "articles")
         os.makedirs(save_dir, exist_ok=True)
         
         # Always save as WebP
@@ -218,14 +225,14 @@ async def download_remote_image(url: str, slug: str) -> Optional[str]:
                         # Save optimized WebP
                         img.save(file_path, "WEBP", quality=80, optimize=True)
                         
-                    return f"/static/articles/{filename}"
+                    return f"/static/gallery/articles/{filename}"
                 except Exception as img_err:
                     print(f"Image conversion failed: {img_err}, saving original bytes")
                     # Fallback: save original content if conversion fails, but rename extension match content if possible
                     # Revert to original extension logic if Pillow fails
                     with open(file_path, "wb") as f:
                         f.write(response.content)
-                    return f"/static/articles/{filename}"
+                    return f"/static/gallery/articles/{filename}"
             else:
                 print(f"Failed to download image: Status {response.status_code}")
                 return None

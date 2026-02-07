@@ -94,6 +94,7 @@ async def rag_sync_callback(
         'therapy': TherapyType,
         'content': Content,
         'article': Content,  # Alias for content/article type
+        'meditation': Content,
         'activity': Activity,
     }
     
