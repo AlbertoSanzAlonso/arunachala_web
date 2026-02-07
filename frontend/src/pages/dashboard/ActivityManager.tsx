@@ -68,6 +68,7 @@ export default function ActivityManager() {
 
     useEffect(() => {
         fetchItems();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Update 'type' when tab changes
@@ -78,6 +79,7 @@ export default function ActivityManager() {
 
         // Reset form when tab changes
         handleCloseModal();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab]);
 
     const fetchItems = async () => {

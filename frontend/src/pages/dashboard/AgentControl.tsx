@@ -53,6 +53,7 @@ const AgentControl: React.FC = () => {
         return () => {
             if (interval) clearInterval(interval);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [syncLoading, ragStatus?.processing_count, suppressPolling, lastSyncTime]);
 
     // Extra refresh when sync finishes
@@ -63,6 +64,7 @@ const AgentControl: React.FC = () => {
             }, 2000);
             return () => clearTimeout(timeout);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ragStatus?.processing_count, syncLoading]);
 
     const fetchRagStatus = async () => {
