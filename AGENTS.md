@@ -82,4 +82,13 @@ arunachala_web/
         - **Category Tabs**: Integrated category navigation (Yoga/Therapy/All).
     - **Pagination**: Implemented client-side pagination (9 items per page) with auto-scroll to top on navigation.
     - **Tag Translations**: Fixed issue where tags were not displaying in the selected language. Now all tags (List, Detail, Modal) respect `i18n.language`.
-    - **Backend Improvements**: Cleaned up legacy `sqlite` remnants to ensure strict PostgreSQL usage.
+## 📝 Recent Updates (2026-02-07 - Afternoon)
+- **Tag Management & Search Refinement**:
+    - **Data Normalization**: Migrated legacy article categories ('general', 'Ayurveda', etc.) to 'yoga' or 'therapy' for better alignment with the studio's focus.
+    - **Tag Translation System**: Implemented automated background translation for all tags into English and Catalan, ensuring consistent metadata across languages.
+    - **Enhanced Search UX**: Refactored `MeditationSearch` and `BlogSearch` with a custom suggestions dropdown:
+        - Prevents accidental auto-completion on "Enter" to preserve partial word searches.
+        - Implements accent-insensitive and case-insensitive matching for titles and tags.
+        - Uses smooth Framer Motion animations for the suggestions menu.
+    - **RAG for Articles & Meditations**: Fully integrated Articles and Meditations into the RAG system, ensuring they are searchable by the AI assistant with automatic synchronization upon publication.
+    - **Tag Synchronization**: Re-synchronized all existing content tags with the `Tag` table to fix missing items in the search clouds.
