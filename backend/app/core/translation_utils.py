@@ -33,10 +33,16 @@ Tu tarea es traducir el siguiente objeto JSON a los siguientes idiomas: {languag
 El idioma original suele ser el español.
 Debes devolver ÚNICAMENTE un objeto JSON donde las claves raíz sean los códigos de idioma ({languages_str}) y el valor sea el objeto original traducido conservando las mismas claves.
 
-Ejemplo de salida esperada:
+REGLAS IMPORTANTES:
+1. Si un campo es una cadena de texto, tradúcelo normalmente.
+2. Si un campo es una LISTA (array) de cadenas (como 'tags'), traduce CADA ELEMENTO de la lista manteniendo el orden.
+3. Mantén el formato JSON válido.
+
+Ejemplo de entrada: {{ "title": "Hola", "tags": ["uno", "dos"] }}
+Ejemplo de salida:
 {{
-  "ca": {{ "field1": "traducción", ... }},
-  "en": {{ "field1": "translation", ... }}
+  "en": {{ "title": "Hello", "tags": ["one", "two"] }},
+  "ca": {{ "title": "Hola", "tags": ["un", "dos"] }}
 }}"""
 
         response = client.chat.completions.create(
@@ -60,9 +66,16 @@ def update_record_translations(db_session, model_class, record_id, translations)
     try:
         record = db_session.query(model_class).filter(model_class.id == record_id).first()
         if record:
-            # Merging existing translations if any
+            # Merging existing translations per language key to avoid overwriting unrelated fields
             current = record.translations or {}
-            current.update(translations)
+            
+            for lang, content in translations.items():
+                if lang not in current:
+                    current[lang] = {}
+                # Update fields for this language
+                if isinstance(content, dict):
+                    current[lang].update(content)
+            
             record.translations = current
             
             # Using flag_modified if SQLAlchemy doesn't detect JSON change
@@ -86,9 +99,19 @@ def update_record_translations(db_session, model_class, record_id, translations)
 async def auto_translate_background(db_factory, model_class, record_id, fields_to_translate):
     """Background task to handle translation and DB update."""
     print(f"Starting auto-translation for {model_class.__name__} ID {record_id}...")
+    
+    # DEBUG LOG TO FILE
+    with open("translation_debug.log", "a") as f:
+        f.write(f"\n--- ID {record_id} ---\nINPUT FIELDS: {json.dumps(fields_to_translate, ensure_ascii=False)}\n")
+
     translations = await translate_content(fields_to_translate)
+    
+    with open("translation_debug.log", "a") as f:
+        f.write(f"OUTPUT: {json.dumps(translations, ensure_ascii=False)}\n")
+
     if translations:
-        print(f"Translations received for ID {record_id}: {list(translations.keys())}")
+        print(f"Translations received for ID {record_id}: {json.dumps(translations, indent=2, ensure_ascii=False)}")
+        print(f"Translations keys: {list(translations.keys())}")
         # We need a fresh session in the background
         db = db_factory()
         try:
@@ -102,7 +125,8 @@ async def auto_translate_background(db_factory, model_class, record_id, fields_t
                 "MassageType": "massage",
                 "TherapyType": "therapy",
                 "Activity": "activity",
-                "Content": "content"
+                "Content": "content",
+                "Tag": "tag"
             }
             item_type = item_type_map.get(model_class.__name__, "unknown")
             print(f"Triggering RAG update for {item_type} {record_id}")

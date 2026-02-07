@@ -15,14 +15,15 @@ This project supports Spanish (ES), Catalan (CA), and English (EN).
 -   **Auto-detection**: Attempts to detect browser language, falls back to Spanish (`es`).
 
 ### Backend (Database)
--   **Models**: Many models (Classes, Therapies, Activities) support a `translations` JSON field.
+-   **Models**: Many models (Classes, Therapies, Activities, Articles, Meditations) support a `translations` JSON field.
     ```json
     {
       "ca": { "title": "...", "description": "..." },
       "en": { "title": "...", "description": "..." }
     }
     ```
--   **Auto-Translation**: When content is created in Spanish, background tasks may auto-generate translations using AI if configured.
+-   **Auto-Translation**: When content is created in Spanish, background tasks may auto-generate translations using AI if configured. This applies to both main content (Classes, Articles, Meditations) and associated **Tags**.
+-   **Tag Translations**: Tags are automatically translated to `en` and `ca` via background tasks to ensure they are available in the frontend Search components across all languages.
 
 ## 📝 Rules for New Content
 1.  Always provide keys in `translation.json` for UI static text.

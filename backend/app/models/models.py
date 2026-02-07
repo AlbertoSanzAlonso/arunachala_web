@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Text, Enum, JSON
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Text, Enum, JSON, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import enum
@@ -33,6 +33,23 @@ class ContentStatus(str, enum.Enum):
     PUBLISHED = "published"
     ARCHIVED = "archived"
 
+# Association table for Content <-> Tags
+content_tags = Table('content_tags', Base.metadata,
+    Column('content_id', Integer, ForeignKey('contents.id'), primary_key=True),
+    Column('tag_id', Integer, ForeignKey('tags.id'), primary_key=True)
+)
+
+class Tag(Base):
+    __tablename__ = 'tags'
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True, nullable=False) # Removed unique here to allow same name in diff categories
+    category = Column(String, index=True, nullable=True) # 'meditation', 'article', etc.
+    translations = Column(JSON, nullable=True) # {"en": "Peace", "ca": "Pau"}
+
+    # Relationship back to content
+    contents = relationship("Content", secondary=content_tags, back_populates="tag_entities")
+
 class Content(Base):
     __tablename__ = "contents"
 
@@ -59,6 +76,7 @@ class Content(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     author = relationship("User", back_populates="contents")
+    tag_entities = relationship("Tag", secondary=content_tags, back_populates="contents")
 
 User.contents = relationship("Content", back_populates="author")
 

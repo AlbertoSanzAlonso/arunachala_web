@@ -2,17 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import {
-    PencilSquareIcon,
-    TrashIcon,
-    PlusIcon,
-    MagnifyingGlassIcon,
-    ChevronUpIcon,
-    ChevronDownIcon,
-    ClockIcon,
-    ExclamationTriangleIcon,
-    SparklesIcon
-} from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, PlusIcon, PencilSquareIcon, TrashIcon, CheckIcon, XMarkIcon, MagnifyingGlassIcon, Bars3Icon, PhotoIcon, SpeakerWaveIcon, ClockIcon } from '@heroicons/react/24/outline';
+import ChevronUpIcon from '@heroicons/react/24/outline/ChevronUpIcon';
+import ChevronDownIcon from '@heroicons/react/24/outline/ChevronDownIcon';
+import SparklesIcon from '@heroicons/react/24/outline/SparklesIcon';
+import ExclamationTriangleIcon from '@heroicons/react/24/outline/ExclamationTriangleIcon';
+import { TagSelector } from '../../components/TagSelector';
 import { API_BASE_URL } from '../../config';
 import { useToast } from '../../hooks/useToast';
 import ToastNotification from '../../components/ToastNotification';
@@ -24,13 +19,14 @@ interface Content {
     title: string;
     slug: string;
     type: 'article' | 'meditation' | 'service' | 'announcement';
-    category?: 'yoga' | 'therapy';
+    category?: 'yoga' | 'therapy' | 'general';
     status: 'draft' | 'published' | 'archived';
     created_at: string;
     excerpt?: string;
     body?: string;
     thumbnail_url?: string;
     media_url?: string;
+    tags?: string[] | string;
 }
 
 const TABS = [
@@ -52,7 +48,8 @@ export default function ContentManager() {
         title: '',
         status: 'draft',
         type: 'article',
-        category: 'yoga'
+        category: 'yoga',
+        tags: []
     });
 
     // New filters and selection state
@@ -62,6 +59,9 @@ export default function ContentManager() {
     const [dateSort, setDateSort] = useState<'desc' | 'asc'>('desc');
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+
+    // Local state for tags input to allow smooth typing
+    // const [localTags, setLocalTags] = useState(''); // This is no longer needed
 
     // Delete Confirmation State
     const [deleteModalState, setDeleteModalState] = useState<{
@@ -242,16 +242,29 @@ export default function ContentManager() {
     const handleOpenModal = (content?: Content) => {
         if (content) {
             setEditingContent(content);
-            setFormData(content);
+
+            // Normalize tags to string[]
+            let normalizedTags: string[] = [];
+            if (Array.isArray(content.tags)) {
+                normalizedTags = content.tags;
+            } else if (typeof content.tags === 'string') {
+                if (content.tags.trim().startsWith('[')) {
+                    try { normalizedTags = JSON.parse(content.tags); } catch { }
+                } else {
+                    normalizedTags = content.tags.split(',').map(t => t.trim()).filter(Boolean);
+                }
+            }
+
+            setFormData({ ...content, tags: normalizedTags });
         } else {
             setEditingContent(null);
             // Set defaults based on current tab
-            let defaultType = 'article';
-            let defaultCategory = 'yoga';
+            let defaultType: 'article' | 'meditation' | 'service' | 'announcement' = 'article';
+            let defaultCategory: 'yoga' | 'therapy' | 'general' | undefined = 'yoga';
 
             if (currentTab === 'yoga_article') { defaultType = 'article'; defaultCategory = 'yoga'; }
             if (currentTab === 'therapy_article') { defaultType = 'article'; defaultCategory = 'therapy'; }
-            if (currentTab === 'meditation') { defaultType = 'meditation'; defaultCategory = undefined as any; }
+            if (currentTab === 'meditation') { defaultType = 'meditation'; defaultCategory = undefined; }
 
             setFormData({
                 title: '',
@@ -261,7 +274,8 @@ export default function ContentManager() {
                 body: '',
                 excerpt: '',
                 thumbnail_url: '',
-                media_url: ''
+                media_url: '',
+                tags: []
             });
         }
         setIsModalOpen(true);
@@ -415,7 +429,10 @@ export default function ContentManager() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({
+                    ...formData,
+                    tags: formData.tags // Use direct array from selector
+                })
             });
 
             if (response.ok) {
@@ -625,7 +642,9 @@ export default function ContentManager() {
                                             </th>
                                             <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Título</th>
                                             <th scope="col" className="hidden md:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Tipo</th>
-                                            <th scope="col" className="hidden lg:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Categoría</th>
+                                            {currentTab !== 'meditation' && (
+                                                <th scope="col" className="hidden lg:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Categoría</th>
+                                            )}
                                             <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Estado</th>
                                             <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">Acciones</span></th>
                                         </tr>
@@ -652,7 +671,9 @@ export default function ContentManager() {
                                                     <td className="hidden md:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize">
                                                         {item.type === 'meditation' ? 'Meditación' : 'Artículo'}
                                                     </td>
-                                                    <td className="hidden lg:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize">{item.category || '-'}</td>
+                                                    {currentTab !== 'meditation' && (
+                                                        <td className="hidden lg:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize">{item.category || '-'}</td>
+                                                    )}
                                                     <td className="whitespace-nowrap px-3 py-4 text-sm">
                                                         <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset 
                                                         ${item.status === 'published' ? 'bg-green-50 text-green-700 ring-green-600/20' : 'bg-gray-50 text-gray-600 ring-gray-500/10'}`}>
@@ -733,18 +754,32 @@ export default function ContentManager() {
                                                     </select>
                                                 </div>
 
-                                                <div className="col-span-1">
-                                                    <label className="block text-sm font-medium text-gray-700">Categoría</label>
-                                                    <select
-                                                        value={formData.category || ''}
-                                                        onChange={e => setFormData({ ...formData, category: e.target.value as any })}
-                                                        disabled={formData.type === 'meditation'}
-                                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-forest focus:ring-forest sm:text-sm p-2 border disabled:bg-gray-100"
-                                                    >
-                                                        <option value="">Seleccionar...</option>
-                                                        <option value="yoga">Yoga</option>
-                                                        <option value="therapy">Terapia</option>
-                                                    </select>
+                                                {formData.type !== 'meditation' && (
+                                                    <div className="col-span-1">
+                                                        <label className="block text-sm font-medium text-gray-700">Categoría</label>
+                                                        <select
+                                                            value={formData.category || ''}
+                                                            onChange={e => setFormData({ ...formData, category: e.target.value as any })}
+                                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-forest focus:ring-forest sm:text-sm p-2 border"
+                                                        >
+                                                            <option value="">Seleccionar...</option>
+                                                            <option value="yoga">Yoga</option>
+                                                            <option value="therapy">Terapia</option>
+                                                        </select>
+                                                    </div>
+                                                )}
+
+                                                <div className="col-span-1 lg:col-span-2">
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Etiquetas</label>
+                                                    <TagSelector
+                                                        value={Array.isArray(formData.tags) ? formData.tags : []}
+                                                        onChange={(newTags) => setFormData({ ...formData, tags: newTags })}
+                                                        category={
+                                                            formData.type === 'meditation' ? 'meditation' :
+                                                                formData.type === 'article' ? (formData.category || 'general') :
+                                                                    'general'
+                                                        }
+                                                    />
                                                 </div>
 
                                                 <div className="col-span-1 lg:col-span-2">

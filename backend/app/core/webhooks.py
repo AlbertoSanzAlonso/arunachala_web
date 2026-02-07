@@ -37,6 +37,7 @@ async def notify_n8n_content_change(
         entity_map = {
             'content': Content,
             'article': Content,
+            'meditation': Content,
             'yoga_class': YogaClassDefinition,
             'massage': MassageType,
             'therapy': TherapyType,
@@ -72,6 +73,15 @@ async def notify_n8n_content_change(
             # Add extra metadata
             if hasattr(db_entity, 'category'):
                 flat_payload['category'] = db_entity.category
+
+            # Add tags if available (critical for search)
+            if hasattr(db_entity, 'tags') and db_entity.tags:
+                # If tags is a list, join it; if string, keep it.
+                t = db_entity.tags
+                if isinstance(t, list):
+                    flat_payload['tags'] = ", ".join(t)
+                else:
+                    flat_payload['tags'] = str(t)
 
         # Create Log
         log_entry = RAGSyncLog(

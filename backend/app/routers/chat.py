@@ -12,7 +12,10 @@ router = APIRouter()
 from groq import Groq
 import google.generativeai as genai
 from sqlalchemy.orm import Session
-from app.models.models import AgentConfig, User
+from app.models.models import (
+    AgentConfig, User, Content, YogaClassDefinition, 
+    MassageType, TherapyType, Activity
+)
 from app.core.database import get_db
 from app.api.auth import get_current_user
 
@@ -77,7 +80,7 @@ def get_embedding(text: str):
     text = text.replace("\n", " ")
     return openai_client.embeddings.create(input=[text], model="text-embedding-3-small").data[0].embedding
 
-def search_knowledge_base(query: str, limit: int = 3):
+def search_knowledge_base(query: str, limit: int = 10):
     """Search Qdrant for relevant context."""
     if not qdrant_client:
         return []
@@ -94,12 +97,69 @@ def search_knowledge_base(query: str, limit: int = 3):
         search_result = qdrant_client.query_points(
             collection_name=COLLECTION_NAME,
             query=query_vector,
-            limit=3  # Reduced limit to save tokens and avoid Rate Limits
+            limit=limit  # Increased limit for better context
         ).points
         return search_result
     except Exception as e:
         print(f"Error searching Qdrant: {e}")
         return []
+
+def get_inventory_summary(db: Session):
+    """Get counts of items in the database to inform the bot about total offerings."""
+    try:
+        def count_active(Model, entity_type=None):
+            query = db.query(Model)
+            if hasattr(Model, 'is_active'):
+                query = query.filter(Model.is_active == True)
+            elif hasattr(Model, 'status'):
+                query = query.filter(Model.status == 'published')
+            
+            if entity_type and hasattr(Model, 'type'):
+                query = query.filter(Model.type == entity_type)
+            return query.count()
+
+        # Explicit count for meditations to ensure accuracy
+        meditations_count = db.query(Content).filter(Content.type == 'meditation', Content.status == 'published').count()
+
+        summary = {
+            "yoga": count_active(YogaClassDefinition),
+            "massage": count_active(MassageType),
+            "therapy": count_active(TherapyType),
+            "articles": count_active(Content, 'article'),
+            "meditations": meditations_count,
+            "activities": count_active(Activity)
+        }
+        
+        def get_samples(Model, entity_type=None, limit=5):
+            query = db.query(Model)
+            if hasattr(Model, 'is_active'):
+                query = query.filter(Model.is_active == True)
+            elif hasattr(Model, 'status'):
+                query = query.filter(Model.status == 'published')
+            if entity_type and hasattr(Model, 'type'):
+                query = query.filter(Model.type == entity_type)
+            
+            items = query.limit(limit).all()
+            if not items: return ""
+            titles = []
+            for item in items:
+                t = getattr(item, 'title', None) or getattr(item, 'name', None)
+                if t: titles.append(t)
+            return " (ejemplos: " + ", ".join(titles) + "...)" if titles else ""
+
+        parts = []
+        if summary['yoga']: parts.append(f"{summary['yoga']} clases de yoga{get_samples(YogaClassDefinition)}")
+        if summary['massage']: parts.append(f"{summary['massage']} tipos de masajes{get_samples(MassageType)}")
+        if summary['therapy']: parts.append(f"{summary['therapy']} terapias{get_samples(TherapyType)}")
+        if summary['articles']: parts.append(f"{summary['articles']} artículos en el blog{get_samples(Content, 'article')}")
+        if summary['meditations']: parts.append(f"{summary['meditations']} meditaciones guiadas{get_samples(Content, 'meditation', limit=10)}")
+        if summary['activities']: parts.append(f"{summary['activities']} actividades{get_samples(Activity)}")
+        
+        return "Actualmente ofrecemos: " + "; ".join(parts) + "."
+
+    except Exception as e:
+        print(f"Error getting inventory summary: {e}")
+        return ""
 
 def format_context(search_results):
     """Format the retrieved documents into a string context."""
@@ -125,11 +185,15 @@ def format_context(search_results):
         
         # Try to find type
         type_ = payload.get('type') or meta.get('type') or 'general'
+
+        # Try to find tags
+        tags = payload.get('tags') or meta.get('tags') or ''
+        tags_str = f"ETIQUETAS: {tags}\n" if tags else ""
         
         context_parts.append(f"""
 --- DOCUMENTO ENCONTRADO ({type_}) ---
 TÍTULO: {title}
-CONTENIDO O DESCRIPCIÓN:
+{tags_str}CONTENIDO O DESCRIPCIÓN:
 {content}
 --------------------------------------
 """)
@@ -238,7 +302,9 @@ async def chat_endpoint(request: ChatRequest, db: Session = Depends(get_db)):
     # 1. Get user query
     user_query = request.messages[-1].content
     
-    # 2. Retrieve Context (RAG)
+    # 2. Retrieve Context (RAG) and Inventory
+    inventory_summary = get_inventory_summary(db)
+    print(f"🌍 DEBUG INVENTORY: {inventory_summary}")
     retrieved_docs = search_knowledge_base(user_query)
     context_text = format_context(retrieved_docs)
     sources = list(set([doc.payload.get('source', 'unknown') for doc in retrieved_docs])) if retrieved_docs else []
@@ -257,6 +323,10 @@ async def chat_endpoint(request: ChatRequest, db: Session = Depends(get_db)):
 
     # 3. Construct System Prompt
     system_prompt = f"""Eres Arunachala Bot, el asistente virtual del centro de Yoga y Terapias 'Arunachala' en Cornellà.
+
+INFORMACIÓN CRÍTICA DE INVENTARIO (Usa esto para responder sobre cantidades):
+{inventory_summary}
+(IMPORTANTE: Tienes exactamente estas cantidades en tu base de datos. Si el usuario pregunta "cuántos hay", recurre a esta sección. NO te inventes cifras basadas en los fragmentos de abajo si contradicen esta sección).
     
 IDIOMA DE RESPUESTA:
  - **Debes responder SIEMPRE en {target_lang}**.
@@ -272,7 +342,7 @@ PERSONALIDAD Y ESTILO:
 INSTRUCCIONES EXTRA DEL ADMINISTRADOR (ATENCIÓN: Si estas instrucciones incluyen frases o saludos en español, TRADÚCELAS al {target_lang} antes de usarlas):
 {extra_instructions}
 
-CONTEXTO DE LA WEB (RAG):
+CONTEXTO DETALLADO (Fragmentos de la web):
 {context_text}
 
  INSTRUCCIONES DE USO DE CONTEXTO:

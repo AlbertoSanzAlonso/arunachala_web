@@ -274,8 +274,8 @@ export default function ActivityManager() {
         setTitle(item.title);
         setDescription(item.description || '');
         setType(item.type);
-        setStartDate(item.start_date ? item.start_date.substring(0, 16) : '');
-        setEndDate(item.end_date ? item.end_date.substring(0, 16) : '');
+        setStartDate(item.start_date ? item.start_date.substring(0, 10) : '');
+        setEndDate(item.end_date ? item.end_date.substring(0, 10) : '');
         setLocation(item.location || '');
         setPrice(item.price || '');
         setPreviewUrl(item.image_url ? (item.image_url.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`) : null);
@@ -725,11 +725,11 @@ export default function ActivityManager() {
                                     <>
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700">Fecha Inicio</label>
-                                            <input type="datetime-local" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-primary-500 p-3 border sm:text-sm" />
+                                            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-primary-500 p-3 border sm:text-sm" />
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700">Fecha Fin</label>
-                                            <input type="datetime-local" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-primary-500 p-3 border sm:text-sm" />
+                                            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-primary-500 p-3 border sm:text-sm" />
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700">Precio</label>

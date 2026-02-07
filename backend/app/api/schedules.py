@@ -3,7 +3,10 @@ from sqlalchemy.orm import Session
 from typing import List
 from pydantic import BaseModel
 from app.core.database import get_db
-from app.models.models import ClassSchedule, User
+from app.models.models import ClassSchedule, User, Activity
+import json
+from datetime import datetime
+
 from app.api.auth import get_current_user
 from app.core.webhooks import notify_n8n_content_change
 
@@ -75,7 +78,96 @@ def get_schedules(
     if active_only:
         query = query.filter(ClassSchedule.is_active == True)
     schedules = query.order_by(ClassSchedule.day_of_week, ClassSchedule.start_time).all()
-    return schedules
+    
+    # Fetch Activities (courses) with schedules
+    act_query = db.query(Activity).filter(Activity.type == 'curso')
+    if active_only:
+        act_query = act_query.filter(Activity.is_active == True)
+    
+    courses = act_query.all()
+    
+    # Convert query results to list to append courses
+    result = [s for s in schedules]
+    
+    for course in courses:
+        if not course.activity_data:
+            continue
+            
+        data = course.activity_data
+        # Handle case where JSON might be a string (though SQLAlchemy should handle it)
+        if isinstance(data, str):
+             try:
+                 data = json.loads(data)
+             except:
+                 continue
+
+        if not isinstance(data, dict):
+            continue
+
+        schedule_list = data.get('schedule', [])
+        if not schedule_list:
+            continue
+            
+        # Format date range for display
+        date_info = "CURSO"
+        if course.end_date:
+            # Check if it's a datetime object or string (just in case)
+            ed = course.end_date
+            if isinstance(ed, str):
+                try:
+                    ed = datetime.fromisoformat(ed)
+                except:
+                    pass
+            if hasattr(ed, 'strftime'):
+                date_info = f"Hasta {ed.strftime('%d/%m')}"
+            
+        for i, item in enumerate(schedule_list):
+            day = item.get('day')
+            time = item.get('time')
+            try:
+                duration = int(item.get('duration', 60))
+            except:
+                duration = 60
+            
+            if not day or not time:
+                continue
+                
+            # Calculate end time
+            try:
+                h, m = map(int, time.split(':'))
+                end_min = h * 60 + m + duration
+                end_h = (end_min // 60) % 24
+                end_m = end_min % 60
+                end_time = f"{end_h:02d}:{end_m:02d}"
+            except:
+                continue
+            
+            # Mock YogaClassBrief
+            # We use a negative ID to indicate it's not a real YogaClass record
+            mock_class = YogaClassBrief(
+                id=-course.id, 
+                name=course.title,
+                description=course.description,
+                color="bg-blue-100 border-blue-300 text-blue-900",
+                age_range=date_info, # Display end date here
+                translations=course.translations
+            )
+            
+            # Mock ScheduleResponse
+            mock_schedule = ScheduleResponse(
+                id=-(course.id * 1000 + i), # Unique negative ID
+                class_id=-course.id,
+                class_name=course.title,
+                day_of_week=day,
+                start_time=time,
+                end_time=end_time,
+                is_active=True,
+                yoga_class=mock_class
+            )
+            
+            result.append(mock_schedule)
+
+    return result
 
 @router.get("/{schedule_id}", response_model=ScheduleResponse)
 def get_schedule(

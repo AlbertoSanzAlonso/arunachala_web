@@ -3,6 +3,13 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import logo from '../assets/images/logo_transparent_v2.webp';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion';
+
+const LANGUAGES = [
+    { code: 'es', label: 'ES' },
+    { code: 'ca', label: 'CA' },
+    { code: 'en', label: 'EN' }
+];
 
 const Header: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -36,25 +43,28 @@ const Header: React.FC = () => {
 
                 <div className="flex items-center gap-4">
                     {/* Language Switcher Mini */}
-                    <div className="flex items-center bg-[#4a5730]/50 backdrop-blur-sm rounded-full p-1 border border-[#F5F5DC]/20 mr-2 z-50">
-                        <button
-                            onClick={() => changeLanguage('es')}
-                            className={`transition-all duration-300 rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold tracking-wide ${i18n.language.startsWith('es') ? 'bg-[#F5F5DC] text-[#5c6b3c] shadow-sm transform scale-105' : 'text-[#F5F5DC] hover:text-white/90 hover:bg-white/10'}`}
-                        >
-                            ES
-                        </button>
-                        <button
-                            onClick={() => changeLanguage('ca')}
-                            className={`transition-all duration-300 rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold tracking-wide ${i18n.language.startsWith('ca') ? 'bg-[#F5F5DC] text-[#5c6b3c] shadow-sm transform scale-105' : 'text-[#F5F5DC] hover:text-white/90 hover:bg-white/10'}`}
-                        >
-                            CA
-                        </button>
-                        <button
-                            onClick={() => changeLanguage('en')}
-                            className={`transition-all duration-300 rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold tracking-wide ${i18n.language.startsWith('en') ? 'bg-[#F5F5DC] text-[#5c6b3c] shadow-sm transform scale-105' : 'text-[#F5F5DC] hover:text-white/90 hover:bg-white/10'}`}
-                        >
-                            EN
-                        </button>
+                    {/* Language Switcher Mini */}
+                    <div className="flex items-center bg-[#4a5730]/50 backdrop-blur-sm rounded-full p-1 border border-[#F5F5DC]/20 mr-2 z-50 overflow-hidden relative">
+                        {LANGUAGES.map((lang) => {
+                            const isActive = i18n.language.startsWith(lang.code);
+                            return (
+                                <button
+                                    key={lang.code}
+                                    onClick={() => changeLanguage(lang.code)}
+                                    className={`relative z-10 w-8 h-8 flex items-center justify-center text-xs font-bold tracking-wide transition-colors duration-300 ${isActive ? 'text-[#5c6b3c]' : 'text-[#F5F5DC] hover:text-white'
+                                        }`}
+                                >
+                                    {isActive && (
+                                        <motion.div
+                                            layoutId="language-indicator"
+                                            className="absolute inset-0 bg-[#F5F5DC] rounded-full shadow-sm -z-10"
+                                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                        />
+                                    )}
+                                    {lang.label}
+                                </button>
+                            );
+                        })}
                     </div>
 
                     <button

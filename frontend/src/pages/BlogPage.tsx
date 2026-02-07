@@ -21,12 +21,24 @@ const BlogPage: React.FC = () => {
     const location = useLocation();
     const [articles, setArticles] = useState<Article[]>([]);
     const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
-    const [activeCategory, setActiveCategory] = useState<string>('all');
     const [isLoading, setIsLoading] = useState(true);
+
+    // Initial category from URL
+    const pathParts = location.pathname.split('/');
+    const categoryFromPath = (pathParts[2] && ['yoga', 'therapy'].includes(pathParts[2])) ? pathParts[2] : 'all';
 
     // Pagination
     const ITEMS_PER_PAGE = 9;
     const [currentPage, setCurrentPage] = useState(1);
+
+    // Filters State
+    const [filters, setFilters] = useState<FilterState>({
+        query: '',
+        category: categoryFromPath,
+        year: 'all',
+        month: 'all',
+        tags: []
+    });
 
     // Scroll to top on page change
     useEffect(() => {
@@ -37,26 +49,35 @@ const BlogPage: React.FC = () => {
     const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // Initial category from URL
-    const pathParts = location.pathname.split('/');
-    const categoryFromPath = (pathParts[2] && ['yoga', 'therapy'].includes(pathParts[2])) ? pathParts[2] : 'all';
-
     useEffect(() => {
         fetchArticles();
     }, []);
 
-    const handleFilterChange = (filters: FilterState) => {
+    // Effect to update filtered articles when filters change
+    useEffect(() => {
         let result = articles;
-
-        // Update Title based on category filter
-        setActiveCategory(filters.category);
 
         // Filter by Query
         if (filters.query.trim()) {
             const q = filters.query.toLowerCase();
-            result = result.filter(a =>
-                getTranslated(a, 'title', i18n.language).toLowerCase().includes(q)
-            );
+            // Normalize for better matching (ignoring accents)
+            const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+            const normalizedQ = normalize(q);
+
+            result = result.filter(a => {
+                const title = normalize(getTranslated(a, 'title', i18n.language) || '');
+                const excerpt = normalize(getTranslated(a, 'excerpt', i18n.language) || '');
+
+                // Also search in tags
+                let tags = getTranslated(a, 'tags', i18n.language);
+                if (typeof tags === 'string') {
+                    try { tags = JSON.parse(tags); } catch (e) { }
+                }
+                const safeTags = (Array.isArray(tags) ? tags : a.tags) || [];
+                const tagsMatch = safeTags.some((tag: string) => normalize(tag).includes(normalizedQ));
+
+                return title.includes(normalizedQ) || excerpt.includes(normalizedQ) || tagsMatch;
+            });
         }
 
         // Filter by Category
@@ -91,7 +112,11 @@ const BlogPage: React.FC = () => {
         }
 
         setFilteredArticles(result);
-        setCurrentPage(1); // Reset to first page on filter change
+        setCurrentPage(1);
+    }, [articles, filters, i18n.language]);
+
+    const handleFilterChange = (newFilters: FilterState) => {
+        setFilters(newFilters);
     };
 
     const fetchArticles = async () => {
@@ -100,7 +125,6 @@ const BlogPage: React.FC = () => {
             if (response.ok) {
                 const data = await response.json();
                 setArticles(data);
-                setFilteredArticles(data);
             }
         } catch (error) {
             console.error('Error fetching articles:', error);
@@ -164,9 +188,9 @@ const BlogPage: React.FC = () => {
                             animate={{ opacity: 1, y: 0 }}
                             className="text-4xl md:text-6xl font-headers text-forest mb-4 uppercase tracking-wider pt-12 md:pt-0"
                         >
-                            {activeCategory === 'yoga'
+                            {filters.category === 'yoga'
                                 ? t('blog.yoga_title', 'Blog de Yoga')
-                                : activeCategory === 'therapy'
+                                : filters.category === 'therapy'
                                     ? t('blog.therapy_title', 'Blog de Terapias')
                                     : t('blog.title', 'Blog')}
                         </motion.h1>
@@ -176,9 +200,9 @@ const BlogPage: React.FC = () => {
                             transition={{ delay: 0.1 }}
                             className="text-xl text-bark/70 font-light"
                         >
-                            {activeCategory === 'yoga'
+                            {filters.category === 'yoga'
                                 ? t('blog.yoga_subtitle', 'Artículos, consejos y reflexiones sobre la práctica del yoga')
-                                : activeCategory === 'therapy'
+                                : filters.category === 'therapy'
                                     ? t('blog.therapy_subtitle', 'Artículos sobre terapias holísticas, masajes y bienestar')
                                     : t('blog.subtitle', 'Artículos sobre yoga, meditación y bienestar')}
                         </motion.p>
@@ -189,6 +213,7 @@ const BlogPage: React.FC = () => {
                         articles={articles}
                         onFilterChange={handleFilterChange}
                         initialCategory={categoryFromPath}
+                        filters={filters}
                     />
 
                     {/* Articles Grid */}
@@ -293,9 +318,12 @@ const BlogPage: React.FC = () => {
                                     </span>
 
                                     <button
-                                        onClick={() => setCurrentPage(p => Math.min(Math.ceil(filteredArticles.length / ITEMS_PER_PAGE), p + 1))}
-                                        disabled={currentPage === Math.ceil(filteredArticles.length / ITEMS_PER_PAGE)}
-                                        className={`px-6 py-2 rounded-full font-headers uppercase tracking-wider text-sm transition-all ${currentPage === Math.ceil(filteredArticles.length / ITEMS_PER_PAGE)
+                                        onClick={() => {
+                                            setCurrentPage(p => Math.min(Math.ceil(filteredArticles.length / ITEMS_PER_PAGE), p + 1));
+                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        }}
+                                        disabled={currentPage >= Math.ceil(filteredArticles.length / ITEMS_PER_PAGE)}
+                                        className={`px-6 py-2 rounded-full font-headers uppercase tracking-wider text-sm transition-all ${currentPage >= Math.ceil(filteredArticles.length / ITEMS_PER_PAGE)
                                             ? 'text-bark/30 cursor-not-allowed bg-transparent'
                                             : 'bg-white text-forest shadow-md hover:shadow-lg hover:bg-forest hover:text-white'
                                             }`}

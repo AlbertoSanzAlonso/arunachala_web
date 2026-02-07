@@ -1,14 +1,17 @@
 import React, { useState, useEffect, Fragment, useMemo } from 'react';
-import { Combobox, Listbox, Transition } from '@headlessui/react';
+import { Listbox, Transition } from '@headlessui/react';
 import { MagnifyingGlassIcon, CalendarIcon, CheckIcon, XMarkIcon, TagIcon } from '@heroicons/react/24/outline';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { getTranslated } from '../utils/translate';
 import { Article } from '../types/blog';
+import { API_BASE_URL } from '../config';
 
 interface BlogSearchProps {
     articles: Article[];
     onFilterChange: (filters: FilterState) => void;
     initialCategory?: string;
+    filters: FilterState;
 }
 
 export interface FilterState {
@@ -19,33 +22,19 @@ export interface FilterState {
     tags: string[];
 }
 
-const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initialCategory = 'all' }) => {
+const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initialCategory = 'all', filters }) => {
     const { t, i18n } = useTranslation();
-
-    const [query, setQuery] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState(initialCategory);
-
-    // Date Filters: Year -> Month
-    const [selectedYear, setSelectedYear] = useState('all');
-    const [selectedMonth, setSelectedMonth] = useState('all');
-
-    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [allTags, setAllTags] = useState<any[]>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
 
     useEffect(() => {
-        if (initialCategory) setSelectedCategory(initialCategory);
-    }, [initialCategory]);
-
-    // Update parent when filters change
-    useEffect(() => {
-        onFilterChange({
-            query: query,
-            category: selectedCategory,
-            year: selectedYear,
-            month: selectedMonth,
-            tags: selectedTags
-        });
-    }, [query, selectedCategory, selectedYear, selectedMonth, selectedTags, onFilterChange]);
-
+        // Fetch official tags for the selected category (yoga or therapy)
+        const categoryParam = filters.category !== 'all' ? `&category=${filters.category}` : '';
+        fetch(`${API_BASE_URL}/api/tags?in_use=true${categoryParam}`)
+            .then(res => res.ok ? res.json() : [])
+            .then(data => setAllTags(data))
+            .catch(err => console.error("Failed to fetch tags for search", err));
+    }, [i18n.language, filters.category]);
 
     // Extract available years
     const years = useMemo(() => {
@@ -55,57 +44,57 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
 
     // Extract available months for the SELECTED Year
     const months = useMemo(() => {
-        if (selectedYear === 'all') return [];
+        if (filters.year === 'all') return [];
 
         const uniqueMonths = new Set<string>();
         articles.filter(a => {
             const d = new Date(a.created_at);
-            return !isNaN(d.getTime()) && d.getFullYear().toString() === selectedYear;
+            return !isNaN(d.getTime()) && d.getFullYear().toString() === filters.year;
         }).forEach(a => {
             const d = new Date(a.created_at);
             uniqueMonths.add(d.getMonth().toString());
         });
 
-        // Numeric sort (0-11)
         return Array.from(uniqueMonths).sort((a, b) => parseInt(a) - parseInt(b));
-    }, [articles, selectedYear]);
+    }, [articles, filters.year]);
 
-    // Reset month when year changes to 'all'
+    // Reset month if year changes
     useEffect(() => {
-        if (selectedYear === 'all') setSelectedMonth('all');
-    }, [selectedYear]);
-
+        if (filters.year === 'all' && filters.month !== 'all') {
+            onFilterChange({ ...filters, month: 'all' });
+        }
+    }, [filters.year]);
 
     const formatMonthLabel = (monthIndex: string) => {
         if (monthIndex === 'all') return t('blog.search.all_months', 'Todos los meses');
-        const date = new Date(2000, parseInt(monthIndex), 1); // 2000 is arbitrary leap year safe-ish
+        const date = new Date(2000, parseInt(monthIndex), 1);
         const label = date.toLocaleDateString(i18n.language, { month: 'long' });
         return label.charAt(0).toUpperCase() + label.slice(1);
     };
 
     // Extract available tags (translated)
     const availableTags = useMemo(() => {
-        const tagsSet = new Set<string>();
-        articles.forEach(article => {
-            let tTags = getTranslated(article, 'tags', i18n.language);
-            if (typeof tTags === 'string') {
-                try { tTags = JSON.parse(tTags); } catch (e) { }
-            }
-            const safeTags = (Array.isArray(tTags) && tTags.length > 0) ? tTags : article.tags;
+        const currentLang = i18n.language.split('-')[0];
 
-            if (Array.isArray(safeTags)) {
-                safeTags.forEach(tag => tagsSet.add(tag));
+        const translatedNames = allTags.map(tag => {
+            if (tag.translations && tag.translations[currentLang] && tag.translations[currentLang].name) {
+                return tag.translations[currentLang].name;
             }
-        });
-        return Array.from(tagsSet).sort();
-    }, [articles, i18n.language]);
+            if (currentLang !== 'es') {
+                return null;
+            }
+            return tag.name;
+        }).filter(Boolean);
+
+        return Array.from(new Set(translatedNames)).sort();
+    }, [allTags, i18n.language]);
 
     // Filtered suggestions for autocomplete
-    const filteredSuggestions = query === ''
+    const filteredSuggestions = filters.query === ''
         ? []
         : articles.filter((article) => {
-            const title = getTranslated(article, 'title', i18n.language).toLowerCase();
-            return title.includes(query.toLowerCase());
+            const title = (getTranslated(article, 'title', i18n.language) || '').toLowerCase();
+            return title.includes(filters.query.toLowerCase());
         }).slice(0, 5);
 
     const categories = [
@@ -115,10 +104,10 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
     ];
 
     const toggleTag = (tag: string) => {
-        if (selectedTags.includes(tag)) {
-            setSelectedTags(selectedTags.filter(t => t !== tag));
+        if (filters.tags.includes(tag)) {
+            onFilterChange({ ...filters, tags: filters.tags.filter(t => t !== tag) });
         } else {
-            setSelectedTags([...selectedTags, tag]);
+            onFilterChange({ ...filters, tags: [...filters.tags, tag] });
         }
     };
 
@@ -131,49 +120,73 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
 
                     {/* Search Input */}
                     <div className="w-full md:flex-grow relative z-30">
-                        <Combobox value={query} onChange={setQuery}>
-                            <div className="relative">
-                                <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-bark/40" />
-                                <Combobox.Input
-                                    className="w-full pl-12 pr-10 py-4 bg-white border border-bark/10 rounded-2xl text-bark focus:ring-2 focus:ring-forest/20 focus:border-forest/30 transition-all outline-none shadow-sm text-lg placeholder:text-bark/30"
-                                    displayValue={(article: any) => query}
-                                    onChange={(event) => setQuery(event.target.value)}
-                                    placeholder={t('blog.search.placeholder', 'Buscar artículos...')}
-                                />
-                                {query && (
-                                    <button
-                                        onClick={() => setQuery('')}
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-bark/30 hover:text-bark/60 transition-colors"
+                        <div className="relative">
+                            <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-bark/40" />
+                            <input
+                                type="text"
+                                value={filters.query}
+                                onChange={(e) => {
+                                    onFilterChange({ ...filters, query: e.target.value });
+                                    setShowSuggestions(true);
+                                }}
+                                onFocus={() => setShowSuggestions(true)}
+                                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        setShowSuggestions(false);
+                                    }
+                                }}
+                                className="w-full pl-12 pr-10 py-4 bg-white border border-bark/10 rounded-2xl text-bark focus:ring-2 focus:ring-forest/20 focus:border-forest/30 transition-all outline-none shadow-sm text-lg placeholder:text-bark/30"
+                                placeholder={t('blog.search.placeholder', 'Buscar artículos...')}
+                                autoComplete="off"
+                            />
+                            {filters.query && (
+                                <button
+                                    onClick={() => {
+                                        onFilterChange({ ...filters, query: '' });
+                                        setShowSuggestions(false);
+                                    }}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-bark/30 hover:text-bark/60 transition-colors"
+                                >
+                                    <XMarkIcon className="w-5 h-5" />
+                                </button>
+                            )}
+
+                            <AnimatePresence>
+                                {showSuggestions && (filters.query !== '' || filteredSuggestions.length > 0) && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="absolute mt-2 w-full max-h-60 overflow-auto rounded-xl bg-white p-2 text-base shadow-xl ring-1 ring-black/5 focus:outline-none sm:text-sm z-50"
                                     >
-                                        <XMarkIcon className="w-5 h-5" />
-                                    </button>
+                                        {filteredSuggestions.length === 0 ? (
+                                            <div className="relative cursor-default select-none py-3 px-4 text-center text-bark/40 italic">
+                                                {t('blog.search.no_results', 'No se encontraron resultados.')}
+                                            </div>
+                                        ) : (
+                                            filteredSuggestions.map((article) => {
+                                                const displayTitle = getTranslated(article, 'title', i18n.language);
+                                                return (
+                                                    <div
+                                                        key={article.id}
+                                                        className="relative cursor-pointer select-none py-3 pl-4 pr-4 rounded-lg transition-colors hover:bg-forest/5 hover:text-forest text-bark/80"
+                                                        onClick={() => {
+                                                            onFilterChange({ ...filters, query: displayTitle });
+                                                            setShowSuggestions(false);
+                                                        }}
+                                                    >
+                                                        <span className="block truncate font-normal">
+                                                            {displayTitle}
+                                                        </span>
+                                                    </div>
+                                                );
+                                            })
+                                        )}
+                                    </motion.div>
                                 )}
-                            </div>
-                            <Transition as={Fragment} leave="transition ease-in duration-100" leaveTo="opacity-0" afterLeave={() => setQuery(query)}>
-                                <Combobox.Options className="absolute mt-2 w-full max-h-60 overflow-auto rounded-xl bg-white p-2 text-base shadow-xl ring-1 ring-black/5 focus:outline-none sm:text-sm z-50">
-                                    {filteredSuggestions.length === 0 && query !== '' ? (
-                                        <div className="relative cursor-default select-none py-3 px-4 text-center text-bark/40 italic">
-                                            {t('blog.search.no_results', 'No se encontraron resultados.')}
-                                        </div>
-                                    ) : (
-                                        filteredSuggestions.map((article) => (
-                                            <Combobox.Option
-                                                key={article.id}
-                                                className={({ active }) => `relative cursor-pointer select-none py-3 pl-4 pr-4 rounded-lg transition-colors ${active ? 'bg-forest/5 text-forest' : 'text-bark/80'}`}
-                                                value={getTranslated(article, 'title', i18n.language)}
-                                                onClick={() => setQuery(getTranslated(article, 'title', i18n.language))}
-                                            >
-                                                {({ selected }) => (
-                                                    <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
-                                                        {getTranslated(article, 'title', i18n.language)}
-                                                    </span>
-                                                )}
-                                            </Combobox.Option>
-                                        ))
-                                    )}
-                                </Combobox.Options>
-                            </Transition>
-                        </Combobox>
+                            </AnimatePresence>
+                        </div>
                     </div>
 
                     {/* Category Tabs */}
@@ -181,8 +194,8 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
                         {categories.map((cat) => (
                             <button
                                 key={cat.id}
-                                onClick={() => setSelectedCategory(cat.id)}
-                                className={`flex-1 md:flex-none px-6 py-2.5 rounded-lg text-sm font-headers uppercase tracking-wider transition-all duration-300 ${selectedCategory === cat.id
+                                onClick={() => onFilterChange({ ...filters, category: cat.id })}
+                                className={`flex-1 md:flex-none px-6 py-2.5 rounded-lg text-sm font-headers uppercase tracking-wider transition-all duration-300 ${filters.category === cat.id
                                     ? 'bg-white text-forest shadow-sm ring-1 ring-black/5'
                                     : 'text-bark/50 hover:text-bark/80 hover:bg-white/50'
                                     }`}
@@ -205,11 +218,11 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
                             <label className="block text-xs font-headers uppercase tracking-wider text-bark/40 mb-3 ml-1">
                                 {t('blog.search.year', 'Año')}
                             </label>
-                            <Listbox value={selectedYear} onChange={setSelectedYear}>
+                            <Listbox value={filters.year} onChange={(val) => onFilterChange({ ...filters, year: val })}>
                                 <div className="relative">
                                     <Listbox.Button className="relative w-full cursor-pointer rounded-xl bg-white border border-bark/10 py-3 pl-4 pr-10 text-left hover:border-forest/30 transition-colors focus:outline-none focus:ring-2 focus:ring-forest/20">
                                         <span className="block truncate text-bark/70">
-                                            {selectedYear === 'all' ? t('blog.search.all_years', 'Todos') : selectedYear}
+                                            {filters.year === 'all' ? t('blog.search.all_years', 'Todos') : filters.year}
                                         </span>
                                         <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                                             <CalendarIcon className="h-5 w-5 text-bark/30" />
@@ -240,16 +253,16 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
                         </div>
 
                         {/* Month Filter (Conditioned on Year selected) */}
-                        {selectedYear !== 'all' && (
+                        {filters.year !== 'all' && (
                             <div className="w-32 md:w-40 animate-in fade-in slide-in-from-left-4 duration-300">
                                 <label className="block text-xs font-headers uppercase tracking-wider text-bark/40 mb-3 ml-1">
                                     {t('blog.search.month', 'Mes')}
                                 </label>
-                                <Listbox value={selectedMonth} onChange={setSelectedMonth}>
+                                <Listbox value={filters.month} onChange={(val) => onFilterChange({ ...filters, month: val })}>
                                     <div className="relative">
                                         <Listbox.Button className="relative w-full cursor-pointer rounded-xl bg-white border border-bark/10 py-3 pl-4 pr-10 text-left hover:border-forest/30 transition-colors focus:outline-none focus:ring-2 focus:ring-forest/20">
                                             <span className="block truncate text-bark/70">
-                                                {formatMonthLabel(selectedMonth)}
+                                                {formatMonthLabel(filters.month)}
                                             </span>
                                             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                                                 <CalendarIcon className="h-5 w-5 text-bark/30" />
@@ -303,12 +316,11 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
                             {t('blog.search.tags_filter', 'Filtrar por etiquetas')}
                         </label>
                         <div className="flex flex-wrap gap-2">
-                            {/* ... same as before ... */}
                             {availableTags.length === 0 ? (
                                 <span className="text-sm text-bark/30 italic px-2">{t('blog.no_tags', 'No hay etiquetas disponibles')}</span>
                             ) : (
                                 availableTags.map((tag) => {
-                                    const isActive = selectedTags.includes(tag);
+                                    const isActive = filters.tags.includes(tag);
                                     return (
                                         <button
                                             key={tag}
@@ -323,9 +335,9 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
                                     );
                                 })
                             )}
-                            {selectedTags.length > 0 && (
+                            {filters.tags.length > 0 && (
                                 <button
-                                    onClick={() => setSelectedTags([])}
+                                    onClick={() => onFilterChange({ ...filters, tags: [] })}
                                     className="px-3 py-1.5 rounded-full text-xs font-medium text-bark/40 hover:text-red-500 transition-colors ml-2"
                                 >
                                     {t('blog.clear_tags', 'Limpiar')}

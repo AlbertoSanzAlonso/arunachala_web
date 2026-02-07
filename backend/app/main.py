@@ -1,13 +1,15 @@
 from dotenv import load_dotenv
 load_dotenv()
 
+
+# Trigger reload
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.database import engine, Base
 from app.models import models
 import os
 
-from app.api import reviews, auth, gallery, schedules, yoga_classes, treatments, content, activities, upload, dashboard, rag, legacy
+from app.api import reviews, auth, gallery, schedules, yoga_classes, treatments, content, activities, upload, dashboard, rag, legacy, tags
 from app.routers import chat
 from fastapi.staticfiles import StaticFiles
 
@@ -53,7 +55,7 @@ app.include_router(legacy.router) # handle /api/article alias
 app.include_router(chat.router, prefix="/api", tags=["chat"])
 app.include_router(rag.router)  # RAG sync endpoints
 
-
+app.include_router(tags.router, prefix="/api/tags", tags=["tags"])
 # Mount Static Files (for uploaded images)
 import os
 static_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static")

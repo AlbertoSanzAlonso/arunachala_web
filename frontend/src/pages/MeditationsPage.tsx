@@ -5,11 +5,12 @@ import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
 import { API_BASE_URL } from '../config';
 import { Helmet } from 'react-helmet-async';
-import { PlayCircleIcon, PauseCircleIcon, SpeakerWaveIcon, SpeakerXMarkIcon, XMarkIcon, PlayIcon, PauseIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { PlayCircleIcon, PauseCircleIcon, SpeakerWaveIcon, SpeakerXMarkIcon, XMarkIcon, PlayIcon, PauseIcon, MagnifyingGlassIcon, StopIcon } from '@heroicons/react/24/solid';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import MeditationSearch from '../components/MeditationSearch';
+import MeditationSearch, { FilterState } from '../components/MeditationSearch';
+import { getTranslated } from '../utils/translate';
 
 interface Meditation {
     id: number;
@@ -17,6 +18,8 @@ interface Meditation {
     excerpt?: string;
     media_url?: string;
     thumbnail_url?: string;
+    created_at: string;
+    tags?: string[] | string;
     translations?: {
         [key: string]: {
             title?: string;
@@ -36,20 +39,64 @@ const MeditationsPage: React.FC = () => {
     const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
 
     // Search and Pagination State
-    const [searchTerm, setSearchTerm] = useState('');
+    const [filters, setFilters] = useState<FilterState>({
+        query: '',
+        year: 'all',
+        month: 'all',
+        tags: []
+    });
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 9;
 
     // Filtered meditations
-    const filteredMeditations = meditations.filter((meditation) => {
-        const currentLang = i18n.language.split('-')[0];
-        const translation = meditation.translations?.[currentLang];
-        const displayTitle = (translation?.title || meditation.title).toLowerCase();
-        const displayExcerpt = (translation?.excerpt || meditation.excerpt || '').toLowerCase();
-        const search = searchTerm.toLowerCase();
+    const filteredMeditations = React.useMemo(() => {
+        return meditations.filter((meditation) => {
+            const currentLang = i18n.language.split('-')[0];
+            const translation = meditation.translations?.[currentLang];
+            const displayTitle = (translation?.title || meditation.title).toLowerCase();
+            const displayExcerpt = (translation?.excerpt || meditation.excerpt || '').toLowerCase();
+            const q = filters.query.toLowerCase();
 
-        return displayTitle.includes(search) || displayExcerpt.includes(search);
-    });
+            // Query Filter
+            if (q && !displayTitle.includes(q) && !displayExcerpt.includes(q)) {
+                return false;
+            }
+
+            // Year Filter
+            if (filters.year !== 'all') {
+                const year = new Date(meditation.created_at).getFullYear().toString();
+                if (year !== filters.year) return false;
+            }
+
+            // Month Filter
+            if (filters.month !== 'all') {
+                const month = new Date(meditation.created_at).getMonth().toString();
+                if (month !== filters.month) return false;
+            }
+
+            // Tags Filter
+            if (filters.tags.length > 0) {
+                let tTags = getTranslated(meditation, 'tags', i18n.language);
+                if (typeof tTags === 'string') {
+                    try { tTags = JSON.parse(tTags); } catch (e) { }
+                }
+
+                let safeTags: string[] = [];
+                if (Array.isArray(tTags) && tTags.length > 0) safeTags = tTags;
+                else if (Array.isArray(meditation.tags)) safeTags = meditation.tags;
+                else if (typeof meditation.tags === 'string') {
+                    try { safeTags = JSON.parse(meditation.tags); } catch { }
+                }
+
+                if (!safeTags || safeTags.length === 0) return false;
+
+                // Check if ALL selected tags are present
+                return filters.tags.every(tag => safeTags.includes(tag));
+            }
+
+            return true;
+        });
+    }, [meditations, filters, i18n.language]);
 
     // Pagination Logic
     const totalPages = Math.ceil(filteredMeditations.length / itemsPerPage);
@@ -58,10 +105,10 @@ const MeditationsPage: React.FC = () => {
         currentPage * itemsPerPage
     );
 
-    // Reset page when search term changes
+    // Reset page when filters change
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchTerm]);
+    }, [filters]);
 
     // Scroll to top on page change
     useEffect(() => {
@@ -160,7 +207,7 @@ const MeditationsPage: React.FC = () => {
             setAudio(newAudio);
             setPlayingId(meditation.id);
             setSelectedMeditation(meditation);
-            setIsPlayerModalOpen(true);
+            // setIsPlayerModalOpen(true); // Disable modal
         }
     };
 
@@ -180,12 +227,16 @@ const MeditationsPage: React.FC = () => {
         // But user asked for a modal "reproductor", so let's allow closing the view without stopping.
     };
 
-    const stopAudio = () => {
+    const stopAudio = (e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
         if (audio) {
             audio.pause();
+            audio.currentTime = 0; // Reset to start
             setAudio(null);
             setPlayingId(null);
             setIsPlayerModalOpen(false);
+            setProgress(0);
+            setIsPlaying(false);
         }
     };
 
@@ -235,13 +286,13 @@ const MeditationsPage: React.FC = () => {
                     </motion.p>
 
                     {/* Search Bar Component */}
-                    <MeditationSearch meditations={meditations} onSearchChange={setSearchTerm} />
+                    <MeditationSearch meditations={meditations} onFilterChange={setFilters} filters={filters} />
 
                     {isLoading ? (
                         <div className="text-center py-20">{t('meditations.loading')}</div>
                     ) : filteredMeditations.length === 0 ? (
                         <div className="text-center py-20 text-gray-500 italic">
-                            {searchTerm ? t('meditations.error_search') : t('meditations.empty')}
+                            {filters.query || filters.year !== 'all' || filters.tags.length > 0 ? t('meditations.error_search') : t('meditations.empty')}
                         </div>
                     ) : (
                         <>
@@ -274,16 +325,37 @@ const MeditationsPage: React.FC = () => {
                                                         <div className="absolute inset-0 bg-gradient-to-br from-forest/30 to-matcha/30" />
                                                     )}
 
-                                                    <button
-                                                        onClick={() => meditation.media_url && handlePlay(meditation)}
-                                                        className="absolute bg-white/90 rounded-full p-3 shadow-lg hover:scale-110 transition-transform duration-200 z-10"
-                                                    >
-                                                        {playingId === meditation.id && isPlaying ? (
-                                                            <PauseIcon className="w-12 h-12 text-forest" />
+                                                    <div className="absolute flex gap-4 z-10">
+                                                        {playingId === meditation.id ? (
+                                                            <>
+                                                                <button
+                                                                    onClick={(e) => { e.stopPropagation(); if (meditation.media_url) handlePlay(meditation); }}
+                                                                    className="bg-white/90 rounded-full p-3 shadow-lg hover:scale-110 transition-transform duration-200"
+                                                                    title={isPlaying ? "Pausar" : "Reanudar"}
+                                                                >
+                                                                    {isPlaying ? (
+                                                                        <PauseIcon className="w-12 h-12 text-forest" />
+                                                                    ) : (
+                                                                        <PlayIcon className="w-12 h-12 text-forest pl-1" />
+                                                                    )}
+                                                                </button>
+                                                                <button
+                                                                    onClick={stopAudio}
+                                                                    className="bg-white/90 rounded-full p-3 shadow-lg hover:scale-110 transition-transform duration-200"
+                                                                    title="Detener y Reiniciar"
+                                                                >
+                                                                    <StopIcon className="w-12 h-12 text-red-500" />
+                                                                </button>
+                                                            </>
                                                         ) : (
-                                                            <PlayIcon className="w-12 h-12 text-forest pl-1" />
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); if (meditation.media_url) handlePlay(meditation); }}
+                                                                className="bg-white/90 rounded-full p-3 shadow-lg hover:scale-110 transition-transform duration-200"
+                                                            >
+                                                                <PlayIcon className="w-12 h-12 text-forest pl-1" />
+                                                            </button>
                                                         )}
-                                                    </button>
+                                                    </div>
 
                                                     {/* Sound Wave Animation */}
                                                     {playingId === meditation.id && isPlaying && (
@@ -309,6 +381,51 @@ const MeditationsPage: React.FC = () => {
                                                 <div className="p-6">
                                                     <h3 className="text-2xl font-headers text-forest mb-2">{displayTitle}</h3>
                                                     <p className="text-bark/80 line-clamp-3 mb-4">{displayExcerpt}</p>
+
+                                                    {(() => {
+                                                        let tTags = getTranslated(meditation, 'tags', i18n.language);
+                                                        if (typeof tTags === 'string') {
+                                                            try { tTags = JSON.parse(tTags); } catch (e) { }
+                                                        }
+                                                        let safeTags: string[] = [];
+                                                        if (Array.isArray(tTags) && tTags.length > 0) safeTags = tTags;
+                                                        else if (Array.isArray(meditation.tags)) safeTags = meditation.tags;
+                                                        else if (typeof meditation.tags === 'string') {
+                                                            try { safeTags = JSON.parse(meditation.tags); } catch { }
+                                                        }
+
+                                                        if (safeTags && safeTags.length > 0) {
+                                                            return (
+                                                                <div className="flex flex-wrap gap-2 mb-4">
+                                                                    {safeTags.map(tag => {
+                                                                        const isActive = filters.tags.includes(tag);
+                                                                        return (
+                                                                            <span
+                                                                                key={tag}
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    setFilters(prev => ({
+                                                                                        ...prev,
+                                                                                        tags: isActive
+                                                                                            ? prev.tags.filter(t => t !== tag)
+                                                                                            : [...prev.tags, tag]
+                                                                                    }));
+                                                                                    // window.scrollTo({ top: 0, behavior: 'smooth' }); // Optional: scroll up
+                                                                                }}
+                                                                                className={`px-2 py-1 text-xs rounded-md cursor-pointer transition-colors ${isActive
+                                                                                    ? "bg-forest text-white hover:bg-forest/90"
+                                                                                    : "bg-forest/5 text-forest hover:bg-forest/10"
+                                                                                    }`}
+                                                                            >
+                                                                                #{tag}
+                                                                            </span>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            );
+                                                        }
+                                                        return null;
+                                                    })()}
 
                                                     {playingId === meditation.id && (
                                                         <button

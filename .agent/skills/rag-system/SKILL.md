@@ -19,7 +19,7 @@ This skill documents the Arunachala Bot, an AI-powered customer support chatbot.
 
 The system keeps knowledge up-to-date automatically using webhooks and n8n.
 
-1.  **Trigger**: Every time a Yoga Class, Massage, Therapy or **Activity** is Created/Updated/Deleted in the Dashboard.
+1.  **Trigger**: Every time a Yoga Class, Massage, Therapy, **Activity**, **Article**, or **Meditation** is Created/Updated/Deleted in the Dashboard.
 2.  **Webhook**: `backend/app/core/webhooks.py` notifies n8n.
 3.  **n8n Workflow**:
     -   Receives `id` and `type`.

@@ -91,16 +91,17 @@ const AgentControl: React.FC = () => {
 
             if (response.ok) {
                 await response.json();
-                const friendlyType = {
+                const friendlyType: Record<string, string> = {
                     'all': 'todo el contenido',
                     'yoga': 'las clases de yoga',
                     'massage': 'los masajes',
                     'therapy': 'las terapias',
-                    'content': 'los artículos del blog',
+                    'article': 'los artículos del blog',
+                    'meditation': 'las meditaciones guiadas',
                     'activity': 'las actividades'
-                }[type] || 'el contenido';
+                };
 
-                setMessage(`¡Hecho! Se está actualizando la memoria con ${friendlyType}. El progreso aparecerá abajo.`);
+                setMessage(`¡Hecho! Se está actualizando la memoria con ${friendlyType[type] || 'el contenido'}. El progreso aparecerá abajo.`);
                 setLastSyncTime(Date.now());
                 // Refresh immediately
                 fetchRagStatus();
@@ -213,7 +214,8 @@ const AgentControl: React.FC = () => {
                     'yoga_class': 'Hecho. La IA ya no recuerda nada sobre las clases de yoga.',
                     'massage': 'Se ha limpiado el conocimiento sobre los masajes.',
                     'therapy': 'La IA ha olvidado todo lo relacionado con las terapias.',
-                    'content': 'He borrado los artículos del blog de la memoria de la IA.',
+                    'article': 'He borrado los artículos del blog de la memoria de la IA.',
+                    'meditation': 'Se han eliminado las meditaciones del conocimiento de la IA.',
                     'activity': 'Se han eliminado las actividades del conocimiento de la IA.'
                 };
 
@@ -246,7 +248,8 @@ const AgentControl: React.FC = () => {
                             'yoga_class': 'yoga_classes',
                             'massage': 'massage_types',
                             'therapy': 'therapy_types',
-                            'content': 'contents',
+                            'article': 'articles',
+                            'meditation': 'meditations',
                             'activity': 'activities'
                         };
                         const targetKey = tableMap[resetScope];
@@ -501,14 +504,15 @@ const AgentControl: React.FC = () => {
                 {ragStatus ? (
                     <div className="space-y-6">
                         {/* Summary Grid */}
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                             {[
                                 { id: 'yoga', label: 'Yoga', data: ragStatus.yoga_classes, color: 'matcha' },
                                 { id: 'massage', label: 'Masajes', data: ragStatus.massage_types, color: 'matcha' },
                                 { id: 'therapy', label: 'Terapias', data: ragStatus.therapy_types, color: 'matcha' },
-                                { id: 'content', label: 'Blog', data: ragStatus.contents, color: 'matcha' },
+                                { id: 'article', label: 'Blog', data: ragStatus.articles, color: 'matcha' },
+                                { id: 'meditation', label: 'Meditaciones', data: ragStatus.meditations, color: 'matcha' },
                                 { id: 'activity', label: 'Actividades', data: ragStatus.activities, color: 'matcha' },
-                            ].map((item) => (
+                            ].map((item) => item.data && (
                                 <div key={item.id} className="p-4 rounded-xl bg-gray-50 border border-gray-100">
                                     <span className="block text-xs font-bold text-gray-400 uppercase mb-1">{item.label}</span>
                                     <div className="flex items-end justify-between">
@@ -575,13 +579,14 @@ const AgentControl: React.FC = () => {
                             <>
                                 <h2 className="text-2xl font-headers text-red-600 mb-4">Reiniciar Memoria de IA</h2>
                                 <p className="text-gray-600 mb-6">Esta acción eliminará segmentos del conocimiento de la IA. ¿Qué parte quieres borrar?</p>
-                                <div className="grid grid-cols-2 gap-3 mb-8">
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
                                     {[
                                         { id: 'all', label: 'TODO (Reset Total)', color: 'bg-red-600' },
                                         { id: 'yoga_class', label: 'Clases de Yoga', color: 'bg-forest' },
                                         { id: 'massage', label: 'Masajes', color: 'bg-matcha' },
                                         { id: 'therapy', label: 'Terapias', color: 'bg-matcha' },
-                                        { id: 'content', label: 'Blog/Artículos', color: 'bg-bark' },
+                                        { id: 'article', label: 'Blog/Artículos', color: 'bg-bark' },
+                                        { id: 'meditation', label: 'Meditaciones', color: 'bg-matcha' },
                                         { id: 'activity', label: 'Actividades', color: 'bg-blue-600' },
                                     ].map(cat => (
                                         <button

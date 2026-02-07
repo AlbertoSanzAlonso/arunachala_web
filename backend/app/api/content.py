@@ -4,7 +4,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 from app.core.database import get_db
-from app.models.models import Content, User
+from app.models.models import Content, User, Tag
 from app.api.auth import get_current_user
 from app.core.webhooks import notify_n8n_content_change
 from app.core.translation_utils import auto_translate_background
@@ -43,6 +43,78 @@ def generate_slug(title: str, db: Session, content_id: Optional[int] = None) -> 
         counter += 1
     
     return slug
+
+def process_tags(tags: Optional[List[str]]) -> Optional[List[str]]:
+    """Capitalize first letter of each tag"""
+    if not tags:
+        return None
+    return [tag.capitalize() for tag in tags if tag]
+
+def sync_content_tags(db: Session, content: Content, tags_list: Optional[List[str]], background_tasks: Optional[BackgroundTasks] = None):
+    """
+    Syncs the tags list with the Tag table and updates the content relationship.
+    Handles 'Find or Create' logic for each tag.
+    """
+    if not tags_list:
+        content.tag_entities = []
+        return
+
+    tag_objects = []
+    
+    # Determine tag category based on content
+    tag_category = 'general'
+    if content.type == 'meditation':
+        tag_category = 'meditation'
+    elif content.type == 'article':
+        # Use content category (yoga, therapy, general)
+        tag_category = content.category or 'general'
+        
+    print(f"🏷️ Syncing tags for category: {tag_category}")
+
+    for tag_name in tags_list:
+        normalized_name = tag_name.strip()
+        if not normalized_name:
+            continue
+            
+        # Check if tag exists (case-sensitive + category)
+        tag = db.query(Tag).filter(Tag.name == normalized_name, Tag.category == tag_category).first()
+        if not tag:
+            print(f"🆕 Creating new tag: {normalized_name} [{tag_category}]")
+            tag = Tag(name=normalized_name, category=tag_category)
+            db.add(tag)
+            db.flush() # Generate ID for new tag
+            
+            # Trigger background translation for the new tag
+            if background_tasks:
+                background_tasks.add_task(auto_translate_background, SessionLocal, Tag, tag.id, {"name": tag.name})
+            
+        tag_objects.append(tag)
+    
+    print(f"🔗 Linking {len(tag_objects)} tags to content")
+    content.tag_entities = tag_objects
+
+def cleanup_orphan_tags(db: Session):
+    """
+    Removes any tag that is not linked to any content.
+    Enforces 'only tags in use exist' policy.
+    """
+    from app.models.models import content_tags # Ensure it's available
+    
+    # Direct query on association table is more reliable than .any()
+    # Find tag IDs that are present in the association table
+    in_use_tag_ids = db.query(content_tags.c.tag_id).distinct()
+    
+    # Filter tags NOT in that list
+    orphans = db.query(Tag).filter(~Tag.id.in_(in_use_tag_ids)).all()
+    
+    if orphans:
+        print(f"🧹 FOUND ORPHANS: {[t.name for t in orphans]}")
+        print(f"🧹 Clearing {len(orphans)} orphan tags...")
+        for tag in orphans:
+            db.delete(tag)
+        db.commit()
+    else:
+        print("✅ No orphan tags found.")
 
 class ContentBase(BaseModel):
     title: str
@@ -264,6 +336,11 @@ async def create_content(
     
     print(f"🚀 CREATE PROCESS: Slug='{slug}', Thumb='{content_data.thumbnail_url}'")
 
+    # Process tags (capitalize)
+    print(f"📝 Raw tags received: {content_data.tags}")
+    processed_tags = process_tags(content_data.tags)
+    print(f"✨ Processed tags: {processed_tags}")
+    
     # Handle image download if it's a remote URL
     if content_data.thumbnail_url and content_data.thumbnail_url.startswith(('http://', 'https://')):
         print(f"🖼️ Found remote URL, downloading...")
@@ -274,18 +351,26 @@ async def create_content(
         else:
             print(f"⚠️ Image download FAILED. Keeping original URL.")
     
-    # Convert tags list to JSON if provided
-    tags_json = content_data.tags if content_data.tags else None
-    
+    # Force category to None for meditations
+    content_dict = content_data.model_dump(exclude={'tags'})
+    if content_data.type == 'meditation':
+        content_dict['category'] = None
+
     db_content = Content(
-        **content_data.model_dump(exclude={'tags'}),
+        **content_dict,
         slug=slug,
-        tags=tags_json,
+        tags=processed_tags,
         author_id=current_user_id
     )
+    
+    # Sync with Tag table
+    sync_content_tags(db, db_content, processed_tags, background_tasks=background_tasks)
+    
     db.add(db_content)
     db.commit()
     db.refresh(db_content)
+    
+    cleanup_orphan_tags(db)
     
     # Notify n8n for RAG update if published
     if db_content.status == "published":
@@ -297,7 +382,8 @@ async def create_content(
         fields = {
             "title": content_data.title,
             "body": content_data.body,
-            "excerpt": content_data.excerpt
+            "excerpt": content_data.excerpt,
+            "tags": processed_tags
         }
         fields = {k: v for k, v in fields.items() if v}
         background_tasks.add_task(
@@ -341,29 +427,42 @@ async def update_content(
 
     
     # Update fields
-    for key, value in content_data.model_dump(exclude_unset=True, exclude={'tags'}).items():
+    content_dict = content_data.model_dump(exclude_unset=True, exclude={'tags'})
+    if db_content.type == 'meditation':
+        content_dict['category'] = None
+
+    for key, value in content_dict.items():
         setattr(db_content, key, value)
     
     # Update tags if provided
     if content_data.tags is not None:
-        db_content.tags = content_data.tags
+        processed_tags = process_tags(content_data.tags)
+        db_content.tags = processed_tags
+        # Sync with Tag table
+        sync_content_tags(db, db_content, processed_tags, background_tasks=background_tasks)
     
     db.commit()
     db.refresh(db_content)
+
+    cleanup_orphan_tags(db)
     
     # Notify n8n for RAG update if published
     if db_content.status == "published":
         print(f"Triggering RAG sync for updated content #{db_content.id}")
         await notify_n8n_content_change(db_content.id, db_content.type, "update", db=db)
     
-    # Re-translate if main fields changed and no new translations provided
-    if (content_data.title or content_data.body or content_data.excerpt) and not content_data.translations:
+    # Re-translate if main fields changed
+    # We remove the check for 'not content_data.translations' because the frontend sends back old translations
+    # but doesn't allow editing them, so we must auto-update translations if source content changes.
+    if (content_data.title or content_data.body or content_data.excerpt or content_data.tags is not None):
         fields = {
-            "title": db_content.title,
-            "body": db_content.body,
-            "excerpt": db_content.excerpt
+            "title": content_data.title or db_content.title,
+            "body": content_data.body or db_content.body,
+            "excerpt": content_data.excerpt or db_content.excerpt,
+            "tags": db_content.tags
         }
         fields = {k: v for k, v in fields.items() if v}
+        print(f"🔄 QUEUEING TRANSLATION for #{db_content.id} with fields: {list(fields.keys())}")
         background_tasks.add_task(
             auto_translate_background, 
             SessionLocal, 
@@ -404,6 +503,10 @@ async def delete_content(
     
     db.delete(db_content)
     db.commit()
+    
+    # Clean up tags that are no longer in use
+    cleanup_orphan_tags(db)
+
     return {"message": "Content deleted successfully"}
 
 

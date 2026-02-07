@@ -11,18 +11,13 @@ COLLECTION_NAME = "arunachala_knowledge_base"
 
 client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
 
-print(f"--- Stats for {COLLECTION_NAME} ---")
-info = client.get_collection(COLLECTION_NAME)
-print(f"Points count: {info.points_count}")
-
-print("\n--- Listing first 20 points ---")
+print(f"--- Checking ID types in {COLLECTION_NAME} ---")
 points, _ = client.scroll(
     collection_name=COLLECTION_NAME,
-    limit=20,
-    with_payload=True,
+    limit=10,
+    with_payload=False,
     with_vectors=False
 )
 
 for p in points:
-    payload = p.payload
-    print(f"ID: {p.id}, Type: {payload.get('type')}, Title: {payload.get('metadata', {}).get('name') or payload.get('title')}")
+    print(f"ID: {p.id}, Type: {type(p.id)}")

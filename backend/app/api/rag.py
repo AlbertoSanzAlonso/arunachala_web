@@ -37,9 +37,11 @@ class SyncStatusResponse(BaseModel):
     yoga_classes: Dict
     massage_types: Dict
     therapy_types: Dict
-    contents: Dict
+    articles: Dict
+    meditations: Dict
     activities: Dict
     total_needs_reindex: int
+    processing_count: int
 
 
 class SyncTriggerRequest(BaseModel):
@@ -140,19 +142,23 @@ async def get_sync_status(db: Session = Depends(get_db)):
     Useful for dashboard monitoring.
     """
     
-    def get_stats(Model):
-        total_query = db.query(Model)
+    def get_stats(Model, entity_type: Optional[str] = None):
+        query = db.query(Model)
         
         # Only count active items
         if hasattr(Model, 'is_active'):
-            total_query = total_query.filter(Model.is_active == True)
+            query = query.filter(Model.is_active == True)
         elif hasattr(Model, 'status'):
-            total_query = total_query.filter(Model.status == 'published')
+            query = query.filter(Model.status == 'published')
+            
+        # Add type filter if relevant (e.g. for Content)
+        if entity_type and hasattr(Model, 'type'):
+            query = query.filter(Model.type == entity_type)
         
-        total = total_query.count()
+        total = query.count()
         
-        needs_reindex = total_query.filter(Model.needs_reindex == True).count()
-        vectorized = total_query.filter(Model.vector_id != None).count()
+        needs_reindex = query.filter(Model.needs_reindex == True).count()
+        vectorized = query.filter(Model.vector_id != None).count()
         
         return {
             "total": total,
@@ -164,7 +170,8 @@ async def get_sync_status(db: Session = Depends(get_db)):
     yoga_stats = get_stats(YogaClassDefinition)
     massage_stats = get_stats(MassageType)
     therapy_stats = get_stats(TherapyType)
-    content_stats = get_stats(Content)
+    article_stats = get_stats(Content, 'article')
+    meditation_stats = get_stats(Content, 'meditation')
     activity_stats = get_stats(Activity)
     
     # Count active sync operations (pending or processing logs in the last 5 mins)
@@ -178,7 +185,8 @@ async def get_sync_status(db: Session = Depends(get_db)):
         yoga_stats['needs_reindex'] +
         massage_stats['needs_reindex'] +
         therapy_stats['needs_reindex'] +
-        content_stats['needs_reindex'] +
+        article_stats['needs_reindex'] +
+        meditation_stats['needs_reindex'] +
         activity_stats['needs_reindex']
     )
 
@@ -186,7 +194,8 @@ async def get_sync_status(db: Session = Depends(get_db)):
         "yoga_classes": yoga_stats,
         "massage_types": massage_stats,
         "therapy_types": therapy_stats,
-        "contents": content_stats,
+        "articles": article_stats,
+        "meditations": meditation_stats,
         "activities": activity_stats,
         "total_needs_reindex": total_needs_reindex,
         "processing_count": active_syncs
@@ -245,11 +254,12 @@ async def trigger_rag_sync(
     """
     
     model_map = {
-        'yoga': (YogaClassDefinition, 'yoga_class'),
-        'massage': (MassageType, 'massage'),
-        'therapy': (TherapyType, 'therapy'),
-        'content': (Content, 'content'),
-        'activity': (Activity, 'activity'),
+        'yoga': (YogaClassDefinition, 'yoga_class', None),
+        'massage': (MassageType, 'massage', None),
+        'therapy': (TherapyType, 'therapy', None),
+        'article': (Content, 'article', 'article'),
+        'meditation': (Content, 'meditation', 'meditation'),
+        'activity': (Activity, 'activity', None),
     }
     
     types_to_sync = []
@@ -266,7 +276,7 @@ async def trigger_rag_sync(
     sync_total = 0
     
     for s_type in types_to_sync:
-        Model, webhook_type = model_map[s_type]
+        Model, webhook_type, entity_filter = model_map[s_type]
         
         query = db.query(Model)
         
@@ -278,6 +288,10 @@ async def trigger_rag_sync(
             query = query.filter(Model.is_active == True)
         elif hasattr(Model, 'status'):
             query = query.filter(Model.status == 'published')
+            
+        # Add type filter if relevant
+        if entity_filter and hasattr(Model, 'type'):
+            query = query.filter(Model.type == entity_filter)
             
         entities = query.all()
         
@@ -312,7 +326,8 @@ async def trigger_single_item_sync(
         'yoga': (YogaClassDefinition, 'yoga_class'),
         'massage': (MassageType, 'massage'),
         'therapy': (TherapyType, 'therapy'),
-        'content': (Content, 'content'),
+        'article': (Content, 'article'),
+        'meditation': (Content, 'meditation'),
         'activity': (Activity, 'activity'),
     }
     
@@ -365,11 +380,12 @@ async def chat_memory_reset(
         )
 
     model_map = {
-        'yoga_class': (YogaClassDefinition, 'yoga_class'),
-        'massage': (MassageType, 'massage'),
-        'therapy': (TherapyType, 'therapy'),
-        'content': (Content, 'content'),
-        'activity': (Activity, 'activity'),
+        'yoga_class': (YogaClassDefinition, 'yoga_class', None),
+        'massage': (MassageType, 'massage', None),
+        'therapy': (TherapyType, 'therapy', None),
+        'article': (Content, 'article', 'article'),
+        'meditation': (Content, 'meditation', 'meditation'),
+        'activity': (Activity, 'activity', None),
     }
 
     scopes_to_reset = []
@@ -385,10 +401,14 @@ async def chat_memory_reset(
 
     total_reset = 0
     for s_scope in scopes_to_reset:
-        Model, webhook_type = model_map[s_scope]
+        Model, webhook_type, entity_filter = model_map[s_scope]
         
-        # Get all entities that have been vectorized
-        entities = db.query(Model).all()
+        # Get all entities
+        query = db.query(Model)
+        if entity_filter and hasattr(Model, 'type'):
+            query = query.filter(Model.type == entity_filter)
+            
+        entities = query.all()
         
         for entity in entities:
             # Notify n8n to DELETE from vector store if it has a vector_id
