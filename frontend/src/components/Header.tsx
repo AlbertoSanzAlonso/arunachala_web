@@ -1,6 +1,6 @@
 import React from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import logo from '../assets/images/logo_icon.webp';
+import logo from '../assets/images/logo_transparent_v2.webp';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -30,7 +30,7 @@ const Header: React.FC = () => {
                     <img
                         src={logo}
                         alt="Arunachala"
-                        className="h-16 w-16 md:h-20 md:w-20 rounded-full object-cover border-2 border-[#F5F5DC] transition-transform duration-300 hover:scale-105"
+                        className="h-16 w-16 md:h-20 md:w-20 rounded-full object-contain border border-[#F5F5DC] bg-[#F5F5DC] transition-transform duration-300 hover:scale-105"
                     />
                 </div>
 
