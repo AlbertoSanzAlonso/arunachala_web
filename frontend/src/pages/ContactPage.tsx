@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
@@ -7,7 +7,8 @@ import {
     EnvelopeIcon,
     MapPinIcon,
     ClockIcon,
-    PaperAirplaneIcon
+    ChatBubbleLeftRightIcon,
+    ArrowTopRightOnSquareIcon
 } from '@heroicons/react/24/outline';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -15,32 +16,6 @@ import BackButton from '../components/BackButton';
 
 const ContactPage: React.FC = () => {
     const { t } = useTranslation();
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
-    });
-    const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setStatus('sending');
-
-        // Simulating form submission
-        setTimeout(() => {
-            setStatus('success');
-            setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-        }, 1500);
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
 
     return (
         <div className="font-body text-bark min-h-screen flex flex-col relative bg-bone">
@@ -140,117 +115,37 @@ const ContactPage: React.FC = () => {
                         </motion.div>
 
                         {/* Contact Form */}
+                        {/* WhatsApp CTA */}
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.3 }}
-                            className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-xl border border-bone"
+                            className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 md:p-12 rounded-[2.5rem] shadow-xl border border-green-100 flex flex-col justify-center items-center text-center space-y-8 h-full"
                         >
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-headers text-forest uppercase tracking-widest ml-1">{t('contact_page.form.name')}</label>
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            required
-                                            value={formData.name}
-                                            onChange={handleChange}
-                                            className="w-full bg-bone px-6 py-4 rounded-2xl border-2 border-transparent focus:border-matcha outline-none transition-all duration-300"
-                                            placeholder={t('contact_page.form.placeholders.name')}
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-headers text-forest uppercase tracking-widest ml-1">{t('contact_page.form.email')}</label>
-                                        <input
-                                            type="email"
-                                            name="email"
-                                            required
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                            className="w-full bg-bone px-6 py-4 rounded-2xl border-2 border-transparent focus:border-matcha outline-none transition-all duration-300"
-                                            placeholder={t('contact_page.form.placeholders.email')}
-                                        />
-                                    </div>
-                                </div>
+                            <div className="bg-white p-6 rounded-full shadow-lg mb-4">
+                                <ChatBubbleLeftRightIcon className="w-16 h-16 text-green-600" />
+                            </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-headers text-forest uppercase tracking-widest ml-1">{t('contact_page.form.phone')}</label>
-                                        <input
-                                            type="tel"
-                                            name="phone"
-                                            value={formData.phone}
-                                            onChange={handleChange}
-                                            className="w-full bg-bone px-6 py-4 rounded-2xl border-2 border-transparent focus:border-matcha outline-none transition-all duration-300"
-                                            placeholder={t('contact_page.form.placeholders.phone')}
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-headers text-forest uppercase tracking-widest ml-1">{t('contact_page.form.subject')}</label>
-                                        <input
-                                            type="text"
-                                            name="subject"
-                                            required
-                                            value={formData.subject}
-                                            onChange={handleChange}
-                                            className="w-full bg-bone px-6 py-4 rounded-2xl border-2 border-transparent focus:border-matcha outline-none transition-all duration-300"
-                                            placeholder={t('contact_page.form.placeholders.subject')}
-                                        />
-                                    </div>
-                                </div>
+                            <div>
+                                <h2 className="text-3xl font-headers text-forest mb-4">{t('contact_page.whatsapp.title', 'Hablemos por WhatsApp')}</h2>
+                                <p className="text-bark/70 text-lg leading-relaxed max-w-md mx-auto">
+                                    {t('contact_page.whatsapp.description', '¿Prefieres un trato más directo? Escríbenos por WhatsApp para resolver dudas o reservar tu cita al instante.')}
+                                </p>
+                            </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-sm font-headers text-forest uppercase tracking-widest ml-1">{t('contact_page.form.message')}</label>
-                                    <textarea
-                                        name="message"
-                                        required
-                                        rows={4}
-                                        value={formData.message}
-                                        onChange={handleChange}
-                                        className="w-full bg-bone px-6 py-4 rounded-2xl border-2 border-transparent focus:border-matcha outline-none transition-all duration-300 resize-none"
-                                        placeholder={t('contact_page.form.placeholders.message')}
-                                    ></textarea>
-                                </div>
+                            <a
+                                href="https://wa.me/34685410248"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full sm:w-auto py-4 px-8 bg-[#25D366] text-white rounded-2xl font-headers text-lg tracking-wider uppercase hover:bg-[#20bd5a] hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-green-200/50 flex items-center justify-center gap-3"
+                            >
+                                {t('contact_page.whatsapp.button', 'Abrir Chat de WhatsApp')}
+                                <ArrowTopRightOnSquareIcon className="w-5 h-5" />
+                            </a>
 
-                                <button
-                                    type="submit"
-                                    disabled={status === 'sending'}
-                                    className="w-full py-5 bg-forest text-white rounded-2xl font-headers text-lg tracking-[0.2em] uppercase hover:bg-matcha transition-all duration-500 shadow-lg hover:shadow-xl disabled:opacity-50 flex items-center justify-center gap-3 group"
-                                >
-                                    {status === 'sending' ? (
-                                        <>{t('contact_page.form.sending')}</>
-                                    ) : (
-                                        <>
-                                            {t('contact_page.form.send')}
-                                            <PaperAirplaneIcon className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                                        </>
-                                    )}
-                                </button>
-
-                                <AnimatePresence>
-                                    {status === 'success' && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -10 }}
-                                            className="p-4 bg-matcha/20 text-forest text-center rounded-xl border border-matcha/30"
-                                        >
-                                            {t('contact_page.form.success')}
-                                        </motion.div>
-                                    )}
-                                    {status === 'error' && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -10 }}
-                                            className="p-4 bg-red-50 text-red-600 text-center rounded-xl border border-red-100"
-                                        >
-                                            {t('contact_page.form.error')}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </form>
+                            <p className="text-sm text-gray-400 italic">
+                                {t('contact_page.whatsapp.note', 'Te responderemos encantados lo antes posible.')}
+                            </p>
                         </motion.div>
                     </div>
                 </div>

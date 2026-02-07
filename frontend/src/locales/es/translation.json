@@ -274,23 +274,11 @@
     "contact_page": {
         "title": "Contacto",
         "subtitle": "¿Tienes alguna duda? Estamos aquí para ayudarte",
-        "form": {
-            "name": "Nombre",
-            "email": "Email",
-            "phone": "Teléfono",
-            "subject": "Asunto",
-            "message": "Mensaje",
-            "send": "Enviar Mensaje",
-            "sending": "Enviando...",
-            "success": "Mensaje enviado correctamente. Te responderemos pronto.",
-            "error": "Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.",
-            "placeholders": {
-                "name": "Tu nombre",
-                "email": "tu@email.com",
-                "phone": "Tus 9 dígitos",
-                "subject": "Motivo de tu mensaje",
-                "message": "Cuéntanos en qué podemos ayudarte..."
-            }
+        "whatsapp": {
+            "title": "Hablemos por WhatsApp",
+            "description": "¿Prefieres un trato más directo? Escríbenos por WhatsApp para resolver dudas o reservar tu cita al instante.",
+            "button": "Abrir Chat de WhatsApp",
+            "note": "Te responderemos encantados lo antes posible."
         },
         "info": {
             "title": "Información de Contacto",
