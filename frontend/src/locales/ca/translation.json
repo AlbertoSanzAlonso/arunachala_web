@@ -91,7 +91,12 @@
         "open_player": "Obrir Reproductor",
         "guided_meditation": "Meditació Guiada",
         "stop": "Aturar",
-        "error_playback": "No s'ha pogut reproduir l'àudio. Verifica la teva connexió o el format de l'arxiu."
+        "error_playback": "No s'ha pogut reproduir l'àudio. Verifica la teva connexió o el format de l'arxiu.",
+        "search_placeholder": "Cercar meditacions...",
+        "error_search": "No s'han trobat meditacions amb aquest terme de cerca.",
+        "prev": "Anterior",
+        "next": "Següent",
+        "page": "Pàgina"
     },
     "yoga": {
         "title": "IOGA",

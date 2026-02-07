@@ -91,7 +91,12 @@
         "open_player": "Abrir Reproductor",
         "guided_meditation": "Meditación Guiada",
         "stop": "Detener",
-        "error_playback": "No se pudo reproducir el audio. Verifica tu conexión o el formato del archivo."
+        "error_playback": "No se pudo reproducir el audio. Verifica tu conexión o el formato del archivo.",
+        "search_placeholder": "Buscar meditaciones...",
+        "error_search": "No se encontraron meditaciones con ese término de búsqueda.",
+        "prev": "Anterior",
+        "next": "Siguiente",
+        "page": "Página"
     },
     "yoga": {
         "title": "YOGA",

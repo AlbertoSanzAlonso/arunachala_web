@@ -5,10 +5,11 @@ import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
 import { API_BASE_URL } from '../config';
 import { Helmet } from 'react-helmet-async';
-import { PlayCircleIcon, PauseCircleIcon, SpeakerWaveIcon, SpeakerXMarkIcon, XMarkIcon, PlayIcon, PauseIcon } from '@heroicons/react/24/solid';
-import { motion } from 'framer-motion';
+import { PlayCircleIcon, PauseCircleIcon, SpeakerWaveIcon, SpeakerXMarkIcon, XMarkIcon, PlayIcon, PauseIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
+import MeditationSearch from '../components/MeditationSearch';
 
 interface Meditation {
     id: number;
@@ -33,6 +34,39 @@ const MeditationsPage: React.FC = () => {
     const [selectedMeditation, setSelectedMeditation] = useState<Meditation | null>(null);
     const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
     const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+
+    // Search and Pagination State
+    const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 9;
+
+    // Filtered meditations
+    const filteredMeditations = meditations.filter((meditation) => {
+        const currentLang = i18n.language.split('-')[0];
+        const translation = meditation.translations?.[currentLang];
+        const displayTitle = (translation?.title || meditation.title).toLowerCase();
+        const displayExcerpt = (translation?.excerpt || meditation.excerpt || '').toLowerCase();
+        const search = searchTerm.toLowerCase();
+
+        return displayTitle.includes(search) || displayExcerpt.includes(search);
+    });
+
+    // Pagination Logic
+    const totalPages = Math.ceil(filteredMeditations.length / itemsPerPage);
+    const currentItems = filteredMeditations.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
+    // Reset page when search term changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
+    // Scroll to top on page change
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [currentPage]);
     const [progress, setProgress] = useState(0);
     const [duration, setDuration] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
@@ -184,89 +218,144 @@ const MeditationsPage: React.FC = () => {
                         <BackButton label={t('common.back_home')} />
                     </div>
 
-                    <h1 className="text-4xl md:text-6xl font-headers text-forest text-center mb-6 uppercase tracking-wider pt-12 md:pt-0">
+                    <motion.h1
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-4xl md:text-6xl font-headers text-forest text-center mb-6 uppercase tracking-wider pt-12 md:pt-0"
+                    >
                         {t('meditations.title')}
-                    </h1>
-                    <p className="text-center text-xl text-bark/80 max-w-2xl mx-auto mb-16">
+                    </motion.h1>
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-center text-xl text-bark/80 max-w-2xl mx-auto mb-16"
+                    >
                         {t('meditations.subtitle')}
-                    </p>
+                    </motion.p>
+
+                    {/* Search Bar Component */}
+                    <MeditationSearch meditations={meditations} onSearchChange={setSearchTerm} />
 
                     {isLoading ? (
                         <div className="text-center py-20">{t('meditations.loading')}</div>
-                    ) : meditations.length === 0 ? (
+                    ) : filteredMeditations.length === 0 ? (
                         <div className="text-center py-20 text-gray-500 italic">
-                            {t('meditations.empty')}
+                            {searchTerm ? t('meditations.error_search') : t('meditations.empty')}
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {meditations.map((meditation) => {
-                                const currentLang = i18n.language.split('-')[0]; // Handle 'es-ES' -> 'es'
-                                const translation = meditation.translations?.[currentLang];
-                                const displayTitle = translation?.title || meditation.title;
-                                const displayExcerpt = translation?.excerpt || meditation.excerpt;
+                        <>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                                <AnimatePresence mode="popLayout">
+                                    {currentItems.map((meditation, index) => {
+                                        const currentLang = i18n.language.split('-')[0]; // Handle 'es-ES' -> 'es'
+                                        const translation = meditation.translations?.[currentLang];
+                                        const displayTitle = translation?.title || meditation.title;
+                                        const displayExcerpt = translation?.excerpt || meditation.excerpt;
 
-                                return (
-                                    <div key={meditation.id} className="bg-white rounded-3xl shadow-lg overflow-hidden border border-bone hover:shadow-xl transition-all duration-300 group">
-                                        <div className="relative h-48 bg-matcha/20 flex items-center justify-center overflow-hidden">
-                                            {meditation.thumbnail_url ? (
-                                                <img
-                                                    src={meditation.thumbnail_url.startsWith('http') ? meditation.thumbnail_url : `${API_BASE_URL}${meditation.thumbnail_url}`}
-                                                    alt={displayTitle}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                />
-                                            ) : (
-                                                <div className="absolute inset-0 bg-gradient-to-br from-forest/30 to-matcha/30" />
-                                            )}
-
-                                            <button
-                                                onClick={() => meditation.media_url && handlePlay(meditation)}
-                                                className="absolute bg-white/90 rounded-full p-3 shadow-lg hover:scale-110 transition-transform duration-200 z-10"
+                                        return (
+                                            <motion.div
+                                                layout
+                                                key={meditation.id}
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, scale: 0.9 }}
+                                                transition={{ delay: index * 0.05 }}
+                                                className="bg-white rounded-3xl shadow-lg overflow-hidden border border-bone hover:shadow-xl transition-all duration-300 group"
                                             >
-                                                {playingId === meditation.id && isPlaying ? (
-                                                    <PauseIcon className="w-12 h-12 text-forest" />
-                                                ) : (
-                                                    <PlayIcon className="w-12 h-12 text-forest pl-1" />
-                                                )}
-                                            </button>
-
-                                            {/* Sound Wave Animation */}
-                                            {playingId === meditation.id && isPlaying && (
-                                                <div className="absolute bottom-4 left-0 right-0 flex justify-center items-end gap-1 h-8 z-20 pointer-events-none">
-                                                    {[...Array(5)].map((_, i) => (
-                                                        <motion.div
-                                                            key={i}
-                                                            className="w-1 bg-white/80 rounded-full"
-                                                            animate={{
-                                                                height: [4, 16 + Math.random() * 16, 4],
-                                                            }}
-                                                            transition={{
-                                                                duration: 0.5 + Math.random() * 0.5,
-                                                                repeat: Infinity,
-                                                                repeatType: "reverse",
-                                                                delay: i * 0.1,
-                                                            }}
+                                                <div className="relative h-48 bg-matcha/20 flex items-center justify-center overflow-hidden">
+                                                    {meditation.thumbnail_url ? (
+                                                        <img
+                                                            src={meditation.thumbnail_url.startsWith('http') ? meditation.thumbnail_url : `${API_BASE_URL}${meditation.thumbnail_url}`}
+                                                            alt={displayTitle}
+                                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                                         />
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="p-6">
-                                            <h3 className="text-2xl font-headers text-forest mb-2">{displayTitle}</h3>
-                                            <p className="text-bark/80 line-clamp-3 mb-4">{displayExcerpt}</p>
+                                                    ) : (
+                                                        <div className="absolute inset-0 bg-gradient-to-br from-forest/30 to-matcha/30" />
+                                                    )}
 
-                                            {playingId === meditation.id && (
-                                                <button
-                                                    onClick={() => setIsPlayerModalOpen(true)}
-                                                    className="w-full py-2 bg-matcha/10 text-forest text-xs font-semibold rounded-lg hover:bg-matcha/20 transition-colors uppercase tracking-widest"
-                                                >
-                                                    {t('meditations.open_player')}
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                                                    <button
+                                                        onClick={() => meditation.media_url && handlePlay(meditation)}
+                                                        className="absolute bg-white/90 rounded-full p-3 shadow-lg hover:scale-110 transition-transform duration-200 z-10"
+                                                    >
+                                                        {playingId === meditation.id && isPlaying ? (
+                                                            <PauseIcon className="w-12 h-12 text-forest" />
+                                                        ) : (
+                                                            <PlayIcon className="w-12 h-12 text-forest pl-1" />
+                                                        )}
+                                                    </button>
+
+                                                    {/* Sound Wave Animation */}
+                                                    {playingId === meditation.id && isPlaying && (
+                                                        <div className="absolute bottom-4 left-0 right-0 flex justify-center items-end gap-1 h-8 z-20 pointer-events-none">
+                                                            {[...Array(5)].map((_, i) => (
+                                                                <motion.div
+                                                                    key={i}
+                                                                    className="w-1 bg-white/80 rounded-full"
+                                                                    animate={{
+                                                                        height: [4, 16 + Math.random() * 16, 4],
+                                                                    }}
+                                                                    transition={{
+                                                                        duration: 0.5 + Math.random() * 0.5,
+                                                                        repeat: Infinity,
+                                                                        repeatType: "reverse",
+                                                                        delay: i * 0.1,
+                                                                    }}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="p-6">
+                                                    <h3 className="text-2xl font-headers text-forest mb-2">{displayTitle}</h3>
+                                                    <p className="text-bark/80 line-clamp-3 mb-4">{displayExcerpt}</p>
+
+                                                    {playingId === meditation.id && (
+                                                        <button
+                                                            onClick={() => setIsPlayerModalOpen(true)}
+                                                            className="w-full py-2 bg-matcha/10 text-forest text-xs font-semibold rounded-lg hover:bg-matcha/20 transition-colors uppercase tracking-widest"
+                                                        >
+                                                            {t('meditations.open_player')}
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </motion.div>
+                                        );
+                                    })}
+                                </AnimatePresence>
+                            </div>
+
+                            {/* Pagination Controls */}
+                            {totalPages > 1 && (
+                                <div className="flex justify-center items-center gap-6 mt-16 pb-8">
+                                    <button
+                                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                        disabled={currentPage === 1}
+                                        className={`px-6 py-2 rounded-full font-headers uppercase tracking-wider text-sm transition-all ${currentPage === 1
+                                            ? 'text-bark/30 cursor-not-allowed bg-transparent'
+                                            : 'bg-white text-forest shadow-md hover:shadow-lg hover:bg-forest hover:text-white'
+                                            }`}
+                                    >
+                                        {t('meditations.prev')}
+                                    </button>
+
+                                    <span className="text-bark/60 font-medium">
+                                        {currentPage} / {totalPages}
+                                    </span>
+
+                                    <button
+                                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                        disabled={currentPage === totalPages}
+                                        className={`px-6 py-2 rounded-full font-headers uppercase tracking-wider text-sm transition-all ${currentPage === totalPages
+                                            ? 'text-bark/30 cursor-not-allowed bg-transparent'
+                                            : 'bg-white text-forest shadow-md hover:shadow-lg hover:bg-forest hover:text-white'
+                                            }`}
+                                    >
+                                        {t('meditations.next')}
+                                    </button>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
 

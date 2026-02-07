@@ -91,7 +91,12 @@
         "open_player": "Open Player",
         "guided_meditation": "Guided Meditation",
         "stop": "Stop",
-        "error_playback": "Could not play audio. Please check your connection or the file format."
+        "error_playback": "Could not play audio. Please check your connection or the file format.",
+        "search_placeholder": "Search meditations...",
+        "error_search": "No meditations found with that search term.",
+        "prev": "Previous",
+        "next": "Next",
+        "page": "Page"
     },
     "yoga": {
         "title": "YOGA",
