@@ -5,7 +5,8 @@ import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
 import { API_BASE_URL } from '../config';
 import { Helmet } from 'react-helmet-async';
-import { PlayCircleIcon, PauseCircleIcon, SpeakerWaveIcon, SpeakerXMarkIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { PlayCircleIcon, PauseCircleIcon, SpeakerWaveIcon, SpeakerXMarkIcon, XMarkIcon, PlayIcon, PauseIcon } from '@heroicons/react/24/solid';
+import { motion } from 'framer-motion';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 
@@ -180,7 +181,7 @@ const MeditationsPage: React.FC = () => {
             <main className="flex-grow pt-32 pb-16 relative">
                 <div className="max-w-7xl mx-auto px-6 relative w-full">
                     <div className="mb-8 md:mb-0 md:absolute md:top-0 md:left-2 z-20">
-                        <BackButton />
+                        <BackButton label={t('common.back_home')} />
                     </div>
 
                     <h1 className="text-4xl md:text-6xl font-headers text-forest text-center mb-6 uppercase tracking-wider pt-12 md:pt-0">
@@ -221,8 +222,33 @@ const MeditationsPage: React.FC = () => {
                                                 onClick={() => meditation.media_url && handlePlay(meditation)}
                                                 className="absolute bg-white/90 rounded-full p-3 shadow-lg hover:scale-110 transition-transform duration-200 z-10"
                                             >
-                                                <PlayCircleIcon className="w-12 h-12 text-forest" />
+                                                {playingId === meditation.id && isPlaying ? (
+                                                    <PauseIcon className="w-12 h-12 text-forest" />
+                                                ) : (
+                                                    <PlayIcon className="w-12 h-12 text-forest pl-1" />
+                                                )}
                                             </button>
+
+                                            {/* Sound Wave Animation */}
+                                            {playingId === meditation.id && isPlaying && (
+                                                <div className="absolute bottom-4 left-0 right-0 flex justify-center items-end gap-1 h-8 z-20 pointer-events-none">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <motion.div
+                                                            key={i}
+                                                            className="w-1 bg-white/80 rounded-full"
+                                                            animate={{
+                                                                height: [4, 16 + Math.random() * 16, 4],
+                                                            }}
+                                                            transition={{
+                                                                duration: 0.5 + Math.random() * 0.5,
+                                                                repeat: Infinity,
+                                                                repeatType: "reverse",
+                                                                delay: i * 0.1,
+                                                            }}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="p-6">
                                             <h3 className="text-2xl font-headers text-forest mb-2">{displayTitle}</h3>
