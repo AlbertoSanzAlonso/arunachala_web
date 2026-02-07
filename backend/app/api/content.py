@@ -52,6 +52,7 @@ class ContentBase(BaseModel):
     category: Optional[str] = None  # 'yoga', 'therapy', 'general'
     status: str = "draft"
     thumbnail_url: Optional[str] = None
+    media_url: Optional[str] = None
     seo_title: Optional[str] = None
     seo_description: Optional[str] = None
     tags: Optional[List[str]] = None
@@ -68,6 +69,7 @@ class ContentUpdate(BaseModel):
     category: Optional[str] = None
     status: Optional[str] = None
     thumbnail_url: Optional[str] = None
+    media_url: Optional[str] = None
     seo_title: Optional[str] = None
     seo_description: Optional[str] = None
     tags: Optional[List[str]] = None

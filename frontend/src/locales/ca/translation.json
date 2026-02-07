@@ -80,7 +80,18 @@
         "space": "El Nostre Espai",
         "about": "Sobre Nosaltres",
         "contact": "Contacte",
-        "activities": "Activitats"
+        "activities": "Activitats",
+        "meditations": "Meditacions"
+    },
+    "meditations": {
+        "title": "Meditacions",
+        "subtitle": "Troba un moment de calma i connexió amb les nostres meditacions guiades i mantres.",
+        "loading": "Carregant meditacions...",
+        "empty": "Properament compartirem noves meditacions amb tu.",
+        "open_player": "Obrir Reproductor",
+        "guided_meditation": "Meditació Guiada",
+        "stop": "Aturar",
+        "error_playback": "No s'ha pogut reproduir l'àudio. Verifica la teva connexió o el format de l'arxiu."
     },
     "yoga": {
         "title": "IOGA",

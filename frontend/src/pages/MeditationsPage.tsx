@@ -15,10 +15,17 @@ interface Meditation {
     excerpt?: string;
     media_url?: string;
     thumbnail_url?: string;
+    translations?: {
+        [key: string]: {
+            title?: string;
+            excerpt?: string;
+            body?: string;
+        };
+    };
 }
 
 const MeditationsPage: React.FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [meditations, setMeditations] = useState<Meditation[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [playingId, setPlayingId] = useState<number | null>(null);
@@ -104,7 +111,7 @@ const MeditationsPage: React.FC = () => {
                 console.log("Audio started playing successfully");
             }).catch(err => {
                 console.error("Failed to play audio:", err);
-                alert("No se pudo reproducir el audio. Verifica tu conexión o el formato del archivo.");
+                alert(t('meditations.error_playback', "No se pudo reproducir el audio. Verifica tu conexión o el formato del archivo."));
             });
 
             newAudio.onended = () => {
@@ -177,55 +184,62 @@ const MeditationsPage: React.FC = () => {
                     </div>
 
                     <h1 className="text-4xl md:text-6xl font-headers text-forest text-center mb-6 uppercase tracking-wider pt-12 md:pt-0">
-                        {t('menu.meditations')}
+                        {t('meditations.title')}
                     </h1>
                     <p className="text-center text-xl text-bark/80 max-w-2xl mx-auto mb-16">
-                        Encuentra un momento de calma y conexión con nuestras meditaciones guiadas y mantras.
+                        {t('meditations.subtitle')}
                     </p>
 
                     {isLoading ? (
-                        <div className="text-center py-20">Cargando meditaciones...</div>
+                        <div className="text-center py-20">{t('meditations.loading')}</div>
                     ) : meditations.length === 0 ? (
                         <div className="text-center py-20 text-gray-500 italic">
-                            Próximamente compartiremos nuevas meditaciones contigo.
+                            {t('meditations.empty')}
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {meditations.map((meditation) => (
-                                <div key={meditation.id} className="bg-white rounded-3xl shadow-lg overflow-hidden border border-bone hover:shadow-xl transition-all duration-300 group">
-                                    <div className="relative h-48 bg-matcha/20 flex items-center justify-center overflow-hidden">
-                                        {meditation.thumbnail_url ? (
-                                            <img
-                                                src={meditation.thumbnail_url.startsWith('http') ? meditation.thumbnail_url : `${API_BASE_URL}${meditation.thumbnail_url}`}
-                                                alt={meditation.title}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                            />
-                                        ) : (
-                                            <div className="absolute inset-0 bg-gradient-to-br from-forest/30 to-matcha/30" />
-                                        )}
+                            {meditations.map((meditation) => {
+                                const currentLang = i18n.language.split('-')[0]; // Handle 'es-ES' -> 'es'
+                                const translation = meditation.translations?.[currentLang];
+                                const displayTitle = translation?.title || meditation.title;
+                                const displayExcerpt = translation?.excerpt || meditation.excerpt;
 
-                                        <button
-                                            onClick={() => meditation.media_url && handlePlay(meditation)}
-                                            className="absolute bg-white/90 rounded-full p-3 shadow-lg hover:scale-110 transition-transform duration-200 z-10"
-                                        >
-                                            <PlayCircleIcon className="w-12 h-12 text-forest" />
-                                        </button>
-                                    </div>
-                                    <div className="p-6">
-                                        <h3 className="text-2xl font-headers text-forest mb-2">{meditation.title}</h3>
-                                        <p className="text-bark/80 line-clamp-3 mb-4">{meditation.excerpt}</p>
+                                return (
+                                    <div key={meditation.id} className="bg-white rounded-3xl shadow-lg overflow-hidden border border-bone hover:shadow-xl transition-all duration-300 group">
+                                        <div className="relative h-48 bg-matcha/20 flex items-center justify-center overflow-hidden">
+                                            {meditation.thumbnail_url ? (
+                                                <img
+                                                    src={meditation.thumbnail_url.startsWith('http') ? meditation.thumbnail_url : `${API_BASE_URL}${meditation.thumbnail_url}`}
+                                                    alt={displayTitle}
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                />
+                                            ) : (
+                                                <div className="absolute inset-0 bg-gradient-to-br from-forest/30 to-matcha/30" />
+                                            )}
 
-                                        {playingId === meditation.id && (
                                             <button
-                                                onClick={() => setIsPlayerModalOpen(true)}
-                                                className="w-full py-2 bg-matcha/10 text-forest text-xs font-semibold rounded-lg hover:bg-matcha/20 transition-colors uppercase tracking-widest"
+                                                onClick={() => meditation.media_url && handlePlay(meditation)}
+                                                className="absolute bg-white/90 rounded-full p-3 shadow-lg hover:scale-110 transition-transform duration-200 z-10"
                                             >
-                                                Abrir Reproductor
+                                                <PlayCircleIcon className="w-12 h-12 text-forest" />
                                             </button>
-                                        )}
+                                        </div>
+                                        <div className="p-6">
+                                            <h3 className="text-2xl font-headers text-forest mb-2">{displayTitle}</h3>
+                                            <p className="text-bark/80 line-clamp-3 mb-4">{displayExcerpt}</p>
+
+                                            {playingId === meditation.id && (
+                                                <button
+                                                    onClick={() => setIsPlayerModalOpen(true)}
+                                                    className="w-full py-2 bg-matcha/10 text-forest text-xs font-semibold rounded-lg hover:bg-matcha/20 transition-colors uppercase tracking-widest"
+                                                >
+                                                    {t('meditations.open_player')}
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>
@@ -264,87 +278,93 @@ const MeditationsPage: React.FC = () => {
                                             <XMarkIcon className="w-6 h-6" />
                                         </button>
 
-                                        {selectedMeditation && (
-                                            <div className="flex flex-col items-center text-center">
-                                                <div className="w-48 h-48 rounded-2xl shadow-xl mb-8 overflow-hidden bg-matcha/20">
-                                                    {selectedMeditation.thumbnail_url ? (
-                                                        <img
-                                                            src={selectedMeditation.thumbnail_url.startsWith('http') ? selectedMeditation.thumbnail_url : `${API_BASE_URL}${selectedMeditation.thumbnail_url}`}
-                                                            alt={selectedMeditation.title}
-                                                            className="w-full h-full object-cover"
+                                        {selectedMeditation && (() => {
+                                            const currentLang = i18n.language.split('-')[0];
+                                            const translation = selectedMeditation.translations?.[currentLang];
+                                            const displayTitle = translation?.title || selectedMeditation.title;
+
+                                            return (
+                                                <div className="flex flex-col items-center text-center">
+                                                    <div className="w-48 h-48 rounded-2xl shadow-xl mb-8 overflow-hidden bg-matcha/20">
+                                                        {selectedMeditation.thumbnail_url ? (
+                                                            <img
+                                                                src={selectedMeditation.thumbnail_url.startsWith('http') ? selectedMeditation.thumbnail_url : `${API_BASE_URL}${selectedMeditation.thumbnail_url}`}
+                                                                alt={displayTitle}
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                        ) : (
+                                                            <div className="w-full h-full bg-gradient-to-br from-forest to-matcha" />
+                                                        )}
+                                                    </div>
+
+                                                    <h3 className="text-2xl font-headers text-forest mb-2">
+                                                        {displayTitle}
+                                                    </h3>
+                                                    <p className="text-bark/60 text-sm mb-8 italic">
+                                                        {t('meditations.guided_meditation')}
+                                                    </p>
+
+                                                    {/* Progress Bar */}
+                                                    <div className="w-full space-y-2 mb-8">
+                                                        <input
+                                                            type="range"
+                                                            min="0"
+                                                            max="100"
+                                                            value={duration > 0 ? (currentTime / duration) * 100 : 0}
+                                                            onChange={handleSeek}
+                                                            className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-forest transition-all"
+                                                            style={{ backgroundSize: `${progress}% 100%` }}
                                                         />
-                                                    ) : (
-                                                        <div className="w-full h-full bg-gradient-to-br from-forest to-matcha" />
-                                                    )}
-                                                </div>
+                                                        <div className="flex justify-between text-xs text-bark/40 font-mono font-medium">
+                                                            <span>{formatTime(currentTime)}</span>
+                                                            <span>{formatTime(duration)}</span>
+                                                        </div>
+                                                    </div>
 
-                                                <h3 className="text-2xl font-headers text-forest mb-2">
-                                                    {selectedMeditation.title}
-                                                </h3>
-                                                <p className="text-bark/60 text-sm mb-8 italic">
-                                                    Meditación Guiada
-                                                </p>
+                                                    {/* Controls */}
+                                                    <div className="flex items-center space-x-8">
+                                                        <button
+                                                            onClick={toggleMute}
+                                                            className="text-bark/40 hover:text-forest transition-colors"
+                                                        >
+                                                            {isMuted ? (
+                                                                <SpeakerXMarkIcon className="w-8 h-8" />
+                                                            ) : (
+                                                                <SpeakerWaveIcon className="w-8 h-8" />
+                                                            )}
+                                                        </button>
 
-                                                {/* Progress Bar */}
-                                                <div className="w-full space-y-2 mb-8">
-                                                    <input
-                                                        type="range"
-                                                        min="0"
-                                                        max="100"
-                                                        value={duration > 0 ? (currentTime / duration) * 100 : 0}
-                                                        onChange={handleSeek}
-                                                        className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-forest transition-all"
-                                                        style={{ backgroundSize: `${progress}% 100%` }}
-                                                    />
-                                                    <div className="flex justify-between text-xs text-bark/40 font-mono font-medium">
-                                                        <span>{formatTime(currentTime)}</span>
-                                                        <span>{formatTime(duration)}</span>
+                                                        <button
+                                                            onClick={() => audio && (audio.paused ? audio.play() : audio.pause())}
+                                                            className="bg-forest text-white rounded-full p-4 shadow-lg hover:scale-105 active:scale-95 transition-all"
+                                                        >
+                                                            {isPlaying ? (
+                                                                <PauseCircleIcon className="w-10 h-10" />
+                                                            ) : (
+                                                                <PlayCircleIcon className="w-10 h-10" />
+                                                            )}
+                                                        </button>
+
+                                                        <button
+                                                            onClick={stopAudio}
+                                                            className="text-red-400 hover:text-red-600 transition-colors text-xs font-bold uppercase tracking-widest"
+                                                        >
+                                                            {t('meditations.stop')}
+                                                        </button>
                                                     </div>
                                                 </div>
-
-                                                {/* Controls */}
-                                                <div className="flex items-center space-x-8">
-                                                    <button
-                                                        onClick={toggleMute}
-                                                        className="text-bark/40 hover:text-forest transition-colors"
-                                                    >
-                                                        {isMuted ? (
-                                                            <SpeakerXMarkIcon className="w-8 h-8" />
-                                                        ) : (
-                                                            <SpeakerWaveIcon className="w-8 h-8" />
-                                                        )}
-                                                    </button>
-
-                                                    <button
-                                                        onClick={() => audio && (audio.paused ? audio.play() : audio.pause())}
-                                                        className="bg-forest text-white rounded-full p-4 shadow-lg hover:scale-105 active:scale-95 transition-all"
-                                                    >
-                                                        {isPlaying ? (
-                                                            <PauseCircleIcon className="w-10 h-10" />
-                                                        ) : (
-                                                            <PlayCircleIcon className="w-10 h-10" />
-                                                        )}
-                                                    </button>
-
-                                                    <button
-                                                        onClick={stopAudio}
-                                                        className="text-red-400 hover:text-red-600 transition-colors text-xs font-bold uppercase tracking-widest"
-                                                    >
-                                                        Detener
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        )}
+                                            );
+                                        })()}
                                     </Dialog.Panel>
                                 </Transition.Child>
                             </div>
                         </div>
                     </Dialog>
                 </Transition>
-            </main>
+            </main >
 
             <Footer />
-        </div>
+        </div >
     );
 };
 

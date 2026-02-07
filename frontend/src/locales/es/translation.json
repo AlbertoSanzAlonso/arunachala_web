@@ -83,6 +83,16 @@
         "activities": "Actividades",
         "meditations": "Meditaciones"
     },
+    "meditations": {
+        "title": "Meditaciones",
+        "subtitle": "Encuentra un momento de calma y conexión con nuestras meditaciones guiadas y mantras.",
+        "loading": "Cargando meditaciones...",
+        "empty": "Próximamente compartiremos nuevas meditaciones contigo.",
+        "open_player": "Abrir Reproductor",
+        "guided_meditation": "Meditación Guiada",
+        "stop": "Detener",
+        "error_playback": "No se pudo reproducir el audio. Verifica tu conexión o el formato del archivo."
+    },
     "yoga": {
         "title": "YOGA",
         "subtitle": "Encuentra equilibrio y paz a través del movimiento y la respiración.",

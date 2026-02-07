@@ -80,7 +80,18 @@
         "space": "Our Space",
         "about": "About Us",
         "contact": "Contact",
-        "activities": "Activities"
+        "activities": "Activities",
+        "meditations": "Meditations"
+    },
+    "meditations": {
+        "title": "Meditations",
+        "subtitle": "Find a moment of calm and connection with our guided meditations and mantras.",
+        "loading": "Loading meditations...",
+        "empty": "We will soon share new meditations with you.",
+        "open_player": "Open Player",
+        "guided_meditation": "Guided Meditation",
+        "stop": "Stop",
+        "error_playback": "Could not play audio. Please check your connection or the file format."
     },
     "yoga": {
         "title": "YOGA",
