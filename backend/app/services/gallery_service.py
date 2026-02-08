@@ -34,6 +34,17 @@ class GalleryService:
             query = query.filter(Gallery.category == category)
         return query.order_by(Gallery.position.asc()).all()
 
+    def upload_images_bulk(self, files: List[UploadFile], category: str) -> List[Gallery]:
+        results = []
+        for file in files:
+            try:
+                # We reuse the existing upload_image logic for each file
+                results.append(self.upload_image(file, category))
+            except Exception as e:
+                print(f"❌ Error uploading file in bulk: {e}")
+                # Continue with others even if one fails
+        return results
+
     def upload_image(self, file: UploadFile, category: str, alt_text: str = "") -> Gallery:
         valid_categories = ["home", "yoga", "therapies", "center"]
         if category not in valid_categories:

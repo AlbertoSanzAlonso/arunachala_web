@@ -8,6 +8,7 @@ export const useGallery = (selectedCategory: GalleryCategory) => {
     });
     const [isLoading, setIsLoading] = useState(true);
     const [isUploading, setIsUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
 
     const fetchImages = useCallback(async () => {
         setIsLoading(true);
@@ -47,24 +48,31 @@ export const useGallery = (selectedCategory: GalleryCategory) => {
 
     const uploadImages = async (files: FileList | null) => {
         if (!files?.length) return;
+
         setIsUploading(true);
         const fileArray = Array.from(files);
+        setUploadProgress({ current: 0, total: fileArray.length });
 
-        for (const file of fileArray) {
+        // We'll upload in chunks of 5 to not overwhelm the connection but still be fast
+        const chunkSize = 5;
+        for (let i = 0; i < fileArray.length; i += chunkSize) {
+            const chunk = fileArray.slice(i, i + chunkSize);
             const formData = new FormData();
-            formData.append('file', file);
+            chunk.forEach(file => formData.append('files', file));
             formData.append('category', selectedCategory);
 
             try {
-                await galleryService.upload(formData);
+                await galleryService.uploadBulk(formData);
+                setUploadProgress(prev => ({ ...prev, current: Math.min(prev.total, i + chunk.length) }));
             } catch (error) {
-                console.error('Error uploading file:', file.name, error);
+                console.error('Error uploading bulk chunk:', error);
             }
         }
 
         await fetchImages();
         await fetchCounts();
         setIsUploading(false);
+        setUploadProgress({ current: 0, total: 0 });
     };
 
     const deleteImage = async (id: number) => {
@@ -156,6 +164,7 @@ export const useGallery = (selectedCategory: GalleryCategory) => {
         isUploading,
         fetchImages,
         uploadImages,
+        uploadProgress,
         deleteImage,
         deleteMultipleImages,
         saveOrder,

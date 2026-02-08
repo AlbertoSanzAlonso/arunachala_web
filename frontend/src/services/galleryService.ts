@@ -21,6 +21,11 @@ export const galleryService = {
         return response.data;
     },
 
+    uploadBulk: async (formData: FormData) => {
+        const response = await api.post<GalleryImage[]>('/gallery/upload-bulk', formData);
+        return response.data;
+    },
+
     delete: async (id: number) => {
         await api.delete(`/gallery/${id}`);
     },

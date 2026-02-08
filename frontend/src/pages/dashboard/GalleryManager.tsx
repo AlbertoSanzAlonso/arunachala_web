@@ -36,6 +36,7 @@ export default function GalleryManager() {
         isLoading,
         isUploading,
         uploadImages,
+        uploadProgress,
         deleteImage,
         deleteMultipleImages,
         saveOrder,
@@ -138,13 +139,36 @@ export default function GalleryManager() {
                 </div>
             )}
 
+            {isUploading && (
+                <div className="pointer-events-none fixed bottom-4 right-4 z-50 flex items-center">
+                    <div className="bg-white px-6 py-4 rounded-xl shadow-2xl border-l-4 border-forest animate-fadeIn flex items-center gap-4">
+                        <div className="relative">
+                            <ArrowPathIcon className="h-8 w-8 text-forest animate-spin" />
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-bold text-gray-900">
+                                {uploadProgress.total > 1
+                                    ? `Subiendo archivos (${uploadProgress.current}/${uploadProgress.total})`
+                                    : 'Subiendo archivo...'}
+                            </h3>
+                            <div className="w-48 h-1.5 bg-gray-100 rounded-full mt-1 overflow-hidden">
+                                <div
+                                    className="h-full bg-forest transition-all duration-300"
+                                    style={{ width: `${(uploadProgress.current / uploadProgress.total) * 100}%` }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto">
                     <h1 className="text-2xl font-semibold leading-6 text-gray-900">Galería de Imágenes</h1>
                     <p className="mt-2 text-sm text-gray-700">
                         {selectionMode
                             ? `Seleccionadas ${selectedIds.length} imágenes`
-                            : 'Sube fotos arrastrándolas aquí, ordénalas y gestiónalas por categoría.'}
+                            : 'Selecciona varias fotos, arrástralas aquí, ordénalas y gestiónalas por categoría.'}
                     </p>
                 </div>
                 <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none flex gap-2 flex-wrap justify-end">
@@ -241,8 +265,12 @@ export default function GalleryManager() {
                                 className={`inline-flex items-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 cursor-pointer ${isUploading ? 'opacity-70 cursor-wait' : ''
                                     }`}
                             >
-                                {isUploading ? <ArrowPathIcon className="h-5 w-5 animate-spin" /> : <PhotoIcon className="h-5 w-5 mr-1" />}
-                                {isUploading ? ' Subiendo...' : ' Subir Fotos'}
+                                {isUploading ? <ArrowPathIcon className="h-5 w-5 animate-spin mr-1" /> : <PhotoIcon className="h-5 w-5 mr-1" />}
+                                {isUploading
+                                    ? (uploadProgress.total > 1
+                                        ? ` Subiendo ${uploadProgress.current}/${uploadProgress.total}...`
+                                        : ' Subiendo...')
+                                    : ' Subir Fotos'}
                             </label>
                         </div>
                     )}

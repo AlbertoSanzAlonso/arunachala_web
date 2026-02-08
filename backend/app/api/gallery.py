@@ -42,6 +42,14 @@ async def upload_image(
 ):
     return service.upload_image(file, category, alt_text)
 
+@router.post("/upload-bulk", response_model=List[GalleryResponse])
+async def upload_images_bulk(
+    files: List[UploadFile] = File(...),
+    category: str = Form(...),
+    service: GalleryService = Depends(get_service),
+):
+    return service.upload_images_bulk(files, category)
+
 @router.get("/", response_model=List[GalleryResponse])
 def get_gallery_images(
     category: Optional[str] = None, 
