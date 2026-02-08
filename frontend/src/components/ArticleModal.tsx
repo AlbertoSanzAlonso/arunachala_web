@@ -107,7 +107,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
 
                                 {/* Header Image */}
                                 <div className="h-64 md:h-80 bg-forest/10 relative overflow-hidden">
-                                    {article.thumbnail_url ? (
+                                    {article.thumbnail_url && !article.thumbnail_url.includes('om_symbol.webp') && !article.thumbnail_url.includes('lotus_flower.webp') ? (
                                         <img
                                             src={getImageUrl(article.thumbnail_url)}
                                             alt={translatedTitle}
@@ -130,15 +130,15 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
                                                 target.src = article.category === 'yoga'
                                                     ? getImageUrl('/static/gallery/articles/om_symbol.webp')
                                                     : getImageUrl('/static/gallery/articles/lotus_flower.webp');
-                                                target.className = "w-64 h-64 object-contain opacity-50 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2";
+                                                target.className = "w-48 h-48 object-contain opacity-30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2";
                                             }}
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-forest/20 to-matcha/20 px-10">
-                                            {article.category === 'yoga' ? (
-                                                <img src={getImageUrl('/static/gallery/articles/om_symbol.webp')} alt="Yoga" className="w-64 h-64 object-contain opacity-50" />
-                                            ) : article.category === 'therapy' ? (
-                                                <img src={getImageUrl('/static/gallery/articles/lotus_flower.webp')} alt="Terapia" className="w-64 h-64 object-contain opacity-50" />
+                                            {(article.category === 'yoga' || (article.thumbnail_url && article.thumbnail_url.includes('om_symbol.webp'))) ? (
+                                                <img src={getImageUrl('/static/gallery/articles/om_symbol.webp')} alt="Yoga" className="w-48 h-48 object-contain opacity-30" />
+                                            ) : (article.category === 'therapy' || (article.thumbnail_url && article.thumbnail_url.includes('lotus_flower.webp'))) ? (
+                                                <img src={getImageUrl('/static/gallery/articles/lotus_flower.webp')} alt="Terapia" className="w-48 h-48 object-contain opacity-30" />
                                             ) : (
                                                 <TagIcon className="w-20 h-20 text-forest/30" />
                                             )}

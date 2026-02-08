@@ -888,7 +888,7 @@ export default function ContentManager() {
                                                                         )
                                                                     }
                                                                     alt="Destacada"
-                                                                    className={`h-40 w-auto object-cover rounded-md border border-gray-200 ${!formData.thumbnail_url ? 'opacity-50 grayscale' : ''}`}
+                                                                    className={`h-32 w-auto object-cover rounded-md border border-gray-200 ${!formData.thumbnail_url ? 'opacity-30 grayscale' : ''}`}
                                                                     onError={(e) => {
                                                                         const target = e.currentTarget;
                                                                         if (target.getAttribute('data-fallback')) {
@@ -907,7 +907,7 @@ export default function ContentManager() {
                                                                         target.src = formData.type === 'meditation'
                                                                             ? `${API_BASE_URL}/static/gallery/articles/meditation_default.webp`
                                                                             : (formData.category === 'yoga' ? `${API_BASE_URL}/static/gallery/articles/om_symbol.webp` : `${API_BASE_URL}/static/gallery/articles/lotus_flower.webp`);
-                                                                        target.className = "h-40 w-auto object-contain p-4 opacity-50 grayscale rounded-md border border-gray-200";
+                                                                        target.className = "h-32 w-auto object-contain p-4 opacity-30 grayscale rounded-md border border-gray-200";
                                                                     }}
                                                                 />
                                                                 {!formData.thumbnail_url && (

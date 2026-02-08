@@ -184,7 +184,7 @@ const BlogDetailPage: React.FC = () => {
                         transition={{ delay: 0.2 }}
                         className="mb-12 rounded-[2rem] overflow-hidden shadow-xl"
                     >
-                        {article.thumbnail_url ? (
+                        {article.thumbnail_url && !article.thumbnail_url.includes('om_symbol.webp') && !article.thumbnail_url.includes('lotus_flower.webp') ? (
                             <img
                                 src={getImageUrl(article.thumbnail_url)}
                                 alt={translatedTitle}
@@ -207,17 +207,17 @@ const BlogDetailPage: React.FC = () => {
                                     target.src = article.category === 'yoga'
                                         ? getImageUrl('/static/gallery/articles/om_symbol.webp')
                                         : getImageUrl('/static/gallery/articles/lotus_flower.webp');
-                                    target.className = "w-64 h-64 object-contain opacity-50 mx-auto py-10";
+                                    target.className = "w-48 h-48 object-contain opacity-30 mx-auto py-10";
                                 }}
                             />
                         ) : (
                             <div className="w-full h-80 flex items-center justify-center bg-gradient-to-br from-forest/20 to-matcha/20">
-                                {article.category === 'yoga' ? (
-                                    <img src={getImageUrl('/static/gallery/articles/om_symbol.webp')} alt="Yoga" className="w-64 h-64 object-contain opacity-50" />
-                                ) : article.category === 'therapy' ? (
-                                    <img src={getImageUrl('/static/gallery/articles/lotus_flower.webp')} alt="Terapia" className="w-64 h-64 object-contain opacity-50" />
+                                {(article.category === 'yoga' || (article.thumbnail_url && article.thumbnail_url.includes('om_symbol.webp'))) ? (
+                                    <img src={getImageUrl('/static/gallery/articles/om_symbol.webp')} alt="Yoga" className="w-48 h-48 object-contain opacity-30" />
+                                ) : (article.category === 'therapy' || (article.thumbnail_url && article.thumbnail_url.includes('lotus_flower.webp'))) ? (
+                                    <img src={getImageUrl('/static/gallery/articles/lotus_flower.webp')} alt="Terapia" className="w-48 h-48 object-contain opacity-30" />
                                 ) : (
-                                    <TagIcon className="w-20 h-20 text-forest/30" />
+                                    <TagIcon className="w-16 h-16 text-forest/30" />
                                 )}
                             </div>
                         )}
@@ -325,7 +325,7 @@ const BlogDetailPage: React.FC = () => {
                                         className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group"
                                     >
                                         <div className="h-32 bg-forest/10 overflow-hidden">
-                                            {related.thumbnail_url ? (
+                                            {related.thumbnail_url && !related.thumbnail_url.includes('om_symbol.webp') && !related.thumbnail_url.includes('lotus_flower.webp') ? (
                                                 <img
                                                     src={getImageUrl(related.thumbnail_url)}
                                                     alt={getTranslated(related, 'title', i18n.language)}
@@ -348,17 +348,17 @@ const BlogDetailPage: React.FC = () => {
                                                         target.src = related.category === 'yoga'
                                                             ? getImageUrl('/static/gallery/articles/om_symbol.webp')
                                                             : getImageUrl('/static/gallery/articles/lotus_flower.webp');
-                                                        target.className = "w-16 h-16 object-contain opacity-40 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:scale-110 transition-transform duration-500";
+                                                        target.className = "w-12 h-12 object-contain opacity-30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:scale-110 transition-transform duration-500";
                                                     }}
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center">
-                                                    {related.category === 'yoga' ? (
-                                                        <img src={getImageUrl('/static/gallery/articles/om_symbol.webp')} alt="Yoga" className="w-16 h-16 object-contain opacity-40 group-hover:scale-110 transition-transform duration-500" />
-                                                    ) : related.category === 'therapy' ? (
-                                                        <img src={getImageUrl('/static/gallery/articles/lotus_flower.webp')} alt="Terapia" className="w-16 h-16 object-contain opacity-40 group-hover:scale-110 transition-transform duration-500" />
+                                                    {(related.category === 'yoga' || (related.thumbnail_url && related.thumbnail_url.includes('om_symbol.webp'))) ? (
+                                                        <img src={getImageUrl('/static/gallery/articles/om_symbol.webp')} alt="Yoga" className="w-12 h-12 object-contain opacity-30 group-hover:scale-110 transition-transform duration-500" />
+                                                    ) : (related.category === 'therapy' || (related.thumbnail_url && related.thumbnail_url.includes('lotus_flower.webp'))) ? (
+                                                        <img src={getImageUrl('/static/gallery/articles/lotus_flower.webp')} alt="Terapia" className="w-12 h-12 object-contain opacity-30 group-hover:scale-110 transition-transform duration-500" />
                                                     ) : (
-                                                        <TagIcon className="w-8 h-8 text-forest/30" />
+                                                        <TagIcon className="w-6 h-6 text-forest/30" />
                                                     )}
                                                 </div>
                                             )}
