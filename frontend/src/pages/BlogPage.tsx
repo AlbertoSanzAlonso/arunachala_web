@@ -244,10 +244,36 @@ const BlogPage: React.FC = () => {
                                                     src={getImageUrl(article.thumbnail_url)}
                                                     alt={getTranslated(article, 'title', i18n.language)}
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                    onError={(e) => {
+                                                        const target = e.currentTarget;
+                                                        if (target.getAttribute('data-fallback')) {
+                                                            target.style.display = 'none';
+                                                            const parent = target.parentElement;
+                                                            if (parent) {
+                                                                const fileName = article.thumbnail_url?.split('/').pop() || 'Imagen';
+                                                                const errDiv = document.createElement('div');
+                                                                errDiv.className = "absolute inset-0 flex items-center justify-center p-4 text-center text-[10px] text-bark/30 italic break-all";
+                                                                errDiv.innerText = fileName;
+                                                                parent.appendChild(errDiv);
+                                                            }
+                                                            return;
+                                                        }
+                                                        target.setAttribute('data-fallback', 'true');
+                                                        target.src = article.category === 'yoga'
+                                                            ? getImageUrl('/static/gallery/articles/om_symbol.webp')
+                                                            : getImageUrl('/static/gallery/articles/lotus_flower.webp');
+                                                        target.className = "w-32 h-32 object-contain opacity-40 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:scale-110 transition-transform duration-500";
+                                                    }}
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center">
-                                                    <TagIcon className="w-16 h-16 text-forest/30" />
+                                                    {article.category === 'yoga' ? (
+                                                        <img src={getImageUrl('/static/gallery/articles/om_symbol.webp')} alt="Yoga" className="w-32 h-32 object-contain opacity-40 group-hover:scale-110 transition-transform duration-500" />
+                                                    ) : article.category === 'therapy' ? (
+                                                        <img src={getImageUrl('/static/gallery/articles/lotus_flower.webp')} alt="Terapia" className="w-32 h-32 object-contain opacity-40 group-hover:scale-110 transition-transform duration-500" />
+                                                    ) : (
+                                                        <TagIcon className="w-16 h-16 text-forest/30" />
+                                                    )}
                                                 </div>
                                             )}
                                             {/* Category Badge */}
@@ -261,9 +287,11 @@ const BlogPage: React.FC = () => {
                                             <h2 className="text-2xl font-headers text-forest mb-3 group-hover:text-matcha transition-colors">
                                                 {getTranslated(article, 'title', i18n.language)}
                                             </h2>
-                                            <p className="text-bark/70 mb-4 line-clamp-3">
-                                                {getTranslated(article, 'excerpt', i18n.language)}
-                                            </p>
+                                            <div className="h-20 overflow-y-auto mb-4 pr-2 custom-scrollbar">
+                                                <p className="text-bark/70 text-sm leading-relaxed">
+                                                    {getTranslated(article, 'excerpt', i18n.language)}
+                                                </p>
+                                            </div>
 
                                             {/* Meta Info */}
                                             <div className="flex items-center gap-4 text-sm text-bark/50">
@@ -282,15 +310,30 @@ const BlogPage: React.FC = () => {
                                                 if (!safeTags || safeTags.length === 0) return null;
 
                                                 return (
-                                                    <div className="flex flex-wrap gap-2 mt-4">
-                                                        {safeTags.slice(0, 3).map((tag: string, idx: number) => (
-                                                            <span
-                                                                key={idx}
-                                                                className="px-2 py-1 bg-bone text-bark/60 rounded-full text-xs"
-                                                            >
-                                                                #{tag}
-                                                            </span>
-                                                        ))}
+                                                    <div className="flex flex-wrap gap-2 mt-4 relative z-10">
+                                                        {safeTags.slice(0, 3).map((tag: string, idx: number) => {
+                                                            const isActive = filters.tags.includes(tag);
+                                                            return (
+                                                                <span
+                                                                    key={idx}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setFilters(prev => ({
+                                                                            ...prev,
+                                                                            tags: isActive
+                                                                                ? prev.tags.filter(t => t !== tag)
+                                                                                : [...prev.tags, tag]
+                                                                        }));
+                                                                    }}
+                                                                    className={`px-2 py-1 rounded-full text-xs transition-all duration-200 cursor-pointer ${isActive
+                                                                        ? "bg-forest text-white shadow-sm"
+                                                                        : "bg-bone text-bark/60 hover:bg-matcha/20 hover:text-forest"
+                                                                        }`}
+                                                                >
+                                                                    #{tag}
+                                                                </span>
+                                                            );
+                                                        })}
                                                     </div>
                                                 );
                                             })()}
@@ -301,34 +344,129 @@ const BlogPage: React.FC = () => {
 
                             {/* Pagination Controls */}
                             {Math.ceil(filteredArticles.length / ITEMS_PER_PAGE) > 1 && (
-                                <div className="flex justify-center items-center gap-6 mt-16">
-                                    <button
-                                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                                        disabled={currentPage === 1}
-                                        className={`px-6 py-2 rounded-full font-headers uppercase tracking-wider text-sm transition-all ${currentPage === 1
-                                            ? 'text-bark/30 cursor-not-allowed bg-transparent'
-                                            : 'bg-white text-forest shadow-md hover:shadow-lg hover:bg-forest hover:text-white'
-                                            }`}
-                                    >
-                                        {t('blog.prev_page', 'Anterior')}
-                                    </button>
-
-                                    <span className="text-bark/60 font-medium">
-                                        {currentPage} / {Math.ceil(filteredArticles.length / ITEMS_PER_PAGE)}
-                                    </span>
-
+                                <div className="flex justify-center items-center gap-2 md:gap-3 mt-16 mb-8">
+                                    {/* First Page */}
                                     <button
                                         onClick={() => {
-                                            setCurrentPage(p => Math.min(Math.ceil(filteredArticles.length / ITEMS_PER_PAGE), p + 1));
+                                            setCurrentPage(1);
                                             window.scrollTo({ top: 0, behavior: 'smooth' });
                                         }}
-                                        disabled={currentPage >= Math.ceil(filteredArticles.length / ITEMS_PER_PAGE)}
-                                        className={`px-6 py-2 rounded-full font-headers uppercase tracking-wider text-sm transition-all ${currentPage >= Math.ceil(filteredArticles.length / ITEMS_PER_PAGE)
-                                            ? 'text-bark/30 cursor-not-allowed bg-transparent'
-                                            : 'bg-white text-forest shadow-md hover:shadow-lg hover:bg-forest hover:text-white'
+                                        disabled={currentPage === 1}
+                                        className={`p-2 rounded-full transition-all ${currentPage === 1
+                                            ? 'text-bark/20 cursor-not-allowed'
+                                            : 'bg-white text-forest shadow-md hover:bg-forest hover:text-white'
                                             }`}
+                                        aria-label="Primera página"
                                     >
-                                        {t('blog.next_page', 'Siguiente')}
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                                        </svg>
+                                    </button>
+
+                                    {/* Prev Block */}
+                                    <button
+                                        onClick={() => {
+                                            // Jump to the first page of the previous block of 5
+                                            const prevRangeStart = Math.max(1, Math.floor((currentPage - 1) / 5) * 5 - 4);
+                                            setCurrentPage(prevRangeStart);
+                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        }}
+                                        disabled={currentPage <= 5 && Math.floor((currentPage - 1) / 5) === 0}
+                                        className={`p-2 rounded-full transition-all ${currentPage <= 5 && Math.floor((currentPage - 1) / 5) === 0
+                                            ? 'text-bark/20 cursor-not-allowed'
+                                            : 'bg-white text-forest shadow-md hover:bg-forest hover:text-white'
+                                            }`}
+                                        aria-label={t('blog.prev_page', 'Anterior')}
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                    </button>
+
+                                    <div className="flex items-center gap-1 md:gap-2">
+                                        {(() => {
+                                            const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
+                                            const rangeSize = 5;
+                                            const start = Math.floor((currentPage - 1) / rangeSize) * rangeSize + 1;
+                                            const end = Math.min(totalPages, start + rangeSize - 1);
+
+                                            const pages = [];
+                                            for (let i = start; i <= end; i++) {
+                                                pages.push(
+                                                    <button
+                                                        key={i}
+                                                        onClick={() => {
+                                                            setCurrentPage(i);
+                                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                        }}
+                                                        className={`w-10 h-10 rounded-full font-bold text-sm transition-all duration-300 ${currentPage === i
+                                                            ? 'bg-forest text-white shadow-lg scale-110'
+                                                            : 'bg-white text-bark/60 hover:bg-matcha/20 hover:text-forest'
+                                                            }`}
+                                                    >
+                                                        {i}
+                                                    </button>
+                                                );
+                                            }
+                                            return pages;
+                                        })()}
+                                    </div>
+
+                                    {/* Next Block */}
+                                    <button
+                                        onClick={() => {
+                                            const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
+                                            // Jump to the first page of the next block of 5
+                                            const nextRangeStart = Math.min(totalPages, Math.floor((currentPage - 1) / 5) * 5 + 6);
+                                            setCurrentPage(nextRangeStart);
+                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        }}
+                                        disabled={(() => {
+                                            const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
+                                            const currentBlockEnd = Math.floor((currentPage - 1) / 5) * 5 + 5;
+                                            return currentBlockEnd >= totalPages;
+                                        })()}
+                                        className={`p-2 rounded-full transition-all ${(() => {
+                                            const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
+                                            const currentBlockEnd = Math.floor((currentPage - 1) / 5) * 5 + 5;
+                                            return currentBlockEnd >= totalPages;
+                                        })()
+                                            ? 'text-bark/20 cursor-not-allowed'
+                                            : 'bg-white text-forest shadow-md hover:bg-forest hover:text-white'
+                                            }`}
+                                        aria-label={t('blog.next_page', 'Siguiente')}
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                    </button>
+
+                                    {/* Last Range */}
+                                    <button
+                                        onClick={() => {
+                                            const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
+                                            const lastRangeStart = Math.floor((totalPages - 1) / 5) * 5 + 1;
+                                            setCurrentPage(lastRangeStart);
+                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        }}
+                                        disabled={(() => {
+                                            const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
+                                            const lastRangeStart = Math.floor((totalPages - 1) / 5) * 5 + 1;
+                                            return currentPage >= lastRangeStart;
+                                        })()}
+                                        className={`p-2 rounded-full transition-all ${(() => {
+                                            const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
+                                            const lastRangeStart = Math.floor((totalPages - 1) / 5) * 5 + 1;
+                                            return currentPage >= lastRangeStart;
+                                        })()
+                                            ? 'text-bark/20 cursor-not-allowed'
+                                            : 'bg-white text-forest shadow-md hover:bg-forest hover:text-white'
+                                            }`}
+                                        aria-label="Último rango"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414zm6 0a1 1 0 011.414 0l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414-1.414L14.586 10l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                                        </svg>
                                     </button>
                                 </div>
                             )}

@@ -315,34 +315,36 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
                             <TagIcon className="w-3 h-3" />
                             {t('blog.search.tags_filter', 'Filtrar por etiquetas')}
                         </label>
-                        <div className="flex flex-wrap gap-2">
-                            {availableTags.length === 0 ? (
-                                <span className="text-sm text-bark/30 italic px-2">{t('blog.no_tags', 'No hay etiquetas disponibles')}</span>
-                            ) : (
-                                availableTags.map((tag) => {
-                                    const isActive = filters.tags.includes(tag);
-                                    return (
-                                        <button
-                                            key={tag}
-                                            onClick={() => toggleTag(tag)}
-                                            className={`px-3 py-1.5 rounded-full text-sm transition-all duration-200 border ${isActive
-                                                ? 'bg-forest text-white border-forest shadow-md'
-                                                : 'bg-white text-bark/60 border-bark/10 hover:border-forest/30 hover:text-forest'
-                                                }`}
-                                        >
-                                            #{tag}
-                                        </button>
-                                    );
-                                })
-                            )}
-                            {filters.tags.length > 0 && (
-                                <button
-                                    onClick={() => onFilterChange({ ...filters, tags: [] })}
-                                    className="px-3 py-1.5 rounded-full text-xs font-medium text-bark/40 hover:text-red-500 transition-colors ml-2"
-                                >
-                                    {t('blog.clear_tags', 'Limpiar')}
-                                </button>
-                            )}
+                        <div className="max-h-[120px] overflow-y-auto custom-scrollbar-thin pr-2">
+                            <div className="flex flex-wrap gap-2">
+                                {availableTags.length === 0 ? (
+                                    <span className="text-sm text-bark/30 italic px-2">{t('blog.no_tags', 'No hay etiquetas disponibles')}</span>
+                                ) : (
+                                    availableTags.map((tag) => {
+                                        const isActive = filters.tags.includes(tag);
+                                        return (
+                                            <button
+                                                key={tag}
+                                                onClick={() => toggleTag(tag)}
+                                                className={`px-3 py-1.5 rounded-full text-sm transition-all duration-200 border ${isActive
+                                                    ? 'bg-forest text-white border-forest shadow-md'
+                                                    : 'bg-white text-bark/60 border-bark/10 hover:border-forest/30 hover:text-forest'
+                                                    }`}
+                                            >
+                                                #{tag}
+                                            </button>
+                                        );
+                                    })
+                                )}
+                                {filters.tags.length > 0 && (
+                                    <button
+                                        onClick={() => onFilterChange({ ...filters, tags: [] })}
+                                        className="px-3 py-1.5 rounded-full text-xs font-medium text-bark/40 hover:text-red-500 transition-colors ml-2"
+                                    >
+                                        {t('blog.clear_tags', 'Limpiar')}
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
 

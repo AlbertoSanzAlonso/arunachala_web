@@ -59,6 +59,8 @@ export default function ContentManager() {
     const [dateSort, setDateSort] = useState<'desc' | 'asc'>('desc');
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+    const [showPublicationPrompt, setShowPublicationPrompt] = useState(false);
+    const [lastCreatedContent, setLastCreatedContent] = useState<Content | null>(null);
 
     // Local state for tags input to allow smooth typing
     // const [localTags, setLocalTags] = useState(''); // This is no longer needed
@@ -260,7 +262,7 @@ export default function ContentManager() {
             setEditingContent(null);
             // Set defaults based on current tab
             let defaultType: 'article' | 'meditation' | 'service' | 'announcement' = 'article';
-            let defaultCategory: 'yoga' | 'therapy' | 'general' | undefined = 'yoga';
+            let defaultCategory: 'yoga' | 'therapy' | 'general' | undefined = undefined;
 
             if (currentTab === 'yoga_article') { defaultType = 'article'; defaultCategory = 'yoga'; }
             if (currentTab === 'therapy_article') { defaultType = 'article'; defaultCategory = 'therapy'; }
@@ -436,9 +438,15 @@ export default function ContentManager() {
             });
 
             if (response.ok) {
+                const data = await response.json();
                 setIsModalOpen(false);
                 fetchContents();
-                toast.success(editingContent ? 'Contenido actualizado correctamente' : 'Contenido creado correctamente');
+                if (!editingContent && formData.status === 'draft') {
+                    setLastCreatedContent(data);
+                    setShowPublicationPrompt(true);
+                } else {
+                    toast.success(editingContent ? 'Contenido actualizado correctamente' : 'Contenido creado correctamente');
+                }
             } else {
                 const errorData = await response.json().catch(() => null);
                 const errorMessage = errorData?.detail || 'Error al guardar el contenido';
@@ -454,6 +462,35 @@ export default function ContentManager() {
 
     const handleDelete = (id: number) => {
         openDeleteModal(id);
+    };
+
+    const handleQuickPublish = async () => {
+        if (!lastCreatedContent) return;
+
+        setShowPublicationPrompt(false);
+        setIsSaving(true);
+        try {
+            const token = sessionStorage.getItem('access_token');
+            const response = await fetch(`${API_BASE_URL}/api/content/${lastCreatedContent.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ status: 'published' })
+            });
+
+            if (response.ok) {
+                fetchContents();
+                toast.success('¡Contenido publicado con éxito!');
+            } else {
+                toast.error('Error al intentar publicar');
+            }
+        } catch (error) {
+            toast.error('Error de conexión al publicar');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
@@ -732,7 +769,9 @@ export default function ContentManager() {
                                         <form onSubmit={handleSave} className="space-y-4">
                                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                                 <div className="col-span-1 lg:col-span-2">
-                                                    <label className="block text-sm font-medium text-gray-700">Título</label>
+                                                    <label className="block text-sm font-medium text-gray-700">
+                                                        Título <span className="text-red-500">*</span>
+                                                    </label>
                                                     <input
                                                         type="text"
                                                         required
@@ -754,10 +793,13 @@ export default function ContentManager() {
                                                     </select>
                                                 </div>
 
-                                                {formData.type !== 'meditation' && (
+                                                {formData.type === 'article' && (
                                                     <div className="col-span-1">
-                                                        <label className="block text-sm font-medium text-gray-700">Categoría</label>
+                                                        <label className="block text-sm font-medium text-gray-700">
+                                                            Categoría <span className="text-red-500">*</span>
+                                                        </label>
                                                         <select
+                                                            required
                                                             value={formData.category || ''}
                                                             onChange={e => setFormData({ ...formData, category: e.target.value as any })}
                                                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-forest focus:ring-forest sm:text-sm p-2 border"
@@ -833,22 +875,57 @@ export default function ContentManager() {
 
                                                 <div className="col-span-1 lg:col-span-2">
                                                     <label className="block text-sm font-medium text-gray-700">Imagen Destacada</label>
-                                                    {formData.thumbnail_url && (
-                                                        <div className="mt-2 mb-2">
-                                                            <img
-                                                                src={formData.thumbnail_url.startsWith('http') ? formData.thumbnail_url : `${API_BASE_URL}${formData.thumbnail_url}`}
-                                                                alt="Destacada"
-                                                                className="h-40 w-auto object-cover rounded-md"
-                                                            />
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => setFormData({ ...formData, thumbnail_url: '' })}
-                                                                className="text-xs text-red-600 mt-1 hover:underline"
-                                                            >
-                                                                Eliminar imagen
-                                                            </button>
-                                                        </div>
-                                                    )}
+                                                    {(formData.thumbnail_url ||
+                                                        (formData.type === 'article' && (formData.category === 'yoga' || formData.category === 'therapy')) ||
+                                                        (formData.type === 'meditation')) && (
+                                                            <div className="mt-2 mb-2 relative group">
+                                                                <img
+                                                                    src={formData.thumbnail_url
+                                                                        ? (formData.thumbnail_url.startsWith('http') ? formData.thumbnail_url : `${API_BASE_URL}${formData.thumbnail_url}`)
+                                                                        : (formData.type === 'meditation'
+                                                                            ? `${API_BASE_URL}/static/gallery/articles/meditation_default.webp`
+                                                                            : (formData.category === 'yoga' ? `${API_BASE_URL}/static/gallery/articles/om_symbol.webp` : `${API_BASE_URL}/static/gallery/articles/lotus_flower.webp`)
+                                                                        )
+                                                                    }
+                                                                    alt="Destacada"
+                                                                    className={`h-40 w-auto object-cover rounded-md border border-gray-200 ${!formData.thumbnail_url ? 'opacity-50 grayscale' : ''}`}
+                                                                    onError={(e) => {
+                                                                        const target = e.currentTarget;
+                                                                        if (target.getAttribute('data-fallback')) {
+                                                                            target.style.display = 'none';
+                                                                            const parent = target.parentElement;
+                                                                            if (parent) {
+                                                                                const fileName = formData.thumbnail_url?.split('/').pop() || 'Imagen';
+                                                                                const errDiv = document.createElement('div');
+                                                                                errDiv.className = "h-40 w-64 flex items-center justify-center p-4 text-center text-[10px] text-gray-400 italic break-all border border-gray-200 rounded-md bg-gray-50";
+                                                                                errDiv.innerText = fileName;
+                                                                                parent.appendChild(errDiv);
+                                                                            }
+                                                                            return;
+                                                                        }
+                                                                        target.setAttribute('data-fallback', 'true');
+                                                                        target.src = formData.type === 'meditation'
+                                                                            ? `${API_BASE_URL}/static/gallery/articles/meditation_default.webp`
+                                                                            : (formData.category === 'yoga' ? `${API_BASE_URL}/static/gallery/articles/om_symbol.webp` : `${API_BASE_URL}/static/gallery/articles/lotus_flower.webp`);
+                                                                        target.className = "h-40 w-auto object-contain p-4 opacity-50 grayscale rounded-md border border-gray-200";
+                                                                    }}
+                                                                />
+                                                                {!formData.thumbnail_url && (
+                                                                    <span className="absolute bottom-2 left-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded backdrop-blur-sm">
+                                                                        Imagen por defecto (basada en {formData.type === 'meditation' ? 'meditación' : 'categoría'})
+                                                                    </span>
+                                                                )}
+                                                                {formData.thumbnail_url && (
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => setFormData({ ...formData, thumbnail_url: '' })}
+                                                                        className="text-xs text-red-600 mt-1 hover:underline block"
+                                                                    >
+                                                                        Eliminar imagen (usar valor por defecto)
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        )}
                                                     <div className="flex flex-col space-y-2">
                                                         <div className="flex items-center space-x-2">
                                                             <input
@@ -929,6 +1006,72 @@ export default function ContentManager() {
                                                 </button>
                                             </div>
                                         </form>
+                                    </Dialog.Panel>
+                                </Transition.Child>
+                            </div>
+                        </div>
+                    </Dialog>
+                </Transition>
+
+                {/* Publication Choice Modal */}
+                <Transition appear show={showPublicationPrompt} as={Fragment}>
+                    <Dialog as="div" className="relative z-50" onClose={() => setShowPublicationPrompt(false)}>
+                        <Transition.Child
+                            as={Fragment}
+                            enter="ease-out duration-300"
+                            enterFrom="opacity-0"
+                            enterTo="opacity-100"
+                            leave="ease-in duration-200"
+                            leaveFrom="opacity-100"
+                            leaveTo="opacity-0"
+                        >
+                            <div className="fixed inset-0 bg-black bg-opacity-25" />
+                        </Transition.Child>
+
+                        <div className="fixed inset-0 overflow-y-auto">
+                            <div className="flex min-h-full items-center justify-center p-4 text-center">
+                                <Transition.Child
+                                    as={Fragment}
+                                    enter="ease-out duration-300"
+                                    enterFrom="opacity-0 scale-95"
+                                    enterTo="opacity-100 scale-100"
+                                    leave="ease-in duration-200"
+                                    leaveFrom="opacity-100 scale-100"
+                                    leaveTo="opacity-0 scale-95"
+                                >
+                                    <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                        <div className="flex items-center gap-4 mb-4">
+                                            <div className="flex-shrink-0 bg-indigo-100 rounded-full p-2">
+                                                <CheckIcon className="h-6 w-6 text-indigo-600" />
+                                            </div>
+                                            <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                                                ¡Contenido creado con éxito!
+                                            </Dialog.Title>
+                                        </div>
+
+                                        <div className="mt-2 text-sm text-gray-500">
+                                            <p>
+                                                El contenido "{lastCreatedContent?.title}" se ha guardado como <strong>borrador</strong>.
+                                                ¿Qué te gustaría hacer ahora?
+                                            </p>
+                                        </div>
+
+                                        <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                                            <button
+                                                type="button"
+                                                className="flex-1 inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-forest focus:ring-offset-2"
+                                                onClick={() => setShowPublicationPrompt(false)}
+                                            >
+                                                Dejar en borrador
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="flex-1 inline-flex justify-center rounded-md border border-transparent bg-forest px-4 py-2 text-sm font-medium text-white hover:bg-forest/90 focus:outline-none focus:ring-2 focus:ring-forest focus:ring-offset-2"
+                                                onClick={handleQuickPublish}
+                                            >
+                                                Publicar directamente
+                                            </button>
+                                        </div>
                                     </Dialog.Panel>
                                 </Transition.Child>
                             </div>

@@ -331,6 +331,18 @@ async def create_content(
     # if current_user.role != "admin":
     #     raise HTTPException(status_code=403, detail="Not authorized")
     
+    # Check for duplicate title (case-insensitive) for the same type
+    existing_content = db.query(Content).filter(
+        Content.title.ilike(content_data.title),
+        Content.type == content_data.type
+    ).first()
+    if existing_content:
+        type_label = "artículo" if content_data.type == "article" else "meditación"
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Ya existe un {type_label} con el título '{content_data.title}'. Por favor, elige uno diferente."
+        )
+    
     # Generate slug from title
     slug = generate_slug(content_data.title, db)
     
@@ -351,10 +363,23 @@ async def create_content(
         else:
             print(f"⚠️ Image download FAILED. Keeping original URL.")
     
-    # Force category to None for meditations
+    # Force category to None for meditations, or validate for articles
     content_dict = content_data.model_dump(exclude={'tags'})
     if content_data.type == 'meditation':
         content_dict['category'] = None
+        # Set default thumbnail if missing for meditations
+        if not content_dict.get('thumbnail_url'):
+            content_dict['thumbnail_url'] = '/static/gallery/articles/meditation_default.webp'
+    elif content_data.type == 'article':
+        if content_dict.get('category') not in ['yoga', 'therapy']:
+            raise HTTPException(status_code=400, detail="Los artículos deben tener la categoría 'yoga' o 'therapy'")
+        
+        # Set default thumbnail if missing for articles
+        if not content_dict.get('thumbnail_url'):
+            if content_dict.get('category') == 'yoga':
+                content_dict['thumbnail_url'] = '/static/gallery/articles/om_symbol.webp'
+            elif content_dict.get('category') == 'therapy':
+                content_dict['thumbnail_url'] = '/static/gallery/articles/lotus_flower.webp'
 
     db_content = Content(
         **content_dict,
@@ -414,6 +439,20 @@ async def update_content(
     # Update slug if title changed
     current_slug = db_content.slug
     if content_data.title and content_data.title != db_content.title:
+        # Check for duplicate title
+        target_type = content_data.type or db_content.type
+        existing_content = db.query(Content).filter(
+            Content.title.ilike(content_data.title),
+            Content.type == target_type,
+            Content.id != content_id
+        ).first()
+        if existing_content:
+            type_label = "artículo" if target_type == "article" else "meditación"
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Ya existe otro {type_label} con el título '{content_data.title}'."
+            )
+
         current_slug = generate_slug(content_data.title, db, content_id)
         db_content.slug = current_slug
     
@@ -428,8 +467,34 @@ async def update_content(
     
     # Update fields
     content_dict = content_data.model_dump(exclude_unset=True, exclude={'tags'})
-    if db_content.type == 'meditation':
+    
+    # Validation for articles
+    target_type = content_dict.get('type') or db_content.type
+    if target_type == 'meditation':
         content_dict['category'] = None
+        # Set default thumbnail if missing/cleared for meditations
+        current_thumb = content_dict.get('thumbnail_url') if 'thumbnail_url' in content_dict else db_content.thumbnail_url
+        if not current_thumb:
+            content_dict['thumbnail_url'] = '/static/gallery/articles/meditation_default.webp'
+    elif target_type == 'article':
+        # If it's being set now, or if it was already an article and category is being updated
+        # we check the new category value if provided, else we check existing one
+        new_cat = content_dict.get('category')
+        if new_cat is not None and new_cat not in ['yoga', 'therapy']:
+             raise HTTPException(status_code=400, detail="Los artículos deben tener la categoría 'yoga' o 'therapy'")
+        
+        changing_to_article = content_dict.get('type') == 'article'
+        if changing_to_article and not new_cat and db_content.category not in ['yoga', 'therapy']:
+             raise HTTPException(status_code=400, detail="Al cambiar a artículo, se debe especificar la categoría 'yoga' o 'therapy'")
+        
+        # Set default thumbnail if missing/cleared for articles
+        current_thumb = content_dict.get('thumbnail_url') if 'thumbnail_url' in content_dict else db_content.thumbnail_url
+        if not current_thumb:
+            cat = content_dict.get('category') or db_content.category
+            if cat == 'yoga':
+                content_dict['thumbnail_url'] = '/static/gallery/articles/om_symbol.webp'
+            elif cat == 'therapy':
+                content_dict['thumbnail_url'] = '/static/gallery/articles/lotus_flower.webp'
 
     for key, value in content_dict.items():
         setattr(db_content, key, value)

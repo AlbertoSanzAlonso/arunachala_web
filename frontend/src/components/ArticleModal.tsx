@@ -112,10 +112,36 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
                                             src={getImageUrl(article.thumbnail_url)}
                                             alt={translatedTitle}
                                             className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                const target = e.currentTarget;
+                                                if (target.getAttribute('data-fallback')) {
+                                                    target.style.display = 'none';
+                                                    const parent = target.parentElement;
+                                                    if (parent) {
+                                                        const fileName = article.thumbnail_url?.split('/').pop() || 'Imagen';
+                                                        const errDiv = document.createElement('div');
+                                                        errDiv.className = "w-full h-full flex items-center justify-center p-8 text-center text-sm text-white/50 italic break-all px-20";
+                                                        errDiv.innerText = fileName;
+                                                        parent.appendChild(errDiv);
+                                                    }
+                                                    return;
+                                                }
+                                                target.setAttribute('data-fallback', 'true');
+                                                target.src = article.category === 'yoga'
+                                                    ? getImageUrl('/static/gallery/articles/om_symbol.webp')
+                                                    : getImageUrl('/static/gallery/articles/lotus_flower.webp');
+                                                target.className = "w-64 h-64 object-contain opacity-50 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2";
+                                            }}
                                         />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-forest/20 to-matcha/20">
-                                            <TagIcon className="w-20 h-20 text-forest/30" />
+                                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-forest/20 to-matcha/20 px-10">
+                                            {article.category === 'yoga' ? (
+                                                <img src={getImageUrl('/static/gallery/articles/om_symbol.webp')} alt="Yoga" className="w-64 h-64 object-contain opacity-50" />
+                                            ) : article.category === 'therapy' ? (
+                                                <img src={getImageUrl('/static/gallery/articles/lotus_flower.webp')} alt="Terapia" className="w-64 h-64 object-contain opacity-50" />
+                                            ) : (
+                                                <TagIcon className="w-20 h-20 text-forest/30" />
+                                            )}
                                         </div>
                                     )}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />

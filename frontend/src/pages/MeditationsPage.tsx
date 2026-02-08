@@ -29,6 +29,49 @@ interface Meditation {
     };
 }
 
+const VolumeControl: React.FC<{
+    volume: number;
+    isMuted: boolean;
+    onVolumeChange: (val: number) => void;
+    onMuteToggle: () => void;
+    size?: 'sm' | 'md';
+}> = ({ volume, isMuted, onVolumeChange, onMuteToggle, size = 'md' }) => {
+    const isSmall = size === 'sm';
+    return (
+        <div className={`flex items-center group/volume ${isSmall ? 'gap-1 p-1 bg-white/90 backdrop-blur-sm rounded-full shadow-sm' : 'gap-3'}`}>
+            <button
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onMuteToggle();
+                }}
+                className="text-forest hover:text-matcha transition-colors outline-none"
+                aria-label={isMuted ? "Unmute" : "Mute"}
+            >
+                {isMuted || volume === 0 ? (
+                    <SpeakerXMarkIcon className={isSmall ? "w-5 h-5" : "w-8 h-8"} />
+                ) : (
+                    <SpeakerWaveIcon className={isSmall ? "w-5 h-5" : "w-8 h-8"} />
+                )}
+            </button>
+            <div className={`overflow-hidden transition-all duration-300 flex items-center ${isSmall ? 'w-0 group-hover/volume:w-20 pr-1' : 'w-0 group-hover/volume:w-24 opacity-0 group-hover/volume:opacity-100'}`}>
+                <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={isMuted ? 0 : volume}
+                    onChange={(e) => {
+                        e.stopPropagation();
+                        onVolumeChange(parseFloat(e.target.value));
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    className={`accent-forest cursor-pointer appearance-none bg-forest/20 rounded-full ${isSmall ? 'h-1 w-full' : 'h-1.5 w-full'}`}
+                />
+            </div>
+        </div>
+    );
+};
+
 const MeditationsPage: React.FC = () => {
     const { t, i18n } = useTranslation();
     const [meditations, setMeditations] = useState<Meditation[]>([]);
@@ -117,6 +160,7 @@ const MeditationsPage: React.FC = () => {
     const [progress, setProgress] = useState(0);
     const [duration, setDuration] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
+    const [volume, setVolume] = useState(1);
     const [isMuted, setIsMuted] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
 
@@ -189,6 +233,9 @@ const MeditationsPage: React.FC = () => {
             console.log("Full Audio URL:", fullUrl);
             const newAudio = new Audio(fullUrl);
 
+            newAudio.volume = volume;
+            newAudio.muted = isMuted;
+
             newAudio.play().then(() => {
                 console.log("Audio started playing successfully");
             }).catch(err => {
@@ -208,6 +255,20 @@ const MeditationsPage: React.FC = () => {
             setPlayingId(meditation.id);
             setSelectedMeditation(meditation);
             // setIsPlayerModalOpen(true); // Disable modal
+        }
+    };
+
+    const handleVolumeChange = (newVolume: number) => {
+        setVolume(newVolume);
+        if (audio) {
+            audio.volume = newVolume;
+            if (newVolume > 0 && isMuted) {
+                audio.muted = false;
+                setIsMuted(false);
+            } else if (newVolume === 0 && !isMuted) {
+                audio.muted = true;
+                setIsMuted(true);
+            }
         }
     };
 
@@ -320,9 +381,31 @@ const MeditationsPage: React.FC = () => {
                                                             src={meditation.thumbnail_url.startsWith('http') ? meditation.thumbnail_url : `${API_BASE_URL}${meditation.thumbnail_url}`}
                                                             alt={displayTitle}
                                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                            onError={(e) => {
+                                                                const target = e.currentTarget;
+                                                                if (target.getAttribute('data-fallback')) {
+                                                                    target.style.display = 'none';
+                                                                    const parent = target.parentElement;
+                                                                    if (parent) {
+                                                                        const fileName = meditation.thumbnail_url?.split('/').pop() || 'Imagen';
+                                                                        const errDiv = document.createElement('div');
+                                                                        errDiv.className = "absolute inset-0 flex items-center justify-center p-4 text-center text-[10px] text-bark/30 italic break-all";
+                                                                        errDiv.innerText = fileName;
+                                                                        parent.appendChild(errDiv);
+                                                                    }
+                                                                    return;
+                                                                }
+                                                                target.setAttribute('data-fallback', 'true');
+                                                                target.src = `${API_BASE_URL}/static/gallery/articles/meditation_default.webp`;
+                                                                target.className = "w-full h-full object-cover opacity-60";
+                                                            }}
                                                         />
                                                     ) : (
-                                                        <div className="absolute inset-0 bg-gradient-to-br from-forest/30 to-matcha/30" />
+                                                        <img
+                                                            src={`${API_BASE_URL}/static/gallery/articles/meditation_default.webp`}
+                                                            alt="Meditation"
+                                                            className="w-full h-full object-cover opacity-60"
+                                                        />
                                                     )}
 
                                                     <div className="absolute flex gap-4 z-10">
@@ -357,7 +440,18 @@ const MeditationsPage: React.FC = () => {
                                                         )}
                                                     </div>
 
-                                                    {/* Sound Wave Animation */}
+                                                    {/* Sound Wave Animation & Volume Control */}
+                                                    {playingId === meditation.id && (
+                                                        <div className="absolute bottom-4 left-4 z-30">
+                                                            <VolumeControl
+                                                                volume={volume}
+                                                                isMuted={isMuted}
+                                                                onVolumeChange={handleVolumeChange}
+                                                                onMuteToggle={toggleMute}
+                                                                size="sm"
+                                                            />
+                                                        </div>
+                                                    )}
                                                     {playingId === meditation.id && isPlaying && (
                                                         <div className="absolute bottom-4 left-0 right-0 flex justify-center items-end gap-1 h-8 z-20 pointer-events-none">
                                                             {[...Array(5)].map((_, i) => (
@@ -380,7 +474,9 @@ const MeditationsPage: React.FC = () => {
                                                 </div>
                                                 <div className="p-6">
                                                     <h3 className="text-2xl font-headers text-forest mb-2">{displayTitle}</h3>
-                                                    <p className="text-bark/80 line-clamp-3 mb-4">{displayExcerpt}</p>
+                                                    <div className="h-20 overflow-y-auto mb-4 pr-2 custom-scrollbar">
+                                                        <p className="text-bark/80 text-sm leading-relaxed">{displayExcerpt}</p>
+                                                    </div>
 
                                                     {(() => {
                                                         let tTags = getTranslated(meditation, 'tags', i18n.language);
@@ -444,31 +540,113 @@ const MeditationsPage: React.FC = () => {
 
                             {/* Pagination Controls */}
                             {totalPages > 1 && (
-                                <div className="flex justify-center items-center gap-6 mt-16 pb-8">
+                                <div className="flex justify-center items-center gap-2 md:gap-3 mt-16 pb-8">
+                                    {/* First Page */}
                                     <button
-                                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                        onClick={() => {
+                                            setCurrentPage(1);
+                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        }}
                                         disabled={currentPage === 1}
-                                        className={`px-6 py-2 rounded-full font-headers uppercase tracking-wider text-sm transition-all ${currentPage === 1
-                                            ? 'text-bark/30 cursor-not-allowed bg-transparent'
-                                            : 'bg-white text-forest shadow-md hover:shadow-lg hover:bg-forest hover:text-white'
+                                        className={`p-2 rounded-full transition-all ${currentPage === 1
+                                            ? 'text-bark/20 cursor-not-allowed'
+                                            : 'bg-white text-forest shadow-md hover:bg-forest hover:text-white'
                                             }`}
+                                        aria-label="Primera página"
                                     >
-                                        {t('meditations.prev')}
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                                        </svg>
                                     </button>
 
-                                    <span className="text-bark/60 font-medium">
-                                        {currentPage} / {totalPages}
-                                    </span>
-
+                                    {/* Prev Block */}
                                     <button
-                                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                        disabled={currentPage === totalPages}
-                                        className={`px-6 py-2 rounded-full font-headers uppercase tracking-wider text-sm transition-all ${currentPage === totalPages
-                                            ? 'text-bark/30 cursor-not-allowed bg-transparent'
-                                            : 'bg-white text-forest shadow-md hover:shadow-lg hover:bg-forest hover:text-white'
+                                        onClick={() => {
+                                            // Jump to the first page of the previous block of 5
+                                            const prevRangeStart = Math.max(1, Math.floor((currentPage - 1) / 5) * 5 - 4);
+                                            setCurrentPage(prevRangeStart);
+                                        }}
+                                        disabled={currentPage <= 5 && Math.floor((currentPage - 1) / 5) === 0}
+                                        className={`p-2 rounded-full transition-all ${currentPage <= 5 && Math.floor((currentPage - 1) / 5) === 0
+                                            ? 'text-bark/20 cursor-not-allowed'
+                                            : 'bg-white text-forest shadow-md hover:bg-forest hover:text-white'
                                             }`}
+                                        aria-label={t('meditations.prev')}
                                     >
-                                        {t('meditations.next')}
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                    </button>
+
+                                    <div className="flex items-center gap-1 md:gap-2">
+                                        {(() => {
+                                            const rangeSize = 5;
+                                            const start = Math.floor((currentPage - 1) / rangeSize) * rangeSize + 1;
+                                            const end = Math.min(totalPages, start + rangeSize - 1);
+
+                                            const pages = [];
+                                            for (let i = start; i <= end; i++) {
+                                                pages.push(
+                                                    <button
+                                                        key={i}
+                                                        onClick={() => {
+                                                            setCurrentPage(i);
+                                                        }}
+                                                        className={`w-10 h-10 rounded-full font-bold text-sm transition-all duration-300 ${currentPage === i
+                                                            ? 'bg-forest text-white shadow-lg scale-110'
+                                                            : 'bg-white text-bark/60 hover:bg-matcha/20 hover:text-forest'
+                                                            }`}
+                                                    >
+                                                        {i}
+                                                    </button>
+                                                );
+                                            }
+                                            return pages;
+                                        })()}
+                                    </div>
+
+                                    {/* Next Block */}
+                                    <button
+                                        onClick={() => {
+                                            // Jump to the first page of the next block of 5
+                                            const nextRangeStart = Math.min(totalPages, Math.floor((currentPage - 1) / 5) * 5 + 6);
+                                            setCurrentPage(nextRangeStart);
+                                        }}
+                                        disabled={(() => {
+                                            const currentBlockEnd = Math.floor((currentPage - 1) / 5) * 5 + 5;
+                                            return currentBlockEnd >= totalPages;
+                                        })()}
+                                        className={`p-2 rounded-full transition-all ${(() => {
+                                            const currentBlockEnd = Math.floor((currentPage - 1) / 5) * 5 + 5;
+                                            return currentBlockEnd >= totalPages;
+                                        })()
+                                            ? 'text-bark/20 cursor-not-allowed'
+                                            : 'bg-white text-forest shadow-md hover:bg-forest hover:text-white'
+                                            }`}
+                                        aria-label={t('meditations.next')}
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                    </button>
+
+                                    {/* Last Range */}
+                                    <button
+                                        onClick={() => {
+                                            const lastRangeStart = Math.floor((totalPages - 1) / 5) * 5 + 1;
+                                            setCurrentPage(lastRangeStart);
+                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        }}
+                                        disabled={currentPage >= Math.floor((totalPages - 1) / 5) * 5 + 1}
+                                        className={`p-2 rounded-full transition-all ${currentPage >= Math.floor((totalPages - 1) / 5) * 5 + 1
+                                            ? 'text-bark/20 cursor-not-allowed'
+                                            : 'bg-white text-forest shadow-md hover:bg-forest hover:text-white'
+                                            }`}
+                                        aria-label="Último rango"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414zm6 0a1 1 0 011.414 0l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414-1.414L14.586 10l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                                        </svg>
                                     </button>
                                 </div>
                             )}
@@ -523,9 +701,31 @@ const MeditationsPage: React.FC = () => {
                                                                 src={selectedMeditation.thumbnail_url.startsWith('http') ? selectedMeditation.thumbnail_url : `${API_BASE_URL}${selectedMeditation.thumbnail_url}`}
                                                                 alt={displayTitle}
                                                                 className="w-full h-full object-cover"
+                                                                onError={(e) => {
+                                                                    const target = e.currentTarget;
+                                                                    if (target.getAttribute('data-fallback')) {
+                                                                        target.style.display = 'none';
+                                                                        const parent = target.parentElement;
+                                                                        if (parent) {
+                                                                            const fileName = selectedMeditation.thumbnail_url?.split('/').pop() || 'Imagen';
+                                                                            const errDiv = document.createElement('div');
+                                                                            errDiv.className = "w-full h-full flex items-center justify-center p-4 text-center text-sm text-bark/30 italic break-all";
+                                                                            errDiv.innerText = fileName;
+                                                                            parent.appendChild(errDiv);
+                                                                        }
+                                                                        return;
+                                                                    }
+                                                                    target.setAttribute('data-fallback', 'true');
+                                                                    target.src = `${API_BASE_URL}/static/gallery/articles/meditation_default.webp`;
+                                                                    target.className = "w-full h-full object-cover opacity-80";
+                                                                }}
                                                             />
                                                         ) : (
-                                                            <div className="w-full h-full bg-gradient-to-br from-forest to-matcha" />
+                                                            <img
+                                                                src={`${API_BASE_URL}/static/gallery/articles/meditation_default.webp`}
+                                                                alt="Meditation"
+                                                                className="w-full h-full object-cover opacity-80"
+                                                            />
                                                         )}
                                                     </div>
 
@@ -554,35 +754,37 @@ const MeditationsPage: React.FC = () => {
                                                     </div>
 
                                                     {/* Controls */}
-                                                    <div className="flex items-center space-x-8">
-                                                        <button
-                                                            onClick={toggleMute}
-                                                            className="text-bark/40 hover:text-forest transition-colors"
-                                                        >
-                                                            {isMuted ? (
-                                                                <SpeakerXMarkIcon className="w-8 h-8" />
-                                                            ) : (
-                                                                <SpeakerWaveIcon className="w-8 h-8" />
-                                                            )}
-                                                        </button>
+                                                    <div className="grid grid-cols-3 items-center w-full mt-4">
+                                                        <div className="flex justify-start">
+                                                            <VolumeControl
+                                                                volume={volume}
+                                                                isMuted={isMuted}
+                                                                onVolumeChange={handleVolumeChange}
+                                                                onMuteToggle={toggleMute}
+                                                            />
+                                                        </div>
 
-                                                        <button
-                                                            onClick={() => audio && (audio.paused ? audio.play() : audio.pause())}
-                                                            className="bg-forest text-white rounded-full p-4 shadow-lg hover:scale-105 active:scale-95 transition-all"
-                                                        >
-                                                            {isPlaying ? (
-                                                                <PauseCircleIcon className="w-10 h-10" />
-                                                            ) : (
-                                                                <PlayCircleIcon className="w-10 h-10" />
-                                                            )}
-                                                        </button>
+                                                        <div className="flex justify-center">
+                                                            <button
+                                                                onClick={() => audio && (audio.paused ? audio.play() : audio.pause())}
+                                                                className="bg-forest text-white rounded-full p-4 shadow-lg hover:scale-105 active:scale-95 transition-all outline-none"
+                                                            >
+                                                                {isPlaying ? (
+                                                                    <PauseCircleIcon className="w-10 h-10" />
+                                                                ) : (
+                                                                    <PlayCircleIcon className="w-10 h-10" />
+                                                                )}
+                                                            </button>
+                                                        </div>
 
-                                                        <button
-                                                            onClick={stopAudio}
-                                                            className="text-red-400 hover:text-red-600 transition-colors text-xs font-bold uppercase tracking-widest"
-                                                        >
-                                                            {t('meditations.stop')}
-                                                        </button>
+                                                        <div className="flex justify-end">
+                                                            <button
+                                                                onClick={stopAudio}
+                                                                className="text-red-400 hover:text-red-600 transition-colors text-xs font-bold uppercase tracking-widest outline-none"
+                                                            >
+                                                                {t('meditations.stop')}
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             );
