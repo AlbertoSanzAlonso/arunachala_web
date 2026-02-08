@@ -50,10 +50,11 @@ def process_tags(tags: Optional[List[str]]) -> Optional[List[str]]:
         return None
     return [tag.capitalize() for tag in tags if tag]
 
-def sync_content_tags(db: Session, content: Content, tags_list: Optional[List[str]], background_tasks: Optional[BackgroundTasks] = None):
+def sync_content_tags(db: Session, content: Content, tags_list: Optional[List[str]], background_tasks: Optional[BackgroundTasks] = None, content_translations: Optional[dict] = None):
     """
     Syncs the tags list with the Tag table and updates the content relationship.
     Handles 'Find or Create' logic for each tag.
+    Also updates tag translations if provided in content_translations.
     """
     if not tags_list:
         content.tag_entities = []
@@ -71,7 +72,7 @@ def sync_content_tags(db: Session, content: Content, tags_list: Optional[List[st
         
     print(f"🏷️ Syncing tags for category: {tag_category}")
 
-    for tag_name in tags_list:
+    for i, tag_name in enumerate(tags_list):
         normalized_name = tag_name.strip()
         if not normalized_name:
             continue
@@ -84,10 +85,27 @@ def sync_content_tags(db: Session, content: Content, tags_list: Optional[List[st
             db.add(tag)
             db.flush() # Generate ID for new tag
             
-            # Trigger background translation for the new tag
+            # Trigger background translation for the new tag ONLY if incomplete translations
             if background_tasks:
                 background_tasks.add_task(auto_translate_background, SessionLocal, Tag, tag.id, {"name": tag.name})
+        
+        # Update explicit translations if provided
+        if content_translations:
+            updates = {}
+            for lang, data in content_translations.items():
+                if data and isinstance(data, dict) and 'tags' in data:
+                    t_list = data['tags']
+                    if isinstance(t_list, list) and len(t_list) > i:
+                        val = t_list[i]
+                        if val and isinstance(val, str):
+                            updates[lang] = val.strip()
             
+            if updates:
+                current = dict(tag.translations) if tag.translations else {}
+                current.update(updates)
+                tag.translations = current
+                db.add(tag) # Ensure update is tracked
+
         tag_objects.append(tag)
     
     print(f"🔗 Linking {len(tag_objects)} tags to content")
@@ -403,7 +421,7 @@ async def create_content(
     )
     
     # Sync with Tag table
-    sync_content_tags(db, db_content, processed_tags, background_tasks=background_tasks)
+    sync_content_tags(db, db_content, processed_tags, background_tasks=background_tasks, content_translations=content_data.translations)
     
     db.add(db_content)
     db.commit()

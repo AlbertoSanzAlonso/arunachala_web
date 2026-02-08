@@ -10,10 +10,6 @@ interface TagSelectorProps {
     category?: string;
 }
 
-interface TagOption {
-    id: number;
-    name: string;
-}
 
 export const TagSelector: React.FC<TagSelectorProps> = ({ value, onChange, category }) => {
     const [query, setQuery] = useState('');

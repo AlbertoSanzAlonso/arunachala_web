@@ -32,3 +32,6 @@ The Content Manager now includes an "Author" filter:
 - **AI (Bot)**: Show content where `author_id == 4` or name is "ArunachalaBot".
 
 This allows easy separation of manually written content vs automated/generated content.
+
+## Tag Translations
+If the n8n payload includes a `translations` object with `tags` arrays for each language (e.g., inside `es`, `en`, `ca` objects), the system will automatically sync these translated tags to the `tags` database table. This ensures that filtering by tag works seamlessly across languages.
