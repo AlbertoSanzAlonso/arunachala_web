@@ -105,7 +105,13 @@ export default function ContentManager() {
             else if (currentTab === 'meditation') matchesTab = item.type === 'meditation';
 
             // Search filter
-            const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase());
+            const searchLower = searchTerm.toLowerCase();
+            const matchesSearch =
+                item.title.toLowerCase().includes(searchLower) ||
+                (item.excerpt && item.excerpt.toLowerCase().includes(searchLower)) ||
+                (item.body && item.body.toLowerCase().includes(searchLower)) ||
+                (Array.isArray(item.tags) && item.tags.some(tag => tag.toLowerCase().includes(searchLower))) ||
+                (typeof item.tags === 'string' && item.tags.toLowerCase().includes(searchLower));
 
             // Time filter
             let matchesTime = true;
@@ -556,6 +562,12 @@ export default function ContentManager() {
                                 }}
                                 onFocus={() => setShowSuggestions(true)}
                                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)} // Delay to allow click
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        setShowSuggestions(false);
+                                        (e.target as HTMLInputElement).blur();
+                                    }
+                                }}
                             />
                             {/* Suggestions Dropdown */}
                             {showSuggestions && searchSuggestions.length > 0 && (

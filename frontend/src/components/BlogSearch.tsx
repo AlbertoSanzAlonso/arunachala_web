@@ -63,7 +63,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
         if (filters.year === 'all' && filters.month !== 'all') {
             onFilterChange({ ...filters, month: 'all' });
         }
-    }, [filters.year]);
+    }, [filters.year, filters.month, filters, onFilterChange]);
 
     const formatMonthLabel = (monthIndex: string) => {
         if (monthIndex === 'all') return t('blog.search.all_months', 'Todos los meses');

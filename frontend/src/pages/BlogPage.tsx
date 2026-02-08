@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -115,9 +115,9 @@ const BlogPage: React.FC = () => {
         setCurrentPage(1);
     }, [articles, filters, i18n.language]);
 
-    const handleFilterChange = (newFilters: FilterState) => {
+    const handleFilterChange = useCallback((newFilters: FilterState) => {
         setFilters(newFilters);
-    };
+    }, []);
 
     const fetchArticles = async () => {
         try {
