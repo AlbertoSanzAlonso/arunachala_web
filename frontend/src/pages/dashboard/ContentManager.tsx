@@ -28,6 +28,12 @@ interface Content {
     thumbnail_url?: string;
     media_url?: string;
     tags?: string[] | string;
+    author?: {
+        id: number;
+        first_name: string;
+        last_name?: string;
+    };
+    author_id?: number;
 }
 
 const TABS = [
@@ -70,6 +76,7 @@ export default function ContentManager() {
     const [filterType, setFilterType] = useState<'all' | 'week' | 'month' | 'year'>('all');
     const [filterValue, setFilterValue] = useState<string>('');
     const [dateSort, setDateSort] = useState<'desc' | 'asc'>('desc');
+    const [filterAuthor, setFilterAuthor] = useState<'all' | 'human' | 'ai'>('all');
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
     const [showPublicationPrompt, setShowPublicationPrompt] = useState(false);
@@ -115,7 +122,7 @@ export default function ContentManager() {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [currentTab, searchTerm, filterType, filterValue]);
+    }, [currentTab, searchTerm, filterType, filterValue, filterAuthor]);
 
     const filteredContents = contents
         .filter(item => {
@@ -162,7 +169,16 @@ export default function ContentManager() {
                 }
             }
 
-            return matchesTab && matchesSearch && matchesTime;
+            // Author filter
+            let matchesAuthor = true;
+            if (filterAuthor === 'ai') {
+                // Agent ID is usually 4, or verify by name
+                matchesAuthor = item.author_id === 4 || item.author?.first_name === 'ArunachalaBot';
+            } else if (filterAuthor === 'human') {
+                matchesAuthor = item.author_id !== 4 && item.author?.first_name !== 'ArunachalaBot';
+            }
+
+            return matchesTab && matchesSearch && matchesTime && matchesAuthor;
         })
         .sort((a, b) => {
             const dateA = new Date(a.created_at).getTime();
@@ -663,6 +679,22 @@ export default function ContentManager() {
                             )}
                         </div>
 
+                        {/* Author Filter */}
+                        <div className="relative w-32 self-center">
+                            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                <SparklesIcon className="h-5 w-5 text-gray-400" />
+                            </div>
+                            <select
+                                className="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-forest sm:text-sm sm:leading-6"
+                                value={filterAuthor}
+                                onChange={(e) => setFilterAuthor(e.target.value as any)}
+                            >
+                                <option value="all">Todos</option>
+                                <option value="human">Humanos</option>
+                                <option value="ai">IA (Bot)</option>
+                            </select>
+                        </div>
+
                         {/* Sort Order Toggle */}
                         <button
                             onClick={() => setDateSort(prev => prev === 'asc' ? 'desc' : 'asc')}
@@ -698,7 +730,7 @@ export default function ContentManager() {
                 <div className="mt-8 flow-root">
                     <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+                            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg bg-white">
                                 <table className="min-w-full divide-y divide-gray-300">
                                     <thead className="bg-gray-50">
                                         <tr>
@@ -716,6 +748,7 @@ export default function ContentManager() {
                                                 <th scope="col" className="hidden lg:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Categoría</th>
                                             )}
                                             <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Estado</th>
+                                            <th scope="col" className="hidden xl:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Autor</th>
                                             <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">Acciones</span></th>
                                         </tr>
                                     </thead>
@@ -726,7 +759,7 @@ export default function ContentManager() {
                                             <tr><td colSpan={6} className="text-center py-4 text-gray-500">No hay contenido en esta sección.</td></tr>
                                         ) : (
                                             filteredContents.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((item) => (
-                                                <tr key={item.id} className={selectedIds.has(item.id) ? 'bg-gray-50' : undefined}>
+                                                <tr key={item.id} className={selectedIds.has(item.id) ? 'bg-gray-50' : 'bg-white'}>
                                                     <td className="relative py-4 pl-4 pr-3 sm:pl-6">
                                                         <input
                                                             type="checkbox"
@@ -749,6 +782,15 @@ export default function ContentManager() {
                                                         ${item.status === 'published' ? 'bg-green-50 text-green-700 ring-green-600/20' : 'bg-gray-50 text-gray-600 ring-gray-500/10'}`}>
                                                             {item.status === 'published' ? 'Publicado' : 'Borrador'}
                                                         </span>
+                                                    </td>
+                                                    <td className="hidden xl:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                                        {item.author?.first_name === 'ArunachalaBot' ? (
+                                                            <span className="inline-flex items-center gap-1 text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full text-xs font-medium">
+                                                                <SparklesIcon className="w-3 h-3" /> IA
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-gray-600">{item.author?.first_name || 'Admin'}</span>
+                                                        )}
                                                     </td>
                                                     <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                                                         <button onClick={() => handleOpenModal(item)} className="text-forest hover:text-forest/80 mr-4">

@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
@@ -131,7 +131,7 @@ class ContentBase(BaseModel):
     translations: Optional[dict] = None
 
 class ContentCreate(ContentBase):
-    pass
+    author_id: Optional[int] = None
 
 class ContentUpdate(BaseModel):
     title: Optional[str] = None
@@ -147,12 +147,21 @@ class ContentUpdate(BaseModel):
     tags: Optional[List[str]] = None
     translations: Optional[dict] = None
 
+class AuthorResponse(BaseModel):
+    id: int
+    first_name: Optional[str]
+    last_name: Optional[str]
+    
+    class Config:
+        from_attributes = True
+
 class ContentResponse(ContentBase):
     id: int
     slug: str
     author_id: Optional[int]
     created_at: datetime
     updated_at: Optional[datetime]
+    author: Optional[AuthorResponse] = None
 
     class Config:
         from_attributes = True
@@ -234,15 +243,20 @@ def get_contents(
     type: Optional[str] = None,
     category: Optional[str] = None,
     status: Optional[str] = None,
+    author_id: Optional[int] = Query(None, description="Filter by author ID (e.g. 4 for AI Agent)"),
     db: Session = Depends(get_db)
 ):
-    query = db.query(Content)
+    query = db.query(Content).options(joinedload(Content.author))
+    
     if type:
         query = query.filter(Content.type == type)
     if category:
         query = query.filter(Content.category == category)
     if status:
         query = query.filter(Content.status == status)
+    if author_id is not None:
+        query = query.filter(Content.author_id == author_id)
+        
     return query.order_by(Content.created_at.desc()).all()
 
 @router.get("/slug/{slug}", response_model=ContentResponse)
@@ -327,7 +341,7 @@ async def create_content(
     db: Session = Depends(get_db)
 ):
     # Mock user for automation if needed, or handle author_id logic
-    current_user_id = 1 # Admin/System user ID default
+    current_user_id = content_data.author_id if content_data.author_id else 1 
     # if current_user.role != "admin":
     #     raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -346,7 +360,7 @@ async def create_content(
     # Generate slug from title
     slug = generate_slug(content_data.title, db)
     
-    print(f"🚀 CREATE PROCESS: Slug='{slug}', Thumb='{content_data.thumbnail_url}'")
+    print(f"🚀 CREATE PROCESS: Slug='{slug}', Thumb='{content_data.thumbnail_url}', AuthorID='{content_data.author_id}'")
 
     # Process tags (capitalize)
     print(f"📝 Raw tags received: {content_data.tags}")
@@ -364,7 +378,7 @@ async def create_content(
             print(f"⚠️ Image download FAILED. Keeping original URL.")
     
     # Force category to None for meditations, or validate for articles
-    content_dict = content_data.model_dump(exclude={'tags'})
+    content_dict = content_data.model_dump(exclude={'tags', 'author_id'})
     if content_data.type == 'meditation':
         content_dict['category'] = None
         # Set default thumbnail if missing for meditations
