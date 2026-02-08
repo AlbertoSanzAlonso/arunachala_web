@@ -139,13 +139,19 @@ def get_inventory_summary(db: Session):
             if entity_type and hasattr(Model, 'type'):
                 query = query.filter(Model.type == entity_type)
             
+            # IMPROVEMENT: Order by newest first
+            if hasattr(Model, 'created_at'):
+                query = query.order_by(Model.created_at.desc())
+            elif hasattr(Model, 'id'):
+                query = query.order_by(Model.id.desc())
+                
             items = query.limit(limit).all()
             if not items: return ""
             titles = []
             for item in items:
                 t = getattr(item, 'title', None) or getattr(item, 'name', None)
                 if t: titles.append(t)
-            return " (ejemplos: " + ", ".join(titles) + "...)" if titles else ""
+            return " (los más recientes: " + ", ".join(titles) + "...)" if titles else ""
 
         parts = []
         if summary['yoga']: parts.append(f"{summary['yoga']} clases de yoga{get_samples(YogaClassDefinition)}")

@@ -327,9 +327,6 @@ const ChatBot: React.FC = () => {
                                     <PaperAirplaneIcon className="w-5 h-5 -rotate-12" />
                                 </button>
                             </form>
-                            <p className="text-[10px] text-center text-gray-400 mt-3 font-medium tracking-tight">
-                                {t('chatbot.ai_notice', "✨ Inteligencia Artificial entrenada para Arunachala ✨")}
-                            </p>
                         </div>
                     </motion.div>
                 )}

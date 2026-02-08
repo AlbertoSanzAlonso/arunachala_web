@@ -327,6 +327,12 @@
         "seo": {
             "title": "Blog | Arunachala Ioga i Teràpies",
             "description": "Descobreix articles sobre ioga, meditació, teràpies holístiques i benestar al nostre blog."
+        },
+        "cta": {
+            "title": "T'ha inspirat aquest article?",
+            "description_yoga": "Vine a practicar amb nosaltres a Arunachala. Un espai de calma al cor de Cornellà.",
+            "description_therapy": "Vine a cuidar-te a Arunachala. El teu refugi de sanació i calma a Cornellà.",
+            "button": "Contacta amb nosaltres"
         }
     },
     "legal": {

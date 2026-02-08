@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { PlusIcon, PencilIcon, TrashIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import Cropper from 'react-easy-crop';
 import { Point, Area } from 'react-easy-crop/types';
@@ -21,7 +22,20 @@ interface TreatmentType {
 const API_URL = API_BASE_URL;
 
 export default function TreatmentsManager() {
-    const [activeTab, setActiveTab] = useState<'massages' | 'therapies'>('massages');
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    // Initialize tab from URL
+    const initialTab = (searchParams.get('tab') as 'massages' | 'therapies') || 'massages';
+    const [activeTab, setActiveTab] = useState<'massages' | 'therapies'>(initialTab);
+
+    // Sync URL when tab changes
+    useEffect(() => {
+        setSearchParams(prev => {
+            prev.set('tab', activeTab);
+            return prev;
+        }, { replace: true });
+    }, [activeTab, setSearchParams]);
+
     const [items, setItems] = useState<TreatmentType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);

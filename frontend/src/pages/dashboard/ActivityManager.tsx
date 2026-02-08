@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { PlusIcon, PencilIcon, TrashIcon, PhotoIcon, SparklesIcon, CalendarIcon, ChatBubbleLeftRightIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Cropper from 'react-easy-crop';
 import { Point, Area } from 'react-easy-crop/types';
@@ -28,11 +29,23 @@ const API_URL = API_BASE_URL;
 const DAYS_OF_WEEK = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
 export default function ActivityManager() {
+    const [searchParams, setSearchParams] = useSearchParams();
     const [items, setItems] = useState<Activity[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingItem, setEditingItem] = useState<Activity | null>(null);
-    const [activeTab, setActiveTab] = useState<'cursos' | 'eventos' | 'sugerencias'>('cursos');
+
+    // Initialize tab from URL
+    const initialTab = (searchParams.get('tab') as 'cursos' | 'eventos' | 'sugerencias') || 'cursos';
+    const [activeTab, setActiveTab] = useState<'cursos' | 'eventos' | 'sugerencias'>(initialTab);
+
+    // Sync URL when tab changes
+    useEffect(() => {
+        setSearchParams(prev => {
+            prev.set('tab', activeTab);
+            return prev;
+        }, { replace: true });
+    }, [activeTab, setSearchParams]);
 
     // Generic Form States
     const [title, setTitle] = useState('');

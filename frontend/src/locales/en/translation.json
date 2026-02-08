@@ -327,6 +327,12 @@
         "seo": {
             "title": "Blog | Arunachala Yoga & Therapies",
             "description": "Discover articles about yoga, meditation, holistic therapies and wellness on our blog."
+        },
+        "cta": {
+            "title": "Did this article inspire you?",
+            "description_yoga": "Come practice with us at Arunachala. A space of calm in the heart of Cornellà.",
+            "description_therapy": "Come take care of yourself at Arunachala. Your healing sanctuary in Cornellà.",
+            "button": "Contact us"
         }
     },
     "legal": {

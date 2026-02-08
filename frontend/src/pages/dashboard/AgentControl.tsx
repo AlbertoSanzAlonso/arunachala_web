@@ -19,6 +19,7 @@ const AgentControl: React.FC = () => {
     const [resetStep, setResetStep] = useState(1); // 1: Select Type, 2: Final Warning
     const [resetScope, setResetScope] = useState<string | null>(null);
     const [resetLoading, setResetLoading] = useState(false);
+    const [showTriggerModal, setShowTriggerModal] = useState(false);
 
     // RAG Status State
     const [ragStatus, setRagStatus] = useState<any>(null);
@@ -26,9 +27,15 @@ const AgentControl: React.FC = () => {
     const [lastSyncTime, setLastSyncTime] = useState<number>(0);
     const [suppressPolling, setSuppressPolling] = useState(false);
 
+    // Automation Tasks State
+    const [tasks, setTasks] = useState<any[]>([]);
+    const [tasksLoading, setTasksLoading] = useState(false);
+    const [triggerLoading, setTriggerLoading] = useState<string | null>(null);
+
     useEffect(() => {
         fetchConfig();
         fetchRagStatus();
+        fetchTasks();
     }, []);
 
     // AUTO-POLLING LOGIC for real-time updates
@@ -278,6 +285,92 @@ const AgentControl: React.FC = () => {
         }
     };
 
+    const fetchTasks = async () => {
+        setTasksLoading(true);
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/automation/tasks`);
+            if (response.ok) {
+                const data = await response.json();
+                setTasks(data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch automation tasks", error);
+        } finally {
+            setTasksLoading(false);
+        }
+    };
+
+    const handleTriggerTask = async (taskType: string, category?: string) => {
+        const triggerKey = `${taskType}-${category || 'all'}`;
+        setTriggerLoading(triggerKey);
+        try {
+            const token = sessionStorage.getItem('access_token');
+            console.log("Triggering task with token type:", typeof token, "exists:", !!token);
+
+            if (!token) {
+                setMessage("Error: No se encontró el token de sesión. Por favor, vuelve a iniciar sesión.");
+                return;
+            }
+
+            const response = await fetch(`${API_BASE_URL}/api/automation/trigger`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ task_type: taskType, category })
+            });
+
+            if (response.status === 401) {
+                setMessage("Tu sesión ha expirado o es inválida. Por favor, reinicia sesión.");
+                return;
+            }
+
+            if (response.ok) {
+                setShowTriggerModal(true);
+            } else {
+                setMessage("Error al disparar la tarea automática.");
+            }
+        } catch (error) {
+            setMessage("Error de conexión al disparar la tarea.");
+        } finally {
+            setTriggerLoading(null);
+        }
+    };
+
+    const handleUpdateTaskSchedule = async (task: any, updates: any) => {
+        try {
+            const token = sessionStorage.getItem('access_token');
+            if (!token) {
+                setMessage("Sesión no encontrada. Por favor, reinicia sesión.");
+                return;
+            }
+
+            const response = await fetch(`${API_BASE_URL}/api/automation/tasks/${task.id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ ...task, ...updates })
+            });
+
+            if (response.status === 401) {
+                setMessage("Sesión expirada. Por favor, reinicia sesión.");
+                return;
+            }
+
+            if (response.ok) {
+                const updatedTask = await response.json();
+                setTasks(tasks.map(t => t.id === task.id ? updatedTask : t));
+                setMessage(`Horario actualizado para: ${task.name}`);
+            }
+        } catch (error) {
+            console.error("Failed to update task schedule", error);
+            setMessage("Error al actualizar el horario.");
+        }
+    };
+
     const OptionGroup = ({ label, options, value, onChange }: any) => (
         <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
@@ -471,6 +564,153 @@ const AgentControl: React.FC = () => {
 
             </form>
 
+            {/* ARTICULOS Y AUTOMATIZACIÓN (NEW SECTION) */}
+            <div className="mt-12 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="bg-matcha/20 p-2 rounded-lg">
+                        <svg className="w-6 h-6 text-forest" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 2v6h6" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 13H8m8 4H8m0-8h1" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-headers text-bark">Generación de Contenido</h2>
+                        <p className="text-gray-500 text-sm">Dispara la creación de nuevos artículos para el blog.</p>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    {/* Yoga Trigger */}
+                    <div className="p-6 rounded-2xl bg-forest/5 border border-forest/10 flex items-center justify-between">
+                        <div>
+                            <span className="block font-bold text-forest mb-1">Artículo de Yoga</span>
+                            <p className="text-xs text-forest/70 max-w-[200px]">Crea un artículo sobre beneficios, posturas o filosofía.</p>
+                        </div>
+                        <button
+                            onClick={() => handleTriggerTask('generate_article', 'yoga')}
+                            disabled={triggerLoading === 'generate_article-yoga'}
+                            className="px-4 py-2 bg-forest text-white text-sm font-bold rounded-xl hover:bg-matcha transition-all shadow-sm disabled:opacity-50"
+                        >
+                            {triggerLoading === 'generate_article-yoga' ? 'Generando...' : 'Generar Ahora'}
+                        </button>
+                    </div>
+
+                    {/* Therapy Trigger */}
+                    <div className="p-6 rounded-2xl bg-bark/5 border border-bark/10 flex items-center justify-between">
+                        <div>
+                            <span className="block font-bold text-bark mb-1">Artículo de Terapias</span>
+                            <p className="text-xs text-bark/70 max-w-[200px]">Genera contenido sobre masajes y terapias alternativas.</p>
+                        </div>
+                        <button
+                            onClick={() => handleTriggerTask('generate_article', 'therapy')}
+                            disabled={triggerLoading === 'generate_article-therapy'}
+                            className="px-4 py-2 bg-bark text-white text-sm font-bold rounded-xl hover:bg-bark/80 transition-all shadow-sm disabled:opacity-50"
+                        >
+                            {triggerLoading === 'generate_article-therapy' ? 'Generando...' : 'Generar Ahora'}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Automation Scheduling */}
+                <div className="border-t border-gray-100 pt-8">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Programación Automática</h3>
+                        <span className="text-[10px] bg-matcha/10 text-forest px-2 py-1 rounded-full font-bold">RETIROS Y BLOG</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4">
+                        {tasks.map((task) => (
+                            <div key={task.id} className="group relative flex flex-col md:flex-row md:items-center justify-between p-5 rounded-2xl bg-white border border-gray-100 hover:border-matcha/30 hover:shadow-md transition-all gap-6">
+                                {/* Left side: Info */}
+                                <div className="flex items-center gap-4">
+                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${task.is_active ? 'bg-forest text-white' : 'bg-gray-100 text-gray-400'}`}>
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <span className={`block font-bold text-bark transition-colors ${task.is_active ? 'text-forest' : ''}`}>{task.name}</span>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <span className={`inline-block w-2 h-2 rounded-full ${task.is_active ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
+                                            <span className="text-[11px] text-gray-500 font-medium">
+                                                {task.last_run
+                                                    ? `Última: ${new Date(task.last_run).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}`
+                                                    : (task.is_active ? 'Activa' : 'Inactiva')}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Right side: Controls */}
+                                <div className="flex flex-wrap items-center gap-6">
+                                    {/* Day Picker */}
+                                    <div className="space-y-2">
+                                        <span className="block text-[10px] font-bold text-gray-400 uppercase ml-1">Días de ejecución</span>
+                                        <div className="flex gap-1.5 p-1.5 bg-gray-50 rounded-xl border border-gray-100">
+                                            {['1', '2', '3', '4', '5', '6', '0'].map((d) => {
+                                                const dayLabel = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][parseInt(d)];
+                                                const isActive = task.schedule_days?.split(',').includes(d);
+                                                return (
+                                                    <button
+                                                        key={d}
+                                                        onClick={() => {
+                                                            let days = task.schedule_days?.split(',').filter((x: string) => x) || [];
+                                                            if (days.includes(d)) days = days.filter((x: string) => x !== d);
+                                                            else days.push(d);
+                                                            handleUpdateTaskSchedule(task, { schedule_days: days.join(',') });
+                                                        }}
+                                                        className={`w-8 h-8 rounded-lg text-xs font-bold transition-all transform active:scale-90 ${isActive
+                                                            ? 'bg-forest text-white shadow-sm'
+                                                            : 'bg-white text-gray-400 hover:text-bark hover:bg-gray-50'
+                                                            }`}
+                                                    >
+                                                        {dayLabel}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* Time Picker */}
+                                    <div className="space-y-2">
+                                        <span className="block text-[10px] font-bold text-gray-400 uppercase ml-1">Hora</span>
+                                        <div className="relative">
+                                            <input
+                                                type="time"
+                                                value={task.schedule_time}
+                                                onChange={(e) => handleUpdateTaskSchedule(task, { schedule_time: e.target.value })}
+                                                className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-bark focus:ring-2 focus:ring-forest/20 focus:border-forest outline-none transition-all cursor-pointer"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Toggle */}
+                                    <div className="flex flex-col items-center gap-1">
+                                        <span className={`text-[10px] font-bold uppercase transition-colors ${task.is_active ? 'text-forest' : 'text-gray-400'}`}>
+                                            {task.is_active ? 'Activa' : 'Pausada'}
+                                        </span>
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-10 w-[1px] bg-gray-100 hidden md:block" />
+                                            <button
+                                                onClick={() => handleUpdateTaskSchedule(task, { is_active: !task.is_active })}
+                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-forest/20 focus:ring-offset-2 ${task.is_active ? 'bg-forest shadow-sm' : 'bg-gray-200'
+                                                    }`}
+                                            >
+                                                <span
+                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${task.is_active ? 'translate-x-6' : 'translate-x-1'
+                                                        }`}
+                                                />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
             {/* KNOWLEDGE CENTER */}
             <div className="mt-12 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
                 <div className="flex items-center justify-between mb-6">
@@ -563,6 +803,51 @@ const AgentControl: React.FC = () => {
                 ) : (
                     <div className="py-8 text-center text-gray-400 italic">
                         Cargando estado de sincronización...
+                    </div>
+                )}
+
+                {/* Automation Trigger Success Modal */}
+                {showTriggerModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bark/60 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-forest/10 text-center"
+                        >
+                            <div className="w-20 h-20 bg-matcha/20 text-forest rounded-full flex items-center justify-center mx-auto mb-6">
+                                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+
+                            <h2 className="text-2xl font-headers text-bark mb-4">Petición Procesada</h2>
+
+                            <div className="space-y-4 text-gray-600 mb-8">
+                                <p>
+                                    La orden de generación de artículo ha sido enviada con éxito a nuestro agente de IA.
+                                </p>
+                                <div className="bg-gray-50 p-4 rounded-xl text-sm italic">
+                                    "La IA está ahora mismo investigando, redactando y seleccionando imágenes para tu nuevo contenido."
+                                </div>
+                                <p className="text-sm">
+                                    Este proceso suele tardar <strong className="text-bark">entre 2 y 5 minutos</strong>. Puedes seguir trabajando en el dashboard; el artículo aparecerá automáticamente en la sección de <strong className="text-bark">Contenidos</strong> cuando esté listo.
+                                </p>
+                            </div>
+
+                            <button
+                                onClick={() => setShowTriggerModal(false)}
+                                className="w-full py-4 bg-forest text-white rounded-xl font-bold hover:bg-matcha transition-all shadow-lg active:scale-95"
+                            >
+                                Entendido, volveré luego
+                            </button>
+
+                            <button
+                                onClick={() => navigate('/dashboard/content')}
+                                className="mt-4 w-full text-forest text-sm font-medium hover:underline"
+                            >
+                                Ir a la sección de contenidos
+                            </button>
+                        </motion.div>
                     </div>
                 )}
             </div>

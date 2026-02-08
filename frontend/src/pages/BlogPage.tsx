@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
@@ -19,6 +19,7 @@ import { Article } from '../types/blog';
 const BlogPage: React.FC = () => {
     const { t, i18n } = useTranslation();
     const location = useLocation();
+    const navigate = useNavigate();
     const [articles, setArticles] = useState<Article[]>([]);
     const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -117,7 +118,13 @@ const BlogPage: React.FC = () => {
 
     const handleFilterChange = useCallback((newFilters: FilterState) => {
         setFilters(newFilters);
-    }, []);
+
+        // Update URL to reflect category change
+        if (newFilters.category !== filters.category) {
+            const newPath = newFilters.category === 'all' ? '/blog' : `/blog/${newFilters.category}`;
+            navigate(newPath, { replace: true });
+        }
+    }, [filters.category, navigate]);
 
     const fetchArticles = async () => {
         try {

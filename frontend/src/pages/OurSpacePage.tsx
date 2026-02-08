@@ -89,16 +89,21 @@ const OurSpacePage: React.FC = () => {
                                 {t('space.subtitle', 'Un refugio de paz en la ciudad')}
                             </h2>
                             <p>
-                                {t('space.description_1', 'En Arunachala, hemos creado un entorno diseñado específicamente para la calma y la introspección. Nuestro centro está concebido no solo como un lugar para practicar yoga, sino como un santuario donde desconectar del ruido exterior y reconectar contigo mismo.')}
+                                {t('space.description_1', 'En Arunachala, tu centro de yoga y bienestar en Cornellà de Llobregat, hemos creado un entorno diseñado específicamente para la calma y la introspección. Nuestro espacio está concebido no solo como un lugar para practicar yoga o recibir terapias, sino como un santuario urbano donde desconectar del ruido exterior y reconectar contigo mismo.')}
                             </p>
                             <p>
-                                {t('space.description_2', 'Disponemos de una sala principal diáfana, bañada por luz natural y equipada con materiales orgánicos de alta calidad. El ambiente, impregnado de aromas suaves y silencio, invita a la práctica profunda y meditativa desde el primer momento en que cruzas la puerta.')}
+                                {t('space.description_2', 'Ubicado en el corazón de Cornellà, disponemos de una sala principal diáfana, bañada por luz natural y equipada con materiales orgánicos de alta calidad. El ambiente, impregnado de aromas suaves y silencio, convierte a nuestro centro en el refugio ideal para tu práctica profunda y meditativa desde el primer momento en que cruzas la puerta.')}
                             </p>
 
-                            <div className="flex items-center gap-2 text-forest font-bold pt-4">
-                                <MapPinIcon className="w-6 h-6" />
+                            <a
+                                href="https://maps.app.goo.gl/ErMhKHkMgKhoLMPK6"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 text-forest font-bold pt-4 hover:text-matcha transition-colors w-fit group"
+                            >
+                                <MapPinIcon className="w-6 h-6 group-hover:scale-110 transition-transform" />
                                 <span>Passatge de Mateu Oliva, 3, 08940 Cornellà de Llobregat</span>
-                            </div>
+                            </a>
                         </motion.div>
 
                         {/* Main Image (Fixed) */}

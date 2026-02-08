@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import { Link } from 'react-router-dom';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon, CalendarIcon, TagIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
@@ -221,6 +222,26 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
                                             </div>
                                         );
                                     })()}
+
+                                    {/* Call to Action - Fixed at bottom of article */}
+                                    <div className="mt-12 bg-forest/5 rounded-2xl p-8 text-center border border-forest/10">
+                                        <h3 className="text-2xl font-headers text-forest mb-4">
+                                            {t('blog.cta.title', '¿Te ha inspirado este artículo?')}
+                                        </h3>
+                                        <p className="text-bark/80 mb-6 max-w-2xl mx-auto">
+                                            {article.category === 'therapy'
+                                                ? t('blog.cta.description_therapy', 'Ven a cuidar de ti en Arunachala. Un espacio de sanación y calma en Cornellà.')
+                                                : t('blog.cta.description_yoga', 'Ven a practicar con nosotros en Arunachala. Un espacio de calma en el corazón de Cornellà.')
+                                            }
+                                        </p>
+                                        <Link
+                                            to="/contacto"
+                                            onClick={onClose}
+                                            className="inline-flex items-center gap-2 px-8 py-3 bg-forest text-white rounded-full font-bold hover:bg-matcha transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                                        >
+                                            {t('blog.cta.button', 'Reservar mi clase')}
+                                        </Link>
+                                    </div>
                                 </div>
                             </Dialog.Panel>
                         </Transition.Child>

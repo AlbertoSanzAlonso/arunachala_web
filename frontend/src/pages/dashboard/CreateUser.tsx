@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserPlusIcon, EnvelopeIcon, LockClosedIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
+import { UserPlusIcon, EnvelopeIcon, LockClosedIcon, ShieldCheckIcon, EyeIcon, EyeSlashIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
 
 import { API_BASE_URL } from '../../config';
@@ -19,6 +19,8 @@ export default function CreateUser() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -91,6 +93,13 @@ export default function CreateUser() {
 
     return (
         <div className="max-w-2xl mx-auto">
+            <button
+                onClick={() => navigate('/dashboard/users')}
+                className="mb-6 flex items-center text-sm text-gray-500 hover:text-gray-700 transition-colors"
+            >
+                <ArrowLeftIcon className="h-4 w-4 mr-1" />
+                Volver a la lista de usuarios
+            </button>
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-2">
                     <UserPlusIcon className="h-8 w-8 text-primary-600" />
@@ -190,15 +199,26 @@ export default function CreateUser() {
                                 <LockClosedIcon className="h-5 w-5 text-gray-400" />
                             </div>
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 id="password"
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
-                                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                                 placeholder="Mínimo 6 caracteres"
                                 required
                             />
+                            <button
+                                type="button"
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? (
+                                    <EyeSlashIcon className="h-5 w-5" aria-hidden="true" />
+                                ) : (
+                                    <EyeIcon className="h-5 w-5" aria-hidden="true" />
+                                )}
+                            </button>
                         </div>
                     </div>
 
@@ -212,15 +232,26 @@ export default function CreateUser() {
                                 <LockClosedIcon className="h-5 w-5 text-gray-400" />
                             </div>
                             <input
-                                type="password"
+                                type={showConfirmPassword ? "text" : "password"}
                                 id="confirmPassword"
                                 name="confirmPassword"
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
-                                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                                 placeholder="Repite la contraseña"
                                 required
                             />
+                            <button
+                                type="button"
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            >
+                                {showConfirmPassword ? (
+                                    <EyeSlashIcon className="h-5 w-5" aria-hidden="true" />
+                                ) : (
+                                    <EyeIcon className="h-5 w-5" aria-hidden="true" />
+                                )}
+                            </button>
                         </div>
                     </div>
 

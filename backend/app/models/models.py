@@ -196,6 +196,23 @@ class Activity(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
 
+class AutomationTask(Base):
+    __tablename__ = "automation_tasks"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False) # e.g., "Generar artículo de Yoga"
+    task_type = Column(String, nullable=False) # e.g., "generate_article"
+    category = Column(String, nullable=True) # "yoga", "therapy"
+    schedule_type = Column(String, default="weekly") # "daily", "weekly"
+    schedule_days = Column(String, nullable=True) # "1,3,5" (Mon, Wed, Fri)
+    schedule_time = Column(String, default="09:00")
+    is_active = Column(Boolean, default=False)
+    last_run = Column(DateTime(timezone=True), nullable=True)
+    next_run = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
 class DashboardActivity(Base):
     __tablename__ = "dashboard_activities"
 
