@@ -62,6 +62,10 @@ export default function ContentManager() {
     const [showPublicationPrompt, setShowPublicationPrompt] = useState(false);
     const [lastCreatedContent, setLastCreatedContent] = useState<Content | null>(null);
 
+    // Pagination
+    const ITEMS_PER_PAGE = 10;
+    const [currentPage, setCurrentPage] = useState(1);
+
     // Local state for tags input to allow smooth typing
     // const [localTags, setLocalTags] = useState(''); // This is no longer needed
 
@@ -95,6 +99,10 @@ export default function ContentManager() {
     useEffect(() => {
         fetchContents();
     }, []);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [currentTab, searchTerm, filterType, filterValue]);
 
     const filteredContents = contents
         .filter(item => {
@@ -704,7 +712,7 @@ export default function ContentManager() {
                                         ) : filteredContents.length === 0 ? (
                                             <tr><td colSpan={6} className="text-center py-4 text-gray-500">No hay contenido en esta sección.</td></tr>
                                         ) : (
-                                            filteredContents.map((item) => (
+                                            filteredContents.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((item) => (
                                                 <tr key={item.id} className={selectedIds.has(item.id) ? 'bg-gray-50' : undefined}>
                                                     <td className="relative py-4 pl-4 pr-3 sm:pl-6">
                                                         <input
@@ -746,6 +754,124 @@ export default function ContentManager() {
                         </div>
                     </div>
                 </div>
+
+                {/* Pagination Controls */}
+                {Math.ceil(filteredContents.length / ITEMS_PER_PAGE) > 1 && (
+                    <div className="flex justify-center items-center gap-2 md:gap-3 mt-8 mb-4">
+                        {/* First Page */}
+                        <button
+                            onClick={() => setCurrentPage(1)}
+                            disabled={currentPage === 1}
+                            className={`p-2 rounded-full transition-all ${currentPage === 1
+                                ? 'text-gray-300 cursor-not-allowed'
+                                : 'bg-white text-forest shadow-sm hover:bg-forest hover:text-white border border-gray-200'
+                                }`}
+                            aria-label="Primera página"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                            </svg>
+                        </button>
+
+                        {/* Prev Block */}
+                        <button
+                            onClick={() => {
+                                const prevRangeStart = Math.max(1, Math.floor((currentPage - 1) / 5) * 5 - 4);
+                                setCurrentPage(prevRangeStart);
+                            }}
+                            disabled={currentPage <= 5}
+                            className={`p-2 rounded-full transition-all ${currentPage <= 5
+                                ? 'text-gray-300 cursor-not-allowed'
+                                : 'bg-white text-forest shadow-sm hover:bg-forest hover:text-white border border-gray-200'
+                                }`}
+                            aria-label="Anterior rango"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                        </button>
+
+                        <div className="flex items-center gap-1">
+                            {(() => {
+                                const totalPages = Math.ceil(filteredContents.length / ITEMS_PER_PAGE);
+                                const rangeSize = 5;
+                                const start = Math.floor((currentPage - 1) / rangeSize) * rangeSize + 1;
+                                const end = Math.min(totalPages, start + rangeSize - 1);
+
+                                const pages = [];
+                                for (let i = start; i <= end; i++) {
+                                    pages.push(
+                                        <button
+                                            key={i}
+                                            onClick={() => setCurrentPage(i)}
+                                            className={`w-8 h-8 rounded-md font-bold text-xs transition-all duration-300 ${currentPage === i
+                                                ? 'bg-forest text-white shadow-md'
+                                                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                                }`}
+                                        >
+                                            {i}
+                                        </button>
+                                    );
+                                }
+                                return pages;
+                            })()}
+                        </div>
+
+                        {/* Next Block */}
+                        <button
+                            onClick={() => {
+                                const totalPages = Math.ceil(filteredContents.length / ITEMS_PER_PAGE);
+                                const nextRangeStart = Math.min(totalPages, Math.floor((currentPage - 1) / 5) * 5 + 6);
+                                setCurrentPage(nextRangeStart);
+                            }}
+                            disabled={(() => {
+                                const totalPages = Math.ceil(filteredContents.length / ITEMS_PER_PAGE);
+                                const currentBlockEnd = Math.floor((currentPage - 1) / 5) * 5 + 5;
+                                return currentBlockEnd >= totalPages;
+                            })()}
+                            className={`p-2 rounded-full transition-all ${(() => {
+                                const totalPages = Math.ceil(filteredContents.length / ITEMS_PER_PAGE);
+                                const currentBlockEnd = Math.floor((currentPage - 1) / 5) * 5 + 5;
+                                return currentBlockEnd >= totalPages;
+                            })()
+                                ? 'text-gray-300 cursor-not-allowed'
+                                : 'bg-white text-forest shadow-sm hover:bg-forest hover:text-white border border-gray-200'
+                                }`}
+                            aria-label="Siguiente rango"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                            </svg>
+                        </button>
+
+                        {/* Last Range */}
+                        <button
+                            onClick={() => {
+                                const totalPages = Math.ceil(filteredContents.length / ITEMS_PER_PAGE);
+                                const lastRangeStart = Math.floor((totalPages - 1) / 5) * 5 + 1;
+                                setCurrentPage(lastRangeStart);
+                            }}
+                            disabled={(() => {
+                                const totalPages = Math.ceil(filteredContents.length / ITEMS_PER_PAGE);
+                                const lastRangeStart = Math.floor((totalPages - 1) / 5) * 5 + 1;
+                                return currentPage >= lastRangeStart;
+                            })()}
+                            className={`p-2 rounded-full transition-all ${(() => {
+                                const totalPages = Math.ceil(filteredContents.length / ITEMS_PER_PAGE);
+                                const lastRangeStart = Math.floor((totalPages - 1) / 5) * 5 + 1;
+                                return currentPage >= lastRangeStart;
+                            })()
+                                ? 'text-gray-300 cursor-not-allowed'
+                                : 'bg-white text-forest shadow-sm hover:bg-forest hover:text-white border border-gray-200'
+                                }`}
+                            aria-label="Último rango"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414zm6 0a1 1 0 011.414 0l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414-1.414L14.586 10l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                )}
 
                 {/* Modal */}
                 <Transition appear show={isModalOpen} as={Fragment}>
