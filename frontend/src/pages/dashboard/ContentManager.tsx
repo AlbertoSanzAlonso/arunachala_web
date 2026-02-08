@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { ChevronLeftIcon, PlusIcon, PencilSquareIcon, TrashIcon, CheckIcon, XMarkIcon, MagnifyingGlassIcon, Bars3Icon, PhotoIcon, SpeakerWaveIcon, ClockIcon } from '@heroicons/react/24/outline';
@@ -38,10 +39,22 @@ const TABS = [
 
 export default function ContentManager() {
     const toast = useToast();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [contents, setContents] = useState<Content[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
-    const [currentTab, setCurrentTab] = useState('all');
+
+    // Initialize tab from URL
+    const [currentTab, setCurrentTab] = useState(searchParams.get('tab') || 'all');
+
+    // Sync URL when tab changes
+    useEffect(() => {
+        setSearchParams(prev => {
+            prev.set('tab', currentTab);
+            return prev;
+        }, { replace: true });
+    }, [currentTab, setSearchParams]);
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingContent, setEditingContent] = useState<Content | null>(null);
     const [formData, setFormData] = useState<Partial<Content>>({

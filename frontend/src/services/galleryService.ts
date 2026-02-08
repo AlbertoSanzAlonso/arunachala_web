@@ -22,7 +22,7 @@ export const galleryService = {
     },
 
     uploadBulk: async (formData: FormData) => {
-        const response = await api.post<GalleryImage[]>('/gallery/upload-bulk', formData);
+        const response = await api.post<GalleryImage[]>('/gallery/bulk-upload/', formData);
         return response.data;
     },
 

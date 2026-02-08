@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Reorder } from 'framer-motion';
 import { PhotoIcon, TrashIcon, ArrowsUpDownIcon, ArrowPathIcon, CheckCircleIcon, ScissorsIcon, StarIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
@@ -17,8 +18,20 @@ const CATEGORIES: { value: GalleryCategory; label: string }[] = [
 ];
 
 export default function GalleryManager() {
+    const [searchParams, setSearchParams] = useSearchParams();
+
     // UI State
-    const [selectedCategory, setSelectedCategory] = useState<GalleryCategory>('home');
+    const initialCategory = (searchParams.get('category') as GalleryCategory) || 'home';
+    const [selectedCategory, setSelectedCategory] = useState<GalleryCategory>(initialCategory);
+
+    // Sync URL when category changes
+    useEffect(() => {
+        setSearchParams(prev => {
+            prev.set('category', selectedCategory);
+            return prev;
+        }, { replace: true });
+    }, [selectedCategory, setSearchParams]);
+
     const [dragEnabled, setDragEnabled] = useState(false);
     const [selectionMode, setSelectionMode] = useState(false);
     const [selectedIds, setSelectedIds] = useState<number[]>([]);

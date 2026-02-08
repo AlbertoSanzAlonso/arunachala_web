@@ -14,6 +14,23 @@ export const useGallery = (selectedCategory: GalleryCategory) => {
         setIsLoading(true);
         try {
             const data = await galleryService.getAll(selectedCategory);
+
+            // Auto-assign MAIN if category is 'center' and none exists
+            if (selectedCategory === 'center' && data.length > 0) {
+                const hasMain = data.some(img => img.alt_text?.includes('[MAIN]'));
+                if (!hasMain) {
+                    const firstImage = data[0];
+                    try {
+                        const newAlt = `${firstImage.alt_text || ''} [MAIN]`.trim();
+                        await galleryService.update(firstImage.id, { alt_text: newAlt });
+                        // Update local state to reflect change immediately
+                        firstImage.alt_text = newAlt;
+                    } catch (err) {
+                        console.error('Error setting default main image:', err);
+                    }
+                }
+            }
+
             setImages(data);
         } catch (error) {
             console.error('Error fetching gallery:', error);
@@ -78,7 +95,23 @@ export const useGallery = (selectedCategory: GalleryCategory) => {
     const deleteImage = async (id: number) => {
         try {
             await galleryService.delete(id);
-            setImages(prev => prev.filter(img => img.id !== id));
+            setImages(prev => {
+                const wasMain = prev.find(img => img.id === id)?.alt_text?.includes('[MAIN]');
+                const remaining = prev.filter(img => img.id !== id);
+
+                // If we deleted the main image and there are others left, promote the first one
+                if (wasMain && selectedCategory === 'center' && remaining.length > 0) {
+                    const newMain = remaining[0];
+                    const newAlt = `${newMain.alt_text || ''} [MAIN]`.trim();
+
+                    // Fire and forget update
+                    galleryService.update(newMain.id, { alt_text: newAlt }).catch(console.error);
+
+                    return remaining.map(img => img.id === newMain.id ? { ...img, alt_text: newAlt } : img);
+                }
+
+                return remaining;
+            });
             await fetchCounts();
         } catch (error) {
             console.error('Error deleting image:', error);
@@ -127,32 +160,33 @@ export const useGallery = (selectedCategory: GalleryCategory) => {
         const image = images.find(img => img.id === id);
         if (!image) return;
 
-        // Using simple text tagging convention: "[MAIN]" in alt_text
         const isCurrentlyMain = image.alt_text?.includes('[MAIN]');
 
-        try {
-            if (!isCurrentlyMain) {
-                // Determine previous main and demote it
-                const previousMain = images.find(img => img.alt_text?.includes('[MAIN]'));
-                if (previousMain) {
-                    const newAlt = previousMain.alt_text.replace('[MAIN]', '').trim();
-                    const updatedPrev = await galleryService.update(previousMain.id, { alt_text: newAlt });
-                    setImages(prev => prev.map(img => img.id === updatedPrev.id ? updatedPrev : img));
-                }
+        // If it's already main, do nothing (prevent deselecting)
+        if (isCurrentlyMain) return;
 
-                // Promote new main
-                const newAlt = `${image.alt_text || ''} [MAIN]`.trim();
-                const updatedImage = await galleryService.update(id, { alt_text: newAlt });
-                setImages(prev => prev.map(img => img.id === updatedImage.id ? updatedImage : img));
-            } else {
-                // Demote if clicking same one (optional, maybe we want at least one main? User said "select the main one", usually means radio behavior)
-                // But allowing deselect is fine.
-                const newAlt = image.alt_text.replace('[MAIN]', '').trim();
-                const updatedImage = await galleryService.update(id, { alt_text: newAlt });
-                setImages(prev => prev.map(img => img.id === updatedImage.id ? updatedImage : img));
+        try {
+            // Determine previous main and demote it
+            const previousMain = images.find(img => img.alt_text?.includes('[MAIN]'));
+            if (previousMain) {
+                const newAlt = previousMain.alt_text.replace('[MAIN]', '').trim();
+                // Optimistic update locally first
+                setImages(prev => prev.map(img => img.id === previousMain.id ? { ...img, alt_text: newAlt } : img));
+                // Then server update
+                await galleryService.update(previousMain.id, { alt_text: newAlt });
             }
+
+            // Promote new main
+            const newAlt = `${image.alt_text || ''} [MAIN]`.trim();
+            // Optimistic update locally
+            setImages(prev => prev.map(img => img.id === id ? { ...img, alt_text: newAlt } : img));
+            // Then server update
+            await galleryService.update(id, { alt_text: newAlt });
+
         } catch (error) {
             console.error('Error toggling main image:', error);
+            // Revert on error would be ideal, but for now simple error logging
+            await fetchImages();
         }
     };
 
