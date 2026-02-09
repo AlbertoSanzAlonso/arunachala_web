@@ -84,6 +84,8 @@ const MeditationsPage: React.FC = () => {
     const [selectedMeditation, setSelectedMeditation] = useState<Meditation | null>(null);
     const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
     const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+    const playButtonRef = React.useRef<HTMLButtonElement>(null);
+
 
     // Search and Pagination State
     const [filters, setFilters] = useState<FilterState>({
@@ -675,9 +677,9 @@ const MeditationsPage: React.FC = () => {
                     )}
                 </div>
 
-                {/* Player Modal */}
                 <Transition appear show={isPlayerModalOpen} as={Fragment}>
-                    <Dialog as="div" className="relative z-50" onClose={handleCloseModal}>
+                    <Dialog as="div" className="relative z-50" onClose={handleCloseModal} initialFocus={playButtonRef}>
+
                         <Transition.Child
                             as={Fragment}
                             enter="ease-out duration-300"
@@ -702,14 +704,12 @@ const MeditationsPage: React.FC = () => {
                                     leaveTo="opacity-0 scale-95"
                                 >
                                     <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-3xl bg-white p-8 text-left align-middle shadow-2xl transition-all relative border border-bone">
-                                        {!routeSlug && (
-                                            <button
-                                                onClick={handleCloseModal}
-                                                className="absolute top-4 right-4 text-bark/40 hover:text-bark/80 transition-colors"
-                                            >
-                                                <XMarkIcon className="w-6 h-6" />
-                                            </button>
-                                        )}
+                                        <button
+                                            onClick={handleCloseModal}
+                                            className="absolute top-4 right-4 text-bark/40 hover:text-bark/80 transition-colors"
+                                        >
+                                            <XMarkIcon className="w-6 h-6" />
+                                        </button>
 
                                         {selectedMeditation && (() => {
                                             const currentLang = i18n.language.split('-')[0];
@@ -789,6 +789,7 @@ const MeditationsPage: React.FC = () => {
 
                                                         <div className="flex justify-center">
                                                             <button
+                                                                ref={playButtonRef}
                                                                 onClick={() => audio && (audio.paused ? audio.play() : audio.pause())}
                                                                 className="bg-forest text-white rounded-full p-4 shadow-lg hover:scale-105 active:scale-95 transition-all outline-none"
                                                             >
