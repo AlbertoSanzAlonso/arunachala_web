@@ -136,6 +136,7 @@ class MassageType(Base):
     duration_min = Column(Integer, nullable=True)
     image_url = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
+    price = Column(String, nullable=True) 
     # RAG sync fields
     vector_id = Column(String, nullable=True)
     vectorized_at = Column(DateTime(timezone=True), nullable=True)
@@ -152,6 +153,7 @@ class TherapyType(Base):
     benefits = Column(Text, nullable=True) # Benefits list/text
     translations = Column(JSON, nullable=True)
     duration_min = Column(Integer, nullable=True)
+    price = Column(String, nullable=True) 
     image_url = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
     # RAG sync fields

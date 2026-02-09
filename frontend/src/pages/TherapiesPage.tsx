@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, CalendarDaysIcon, ClockIcon } from '@heroicons/react/24/outline';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
@@ -14,16 +14,15 @@ import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
 import BlogSection from '../components/BlogSection';
 
-// Lazy load heavy components
-const ImageSlider = lazy(() => import('../components/ImageSlider'));
+
 
 interface Treatment {
     id: number;
     name: string;
     excerpt: string;
     description: string;
-    benefits: string;
     duration_min: number;
+    price?: string;
     image_url: string | null;
     translations?: any;
 }
@@ -33,10 +32,9 @@ const TherapiesPage: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const massagesRef = useRef<HTMLDivElement>(null);
     const therapiesRef = useRef<HTMLDivElement>(null);
-    const galleryRef = useRef<HTMLDivElement>(null);
     const blogRef = useRef<HTMLDivElement>(null);
+    const appointmentRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
-    const [galleryImages, setGalleryImages] = useState<string[]>([]);
 
     // Data State
     const [massages, setMassages] = useState<Treatment[]>([]);
@@ -46,15 +44,7 @@ const TherapiesPage: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Fetch Gallery
-                const galleryRes = await fetch(`${API_BASE_URL}/api/gallery/?category=therapies`);
-                if (galleryRes.ok) {
-                    const data = await galleryRes.json();
-                    if (data.length > 0) {
-                        const urls = data.map((img: any) => `${API_BASE_URL}${img.url}`);
-                        setGalleryImages(urls);
-                    }
-                }
+                // Removed gallery fetch logic
 
                 // Fetch Massages
                 const massagesRes = await fetch(`${API_BASE_URL}/api/treatments/massages`);
@@ -156,9 +146,17 @@ const TherapiesPage: React.FC = () => {
                                         {selectedTreatment.duration_min} MIN
                                     </span>
                                 )}
-                                <h3 className="text-3xl md:text-4xl font-headers text-forest mb-6 uppercase">
+                                <h3 className="text-3xl md:text-4xl font-headers text-forest mb-2 uppercase">
                                     {getTranslated(selectedTreatment, 'name', i18n.language)}
                                 </h3>
+                                {selectedTreatment.price && (
+                                    <div className="mb-6">
+                                        <h4 className="text-lg font-bold text-forest uppercase tracking-wide mb-2">{t('therapies.modal.price')}</h4>
+                                        <p className="text-2xl font-sans text-matcha font-bold">
+                                            {selectedTreatment.price}
+                                        </p>
+                                    </div>
+                                )}
 
                                 <div className="prose prose-stone max-w-none">
                                     <h4 className="text-lg font-bold text-forest uppercase tracking-wide mb-2">{t('therapies.modal.description')}</h4>
@@ -174,37 +172,51 @@ const TherapiesPage: React.FC = () => {
                                             </p>
                                         </>
                                     )}
+
                                 </div>
 
-                                <div className="mt-8 pt-8 border-t border-gray-100 flex justify-end">
+
+                                <div className="mt-10 flex flex-col sm:flex-row gap-4 items-center">
+                                    <button
+                                        onClick={() => {
+                                            setSelectedTreatment(null);
+                                            navigate('/contacto');
+                                        }}
+                                        className="w-full sm:w-auto px-8 py-3 bg-forest text-white font-bold rounded-full hover:bg-matcha transition-colors uppercase tracking-widest shadow-lg"
+                                    >
+                                        {t('therapies.appointment.cta', 'Contactar para reservar')}
+                                    </button>
                                     <button
                                         onClick={() => setSelectedTreatment(null)}
-                                        className="text-sm font-bold text-forest hover:text-matcha uppercase tracking-widest transition-colors"
+                                        className="text-sm font-bold text-forest hover:text-matcha uppercase tracking-widest transition-colors py-2"
                                     >
                                         {t('therapies.modal.close')}
                                     </button>
                                 </div>
                             </div>
+
                         </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>
 
             {/* Floating Back to Top Button */}
-            {showBackToTop && (
-                <motion.button
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    onClick={scrollToTop}
-                    className="fixed bottom-8 right-8 z-50 bg-forest text-white p-4 rounded-full shadow-2xl hover:bg-matcha transition-colors group focus:outline-none focus:ring-2 focus:ring-matcha/50"
-                    aria-label={t('yoga.common.back_to_top')}
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 group-hover:-translate-y-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                    </svg>
-                </motion.button>
-            )}
+            {
+                showBackToTop && (
+                    <motion.button
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        onClick={scrollToTop}
+                        className="fixed bottom-8 right-8 z-50 bg-forest text-white p-4 rounded-full shadow-2xl hover:bg-matcha transition-colors group focus:outline-none focus:ring-2 focus:ring-matcha/50"
+                        aria-label={t('yoga.common.back_to_top')}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 group-hover:-translate-y-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                        </svg>
+                    </motion.button>
+                )
+            }
 
             <main className="flex-grow bg-bone">
                 {/* Hero Section */}
@@ -243,7 +255,7 @@ const TherapiesPage: React.FC = () => {
                             {[
                                 { name: t('therapies.buttons.massages'), ref: massagesRef, delay: 0.4 },
                                 { name: t('therapies.buttons.therapies'), ref: therapiesRef, delay: 0.5 },
-                                { name: t('therapies.buttons.gallery'), ref: galleryRef, delay: 0.6 },
+                                { name: t('therapies.appointment.title'), ref: appointmentRef, delay: 0.6 },
                                 { name: t('therapies.buttons.blog'), ref: blogRef, delay: 0.7 }
                             ].map((item) => (
                                 <motion.button
@@ -302,7 +314,7 @@ const TherapiesPage: React.FC = () => {
                                                 <span className="text-forest/60 text-sm font-bold">
                                                     {msg.duration_min && msg.duration_min > 0 ? `${msg.duration_min} min` : ''}
                                                 </span>
-                                                <button className="text-forest font-bold group-hover:text-matcha transition-colors uppercase">{t('yoga.common.read_article')} →</button>
+                                                <button className="text-forest font-bold group-hover:text-matcha transition-colors uppercase">{t('therapies.common.read_more')} →</button>
                                             </div>
                                         </motion.div>
                                     ))}
@@ -368,7 +380,7 @@ const TherapiesPage: React.FC = () => {
                                                 <span className="text-forest/60 text-sm font-bold">
                                                     {thr.duration_min && thr.duration_min > 0 ? `${thr.duration_min} min` : ''}
                                                 </span>
-                                                <button className="text-forest font-bold group-hover:text-matcha transition-colors uppercase">{t('yoga.common.read_article')} →</button>
+                                                <button className="text-forest font-bold group-hover:text-matcha transition-colors uppercase">{t('therapies.common.read_more')} →</button>
                                             </div>
                                         </motion.div>
                                     ))}
@@ -395,34 +407,51 @@ const TherapiesPage: React.FC = () => {
                     </FadeInSection>
                 </section>
 
-                {/* Galería Section */}
-                <section ref={galleryRef} className="py-32 md:py-48 bg-white scroll-mt-24 snap-start">
-                    <FadeInSection className="max-w-7xl mx-auto px-8">
-                        <div className="text-center mb-12">
-                            <h2 className="text-4xl md:text-6xl font-headers text-forest mb-4 uppercase">{t('therapies.sections.gallery')}</h2>
-                            <p className="text-bark/70 text-lg">{t('therapies.sections.gallery_sub')}</p>
-                        </div>
-                        <Suspense fallback={<SectionLoader />}>
-                            {galleryImages.length > 0 ? (
-                                <ImageSlider images={galleryImages}>
-                                    <div className="absolute bottom-8 right-8 z-30 pointer-events-auto">
-                                        <button
-                                            onClick={() => navigate('/galeria/terapias-y-masajes')}
-                                            className="px-8 py-3 bg-black/30 hover:bg-white backdrop-blur-md border border-white/30 rounded-full text-white hover:text-forest font-headers tracking-wide transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2 group uppercase"
-                                        >
-                                            {t('yoga.common.view_all_gallery')} <span className="text-xl leading-none mb-1">→</span>
-                                        </button>
-                                    </div>
-                                </ImageSlider>
-                            ) : (
-                                <div className="h-64 flex items-center justify-center bg-gray-100 rounded-xl">
-                                    <p className="text-gray-400">{t('therapies.none.gallery')}</p>
-                                </div>
-                            )}
-                        </Suspense>
+                {/* Appointment Section */}
+                <section ref={appointmentRef} className="py-24 md:py-32 bg-forest text-bone snap-start relative overflow-hidden scroll-mt-24">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-matcha/10 rounded-full -mr-32 -mt-32 blur-3xl" />
+                    <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full -ml-32 -mb-32 blur-2xl" />
 
+                    <FadeInSection className="max-w-4xl mx-auto px-8 relative z-10">
+                        <div className="bg-white/10 backdrop-blur-md rounded-[3rem] p-8 md:p-16 border border-white/20 shadow-2xl text-center">
+                            <div className="inline-block p-4 bg-matcha/20 rounded-2xl mb-8">
+                                <CalendarDaysIcon className="w-10 h-10 text-matcha" />
+                            </div>
+
+                            <h2 className="text-3xl md:text-5xl font-headers mb-6 uppercase tracking-wider">
+                                {t('therapies.appointment.title')}
+                            </h2>
+
+                            <div className="w-20 h-1 bg-matcha/50 mx-auto mb-8 rounded-full" />
+
+                            <h3 className="text-xl md:text-2xl font-light mb-6 text-matcha">
+                                {t('therapies.appointment.subtitle')}
+                            </h3>
+
+                            <p className="text-lg md:text-xl leading-relaxed mb-12 text-bone/80 font-light">
+                                {t('therapies.appointment.description')}
+                            </p>
+
+                            <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => navigate('/contacto')}
+                                    className="px-10 py-5 bg-matcha hover:bg-bone hover:text-forest text-forest font-bold rounded-full transition-all duration-300 shadow-xl flex items-center gap-3 uppercase tracking-widest"
+                                >
+                                    {t('therapies.appointment.cta')}
+                                </motion.button>
+
+                                <div className="flex items-center gap-2 text-bone/60 italic">
+                                    <ClockIcon className="w-5 h-5" />
+                                    <span>{t('therapies.modal.close').toLowerCase() === 'cerrar' ? 'Respuesta rápida por WhatsApp' : 'Quick response via WhatsApp'}</span>
+                                </div>
+                            </div>
+                        </div>
                     </FadeInSection>
                 </section>
+
+
 
                 {/* Blog Section */}
                 <section ref={blogRef} className="scroll-mt-24 snap-start">
@@ -439,7 +468,7 @@ const TherapiesPage: React.FC = () => {
             <div className="snap-start" id="footer-snap">
                 <Footer />
             </div>
-        </div>
+        </div >
     );
 };
 

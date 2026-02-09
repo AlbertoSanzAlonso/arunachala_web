@@ -22,6 +22,7 @@ class TreatmentBase(BaseModel):
     description: Optional[str] = None
     benefits: Optional[str] = None
     duration_min: Optional[int] = None
+    price: Optional[str] = None
     image_url: Optional[str] = None
     is_active: bool = True
     translations: Optional[dict] = None
@@ -35,6 +36,7 @@ class TreatmentUpdate(BaseModel):
     description: Optional[str] = None
     benefits: Optional[str] = None
     duration_min: Optional[int] = None
+    price: Optional[str] = None
     image_url: Optional[str] = None
     is_active: Optional[bool] = None
     translations: Optional[dict] = None
@@ -66,6 +68,7 @@ async def create_massage(
     description: str = Form(None),
     benefits: str = Form(None),
     duration_min: int = Form(None),
+    price: str = Form(None),
     is_active: bool = Form(True),
     translations: str = Form(None),
     image: UploadFile = File(None),
@@ -93,6 +96,7 @@ async def create_massage(
         description=description or "",
         benefits=benefits or "",
         duration_min=duration_min,
+        price=price,
         is_active=is_active,
         image_url=image_url,
         translations=json.loads(translations) if translations else None
@@ -136,6 +140,7 @@ async def update_massage(
     description: str = Form(None),
     benefits: str = Form(None),
     duration_min: int = Form(None),
+    price: str = Form(None),
     is_active: bool = Form(None),
     translations: str = Form(None),
     image: UploadFile = File(None),
@@ -164,6 +169,7 @@ async def update_massage(
     if benefits is not None: db_massage.benefits = benefits or ""
     if duration_min is not None: 
         db_massage.duration_min = None if duration_min == 0 else duration_min
+    if price is not None: db_massage.price = price
     if is_active is not None: db_massage.is_active = is_active
     if translations is not None: db_massage.translations = json.loads(translations) if translations else None
     
@@ -233,6 +239,7 @@ async def create_therapy(
     description: str = Form(None),
     benefits: str = Form(None),
     duration_min: int = Form(None),
+    price: str = Form(None),
     is_active: bool = Form(True),
     translations: str = Form(None),
     image: UploadFile = File(None),
@@ -260,6 +267,7 @@ async def create_therapy(
         description=description or "",
         benefits=benefits or "",
         duration_min=duration_min,
+        price=price,
         is_active=is_active,
         image_url=image_url,
         translations=json.loads(translations) if translations else None
@@ -303,6 +311,7 @@ async def update_therapy(
     description: str = Form(None),
     benefits: str = Form(None),
     duration_min: int = Form(None),
+    price: str = Form(None),
     is_active: bool = Form(None),
     translations: str = Form(None),
     image: UploadFile = File(None),
@@ -330,6 +339,7 @@ async def update_therapy(
     if benefits is not None: db_therapy.benefits = benefits or ""
     if duration_min is not None: 
         db_therapy.duration_min = None if duration_min == 0 else duration_min
+    if price is not None: db_therapy.price = price
     if is_active is not None: db_therapy.is_active = is_active
     if translations is not None: db_therapy.translations = json.loads(translations) if translations else None
     

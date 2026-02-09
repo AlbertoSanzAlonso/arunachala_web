@@ -15,6 +15,7 @@ interface TreatmentType {
     description: string | null;
     benefits: string | null;
     duration_min: number | null;
+    price: string | null;
     image_url: string | null;
     is_active: boolean;
 }
@@ -48,6 +49,7 @@ export default function TreatmentsManager() {
     const [description, setDescription] = useState('');
     const [benefits, setBenefits] = useState('');
     const [durationMin, setDurationMin] = useState('');
+    const [price, setPrice] = useState('');
     const [selectedFile, setSelectedFile] = useState<File | Blob | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -152,6 +154,11 @@ export default function TreatmentsManager() {
             } else {
                 formData.append('duration_min', '0');
             }
+            if (price) {
+                // Ensure price has € symbol
+                const finalPrice = price.includes('€') ? price : `${price}€`;
+                formData.append('price', finalPrice);
+            }
             // If editing and cleared, send empty? The backend expects int or None.
             // If we send nothing, and it's PUT, it might keep old value if DB logic checks for None.
             // However, FormData entries are strings. We need to handle clearing.
@@ -239,6 +246,7 @@ export default function TreatmentsManager() {
         setExcerpt(item.excerpt || '');
         setDescription(item.description || '');
         setBenefits(item.benefits || '');
+        setPrice(item.price || '');
 
         // Handle duration
         if (item.duration_min !== null && item.duration_min !== undefined) {
@@ -260,6 +268,7 @@ export default function TreatmentsManager() {
         setDescription('');
         setBenefits('');
         setDurationMin('');
+        setPrice('');
         setSelectedFile(null);
         setPreviewUrl(null);
         setImageSrc(null);
@@ -402,6 +411,11 @@ export default function TreatmentsManager() {
                                         Duración variable / No especificada
                                     </p>
                                 )}
+                                {item.price && (
+                                    <p className="mt-1 text-sm font-bold text-primary-600 font-sans">
+                                        Precio: {item.price.includes('€') ? item.price : `${item.price}€`}
+                                    </p>
+                                )}
                             </div>
                             <div className="flex border-t border-gray-200 divide-x divide-gray-200">
                                 <button
@@ -487,6 +501,22 @@ export default function TreatmentsManager() {
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm p-3 border"
                                         placeholder="Opcional. Ej: 60"
                                     />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Precio (Opcional)</label>
+                                    <div className="relative rounded-md shadow-sm mt-1">
+                                        <input
+                                            type="number"
+                                            value={price.replace('€', '').trim()}
+                                            onChange={(e) => setPrice(e.target.value)}
+                                            className="block w-full rounded-md border-gray-300 pr-12 focus:border-primary-500 focus:ring-primary-500 sm:text-sm p-3 border"
+                                            placeholder="50"
+                                        />
+                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                                            <span className="text-gray-500 sm:text-sm">€</span>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div>

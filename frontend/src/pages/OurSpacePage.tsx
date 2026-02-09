@@ -96,13 +96,13 @@ const OurSpacePage: React.FC = () => {
                             </p>
 
                             <a
-                                href="https://maps.app.goo.gl/ErMhKHkMgKhoLMPK6"
+                                href="https://www.google.com/maps/search/?api=1&query=Yoga+y+Terapias+Arunachala"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-2 text-forest font-bold pt-4 hover:text-matcha transition-colors w-fit group"
                             >
                                 <MapPinIcon className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                                <span>Passatge de Mateu Oliva, 3, 08940 Cornellà de Llobregat</span>
+                                <span>Yoga y Terapias Arunachala - Passatge de Mateu Oliva, 3, 08940 Cornellà de Llobregat</span>
                             </a>
                         </motion.div>
 
@@ -232,7 +232,7 @@ const OurSpacePage: React.FC = () => {
                                     title="Arunachala Location"
                                 ></iframe>
                                 <a
-                                    href="https://maps.app.goo.gl/ErMhKHkMgKhoLMPK6"
+                                    href="https://www.google.com/maps/search/?api=1&query=Yoga+y+Terapias+Arunachala"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="absolute bottom-4 left-1/2 -translate-x-1/2 px-6 py-2 bg-forest text-white rounded-full font-headers text-sm tracking-widest hover:bg-matcha transition-all duration-300 shadow-xl flex items-center gap-2 opacity-90 hover:opacity-100 hover:scale-105 z-10"

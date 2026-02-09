@@ -32,11 +32,19 @@ const Footer: React.FC = () => {
                 {/* Brand & Address */}
                 <div className="md:col-span-1 flex flex-col gap-6 text-center">
                     <h3 className="text-2xl font-headers tracking-widest text-[#F5F5DC] font-bold">ARUNACHALA</h3>
-                    <address className="not-italic text-[#F5F5DC]/90 leading-relaxed text-sm">
-                        Pasaje de Mateu Oliva 3, bajos<br />
-                        (junto Plaza Pallars)<br />
-                        08940 Cornellà de Llobregat<br />
-                        Barcelona
+                    <address className="not-italic">
+                        <a
+                            href="https://www.google.com/maps/search/?api=1&query=Yoga+y+Terapias+Arunachala"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[#F5F5DC]/90 leading-relaxed text-sm hover:text-[#becf81] transition-colors"
+                        >
+                            Yoga y Terapias Arunachala<br />
+                            Pasaje de Mateu Oliva 3, bajos<br />
+                            (junto Plaza Pallars)<br />
+                            08940 Cornellà de Llobregat<br />
+                            Barcelona
+                        </a>
                     </address>
                     <p className="text-[#F5F5DC]/80 text-sm">
                         <a href="mailto:yogayterapiasarunachala@gmail.com" className="hover:text-[#becf81] transition-colors">yogayterapiasarunachala@gmail.com</a>

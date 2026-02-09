@@ -185,7 +185,15 @@ const BlogPage: React.FC = () => {
             <main className="flex-grow pt-32 pb-16 relative">
                 <div className="max-w-7xl mx-auto px-6 relative w-full">
                     <div className="mb-8 md:mb-0 md:absolute md:top-0 md:left-2 z-20">
-                        <BackButton />
+                        {
+                            filters.category === 'yoga' ? (
+                                <BackButton to="/clases-de-yoga" label={t('blog.back_to_yoga', 'Volver a Yoga')} />
+                            ) : filters.category === 'therapy' ? (
+                                <BackButton to="/terapias-y-masajes" label={t('blog.back_to_therapies', 'Volver a Terapias')} />
+                            ) : (
+                                <BackButton to="/" label={t('common.back_home', 'Volver al Inicio')} />
+                            )
+                        }
                     </div>
 
                     {/* Hero Section */}

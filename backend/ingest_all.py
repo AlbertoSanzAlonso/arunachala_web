@@ -126,9 +126,9 @@ def main():
         print("Processing General Info...")
         general_info = """
 Arunachala es un centro de bienestar especializado en Yoga y Terapias Holísticas ubicado en Cornellà de Llobregat.
-Dirección: Carrer del Bruc, 44, 08940 Cornellà de Llobregat, Barcelona.
-Contacto Teléfono/WhatsApp: +34 622 35 15 25
-Email: info@arunachala.com (o el formulario de la web).
+Dirección: Passatge de Mateu Oliva, 3, 08940 Cornellà de Llobregat, Barcelona.
+Contacto Teléfono/WhatsApp: +34 678 48 19 71
+Email: yogayterapiasarunachala@gmail.com (o el formulario de la web).
 El centro ofrece un ambiente calmado y acogedor ideal para la práctica meditativa y sanación corporal.
 Ofrecemos clases de Hatha Yoga, Vinyasa Flow, Yoga para niños y mujeres embarazadas. También terapias como Reiki, Flores de Bach y diversos tipos de masajes (Ayurvédico, Tailandés, etc).
         """.strip()

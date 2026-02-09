@@ -68,7 +68,14 @@ const ContactPage: React.FC = () => {
                                         </div>
                                         <div>
                                             <h3 className="font-headers text-forest text-lg uppercase tracking-wide">Dirección</h3>
-                                            <p className="text-bark/80 leading-relaxed">{t('contact_page.info.address')}</p>
+                                            <a
+                                                href="https://www.google.com/maps/search/?api=1&query=Yoga+y+Terapias+Arunachala"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-bark/80 leading-relaxed hover:text-matcha transition-colors"
+                                            >
+                                                {t('contact_page.info.address')}
+                                            </a>
                                         </div>
                                     </div>
 
@@ -78,7 +85,12 @@ const ContactPage: React.FC = () => {
                                         </div>
                                         <div>
                                             <h3 className="font-headers text-forest text-lg uppercase tracking-wide">{t('contact_page.info.phone_label')}</h3>
-                                            <p className="text-bark/80 text-xl font-medium tracking-wider">+34 678 48 19 71</p>
+                                            <a
+                                                href="tel:+34678481971"
+                                                className="text-bark/80 text-xl font-medium tracking-wider hover:text-matcha transition-colors"
+                                            >
+                                                +34 678 48 19 71
+                                            </a>
                                         </div>
                                     </div>
 
@@ -88,7 +100,12 @@ const ContactPage: React.FC = () => {
                                         </div>
                                         <div>
                                             <h3 className="font-headers text-forest text-lg uppercase tracking-wide">{t('contact_page.info.email_label')}</h3>
-                                            <p className="text-bark/80 break-all">arunachala.yoga.info@gmail.com</p>
+                                            <a
+                                                href="mailto:yogayterapiasarunachala@gmail.com"
+                                                className="text-bark/80 break-all hover:text-matcha transition-colors"
+                                            >
+                                                yogayterapiasarunachala@gmail.com
+                                            </a>
                                         </div>
                                     </div>
 

@@ -7,6 +7,7 @@ import { XMarkIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import FadeInSection from '../components/FadeInSection';
+import BackButton from '../components/BackButton';
 import lotusFlower from '../assets/images/lotus_flower.png';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
@@ -18,6 +19,7 @@ interface Treatment {
     description: string;
     benefits: string;
     duration_min: number;
+    price: string;
     image_url: string | null;
     translations?: any;
 }
@@ -120,7 +122,23 @@ const AllMassagesPage: React.FC = () => {
                                     )}
                                 </div>
 
-                                <div className="mt-8 pt-8 border-t border-gray-100 flex justify-end">
+                                {selectedTreatment.price && (
+                                    <div className="mb-6">
+                                        <h4 className="text-lg font-bold text-forest uppercase tracking-wide mb-2">{t('therapies.modal.price')}</h4>
+                                        <p className="text-2xl font-headers text-matcha font-bold">
+                                            {selectedTreatment.price}
+                                        </p>
+                                    </div>
+                                )}
+
+
+                                <div className="mt-8 pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                    <button
+                                        onClick={() => navigate('/contacto')}
+                                        className="w-full sm:w-auto px-6 py-3 bg-forest text-white font-bold rounded-full hover:bg-matcha transition-colors uppercase tracking-widest text-sm"
+                                    >
+                                        {t('therapies.appointment.cta')}
+                                    </button>
                                     <button
                                         onClick={() => setSelectedTreatment(null)}
                                         className="text-sm font-bold text-forest hover:text-matcha uppercase tracking-widest transition-colors"
@@ -137,13 +155,10 @@ const AllMassagesPage: React.FC = () => {
             <main className="flex-grow pt-32 pb-20">
                 <div className="max-w-7xl mx-auto px-8">
                     {/* Back Button */}
-                    <button
-                        onClick={() => navigate('/terapias-y-masajes')}
-                        className="flex items-center gap-2 text-forest hover:text-matcha transition-colors mb-8 group"
-                    >
-                        <ArrowLeftIcon className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                        <span className="font-headers uppercase tracking-wide">{t('common.back_home')}</span>
-                    </button>
+                    {/* Back Button */}
+                    <div className="mb-8">
+                        <BackButton to="/terapias-y-masajes" label={t('blog.back_to_therapies', 'Volver a Terapias')} className="text-forest hover:text-matcha mb-0" />
+                    </div>
 
                     {/* Header */}
                     <FadeInSection className="text-center mb-16">
@@ -189,7 +204,7 @@ const AllMassagesPage: React.FC = () => {
                                             <span className="text-forest/60 text-sm font-bold">
                                                 {massage.duration_min && massage.duration_min > 0 ? `${massage.duration_min} min` : ''}
                                             </span>
-                                            <button className="text-forest font-bold group-hover:text-matcha transition-colors uppercase">{t('yoga.common.read_article')} →</button>
+                                            <button className="text-forest font-bold group-hover:text-matcha transition-colors uppercase">{t('therapies.common.read_more')} →</button>
                                         </div>
                                     </motion.div>
                                 ))}
@@ -204,7 +219,7 @@ const AllMassagesPage: React.FC = () => {
             </main>
 
             <Footer />
-        </div>
+        </div >
     );
 };
 

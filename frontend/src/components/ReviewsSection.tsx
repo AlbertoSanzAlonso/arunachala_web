@@ -39,7 +39,7 @@ const ReviewsSection: React.FC = () => {
     const [rating, setRating] = useState(4.9);
     const [totalReviews, setTotalReviews] = useState(124);
     // Use a Google Maps Search URL as the default fallback
-    const [googleUrl, setGoogleUrl] = useState("https://www.google.com/maps/search/?api=1&query=Arunachala+Yoga");
+    const [googleUrl, setGoogleUrl] = useState("https://www.google.com/maps/search/?api=1&query=Yoga+y+Terapias+Arunachala");
 
     useEffect(() => {
         const fetchReviews = async () => {
