@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams, useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
@@ -18,6 +19,7 @@ interface Meditation {
     excerpt?: string;
     media_url?: string;
     thumbnail_url?: string;
+    slug?: string;
     created_at: string;
     tags?: string[] | string;
     translations?: {
@@ -74,6 +76,8 @@ const VolumeControl: React.FC<{
 
 const MeditationsPage: React.FC = () => {
     const { t, i18n } = useTranslation();
+    const [searchParams] = useSearchParams();
+    const { slug: routeSlug } = useParams();
     const [meditations, setMeditations] = useState<Meditation[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [playingId, setPlayingId] = useState<number | null>(null);
@@ -164,6 +168,47 @@ const MeditationsPage: React.FC = () => {
     const [isMuted, setIsMuted] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
 
+    const handlePlay = React.useCallback((meditation: Meditation) => {
+        if (!meditation) return;
+        const url = meditation.media_url || '';
+
+        // Prepare selection immediately
+        setSelectedMeditation(meditation);
+        setIsPlayerModalOpen(true);
+
+        if (playingId === meditation.id && audio) {
+            if (audio.paused) {
+                audio.play().catch(e => console.error("Playback error", e));
+            } else {
+                audio.pause();
+            }
+        } else {
+            // New audio track
+            if (audio) {
+                audio.pause();
+            }
+            const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
+            const newAudio = new Audio(fullUrl);
+            newAudio.volume = volume;
+            newAudio.muted = isMuted;
+
+            newAudio.play().catch(err => {
+                console.warn("Autoplay blocked or playback error:", err);
+            });
+
+            newAudio.onended = () => {
+                setPlayingId(null);
+                setProgress(0);
+                setCurrentTime(0);
+                setIsPlaying(false);
+                setIsPlayerModalOpen(false);
+            };
+
+            setAudio(newAudio);
+            setPlayingId(meditation.id);
+        }
+    }, [audio, playingId, volume, isMuted, API_BASE_URL]);
+
     useEffect(() => {
         const fetchMeditations = async () => {
             try {
@@ -181,6 +226,29 @@ const MeditationsPage: React.FC = () => {
 
         fetchMeditations();
     }, []);
+
+    // Auto-play from URL parameter
+    useEffect(() => {
+        if (!isLoading && meditations.length > 0) {
+            const playParam = (searchParams.get('play') || routeSlug)?.toLowerCase().trim();
+            if (playParam) {
+                const meditationToPlay = meditations.find(m =>
+                    m.slug?.toLowerCase().trim() === playParam ||
+                    m.title?.toLowerCase().trim() === playParam
+                );
+
+                if (meditationToPlay) {
+                    // Crucial: ensure modal state is set even if already playing
+                    setSelectedMeditation(meditationToPlay);
+                    setIsPlayerModalOpen(true);
+
+                    if (meditationToPlay.id !== playingId) {
+                        handlePlay(meditationToPlay);
+                    }
+                }
+            }
+        }
+    }, [isLoading, meditations, searchParams, routeSlug, playingId, handlePlay]);
 
     // Effect to handle audio events
     useEffect(() => {
@@ -210,53 +278,6 @@ const MeditationsPage: React.FC = () => {
             audio.removeEventListener('pause', handlePauseEvent);
         };
     }, [audio]);
-
-    const handlePlay = (meditation: Meditation) => {
-        const url = meditation.media_url || '';
-        console.log("handlePlay triggered for:", meditation.title, "URL:", url);
-
-        if (playingId === meditation.id && audio) {
-            console.log("Toggling existing audio. Paused:", audio.paused);
-            if (audio.paused) {
-                audio.play().catch(err => console.error("Error playing audio:", err));
-            } else {
-                audio.pause();
-                // We don't null playingId here so the player stays active
-            }
-        } else {
-            console.log("Starting new audio flow...");
-            if (audio) {
-                console.log("Stopping previous audio");
-                audio.pause();
-            }
-            const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
-            console.log("Full Audio URL:", fullUrl);
-            const newAudio = new Audio(fullUrl);
-
-            newAudio.volume = volume;
-            newAudio.muted = isMuted;
-
-            newAudio.play().then(() => {
-                console.log("Audio started playing successfully");
-            }).catch(err => {
-                console.error("Failed to play audio:", err);
-                alert(t('meditations.error_playback', "No se pudo reproducir el audio. Verifica tu conexión o el formato del archivo."));
-            });
-
-            newAudio.onended = () => {
-                console.log("Audio ended");
-                setPlayingId(null);
-                setProgress(0);
-                setCurrentTime(0);
-                setIsPlaying(false);
-                setIsPlayerModalOpen(false);
-            };
-            setAudio(newAudio);
-            setPlayingId(meditation.id);
-            setSelectedMeditation(meditation);
-            // setIsPlayerModalOpen(true); // Disable modal
-        }
-    };
 
     const handleVolumeChange = (newVolume: number) => {
         setVolume(newVolume);
@@ -681,12 +702,14 @@ const MeditationsPage: React.FC = () => {
                                     leaveTo="opacity-0 scale-95"
                                 >
                                     <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-3xl bg-white p-8 text-left align-middle shadow-2xl transition-all relative border border-bone">
-                                        <button
-                                            onClick={handleCloseModal}
-                                            className="absolute top-4 right-4 text-bark/40 hover:text-bark/80 transition-colors"
-                                        >
-                                            <XMarkIcon className="w-6 h-6" />
-                                        </button>
+                                        {!routeSlug && (
+                                            <button
+                                                onClick={handleCloseModal}
+                                                className="absolute top-4 right-4 text-bark/40 hover:text-bark/80 transition-colors"
+                                            >
+                                                <XMarkIcon className="w-6 h-6" />
+                                            </button>
+                                        )}
 
                                         {selectedMeditation && (() => {
                                             const currentLang = i18n.language.split('-')[0];

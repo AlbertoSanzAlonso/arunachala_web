@@ -107,3 +107,4 @@ arunachala_web/
     - **Meditation Player Integration**:
         - **Auto-Play**: Meditation links from the Quiz (`/meditaciones/slug`) now automatically open the player modal.
         - **New Tab Experience**: All recommendations from the Quiz now open in a new tab (`target="_blank"`) to preserve the user's results.
+        - **Focused UI**: Removed the "Close" (X) button from the player modal when accessing via direct link/Quiz to prevent accidental dismissal.
