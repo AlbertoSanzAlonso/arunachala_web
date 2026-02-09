@@ -44,11 +44,13 @@ const MeditationsPage: React.FC = () => {
         play,
         stop,
         setIsPlayerModalOpen: setModalOpen,
+        setIsMeditationInView,
         setVolume,
         setIsMuted,
     } = useAudio();
 
     const [meditations, setMeditations] = useState<Meditation[]>([]);
+
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
@@ -109,6 +111,22 @@ const MeditationsPage: React.FC = () => {
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     );
+
+    // Track if current meditation is on screen (on current page)
+    useEffect(() => {
+        if (playingMeditation) {
+            const inView = currentItems.some(m => m.id === playingMeditation.id);
+            setIsMeditationInView(inView);
+        } else {
+            setIsMeditationInView(false);
+        }
+    }, [playingMeditation, currentItems, setIsMeditationInView]);
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => setIsMeditationInView(false);
+    }, [setIsMeditationInView]);
+
 
     useEffect(() => { setCurrentPage(1); }, [filters]);
 

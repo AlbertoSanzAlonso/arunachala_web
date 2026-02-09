@@ -119,6 +119,18 @@ arunachala_web/
     - **Clean UI**: Removed the redundant language switcher from the mobile slide-out menu to prioritize navigation space.
 - **Git & Agent Maintenance**: Performed a full project commit, pull, and state synchronization.
 
+## 📝 Recent Updates (2026-02-09 - Night)
+- **Interactive Voting System**:
+    - **Backend Realignment**: Restored stable API routing for `/api/suggestions`, fixed critical model imports in `activities.py`, and ensured 100% database data integrity with `delete-orphan` cascades (deleting an activity now automatically cleans up all associated votes/comments).
+    - **Frontend UX**: Implemented a "Vote Again" feature to allow users to change or add votes, and added clear success feedback.
+- **Context-Aware Audio Player (UX)**:
+    - **Smart Visibility**: Introduced `isMeditationInView` logic in `AudioContext`. The Header's mini-player now automatically hides with a smooth animation if the meditation currently playing is visible on the current page (including pagination support), preventing UI clutter.
+- **Mobile-First Design (Activities Page)**:
+    - **Overflow Fixes**: Redesigned the suggestion questionnaire specifically for small screens. Reduced container paddings, optimized button layouts, and adjusted border-radii to ensure a perfect fit on mobile devices without horizontal scrolling.
+- **System Maintenance**:
+    - **Translations**: Standardized `common.loading` and `common.sending` keys across ES/CA/EN locales to eliminate hydration warnings and console errors.
+    - **API Stability**: Resolved backend server process conflicts and ensured stable endpoint availability.
+
 ## 🏗️ Upcoming Tasks
-- **Activities Suggestions**: Implement a new interactive form within the Activities page to allow users to vote for/suggest new activities with custom comments.
+- **RAG for Activities**: Ensure the new activities and user suggestions are correctly indexed for the AI assistant.
 

@@ -22,7 +22,10 @@ interface Activity {
     is_active: boolean;
     created_at: string;
     activity_data?: any;
+    vote_results?: Record<string, number>;
+    user_comments?: { text: string; option: string; date: string }[];
 }
+
 
 const API_URL = API_BASE_URL;
 
@@ -34,6 +37,8 @@ export default function ActivityManager() {
     const [isLoading, setIsLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingItem, setEditingItem] = useState<Activity | null>(null);
+    const [expandedComments, setExpandedComments] = useState<Record<number, boolean>>({});
+
 
     // Initialize tab from URL
     const initialTab = (searchParams.get('tab') as 'cursos' | 'eventos' | 'sugerencias') || 'cursos';
@@ -642,16 +647,88 @@ export default function ActivityManager() {
                                     {item.type}
                                 </span>
                                 <h3 className="text-lg font-semibold text-gray-900">{item.title}</h3>
+                                {item.description && <p className="mt-1 text-xs text-gray-500 italic line-clamp-2">{item.description}</p>}
                                 {item.type === 'sugerencia' && (
-                                    <div className="mt-4 text-sm text-gray-500">
-                                        <p className="font-medium">Opciones:</p>
-                                        <ul className="list-disc pl-5 mt-1">
-                                            {item.activity_data?.options?.map((o: any, idx: number) => (
-                                                <li key={idx}>{o.text}</li>
-                                            )) || <li className="italic">Sin opciones</li>}
-                                        </ul>
+
+                                    <div className="mt-4 space-y-4">
+                                        <div className="text-sm text-gray-500">
+                                            <div className="flex justify-between items-center mb-2">
+                                                <p className="font-semibold text-gray-700">Votos actuales:</p>
+                                                <span className="px-2 py-0.5 bg-primary-100 text-primary-700 text-[10px] font-bold rounded-full">
+                                                    {Object.values(item.vote_results || {}).reduce((a, b) => a + b, 0)} TOTAL
+                                                </span>
+                                            </div>
+                                            <div className="space-y-2">
+
+                                                {item.activity_data?.options?.map((o: any, idx: number) => {
+                                                    const votes = item.vote_results?.[o.text] || 0;
+                                                    const totalVotes = Object.values(item.vote_results || {}).reduce((a, b) => a + b, 0);
+                                                    const percentage = totalVotes > 0 ? (votes / totalVotes) * 100 : 0;
+
+                                                    return (
+                                                        <div key={idx} className="space-y-1">
+                                                            <div className="flex justify-between text-[11px]">
+                                                                <span className="font-medium truncate max-w-[150px]">{o.text}</span>
+                                                                <span className="text-primary-600 font-bold">{votes}</span>
+                                                            </div>
+                                                            <div className="w-full bg-gray-100 rounded-full h-1.5">
+                                                                <div
+                                                                    className="bg-primary-500 h-1.5 rounded-full transition-all duration-500"
+                                                                    style={{ width: `${percentage}%` }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                                {(!item.activity_data?.options || item.activity_data.options.length === 0) && (
+                                                    <p className="italic text-xs">Sin opciones fijas.</p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {item.user_comments && item.user_comments.length > 0 && (
+                                            <div className="pt-4 border-t border-gray-100">
+                                                <button
+                                                    onClick={() => setExpandedComments(prev => ({ ...prev, [item.id]: !prev[item.id] }))}
+                                                    className="w-full flex justify-between items-center text-[11px] font-bold text-gray-400 uppercase tracking-widest hover:text-primary-600 transition-colors"
+                                                >
+                                                    <span className="flex items-center gap-1">
+                                                        <ChatBubbleLeftRightIcon className="h-3 w-3" />
+                                                        Comentarios ({item.user_comments.length})
+                                                    </span>
+                                                    <span>{expandedComments[item.id] ? '▲' : '▼'}</span>
+                                                </button>
+
+                                                {expandedComments[item.id] ? (
+                                                    <div className="mt-3 space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                                                        {item.user_comments.map((c, idx) => (
+                                                            <div key={idx} className="bg-gray-50 p-3 rounded-xl text-[10px] space-y-1 border border-gray-100">
+                                                                <div className="flex justify-between items-start gap-2">
+                                                                    <span className="text-gray-600 italic leading-relaxed">"{c.text}"</span>
+                                                                    <span className="text-[8px] text-gray-400 whitespace-nowrap">
+                                                                        {new Date(c.date).toLocaleDateString()}
+                                                                    </span>
+                                                                </div>
+                                                                {c.option && (
+                                                                    <div className="flex items-center gap-1">
+                                                                        <span className="w-1 h-1 bg-primary-400 rounded-full"></span>
+                                                                        <span className="text-primary-600 font-bold uppercase tracking-tighter">Votó: {c.option}</span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="mt-2 text-[10px] text-gray-400 italic">
+                                                        Haz clic para ver {item.user_comments.length} comentarios
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 )}
+
+
                                 {item.type !== 'sugerencia' && (
                                     <div className="mt-4 space-y-2 text-sm text-gray-500">
                                         <p className="flex items-center gap-2"><span className="font-medium text-gray-700">Inicio:</span> {formatShortDate(item.start_date)}</p>
@@ -713,12 +790,13 @@ export default function ActivityManager() {
                                     <input type="text" required value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-primary-500 p-3 border sm:text-sm" />
                                 </div>
 
-                                {activeTab !== 'sugerencias' && (
-                                    <div className="md:col-span-2">
-                                        <label className="block text-sm font-medium text-gray-700">Descripción</label>
-                                        <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-primary-500 p-3 border sm:text-sm" />
-                                    </div>
-                                )}
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        {activeTab === 'sugerencias' ? 'Descripción (opcional)' : 'Descripción'}
+                                    </label>
+                                    <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-primary-500 p-3 border sm:text-sm" />
+                                </div>
+
 
                                 {activeTab === 'eventos' && (
                                     <div>

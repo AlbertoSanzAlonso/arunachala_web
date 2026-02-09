@@ -199,6 +199,10 @@ class Activity(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
+    # Relationships
+    suggestions = relationship("Suggestion", back_populates="activity", cascade="all, delete-orphan")
+
+
 
 class AutomationTask(Base):
     __tablename__ = "automation_tasks"
@@ -248,9 +252,16 @@ class Suggestion(Base):
     __tablename__ = "suggestions"
 
     id = Column(Integer, primary_key=True, index=True)
-    activity_type = Column(String, nullable=True) # Voted activity
+    activity_id = Column(Integer, ForeignKey("activities.id"), nullable=True) # Link to the specific poll activity
+    activity_type = Column(String, nullable=True) # Selected option text
     custom_suggestion = Column(String, nullable=True) # User's own suggestion
     comments = Column(Text, nullable=True)
     status = Column(String, default="pending") # pending, reviewed, implemented
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # Optional relationship
+    # Relationship
+    activity = relationship("Activity", back_populates="suggestions")
+
+
 

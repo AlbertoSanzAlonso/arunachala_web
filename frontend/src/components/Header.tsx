@@ -1,7 +1,7 @@
 import React from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import logo from '../assets/images/logo_transparent_v2.webp';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAudio } from '../context/AudioContext';
@@ -17,6 +17,7 @@ const Header: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const [showVolume, setShowVolume] = React.useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
     const { t, i18n } = useTranslation();
     const {
         playingMeditation,
@@ -29,6 +30,7 @@ const Header: React.FC = () => {
         playlist,
         volume,
         isMuted,
+        isMeditationInView,
         setVolume,
         setIsMuted,
         setIsPlayerModalOpen
@@ -51,6 +53,10 @@ const Header: React.FC = () => {
     const currentLang = i18n.language.split('-')[0];
     const displayTitle = playingMeditation?.translations?.[currentLang]?.title || playingMeditation?.title;
 
+    // Use the context-provided inView status to decide visibility
+    const shouldShowMiniPlayer = !!playingMeditation && !isMeditationInView;
+
+
     return (
         <>
             <header className="fixed top-0 left-0 w-full z-50 p-4 md:py-3 md:px-8 flex justify-between items-center bg-[#5c6b3c] shadow-md transition-colors duration-300">
@@ -67,7 +73,8 @@ const Header: React.FC = () => {
                 <div className="flex items-center gap-2 md:gap-4">
                     {/* Mini Player */}
                     <AnimatePresence>
-                        {playingMeditation && (
+                        {shouldShowMiniPlayer && (
+
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.9, x: 20 }}
                                 animate={{ opacity: 1, scale: 1, x: 0 }}

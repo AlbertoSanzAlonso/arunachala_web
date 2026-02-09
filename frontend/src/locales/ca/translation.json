@@ -140,6 +140,8 @@
         "view_all": "Veure tots",
         "back": "Atrere",
         "back_home": "Tornar a l'inici",
+        "loading": "Carregant...",
+        "sending": "Enviant...",
         "days": {
             "monday": "Dilluns",
             "tuesday": "Dimarts",
@@ -292,11 +294,37 @@
             "taller": "Taller",
             "curso": "Curs",
             "evento": "Esdeveniment",
-            "retiro": "Retir"
+            "retiro": "Retir",
+            "sugerencia": "Suggeriment"
+        },
+        "sections": {
+            "courses": "Cursos",
+            "events": "Tallers i Esdeveniments",
+            "suggestions": "Suggeriments"
         },
         "consult_price": "Consultar preu",
-        "more_soon": "Properes Activitats",
-        "stay_tuned": "Estem preparant nous retirs i tallers. Estigues al corrent."
+        "no_courses": "No hi ha cursos programats en aquest moment.",
+        "no_events": "No hi ha tallers o esdeveniments programats properament.",
+        "no_polls": "No hi ha votacions actives en aquest moment.",
+        "suggestions": {
+            "vote_now": "Registrar el meu vot",
+            "vote_recorded": "El teu vot ha estat registrat correctament.",
+            "label_comments": "Comentaris addicionals",
+            "placeholder_comments": "Explica'ns una mica més...",
+            "voto_unit": "vot",
+            "voto_plural": "vots",
+            "label_custom_tag": "Tens una altra idea?",
+            "custom_title": "Envia'ns la teva proposta",
+            "custom_subtitle": "Si busques alguna cosa molt específica que no està a la llista anterior, explica'ns-ho aquí.",
+            "custom_label": "La teva proposta",
+            "custom_details_label": "Detalls o comentaris",
+            "placeholder_custom": "Ex: Taller de cuina macrobiòtica...",
+            "submit_idea": "Enviar la meva idea",
+            "idea_received": "Idea rebuda!",
+            "thanks_desc": "Moltes gràcies per la teva proposta, la estudiarem amb afecte.",
+            "suggest_another": "Suggerir una altra idea",
+            "vote_again": "Votar de nou"
+        }
     },
     "space": {
         "title": "El Nostre Espai",

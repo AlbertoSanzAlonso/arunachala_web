@@ -4,13 +4,15 @@ from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 from app.core.database import get_db, SessionLocal
-from app.models.models import Activity, User
+from app.models.models import Activity, User, Suggestion
 from app.api.auth import get_current_user
 from app.core.image_utils import save_upload_file, delete_file
 from app.core.webhooks import notify_n8n_content_change
 from app.core.translation_utils import auto_translate_background
 from app.core.schedule_utils import check_global_overlap
 import json
+from sqlalchemy import func
+
 
 router = APIRouter(prefix="/api/activities", tags=["activities"])
 
@@ -31,6 +33,9 @@ class ActivityResponse(BaseModel):
     is_active: bool = True
     created_at: datetime
     updated_at: Optional[datetime] = None
+    vote_results: Optional[dict] = None
+    user_comments: Optional[List[dict]] = None
+
 
     class Config:
         from_attributes = True
@@ -96,13 +101,47 @@ def get_activities(db: Session = Depends(get_db), active_only: bool = True):
     query = db.query(Activity)
     if active_only:
         query = query.filter(Activity.is_active == True)
-    return query.order_by(Activity.start_date.asc().nulls_last(), Activity.created_at.desc()).all()
+    
+    activities = query.order_by(Activity.start_date.asc().nulls_last(), Activity.created_at.desc()).all()
+    
+    # Enrich suggestion activities with vote data
+    for activity in activities:
+        if activity.type == 'sugerencia':
+            # Calculate vote results
+            votes = db.query(Suggestion.activity_type, func.count(Suggestion.id))\
+                      .filter(Suggestion.activity_id == activity.id)\
+                      .group_by(Suggestion.activity_type).all()
+            activity.vote_results = {v[0]: v[1] for v in votes if v[0]}
+            
+            # Fetch comments
+            comments = db.query(Suggestion)\
+                         .filter(Suggestion.activity_id == activity.id)\
+                         .filter(Suggestion.comments != None)\
+                         .filter(Suggestion.comments != "")\
+                         .order_by(Suggestion.created_at.desc()).all()
+            activity.user_comments = [{"text": c.comments, "option": c.activity_type, "date": c.created_at} for c in comments]
+            
+    return activities
 
 @router.get("/{activity_id}", response_model=ActivityResponse)
 def get_activity(activity_id: int, db: Session = Depends(get_db)):
     activity = db.query(Activity).filter(Activity.id == activity_id).first()
     if not activity:
         raise HTTPException(status_code=404, detail="Activity not found")
+    
+    if activity.type == 'sugerencia':
+        votes = db.query(Suggestion.activity_type, func.count(Suggestion.id))\
+                  .filter(Suggestion.activity_id == activity.id)\
+                  .group_by(Suggestion.activity_type).all()
+        activity.vote_results = {v[0]: v[1] for v in votes if v[0]}
+        
+        comments = db.query(Suggestion)\
+                     .filter(Suggestion.activity_id == activity.id)\
+                     .filter(Suggestion.comments != None)\
+                     .filter(Suggestion.comments != "")\
+                     .order_by(Suggestion.created_at.desc()).all()
+        activity.user_comments = [{"text": c.comments, "option": c.activity_type, "date": c.created_at} for c in comments]
+        
     return activity
 
 @router.post("", response_model=ActivityResponse)

@@ -140,6 +140,8 @@
         "view_all": "Ver todos",
         "back": "Atrás",
         "back_home": "Volver al inicio",
+        "loading": "Cargando...",
+        "sending": "Enviando...",
         "days": {
             "monday": "Lunes",
             "tuesday": "Martes",
@@ -301,8 +303,28 @@
             "suggestions": "Sugerencias"
         },
         "consult_price": "Consultar precio",
-        "more_soon": "Próximas Actividades",
-        "stay_tuned": "Estamos preparando nuevos retiros y talleres. Mantente al tanto."
+        "no_courses": "No hay cursos programados en este momento.",
+        "no_events": "No hay talleres o eventos programados próximamente.",
+        "no_polls": "No hay votaciones activas en este momento.",
+        "suggestions": {
+            "vote_now": "Registrar mi voto",
+            "vote_recorded": "Tu voto ha sido registrado correctamente.",
+            "label_comments": "Comentarios adicionales",
+            "placeholder_comments": "Cuéntanos un poco más...",
+            "voto_unit": "voto",
+            "voto_plural": "votos",
+            "label_custom_tag": "¿Tienes otra idea?",
+            "custom_title": "Mándanos tu propuesta",
+            "custom_subtitle": "Si buscas algo muy específico que no está en la lista anterior, cuéntanoslo aquí.",
+            "custom_label": "Tu propuesta",
+            "custom_details_label": "Detalles o comentarios",
+            "placeholder_custom": "Ej: Taller de cocina macrobiótica...",
+            "submit_idea": "Enviar mi idea",
+            "idea_received": "¡Idea recibida!",
+            "thanks_desc": "Muchas gracias por tu propuesta, la estudiaremos con cariño.",
+            "suggest_another": "Sugerir otra idea",
+            "vote_again": "Votar de nuevo"
+        }
     },
     "space": {
         "title": "Nuestro Espacio",

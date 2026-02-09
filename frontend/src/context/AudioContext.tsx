@@ -26,16 +26,19 @@ interface AudioContextType {
     isMuted: boolean;
     playlist: Meditation[];
     isPlayerModalOpen: boolean;
+    isMeditationInView: boolean;
     play: (meditation: Meditation, shouldOpenModal?: boolean, playlist?: Meditation[]) => void;
     pause: () => void;
     stop: () => void;
     next: () => void;
     previous: () => void;
     setIsPlayerModalOpen: (open: boolean) => void;
+    setIsMeditationInView: (inView: boolean) => void;
     setVolume: (volume: number) => void;
     setIsMuted: (muted: boolean) => void;
     seek: (progress: number) => void;
 }
+
 
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
 
@@ -48,9 +51,11 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [volume, setVolumeState] = useState(1);
     const [isMuted, setIsMutedState] = useState(false);
     const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
+    const [isMeditationInView, setIsMeditationInView] = useState(false);
     const [playlist, setPlaylist] = useState<Meditation[]>([]);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
+
     const playlistRef = useRef<Meditation[]>([]);
     const currentMeditationRef = useRef<Meditation | null>(null);
 
@@ -218,13 +223,16 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             isMuted,
             playlist,
             isPlayerModalOpen,
+            isMeditationInView,
             play,
             pause,
             stop,
             next,
             previous,
             setIsPlayerModalOpen,
+            setIsMeditationInView,
             setVolume,
+
             setIsMuted,
             seek
         }}>

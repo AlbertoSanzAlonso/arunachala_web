@@ -140,6 +140,8 @@
         "view_all": "View all",
         "back": "Back",
         "back_home": "Back to home",
+        "loading": "Loading...",
+        "sending": "Sending...",
         "days": {
             "monday": "Monday",
             "tuesday": "Tuesday",
@@ -292,11 +294,37 @@
             "taller": "Workshop",
             "curso": "Course",
             "evento": "Event",
-            "retiro": "Retreat"
+            "retiro": "Retreat",
+            "sugerencia": "Suggestion"
+        },
+        "sections": {
+            "courses": "Courses",
+            "events": "Workshops & Events",
+            "suggestions": "Suggestions"
         },
         "consult_price": "Consult price",
-        "more_soon": "Upcoming Activities",
-        "stay_tuned": "We are preparing new retreats and workshops. Stay tuned."
+        "no_courses": "No courses scheduled at this time.",
+        "no_events": "No workshops or events scheduled soon.",
+        "no_polls": "No active polls at this time.",
+        "suggestions": {
+            "vote_now": "Register my vote",
+            "vote_recorded": "Your vote has been recorded successfully.",
+            "label_comments": "Additional comments",
+            "placeholder_comments": "Tell us more...",
+            "voto_unit": "vote",
+            "voto_plural": "votes",
+            "label_custom_tag": "Do you have another idea?",
+            "custom_title": "Send us your proposal",
+            "custom_subtitle": "If you are looking for something specific that is not on the list above, tell us here.",
+            "custom_label": "Your proposal",
+            "custom_details_label": "Details or comments",
+            "placeholder_custom": "E.g.: Macrobiotic cooking workshop...",
+            "submit_idea": "Send my idea",
+            "idea_received": "Idea received!",
+            "thanks_desc": "Thank you very much for your proposal, we will study it with care.",
+            "suggest_another": "Suggest another idea",
+            "vote_again": "Vote again"
+        }
     },
     "space": {
         "title": "Our Space",

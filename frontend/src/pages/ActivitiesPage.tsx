@@ -20,27 +20,38 @@ interface Activity {
     price: string | null;
     image_url: string | null;
     translations?: any;
+    activity_data?: any;
 }
 
-const SuggestionForm = () => {
-    const { t } = useTranslation();
+interface UserSuggestion {
+    id: number;
+    activity_id: number | null;
+    activity_type: string | null;
+    custom_suggestion: string | null;
+    comments: string | null;
+    created_at: string;
+}
+
+
+const DynamicPoll = ({ activity, userSuggestions, onVote }: { activity: Activity, userSuggestions: UserSuggestion[], onVote: () => void }) => {
+    const { t, i18n } = useTranslation();
     const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
-    const [customSuggestion, setCustomSuggestion] = useState('');
     const [comments, setComments] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
 
-    const options = [
-        { id: 'kids-yoga', title: t('activities.suggestions.kids', 'Yoga para Niños'), icon: '🎨' },
-        { id: 'silence-retreat', title: t('activities.suggestions.silence', 'Retiro de Silencio'), icon: '🤫' },
-        { id: 'ayurveda-workshop', title: t('activities.suggestions.ayurveda', 'Taller de Ayurveda'), icon: '🍶' },
-        { id: 'bowl-meditation', title: t('activities.suggestions.bowls', 'Cuencos Tibetanos'), icon: '🥣' },
-        { id: 'beach-yoga', title: t('activities.suggestions.beach', 'Yoga en la Playa'), icon: '🌊' }
-    ];
+    const options = activity.activity_data?.options?.map((o: any) => ({
+        id: o.text,
+        title: o.text,
+        icon: o.text.toLowerCase().includes('yoga') ? '🧘' :
+            o.text.toLowerCase().includes('retiro') || o.text.toLowerCase().includes('silencio') ? '🤫' :
+                o.text.toLowerCase().includes('taller') || o.text.toLowerCase().includes('ayurveda') ? '🍶' :
+                    o.text.toLowerCase().includes('niño') ? '🎨' : '✨'
+    })) || [];
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!selectedActivity && !customSuggestion.trim()) return;
+        if (!selectedActivity) return;
 
         setIsSubmitting(true);
         try {
@@ -48,17 +59,18 @@ const SuggestionForm = () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                    activity_id: activity.id,
                     activity_type: selectedActivity,
-                    custom_suggestion: customSuggestion,
                     comments: comments
                 })
             });
 
             if (response.ok) {
                 setSubmitted(true);
+                onVote();
             }
         } catch (error) {
-            console.error("Error submitting suggestion:", error);
+            console.error("Error submitting vote:", error);
         } finally {
             setIsSubmitting(false);
         }
@@ -69,103 +81,194 @@ const SuggestionForm = () => {
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="max-w-xl mx-auto text-center py-12 space-y-6"
+                className="bg-white/40 backdrop-blur-md p-10 rounded-[2.5rem] border border-white/20 shadow-xl text-center space-y-6"
             >
-                <div className="text-6xl">🙏</div>
-                <h3 className="text-2xl font-headers text-forest uppercase tracking-widest">
-                    {t('activities.suggestions.thanks_title', '¡Gracias por tu aporte!')}
-                </h3>
-                <p className="text-bark/70">
-                    {t('activities.suggestions.thanks_desc', 'Hemos recibido tu sugerencia correctamente. La tendremos muy en cuenta para nuestras próximas programaciones.')}
-                </p>
+                <div className="text-5xl">✅</div>
+                <h3 className="text-xl font-headers text-forest uppercase tracking-widest">{t('common.thanks', '¡Gracias!')}</h3>
+                <p className="text-bark/60 text-sm italic">{t('activities.suggestions.vote_recorded', 'Tu voto ha sido registrado correctamente.')}</p>
                 <button
-                    onClick={() => {
-                        setSubmitted(false);
-                        setSelectedActivity(null);
-                        setCustomSuggestion('');
-                        setComments('');
-                    }}
-                    className="text-matcha font-bold uppercase tracking-tighter hover:underline"
+                    onClick={() => { setSubmitted(false); setSelectedActivity(null); setComments(''); }}
+                    className="mt-6 text-[10px] font-bold uppercase tracking-tighter text-matcha hover:underline"
                 >
-                    {t('activities.suggestions.send_another', 'Enviar otra sugerencia')}
+                    {t('activities.suggestions.vote_again', 'Votar de nuevo')}
                 </button>
             </motion.div>
+
         );
     }
 
     return (
-        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-10 relative z-10">
-            {/* Box Selection */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                {options.map((option) => (
-                    <button
-                        key={option.id}
-                        type="button"
-                        onClick={() => setSelectedActivity(option.id === selectedActivity ? null : option.id)}
-                        className={`group relative p-6 rounded-3xl border-2 transition-all duration-300 flex flex-col items-center gap-3 ${selectedActivity === option.id
-                            ? 'border-matcha bg-matcha/10 shadow-lg scale-105'
-                            : 'border-forest/10 bg-white hover:border-matcha/40 hover:shadow-md'
-                            }`}
-                    >
-                        <span className="text-3xl group-hover:scale-110 transition-transform duration-300">{option.icon}</span>
-                        <span className={`text-[10px] font-bold uppercase tracking-wider text-center ${selectedActivity === option.id ? 'text-forest' : 'text-bark/60'}`}>
-                            {option.title}
-                        </span>
-                        {selectedActivity === option.id && (
-                            <motion.div
-                                layoutId="check"
-                                className="absolute -top-2 -right-2 w-6 h-6 bg-matcha text-white rounded-full flex items-center justify-center text-[10px] shadow-sm"
-                            >
-                                ✓
-                            </motion.div>
-                        )}
-                    </button>
-                ))}
+        <div className="bg-white/40 backdrop-blur-md p-5 md:p-12 rounded-[2rem] md:rounded-[2.5rem] border border-white/20 shadow-xl space-y-10">
+            <div className="text-center space-y-3">
+                <h3 className="text-2xl md:text-3xl font-headers text-forest uppercase tracking-wider">
+                    {getTranslated(activity, 'title', i18n.language)}
+                </h3>
+                {activity.description && (
+                    <p className="text-bark/60 max-w-xl mx-auto italic text-sm">
+                        {getTranslated(activity, 'description', i18n.language)}
+                    </p>
+                )}
             </div>
 
-            <div className="space-y-6 bg-white/50 backdrop-blur-sm p-8 rounded-[2rem] border border-white/20 shadow-sm">
-                {/* Custom Suggestion */}
-                <div className="space-y-2 text-left">
-                    <label className="text-xs font-bold uppercase tracking-widest text-forest/60 ml-1">
-                        {t('activities.suggestions.label_custom', '¿Tienes otra idea?')}
+            <form onSubmit={handleSubmit} className="max-w-xl mx-auto space-y-8">
+                <div className="flex flex-col gap-3">
+                    {options.map((option: any) => {
+                        const votes = userSuggestions.filter(s => s.activity_id === activity.id && s.activity_type === option.id).length;
+                        const isSelected = selectedActivity === option.id;
+
+                        return (
+                            <button
+                                key={option.id}
+                                type="button"
+                                onClick={() => setSelectedActivity(isSelected ? null : option.id)}
+                                className={`group relative w-full px-4 py-4 md:px-8 md:py-5 rounded-2xl border-2 transition-all duration-300 flex items-center justify-between gap-4 ${isSelected
+                                    ? 'border-matcha bg-matcha/10 shadow-md scale-[1.02]'
+                                    : 'border-forest/5 bg-white/50 hover:border-matcha/30 hover:bg-white'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-4">
+                                    <span className="text-2xl group-hover:scale-110 transition-transform duration-300">{option.icon}</span>
+                                    <span className={`text-xs font-bold uppercase tracking-widest text-left ${isSelected ? 'text-forest' : 'text-bark/70'}`}>
+                                        {option.title}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    {votes > 0 && (
+                                        <span className="text-[10px] font-bold text-matcha bg-matcha/10 px-3 py-1 rounded-full">
+                                            {votes} {votes === 1 ? t('activities.suggestions.voto_unit', 'voto') : t('activities.suggestions.voto_plural', 'votos')}
+                                        </span>
+                                    )}
+
+                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${isSelected ? 'border-matcha bg-matcha' : 'border-forest/20'}`}>
+                                        {isSelected && <span className="text-[10px] text-white">✓</span>}
+                                    </div>
+                                </div>
+                            </button>
+                        );
+                    })}
+                </div>
+
+                <div className="space-y-4 pt-4 border-t border-forest/5">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-forest/50 ml-1">
+                        {t('activities.suggestions.label_comments', 'Comentarios adicionales')}
                     </label>
-                    <input
-                        type="text"
-                        value={customSuggestion}
-                        onChange={(e) => setCustomSuggestion(e.target.value)}
-                        placeholder={t('activities.suggestions.placeholder_custom', 'Ej: Taller de cocina macrobiótica...')}
-                        className="w-full bg-white border border-forest/10 rounded-2xl px-6 py-4 text-bark focus:border-matcha focus:ring-4 focus:ring-matcha/10 outline-none transition-all"
+                    <textarea
+                        rows={2}
+                        value={comments}
+                        onChange={(e) => setComments(e.target.value)}
+                        placeholder={t('activities.suggestions.placeholder_comments', 'Cuéntanos un poco más...')}
+                        className="w-full bg-white/50 border border-forest/10 rounded-2xl px-6 py-4 text-bark text-sm focus:border-matcha focus:ring-4 focus:ring-matcha/10 outline-none transition-all resize-none"
                     />
                 </div>
 
-                {/* Additional Comments */}
-                <div className="space-y-2 text-left">
-                    <label className="text-xs font-bold uppercase tracking-widest text-forest/60 ml-1">
-                        {t('activities.suggestions.label_comments', 'Comentarios adicionales')}
-                    </label>
+                <button
+                    type="submit"
+                    disabled={isSubmitting || !selectedActivity}
+                    className="w-full py-4 bg-forest text-white rounded-full font-headers uppercase tracking-widest text-sm hover:bg-matcha hover:shadow-xl hover:-translate-y-1 transition-all duration-300 disabled:opacity-20 disabled:pointer-events-none"
+                >
+                    {isSubmitting ? t('common.sending', 'Enviando...') : t('activities.suggestions.vote_now', 'Registrar mi voto')}
+                </button>
+            </form>
+        </div>
+    );
+};
+
+const GlobalCustomSuggestion = ({ onSubmitted }: { onSubmitted: () => void }) => {
+    const { t } = useTranslation();
+    const [customSuggestion, setCustomSuggestion] = useState('');
+    const [comments, setComments] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!customSuggestion.trim()) return;
+
+        setIsSubmitting(true);
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/suggestions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    custom_suggestion: customSuggestion,
+                    comments: comments
+                })
+            });
+
+            if (response.ok) {
+                setSubmitted(true);
+                onSubmitted();
+            }
+        } catch (error) {
+            console.error("Error submitting custom suggestion:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    if (submitted) {
+        return (
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="max-w-2xl mx-auto text-center py-8 px-8 bg-matcha/10 rounded-[2rem] border border-matcha/20"
+            >
+                <h4 className="text-forest font-headers uppercase tracking-wider mb-2">💡 {t('activities.suggestions.idea_received', '¡Idea recibida!')}</h4>
+                <p className="text-bark/70 text-sm">{t('activities.suggestions.thanks_desc', 'Muchas gracias por tu propuesta, la estudiaremos con cariño.')}</p>
+                <button onClick={() => { setSubmitted(false); setCustomSuggestion(''); setComments(''); }} className="mt-4 text-[10px] font-bold uppercase tracking-tighter text-matcha hover:underline">
+                    {t('activities.suggestions.suggest_another', 'Sugerir otra idea')}
+                </button>
+            </motion.div>
+
+        );
+    }
+
+    return (
+        <div className="max-w-2xl mx-auto pt-16 mt-16 border-t border-forest/10">
+            <div className="text-center space-y-4 mb-10">
+                <span className="inline-block px-4 py-1.5 bg-forest/5 text-forest text-[10px] font-bold uppercase tracking-[0.2em] rounded-full">
+                    {t('activities.suggestions.label_custom_tag', '¿Tienes otra idea?')}
+                </span>
+                <h3 className="text-2xl font-headers text-forest uppercase tracking-wider">{t('activities.suggestions.custom_title', 'Mándanos tu propuesta')}</h3>
+                <p className="text-bark/60 text-sm italic">{t('activities.suggestions.custom_subtitle', 'Si buscas algo muy específico que no está en la lista anterior, cuéntanoslo aquí.')}</p>
+            </div>
+
+
+            <form onSubmit={handleSubmit} className="space-y-6 bg-white/40 backdrop-blur-sm p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-white/20 shadow-lg">
+                <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-forest/60 ml-1">{t('activities.suggestions.custom_label', 'Tu propuesta')}</label>
+                    <input
+                        type="text"
+                        required
+                        value={customSuggestion}
+                        onChange={(e) => setCustomSuggestion(e.target.value)}
+                        placeholder={t('activities.suggestions.placeholder_custom', 'Ej: Taller de cocina macrobiótica...')}
+                        className="w-full bg-white border border-forest/10 rounded-2xl px-5 py-3 md:px-6 md:py-4 text-bark focus:border-matcha focus:ring-4 focus:ring-matcha/10 outline-none transition-all"
+                    />
+                </div>
+                <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-forest/60 ml-1">{t('activities.suggestions.custom_details_label', 'Detalles o comentarios')}</label>
                     <textarea
                         rows={3}
                         value={comments}
                         onChange={(e) => setComments(e.target.value)}
-                        placeholder={t('activities.suggestions.placeholder_comments', 'Cuéntanos un poco más sobre lo que buscas o cuándo te vendría mejor...')}
-                        className="w-full bg-white border border-forest/10 rounded-2xl px-6 py-4 text-bark focus:border-matcha focus:ring-4 focus:ring-matcha/10 outline-none transition-all resize-none"
+                        placeholder={t('activities.suggestions.placeholder_comments', 'Cuéntanos un poco más...')}
+                        className="w-full bg-white border border-forest/10 rounded-2xl px-5 py-3 md:px-6 md:py-4 text-bark focus:border-matcha focus:ring-4 focus:ring-matcha/10 outline-none transition-all resize-none"
                     />
                 </div>
 
-                {/* Submit */}
-                <div className="pt-4">
-                    <button
-                        type="submit"
-                        disabled={isSubmitting || (!selectedActivity && !customSuggestion.trim())}
-                        className="w-full md:w-auto px-12 py-4 bg-forest text-white rounded-full font-headers uppercase tracking-widest text-sm hover:bg-matcha hover:shadow-xl hover:-translate-y-1 transition-all duration-300 disabled:opacity-30 disabled:pointer-events-none"
-                    >
-                        {isSubmitting ? t('common.sending', 'Enviando...') : t('activities.suggestions.submit', 'Enviar Propuesta')}
-                    </button>
-                </div>
-            </div>
-        </form>
+                <button
+                    type="submit"
+                    disabled={isSubmitting || !customSuggestion.trim()}
+                    className="w-full py-4 bg-matcha text-white rounded-full font-headers uppercase tracking-widest text-sm hover:bg-forest hover:shadow-xl hover:-translate-y-1 transition-all duration-300 disabled:opacity-20"
+                >
+                    {isSubmitting ? t('common.sending', 'Enviando...') : t('activities.suggestions.submit_idea', 'Enviar mi idea')}
+                </button>
+            </form>
+        </div>
     );
 };
+
 
 const ActivitiesPage: React.FC = () => {
 
@@ -173,22 +276,32 @@ const ActivitiesPage: React.FC = () => {
     const [activities, setActivities] = useState<Activity[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchActivities = async () => {
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/activities`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setActivities(data);
-                }
-            } catch (error) {
-                console.error("Error fetching activities:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+    const [userSuggestions, setUserSuggestions] = useState<UserSuggestion[]>([]);
 
-        fetchActivities();
+    const fetchData = async () => {
+        try {
+            const [actRes, sugRes] = await Promise.all([
+                fetch(`${API_BASE_URL}/api/activities`),
+                fetch(`${API_BASE_URL}/api/suggestions`)
+            ]);
+
+            if (actRes.ok) {
+                const data = await actRes.json();
+                setActivities(data);
+            }
+            if (sugRes.ok) {
+                const data = await sugRes.json();
+                setUserSuggestions(data);
+            }
+        } catch (error) {
+            console.error("Error fetching page data:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
     }, []);
 
     const formatShortDate = (dateStr: string | null) => {
@@ -336,21 +449,29 @@ const ActivitiesPage: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {/* Section 3: Sugerencias Interactiva */}
-                                <div className="space-y-12 py-16 px-8 bg-forest/5 rounded-[3rem] border border-forest/10 relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 w-64 h-64 bg-matcha/5 rounded-full -mr-32 -mt-32 blur-3xl" />
-                                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-forest/5 rounded-full -ml-32 -mb-32 blur-3xl" />
+                                {/* Section 3: Sugerencias Interactiva (Votación) */}
+                                <div className="space-y-12 py-12 md:py-24 px-4 md:px-8 bg-forest/5 rounded-[2rem] md:rounded-[3rem] border border-forest/10 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-matcha/5 rounded-full -mr-64 -mt-64 blur-[100px]" />
+                                    <div className="absolute bottom-0 left-0 w-[40rem] h-[40rem] bg-forest/5 rounded-full -ml-64 -mb-64 blur-[100px]" />
 
-                                    <div className="relative z-10 space-y-4 max-w-2xl mx-auto text-center mb-12">
-                                        <h2 className="text-3xl md:text-4xl font-headers text-forest uppercase tracking-wider">
-                                            {t('activities.sections.suggestions_title', '¿Qué te gustaría experimentar?')}
-                                        </h2>
-                                        <p className="text-bark/70">
-                                            {t('activities.sections.suggestions_desc', 'Vota por una de nuestras propuestas o sugiere algo totalmente nuevo. Tu opinión nos ayuda a crecer.')}
-                                        </p>
+                                    <div className="relative z-10 space-y-16">
+                                        {activities.filter(a => a.type === 'sugerencia').length > 0 ? (
+                                            activities.filter(a => a.type === 'sugerencia').map((activity) => (
+                                                <DynamicPoll
+                                                    key={activity.id}
+                                                    activity={activity}
+                                                    userSuggestions={userSuggestions}
+                                                    onVote={() => fetchData()}
+                                                />
+                                            ))
+                                        ) : (
+                                            <div className="text-center py-12 text-forest/40 italic">
+                                                {t('activities.no_polls', 'No hay votaciones activas en este momento.')}
+                                            </div>
+                                        )}
+
+                                        <GlobalCustomSuggestion onSubmitted={() => fetchData()} />
                                     </div>
-
-                                    <SuggestionForm />
                                 </div>
 
                             </div>
