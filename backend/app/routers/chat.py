@@ -11,6 +11,7 @@ router = APIRouter()
 
 from groq import Groq
 import google.generativeai as genai
+import json, re
 from sqlalchemy.orm import Session
 from app.models.models import (
     AgentConfig, User, Content, YogaClassDefinition, 
@@ -60,7 +61,8 @@ class ChatMessage(BaseModel):
 class ChatRequest(BaseModel):
     messages: List[ChatMessage]
     stream: bool = False
-    language: str = "es"  # Nuevo campo: idioma del usuario
+    language: str = "es"
+    is_quiz: bool = False  # Para identificar si viene del cuestionario de bienestar
 
 class ChatResponse(BaseModel):
     response: str
@@ -80,7 +82,7 @@ def get_embedding(text: str):
     text = text.replace("\n", " ")
     return openai_client.embeddings.create(input=[text], model="text-embedding-3-small").data[0].embedding
 
-def search_knowledge_base(query: str, limit: int = 10):
+def search_knowledge_base(query: str, limit: int = 1):
     """Search Qdrant for relevant context."""
     if not qdrant_client:
         return []
@@ -97,7 +99,7 @@ def search_knowledge_base(query: str, limit: int = 10):
         search_result = qdrant_client.query_points(
             collection_name=COLLECTION_NAME,
             query=query_vector,
-            limit=limit  # Increased limit for better context
+            limit=1  # Drastic reduction for token limits
         ).points
         return search_result
     except Exception as e:
@@ -129,8 +131,9 @@ def get_inventory_summary(db: Session):
             "meditations": meditations_count,
             "activities": count_active(Activity)
         }
+        print(f"📊 INVENTORY COUNTS: {summary}")
         
-        def get_samples(Model, entity_type=None, limit=5):
+        def get_samples_with_metadata(Model, entity_type=None, limit=5):
             query = db.query(Model)
             if hasattr(Model, 'is_active'):
                 query = query.filter(Model.is_active == True)
@@ -139,7 +142,6 @@ def get_inventory_summary(db: Session):
             if entity_type and hasattr(Model, 'type'):
                 query = query.filter(Model.type == entity_type)
             
-            # IMPROVEMENT: Order by newest first
             if hasattr(Model, 'created_at'):
                 query = query.order_by(Model.created_at.desc())
             elif hasattr(Model, 'id'):
@@ -147,21 +149,52 @@ def get_inventory_summary(db: Session):
                 
             items = query.limit(limit).all()
             if not items: return ""
-            titles = []
+            
+            details = []
             for item in items:
-                t = getattr(item, 'title', None) or getattr(item, 'name', None)
-                if t: titles.append(t)
-            return " (los más recientes: " + ", ".join(titles) + "...)" if titles else ""
+                title = getattr(item, 'title', None) or getattr(item, 'name', None)
+                slug = getattr(item, 'slug', None)
+                if not title: continue
+                
+                # If no slug, generate one for linking (Massages/Therapies)
+                if not slug:
+                    slug = title.lower().replace(" ", "-").replace("á", "a").replace("é", "e").replace("í", "i").replace("ó", "o").replace("ú", "u").replace("ñ", "n")
+                
+                # Generate correct URL based on type
+                url = ""
+                if Model == YogaClassDefinition:
+                     url = "/clases-de-yoga"
+                elif Model == MassageType:
+                     url = f"/terapias/masajes?item={slug}"
+                elif Model == TherapyType:
+                     url = f"/terapias/terapias-holisticas?item={slug}"
+                elif entity_type == 'article':
+                     url = f"/blog/{slug}"
+                elif entity_type == 'meditation':
+                     url = f"/meditaciones/{slug}"
+                
+                info = f"'{title}' (URL: {url})"
+                
+                # Add schedule info if available (for Yoga classes)
+                if hasattr(item, 'schedules') and item.schedules:
+                    times = [f"{s.day_of_week} {s.start_time}" for s in item.schedules if s.is_active]
+                    if times:
+                        info += f" [Horario: {', '.join(times)}]"
+                
+                details.append(info)
+            return " (ITEMS DISPONIBLES: " + ", ".join(details) + ")" if details else ""
 
         parts = []
-        if summary['yoga']: parts.append(f"{summary['yoga']} clases de yoga{get_samples(YogaClassDefinition)}")
-        if summary['massage']: parts.append(f"{summary['massage']} tipos de masajes{get_samples(MassageType)}")
-        if summary['therapy']: parts.append(f"{summary['therapy']} terapias{get_samples(TherapyType)}")
-        if summary['articles']: parts.append(f"{summary['articles']} artículos en el blog{get_samples(Content, 'article')}")
-        if summary['meditations']: parts.append(f"{summary['meditations']} meditaciones guiadas{get_samples(Content, 'meditation', limit=10)}")
-        if summary['activities']: parts.append(f"{summary['activities']} actividades{get_samples(Activity)}")
+        if summary['yoga']: parts.append(f"YOGA: {summary['yoga']} clases{get_samples_with_metadata(YogaClassDefinition)}")
+        if summary['massage']: parts.append(f"MASAJES: {summary['massage']} tipos{get_samples_with_metadata(MassageType)}")
+        if summary['therapy']: parts.append(f"TERAPIAS: {summary['therapy']} tipos{get_samples_with_metadata(TherapyType)}")
+        if summary['articles']: parts.append(f"{summary['articles']} artículos en el blog{get_samples_with_metadata(Content, 'article', limit=8)}")
+        if summary['meditations']: parts.append(f"{summary['meditations']} meditaciones guiadas{get_samples_with_metadata(Content, 'meditation', limit=10)}")
+        if summary['activities']: parts.append(f"{summary['activities']} actividades{get_samples_with_metadata(Activity)}")
         
-        return "Actualmente ofrecemos: " + "; ".join(parts) + "."
+        result = "INVENTARIO DETALLADO: " + "; ".join(parts) + "."
+        print(f"🔍 FULL INVENTORY TEXT: {result}")
+        return result
 
     except Exception as e:
         print(f"Error getting inventory summary: {e}")
@@ -173,38 +206,48 @@ def format_context(search_results):
         return ""
     
     context_parts = []
-    for res in search_results:
+    for i, res in enumerate(search_results):
+        if i >= 1: break # HARD LIMIT to 1 document context
         payload = res.payload
         meta = payload.get('metadata', {})
         
-        # Try to find title in root payload, then in metadata dict (title or name)
+        # Try to find title
         title = payload.get('title') or meta.get('title') or meta.get('name') or 'Sin Título'
         
         # Try to find content
         content = payload.get('content', '')
-        # Fallback to description if content is empty
         if not content:
             content = payload.get('description') or meta.get('description', '')
             
-        # Try to find source
-        source = payload.get('source') or meta.get('source') or 'Base de Conocimiento Interna'
-        
+        # TRUNCATE CONTENT DRAMATICALLY
+        if len(content) > 1500:
+             content = content[:1500] + "... (contenido truncado)"
+            
         # Try to find type
         type_ = payload.get('type') or meta.get('type') or 'general'
 
-        # Try to find tags
+        # Strings
         tags = payload.get('tags') or meta.get('tags') or ''
         tags_str = f"ETIQUETAS: {tags}\n" if tags else ""
         
         context_parts.append(f"""
 --- DOCUMENTO ENCONTRADO ({type_}) ---
 TÍTULO: {title}
-{tags_str}CONTENIDO O DESCRIPCIÓN:
+{tags_str}CONTENIDO:
 {content}
 --------------------------------------
 """)
     
     return "\n".join(context_parts)
+
+def clean_ai_response(text: str) -> str:
+    """Forcefully remove absolute URLs from AI response for consistency."""
+    if not text: return text
+    # Remove http://localhost:3000, http://localhost:8000, or any domain-like prefix from buttons
+    text = re.sub(r'\[\[BUTTON:(.*?)\|https?://[a-zA-Z0-9\.:]+/+', r'[[BUTTON:\1|/', text)
+    # Also clean if it hallucinates just the URL outside a button
+    text = re.sub(r'https?://localhost:[0-9]+', '', text)
+    return text
 
 
 # --- Endpoints ---
@@ -218,7 +261,9 @@ def get_agent_config(db: Session = Depends(get_db)):
             response_length="balanced",
             emoji_style="moderate",
             focus_area="info",
-            system_instructions=""
+            system_instructions="",
+            quiz_model="groq",
+            chatbot_model="openai"
         )
         db.add(config)
         db.commit()
@@ -231,6 +276,8 @@ class AgentConfigUpdate(BaseModel):
     emoji_style: str
     focus_area: str
     system_instructions: Optional[str] = None
+    quiz_model: Optional[str] = "groq"
+    chatbot_model: Optional[str] = "openai"
     is_active: bool
 
 @router.post("/config")
@@ -245,6 +292,8 @@ def update_agent_config(config_data: AgentConfigUpdate, db: Session = Depends(ge
     config.emoji_style = config_data.emoji_style
     config.focus_area = config_data.focus_area
     config.system_instructions = config_data.system_instructions
+    config.quiz_model = config_data.quiz_model
+    config.chatbot_model = config_data.chatbot_model
     config.is_active = config_data.is_active
     
     db.commit()
@@ -327,82 +376,148 @@ async def chat_endpoint(request: ChatRequest, db: Session = Depends(get_db)):
     target_lang = lang_map.get(request.language[:2], "Español")
     print(f"🌍 DEBUG LANG: Request='{request.language}' -> Target='{target_lang}'")
 
+    # Multi-language headers for the quiz
+    quiz_headers = {
+        "Español": {
+            "h1": "Sobre lo que nos has compartido",
+            "h2": "Nuestra propuesta para ti",
+            "h3": "Un recurso para profundizar",
+            "h4": "Un pequeño apoyo para ahora",
+            "btn_more": "Saber más",
+            "btn_content": "Ver ahora"
+        },
+        "English": {
+            "h1": "About what you shared",
+            "h2": "Our proposal for you",
+            "h3": "A resource to deepen",
+            "h4": "A little support for now",
+            "btn_more": "Learn more",
+            "btn_content": "See now"
+        },
+        "Català (Catalán)": {
+            "h1": "Sobre el que ens has compartit",
+            "h2": "La nostra proposta per a tu",
+            "h3": "Un recurs per aprofundir",
+            "h4": "Un petit suport per ara",
+            "btn_more": "Saber-ne més",
+            "btn_content": "Veure ara"
+        }
+    }
+    h = quiz_headers.get(target_lang, quiz_headers["Español"])
+
     # 3. Construct System Prompt
-    system_prompt = f"""Eres Arunachala Bot, el asistente virtual del centro de Yoga y Terapias 'Arunachala' en Cornellà.
+    if request.is_quiz:
+        system_prompt = f"""Eres un terapeuta experto y compasivo del centro 'Arunachala'.
+Analiza el cuestionario para ofrecer una hoja de ruta de bienestar personalizada.
+RESPONDE SIEMPRE EN EL IDIOMA: {target_lang}.
 
-INFORMACIÓN CRÍTICA DE INVENTARIO (Usa esto para responder sobre cantidades):
+VARIEDAD (REGLA DE ORO): Tienes libertad para elegir entre todo el INVENTARIO REAL. No te limites siempre a los mismos items. Rota entre diferentes meditaciones, artículos y clases según el matiz de las respuestas del usuario.
+
+INVENTARIO REAL:
 {inventory_summary}
-(IMPORTANTE: Tienes exactamente estas cantidades en tu base de datos. Si el usuario pregunta "cuántos hay", recurre a esta sección. NO te inventes cifras basadas en los fragmentos de abajo si contradicen esta sección).
-    
-IDIOMA DE RESPUESTA:
- - **Debes responder SIEMPRE en {target_lang}**.
- - Si el usuario habla en {target_lang}, TODA tu respuesta (y las citas del contexto) deben ser en {target_lang}. TRADUCE cualquier información recuperada si está en otro idioma.
- - Saluda usando un saludo apropiado en {target_lang} (ej: 'Namasté' es universal, pero el resto en {target_lang}).
-    
-PERSONALIDAD Y ESTILO:
-- Tono: {tone}.
-- Longitud: {length_instruction}
-- Emojis: {emoji_instruction}
-- Objetivo: {focus_instruction}
 
-INSTRUCCIONES EXTRA DEL ADMINISTRADOR (ATENCIÓN: Si estas instrucciones incluyen frases o saludos en español, TRADÚCELAS al {target_lang} antes de usarlas):
+ESTRUCTURA DE RESPUESTA OBLIGATORIA (Usa exactamente estos 4 títulos en negrita en {target_lang}. PROHIBIDO TOTALMENTE añadir ":" o "." o cualquier signo de puntuación inmediatamente tras el título o el cierre de las negritas):
+
+**{h['h1']}**
+[Un párrafo humano y cercano analizando su situación].
+
+PASO 1: Piensa y escribe una explicación personalizada (2-3 frases) conectando con el usuario.
+PASO 2: En la línea siguiente, escribe EL BOTÓN con la URL EXACTA que copiaste del inventario.
+
+EJEMPLO DE YOGA CORRECTO:
+**{h['h2']}**
+Te recomiendo probar nuestras clases de Hatha Yoga para equilibrar tu energía. Son ideales para reconectar con tu cuerpo y calmar la mente.
+[[BUTTON:{h['btn_more']}|/clases-de-yoga]]
+
+EJEMPLO DE MEDITACIÓN CORRECTO:
+**{h['h3']}**
+Esta meditación guiada "Paz Interior" te ayudará a soltar la tensión acumulada. Escúchala antes de dormir para un descanso reparador.
+[[BUTTON:{h['btn_content']}|/meditaciones/paz-interior]]
+
+REGLAS CRÍTICAS:
+1. SIEMPRE escribe la explicación antes del botón.
+2. NUNCA inventes URLs. Usa SOLO las que ves en el inventario.
+3. SI ES YOGA -> IMPORTANTE: La URL SIEMPRE es /clases-de-yoga (sin nada más).
+4. SI ES BLOG -> /blog/slug-real
+5. SI ES TERAPIA -> /terapias/terapias-holisticas?item=slug-real
+
+IDIOMA: Responde íntegramente en {target_lang}.
+"""
+    else:
+        system_prompt = f"""Eres Arunachala Bot, asistente de 'Arunachala Yoga y Terapias' en Cornellà.
+
+INVENTARIO (Cantidades REALES):
+{inventory_summary}
+(Usa esto si preguntan "cuántos hay").
+
+CONFIGURACIÓN DE RESPUESTA:
+ - IDIOMA: {target_lang}. (Si el usuario habla otro idioma, TRADUCE TODO el contenido al idioma del usuario).
+ - SALUDO: Apropiado en {target_lang} (ej: 'Namasté').
+ - TONO: {tone} / {length_instruction}
+ - EMOJIS: {emoji_instruction}
+ - OBJETIVO: {focus_instruction}
+
+INSTRUCCIONES EXTRA:
 {extra_instructions}
 
-CONTEXTO DETALLADO (Fragmentos de la web):
+REGLAS DE URLS:
+ - Yoga: /clases-de-yoga (SIEMPRE).
+ - Masaje: /terapias/masajes?item=SLUG
+ - Terapia Holística: /terapias/terapias-holisticas?item=SLUG
+ - Blog/Artículos: /blog/SLUG
+ - Meditación: /meditaciones/SLUG
+
+PROHIBIDO USAR URLs COMPLETAS: Usa solo rutas relativas (ej: /blog/mi-slug). NUNCA escribas "http://...".
+
+CONTEXTO WEB:
 {context_text}
 
- INSTRUCCIONES DE USO DE CONTEXTO:
- - Usa la información del CONTEXTO DE LA WEB para responder las dudas del usuario.
- - **IMPORTANTE**: Si el contexto está en español y {target_lang} es otro idioma, TRADÚCELO sobre la marcha. 
- - **CITAS TEXTUALES**: Si el usuario pide "la primera línea" o una cita, y el original es español, TRADUCE LA CITA al {target_lang}. No cites en español.
- - NUNCA respondas con fragmentos en español si el usuario habla en otro idioma (salvo nombres propios o términos sánscritos).
- - NO menciones las fuentes ni cites documentos explícitamente (ej: "Según el documento X..."). Integra la información de forma natural en tu respuesta.
- - Si no sabes la respuesta basada en el contexto, puedes usar tu conocimiento general sobre yoga/bienestar, pero prioriza el contexto del centro.
- - Si mencionas horarios o precios, sé preciso basándote únicamente en el contexto provisto.
-
-EJEMPLOS DE COMPORTAMIENTO ESPERADO (User Language != Context Language):
----------------------------------------------------------------------
-Caso 1: Usuario pregunta en Inglés, Contexto en Español.
-User: "What is the price?"
-Context: "El precio es 10 euros."
-Assistant Correcto: "The price is 10 euros." 
-Assistant INCORRECTO: "The price is '10 euros' (El precio es 10 euros)." (NO MOSTRAR EL ORIGINAL)
-
-Caso 2: Usuario pide CITA TEXTUAL en Inglés.
-User: "What is the first line?"
-Context: "En un lugar de la Mancha..."
-Assistant Correcto: "The first line is: 'In a place of La Mancha...'" (SOLO TRADUCCIÓN)
-Assistant INCORRECTO: "The first line is: 'En un lugar de la Mancha...'" (PROHIBIDO CITAR EN IDIOMA INCORRECTO)
-Assistant INCORRECTO: "'En un lugar de la Mancha...' which means 'In a place...'" (NO MOSTRAR AMBOS)
-
-Caso 3: Despedida Ritual / Instrucción Admin.
-Instruction: "Termina con: 'Que el sol te ilumine'."
-Assistant Correcto: "May the sun illuminate you." (SOLO TRADUCCIÓN)
-Assistant INCORRECTO: "May the sun illuminate you. Que el sol te ilumine." (NO DUPLICAR)
----------------------------------------------------------------------
-
---- DIRECTRIZ SUPREMA DE IDIOMA ({target_lang}) ---
-1. EL IDIOMA DEL USUARIO ES: {target_lang}.
-2. TU RESPUESTA DEBE SER 100% EN {target_lang}.
-3. **PROHIBIDO** INCLUIR TEXTO EN ESPAÑOL (ni siquiera entre paréntesis o comillas). SIEMPRE TRADUCE TODO.
-4. Si las instrucciones del administrador o el contexto contienen frases en español, TRADÚCELAS INVISIBLEMENTE y muestra solo el resultado en {target_lang}.
-5. SI LA DESPEDIDA RITUAL ESTÁ EN ESPAÑOL, TRADÚCELA O ELIMÍNALA. (Ej: NO DIGAS "Que el sol...", DI "May the sun...").
+DIRECTRICES:
+ - Responde dudas usando el CONTEXTO WEB.
+ - Si el contexto está en otro idioma, TRADÚCELO al {target_lang}.
+ - Sé preciso con horarios/precios del contexto.
+ - Si no sabes, usa conocimiento general de yoga/bienestar (prioriza el centro).
+ - NUNCA cites textualmente en un idioma distinto al del usuario. Traduce las citas.
+ - NO mezcles idiomas (salvo nombres propios/sánscrito).
+ - NO digas "según el documento". Integra la info.
 """
+
+    # Select preferred model based on config
+    selected_model_type = config.quiz_model if request.is_quiz else config.chatbot_model
+    
+    # helper to check if a provider is available
+    def get_provider_call(model_type):
+        if model_type == "groq" and groq_client:
+            return "groq"
+        if model_type == "openai" and openai_client:
+            return "openai"
+        if model_type == "gemini" and gemini_model:
+            return "gemini"
+        return None
 
     # 4. Prepare messages
     api_messages = [{"role": "system", "content": system_prompt}]
     for msg in request.messages[-5:]: 
         api_messages.append({"role": msg.role, "content": msg.content})
 
-    # 5. Handle Streaming or Static Response
     if request.stream:
         async def stream_generator():
             try:
-                # Meta-data first (empty sources to hide them)
                 yield f"data: {json.dumps({'sources': []})}\n\n"
                 
-                # Priority: OpenAI -> Gemini -> Groq
-                if openai_client:
+                # Try preferred first, then fallbacks
+                order = [selected_model_type, "groq", "openai", "gemini"]
+                used_provider = None
+                for provider in order:
+                    if get_provider_call(provider):
+                        used_provider = provider
+                        break
+                
+                if not used_provider:
+                    yield f"data: {json.dumps({'error': 'No hay proveedores de IA disponibles'})}\n\n"
+                    return
+
+                if used_provider == "openai":
                     stream = openai_client.chat.completions.create(
                         model="gpt-4o-mini",
                         messages=api_messages,
@@ -413,15 +528,14 @@ Assistant INCORRECTO: "May the sun illuminate you. Que el sol te ilumine." (NO D
                         if chunk.choices and chunk.choices[0].delta.content:
                             yield f"data: {json.dumps({'content': chunk.choices[0].delta.content})}\n\n"
 
-                elif gemini_model:
-                    # Gemini streaming is slightly different
+                elif used_provider == "gemini":
                     prompt = "\n".join([f"{m['role']}: {m['content']}" for m in api_messages])
                     response = gemini_model.generate_content(prompt, stream=True)
                     for chunk in response:
                         if chunk.text:
                             yield f"data: {json.dumps({'content': chunk.text})}\n\n"
 
-                elif groq_client:
+                elif used_provider == "groq":
                     stream = groq_client.chat.completions.create(
                         model="llama-3.3-70b-versatile",
                         messages=api_messages,
@@ -430,7 +544,9 @@ Assistant INCORRECTO: "May the sun illuminate you. Que el sol te ilumine." (NO D
                     )
                     for chunk in stream:
                         if chunk.choices[0].delta.content:
-                            yield f"data: {json.dumps({'content': chunk.choices[0].delta.content})}\n\n"
+                            content = clean_ai_response(chunk.choices[0].delta.content)
+                            if content:
+                                yield f"data: {json.dumps({'content': content})}\n\n"
                 
                 yield "data: [DONE]\n\n"
             except Exception as e:
@@ -442,27 +558,36 @@ Assistant INCORRECTO: "May the sun illuminate you. Que el sol te ilumine." (NO D
     else:
         # Non-streaming response
         try:
-            if groq_client:
+            order = [selected_model_type, "groq", "openai", "gemini"]
+            used_provider = None
+            for provider in order:
+                if get_provider_call(provider):
+                    used_provider = provider
+                    break
+            
+            if not used_provider:
+                raise HTTPException(status_code=500, detail="No hay proveedores disponibles")
+
+            if used_provider == "groq":
                 completion = groq_client.chat.completions.create(
                     model="llama-3.3-70b-versatile",
                     messages=api_messages,
                     temperature=0.7
                 )
                 ai_response = completion.choices[0].message.content
-            elif gemini_model:
+            elif used_provider == "gemini":
                 prompt = "\n".join([f"{m['role']}: {m['content']}" for m in api_messages])
                 response = gemini_model.generate_content(prompt)
                 ai_response = response.text
-            elif openai_client:
+            elif used_provider == "openai":
                 completion = openai_client.chat.completions.create(
                     model="gpt-4o-mini",
                     messages=api_messages,
                     temperature=0.7
                 )
                 ai_response = completion.choices[0].message.content
-            else:
-                raise HTTPException(status_code=500, detail="No AI provider configured")
             
+            ai_response = clean_ai_response(ai_response)
             return ChatResponse(response=ai_response, sources=[])
         except Exception as e:
             print(f"Error calling AI: {e}")

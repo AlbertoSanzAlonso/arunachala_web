@@ -171,6 +171,8 @@ class AgentConfig(Base):
     emoji_style = Column(String, default="moderate") # none, moderate, high
     focus_area = Column(String, default="info") # info, booking, coaching
     system_instructions = Column(Text, nullable=True)
+    quiz_model = Column(String, default="groq") # openai, groq, gemini
+    chatbot_model = Column(String, default="openai") # openai, groq, gemini
     is_active = Column(Boolean, default=True)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 

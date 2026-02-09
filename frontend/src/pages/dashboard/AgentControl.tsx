@@ -12,6 +12,8 @@ const AgentControl: React.FC = () => {
     const [focusAreas, setFocusAreas] = useState<string[]>(["info"]); // Changed to array
     const [customFocus, setCustomFocus] = useState("");
     const [instructions, setInstructions] = useState("");
+    const [quizModel, setQuizModel] = useState("groq");
+    const [chatbotModel, setChatbotModel] = useState("openai");
     const [isActive, setIsActive] = useState(true);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<string | null>(null);
@@ -146,6 +148,8 @@ const AgentControl: React.FC = () => {
                 }
 
                 setInstructions(data.system_instructions || "");
+                setQuizModel(data.quiz_model || "groq");
+                setChatbotModel(data.chatbot_model || "openai");
                 setIsActive(data.is_active ?? true);
             }
         } catch (error) {
@@ -182,6 +186,8 @@ const AgentControl: React.FC = () => {
                     emoji_style: emojiStyle,
                     focus_area: focusString,
                     system_instructions: instructions,
+                    quiz_model: quizModel,
+                    chatbot_model: chatbotModel,
                     is_active: isActive
                 })
             });
@@ -479,8 +485,104 @@ const AgentControl: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {/* NEW FIELDS */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-gray-50">
+                    {/* Quiz Model Selector */}
+                    <div>
+                        <label className="block text-sm font-bold text-bark mb-4 flex items-center gap-2">
+                            <span className="w-6 h-6 bg-forest/10 rounded-full flex items-center justify-center text-xs">1</span>
+                            Cerebro del Cuestionario Inicial
+                        </label>
+                        <div className="space-y-3">
+                            {[
+                                { val: 'groq', label: 'Llama 3.3 70B', cost: 'Gratuito', intel: 'Máxima', desc: 'Rápido y muy inteligente. Recomendado.' },
+                                { val: 'openai', label: 'GPT-4o-mini', cost: 'De Pago', intel: 'Alta', desc: 'Muy fiable y con buen formato.' },
+                                { val: 'gemini', label: 'Gemini 1.5 Flash', cost: 'Gratuito', intel: 'Media', desc: 'Buen equilibrio pero menos creativo.' }
+                            ].map((m) => (
+                                <button
+                                    key={m.val}
+                                    type="button"
+                                    onClick={() => setQuizModel(m.val)}
+                                    className={`w-full p-4 rounded-xl border-2 text-left transition-all ${quizModel === m.val
+                                        ? 'border-forest bg-forest/5 ring-1 ring-forest/20'
+                                        : 'border-gray-50 hover:border-gray-200 text-gray-600'
+                                        }`}
+                                >
+                                    <div className="flex justify-between items-start mb-1">
+                                        <span className="font-bold text-sm">{m.label}</span>
+                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${m.cost === 'Gratuito' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                                            {m.cost}
+                                        </span>
+                                    </div>
+                                    <p className="text-[11px] text-gray-500 mb-2">{m.desc}</p>
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-[10px] text-gray-400 uppercase font-bold">Inteligencia:</span>
+                                        <div className="flex gap-0.5">
+                                            {[1, 2, 3].map((star) => (
+                                                <div key={star} className={`w-2 h-2 rounded-full ${m.intel === 'Máxima' || (m.intel === 'Alta' && star <= 2) || (m.intel === 'Media' && star === 1) ? 'bg-forest' : 'bg-gray-200'}`} />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Chatbot Model Selector */}
+                    <div>
+                        <label className="block text-sm font-bold text-bark mb-4 flex items-center gap-2">
+                            <span className="w-6 h-6 bg-forest/10 rounded-full flex items-center justify-center text-xs">2</span>
+                            Cerebro del Chatbot General
+                        </label>
+                        <div className="space-y-3">
+                            {[
+                                { val: 'openai', label: 'GPT-4o-mini', cost: 'De Pago', intel: 'Alta', desc: 'Excelente siguiendo reglas. Recomendado.' },
+                                { val: 'groq', label: 'Llama 3.3 70B', cost: 'Gratuito', intel: 'Máxima', desc: 'Muy potente para conversaciones naturales.' },
+                                { val: 'gemini', label: 'Gemini 1.5 Flash', cost: 'Gratuito', intel: 'Media', desc: 'Versátil pero a veces más simple.' }
+                            ].map((m) => (
+                                <button
+                                    key={m.val}
+                                    type="button"
+                                    onClick={() => setChatbotModel(m.val)}
+                                    className={`w-full p-4 rounded-xl border-2 text-left transition-all ${chatbotModel === m.val
+                                        ? 'border-forest bg-forest/5 ring-1 ring-forest/20'
+                                        : 'border-gray-50 hover:border-gray-200 text-gray-600'
+                                        }`}
+                                >
+                                    <div className="flex justify-between items-start mb-1">
+                                        <span className="font-bold text-sm">{m.label}</span>
+                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${m.cost === 'Gratuito' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                                            {m.cost}
+                                        </span>
+                                    </div>
+                                    <p className="text-[11px] text-gray-500 mb-2">{m.desc}</p>
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-[10px] text-gray-400 uppercase font-bold">Inteligencia:</span>
+                                        <div className="flex gap-0.5">
+                                            {[1, 2, 3].map((star) => (
+                                                <div key={star} className={`w-2 h-2 rounded-full ${m.intel === 'Máxima' || (m.intel === 'Alta' && star <= 2) || (m.intel === 'Media' && star === 1) ? 'bg-forest' : 'bg-gray-200'}`} />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Disclaimer */}
+                    <div className="md:col-span-2 bg-amber-50 p-4 rounded-xl border border-amber-100 flex gap-3">
+                        <div className="text-amber-500">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <p className="text-xs text-amber-800 leading-relaxed">
+                            <strong>Nota importante:</strong> Esta configuración solo afecta a los modelos que interactúan con los usuarios.
+                            <strong> NO interfiere</strong> en absoluto con la programación o publicación de artículos y meditaciones automáticas.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-gray-50">
                     <div>
                         <OptionGroup
                             label="Longitud de Respuesta"

@@ -92,3 +92,18 @@ arunachala_web/
         - Uses smooth Framer Motion animations for the suggestions menu.
     - **RAG for Articles & Meditations**: Fully integrated Articles and Meditations into the RAG system, ensuring they are searchable by the AI assistant with automatic synchronization upon publication.
     - **Tag Synchronization**: Re-synchronized all existing content tags with the `Tag` table to fix missing items in the search clouds.
+
+## 📝 Recent Updates (2026-02-09)
+- **AI Model Optimization & Cost Management**:
+    - **Dual Model Strategy**: Implemented separate model selection for the Wellness Quiz (defaults to **Groq/Llama3** for speed/zero cost) and the main Chatbot (defaults to **OpenAI/GPT-4o** for quality/reasoning).
+    - **Unified Priority Logic**: Backend now strictly prioritizes user configuration -> Groq -> OpenAI -> Gemini, ensuring predictable model usage.
+    - **Dashboard Control**: Added new UI controls in `AgentControl` to independently select models for Quiz vs Chatbot.
+
+- **Wellness Quiz & Navigation Fixes**:
+    - **Smart URL Handling**: 
+        - **Backend**: Implemented `get_inventory_summary` to pre-calculate correct, relative URLs for all items (Yoga, Massages, Meditations).
+        - **Prompt Engineering**: Enforced strict "copy-paste" rules for the AI to prevent internal URL hallucination (no more `localhost` links).
+        - **Sanitization**: Added a backend safety filter `clean_ai_response` that strips any absolute URLs before sending response to client.
+    - **Meditation Player Integration**:
+        - **Auto-Play**: Meditation links from the Quiz (`/meditaciones/slug`) now automatically open the player modal.
+        - **New Tab Experience**: All recommendations from the Quiz now open in a new tab (`target="_blank"`) to preserve the user's results.
