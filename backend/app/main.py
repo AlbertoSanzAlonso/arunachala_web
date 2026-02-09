@@ -9,7 +9,7 @@ from app.core.database import engine, Base
 from app.models import models
 import os
 
-from app.api import reviews, auth, gallery, schedules, yoga_classes, treatments, content, activities, upload, dashboard, rag, legacy, tags, automation
+from app.api import reviews, auth, gallery, schedules, yoga_classes, treatments, content, activities, upload, dashboard, rag, legacy, tags, automation, suggestions
 from app.routers import chat
 from fastapi.staticfiles import StaticFiles
 
@@ -116,6 +116,7 @@ app.include_router(legacy.router) # handle /api/article alias
 app.include_router(chat.router, prefix="/api", tags=["chat"])
 app.include_router(rag.router)  # RAG sync endpoints
 app.include_router(automation.router) # Automation tasks
+app.include_router(suggestions.router) # User suggestions
 
 app.include_router(tags.router, prefix="/api/tags", tags=["tags"])
 # Mount Static Files (for uploaded images)

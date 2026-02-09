@@ -243,3 +243,14 @@ class RAGSyncLog(Base):
     sync_metadata = Column(JSON, nullable=True)  # Additional info (model used, language, etc.)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+class Suggestion(Base):
+    __tablename__ = "suggestions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    activity_type = Column(String, nullable=True) # Voted activity
+    custom_suggestion = Column(String, nullable=True) # User's own suggestion
+    comments = Column(Text, nullable=True)
+    status = Column(String, default="pending") # pending, reviewed, implemented
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+

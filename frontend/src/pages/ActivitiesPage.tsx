@@ -22,7 +22,153 @@ interface Activity {
     translations?: any;
 }
 
+const SuggestionForm = () => {
+    const { t } = useTranslation();
+    const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
+    const [customSuggestion, setCustomSuggestion] = useState('');
+    const [comments, setComments] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+
+    const options = [
+        { id: 'kids-yoga', title: t('activities.suggestions.kids', 'Yoga para Niños'), icon: '🎨' },
+        { id: 'silence-retreat', title: t('activities.suggestions.silence', 'Retiro de Silencio'), icon: '🤫' },
+        { id: 'ayurveda-workshop', title: t('activities.suggestions.ayurveda', 'Taller de Ayurveda'), icon: '🍶' },
+        { id: 'bowl-meditation', title: t('activities.suggestions.bowls', 'Cuencos Tibetanos'), icon: '🥣' },
+        { id: 'beach-yoga', title: t('activities.suggestions.beach', 'Yoga en la Playa'), icon: '🌊' }
+    ];
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedActivity && !customSuggestion.trim()) return;
+
+        setIsSubmitting(true);
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/suggestions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    activity_type: selectedActivity,
+                    custom_suggestion: customSuggestion,
+                    comments: comments
+                })
+            });
+
+            if (response.ok) {
+                setSubmitted(true);
+            }
+        } catch (error) {
+            console.error("Error submitting suggestion:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    if (submitted) {
+        return (
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="max-w-xl mx-auto text-center py-12 space-y-6"
+            >
+                <div className="text-6xl">🙏</div>
+                <h3 className="text-2xl font-headers text-forest uppercase tracking-widest">
+                    {t('activities.suggestions.thanks_title', '¡Gracias por tu aporte!')}
+                </h3>
+                <p className="text-bark/70">
+                    {t('activities.suggestions.thanks_desc', 'Hemos recibido tu sugerencia correctamente. La tendremos muy en cuenta para nuestras próximas programaciones.')}
+                </p>
+                <button
+                    onClick={() => {
+                        setSubmitted(false);
+                        setSelectedActivity(null);
+                        setCustomSuggestion('');
+                        setComments('');
+                    }}
+                    className="text-matcha font-bold uppercase tracking-tighter hover:underline"
+                >
+                    {t('activities.suggestions.send_another', 'Enviar otra sugerencia')}
+                </button>
+            </motion.div>
+        );
+    }
+
+    return (
+        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-10 relative z-10">
+            {/* Box Selection */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                {options.map((option) => (
+                    <button
+                        key={option.id}
+                        type="button"
+                        onClick={() => setSelectedActivity(option.id === selectedActivity ? null : option.id)}
+                        className={`group relative p-6 rounded-3xl border-2 transition-all duration-300 flex flex-col items-center gap-3 ${selectedActivity === option.id
+                            ? 'border-matcha bg-matcha/10 shadow-lg scale-105'
+                            : 'border-forest/10 bg-white hover:border-matcha/40 hover:shadow-md'
+                            }`}
+                    >
+                        <span className="text-3xl group-hover:scale-110 transition-transform duration-300">{option.icon}</span>
+                        <span className={`text-[10px] font-bold uppercase tracking-wider text-center ${selectedActivity === option.id ? 'text-forest' : 'text-bark/60'}`}>
+                            {option.title}
+                        </span>
+                        {selectedActivity === option.id && (
+                            <motion.div
+                                layoutId="check"
+                                className="absolute -top-2 -right-2 w-6 h-6 bg-matcha text-white rounded-full flex items-center justify-center text-[10px] shadow-sm"
+                            >
+                                ✓
+                            </motion.div>
+                        )}
+                    </button>
+                ))}
+            </div>
+
+            <div className="space-y-6 bg-white/50 backdrop-blur-sm p-8 rounded-[2rem] border border-white/20 shadow-sm">
+                {/* Custom Suggestion */}
+                <div className="space-y-2 text-left">
+                    <label className="text-xs font-bold uppercase tracking-widest text-forest/60 ml-1">
+                        {t('activities.suggestions.label_custom', '¿Tienes otra idea?')}
+                    </label>
+                    <input
+                        type="text"
+                        value={customSuggestion}
+                        onChange={(e) => setCustomSuggestion(e.target.value)}
+                        placeholder={t('activities.suggestions.placeholder_custom', 'Ej: Taller de cocina macrobiótica...')}
+                        className="w-full bg-white border border-forest/10 rounded-2xl px-6 py-4 text-bark focus:border-matcha focus:ring-4 focus:ring-matcha/10 outline-none transition-all"
+                    />
+                </div>
+
+                {/* Additional Comments */}
+                <div className="space-y-2 text-left">
+                    <label className="text-xs font-bold uppercase tracking-widest text-forest/60 ml-1">
+                        {t('activities.suggestions.label_comments', 'Comentarios adicionales')}
+                    </label>
+                    <textarea
+                        rows={3}
+                        value={comments}
+                        onChange={(e) => setComments(e.target.value)}
+                        placeholder={t('activities.suggestions.placeholder_comments', 'Cuéntanos un poco más sobre lo que buscas o cuándo te vendría mejor...')}
+                        className="w-full bg-white border border-forest/10 rounded-2xl px-6 py-4 text-bark focus:border-matcha focus:ring-4 focus:ring-matcha/10 outline-none transition-all resize-none"
+                    />
+                </div>
+
+                {/* Submit */}
+                <div className="pt-4">
+                    <button
+                        type="submit"
+                        disabled={isSubmitting || (!selectedActivity && !customSuggestion.trim())}
+                        className="w-full md:w-auto px-12 py-4 bg-forest text-white rounded-full font-headers uppercase tracking-widest text-sm hover:bg-matcha hover:shadow-xl hover:-translate-y-1 transition-all duration-300 disabled:opacity-30 disabled:pointer-events-none"
+                    >
+                        {isSubmitting ? t('common.sending', 'Enviando...') : t('activities.suggestions.submit', 'Enviar Propuesta')}
+                    </button>
+                </div>
+            </div>
+        </form>
+    );
+};
+
 const ActivitiesPage: React.FC = () => {
+
     const { t, i18n } = useTranslation();
     const [activities, setActivities] = useState<Activity[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -190,24 +336,23 @@ const ActivitiesPage: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {/* Section 3: Sugerencias */}
-                                <div className="space-y-8">
-                                    <div className="flex items-center gap-4">
-                                        <h2 className="text-3xl font-headers text-forest uppercase tracking-wider">{t('activities.sections.suggestions', 'Sugerencias')}</h2>
-                                        <div className="flex-grow h-px bg-forest/10" />
+                                {/* Section 3: Sugerencias Interactiva */}
+                                <div className="space-y-12 py-16 px-8 bg-forest/5 rounded-[3rem] border border-forest/10 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-64 h-64 bg-matcha/5 rounded-full -mr-32 -mt-32 blur-3xl" />
+                                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-forest/5 rounded-full -ml-32 -mb-32 blur-3xl" />
+
+                                    <div className="relative z-10 space-y-4 max-w-2xl mx-auto text-center mb-12">
+                                        <h2 className="text-3xl md:text-4xl font-headers text-forest uppercase tracking-wider">
+                                            {t('activities.sections.suggestions_title', '¿Qué te gustaría experimentar?')}
+                                        </h2>
+                                        <p className="text-bark/70">
+                                            {t('activities.sections.suggestions_desc', 'Vota por una de nuestras propuestas o sugiere algo totalmente nuevo. Tu opinión nos ayuda a crecer.')}
+                                        </p>
                                     </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                        {activities.filter(a => a.type === 'sugerencia').length > 0 ? (
-                                            activities.filter(a => a.type === 'sugerencia').map((activity, index) => (
-                                                <ActivityCard key={activity.id} activity={activity} index={index} />
-                                            ))
-                                        ) : (
-                                            <div className="col-span-full py-12 px-8 bg-forest/5 rounded-3xl border border-dashed border-forest/10 text-forest/40 italic text-left">
-                                                {t('activities.no_suggestions', 'Próximamente compartiremos sugerencias para tu práctica.')}
-                                            </div>
-                                        )}
-                                    </div>
+
+                                    <SuggestionForm />
                                 </div>
+
                             </div>
                         )}
                     </div>
