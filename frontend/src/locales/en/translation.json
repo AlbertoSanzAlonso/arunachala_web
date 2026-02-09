@@ -138,6 +138,7 @@
     },
     "common": {
         "view_all": "View all",
+        "back": "Back",
         "back_home": "Back to home",
         "days": {
             "monday": "Monday",
@@ -183,42 +184,99 @@
             }
         ],
         "quiz": {
-            "title": "How are you today?",
-            "subtitle": "Discover which Arunachala experience resonates best with you right now.\nIt only takes a few seconds.",
-            "cta_start": "Discover my moment",
-            "progress": "Question {{current}} of {{total}}",
+            "title": "A Moment to Listen to Yourself",
+            "subtitle": "Take a second to feel your breath before answering.\nDiscover what your body and mind need today.",
+            "cta_start": "Start",
+            "progress": "Step {{current}} of 4",
             "restart": "Start over",
+            "other": "Others... (Tell us more)",
+            "custom_placeholder": "Type your answer here...",
+            "cancel": "Cancel",
+            "confirm": "Confirm",
+            "appointment": "Book Appointment",
             "recommendation_title": "Your Personalized Recommendation",
-            "questions": [
-                {
-                    "question": "How do you feel today?",
+            "loading_ai": "Consulting with the specialist...",
+            "analyzing": "Analyzing your answers to offer you the best recommendation...",
+            "l1": {
+                "question": "How do you arrive here today?",
+                "options": {
+                    "A": "I feel my body is sending me warning signals (pain, stiffness).",
+                    "B": "My mind is very noisy or I feel emotionally tired.",
+                    "C": "I am looking for a space to deepen my self-care, without an urgent issue."
+                }
+            },
+            "l2": {
+                "A": {
+                    "question": "How does that message from your body manifest?",
                     "options": {
-                        "tired": "Tired and stressed",
-                        "stiff": "With physical tension",
-                        "energetic": "With energy to move",
-                        "seeking": "Seeking inner peace"
+                        "A1": "It is something sharp or localized that limits my movements.",
+                        "A2": "It is a general feeling of heaviness, as if I were carrying a heavy backpack."
                     }
                 },
-                {
-                    "question": "What do you need most right now?",
+                "B": {
+                    "question": "What weighs most on your inside?",
                     "options": {
-                        "relax": "Disconnect and relax",
-                        "heal": "Relieve muscle pain",
-                        "flow": "Flow and strengthen",
-                        "clarity": "Mental clarity"
+                        "B1": "The rush, the \"not getting to everything\" and the constant feeling of alertness.",
+                        "B2": "A feeling of stagnation, sadness or lack of clarity."
+                    }
+                },
+                "C": {
+                    "question": "What type of experience calls you most today?",
+                    "options": {
+                        "C1": "Conscious movement and vitality.",
+                        "C2": "Deep calm and relaxation."
                     }
                 }
-            ],
-            "results": {
-                "yoga": {
-                    "title": "Your path is Yoga",
-                    "description": "Your body asks for conscious movement and connection. We recommend joining our Vinyasa Flow or Hatha Yoga classes to channel that energy.",
-                    "cta": "See Yoga Schedules"
+            },
+            "l3": {
+                "A1": {
+                    "question": "Has this pain appeared from a specific effort or has it been with you for a long time?",
+                    "options": {
+                        "1": "It is something punctual.",
+                        "2": "It is something chronic."
+                    }
                 },
-                "therapy": {
-                    "title": "You need Healing and Rest",
-                    "description": "It's time to stop and take care of yourself. Our holistic therapies or a relaxing massage are just what you need to restore your balance.",
-                    "cta": "Book Therapy"
+                "A2": {
+                    "question": "Do you feel your body needs to release tension or needs to strengthen to support you better?",
+                    "options": {
+                        "1": "I need to release tension.",
+                        "2": "I need to gain strength."
+                    }
+                },
+                "B1": {
+                    "question": "Is it harder for you to disconnect during the day or fall asleep at night?",
+                    "options": {
+                        "1": "The day is the challenge.",
+                        "2": "The night is the challenge."
+                    }
+                },
+                "B2": {
+                    "question": "Do you prefer silence to look inside or do you need someone to guide you gently?",
+                    "options": {
+                        "1": "I prefer silence.",
+                        "2": "I prefer to be guided."
+                    }
+                },
+                "C1": {
+                    "question": "Do you prefer a dynamic practice or something gentler?",
+                    "options": {
+                        "1": "Dynamic.",
+                        "2": "Gentle."
+                    }
+                },
+                "C2": {
+                    "question": "Are you looking for physical or energetic work?",
+                    "options": {
+                        "1": "Physical (Massage).",
+                        "2": "Energetic (Reiki/Flowers)."
+                    }
+                }
+            },
+            "l4": {
+                "question": "Would you like to explain your discomfort or situation in more depth?",
+                "options": {
+                    "no": "No, show my recommendation now",
+                    "yes": "Yes, I would like to explain further"
                 }
             }
         }

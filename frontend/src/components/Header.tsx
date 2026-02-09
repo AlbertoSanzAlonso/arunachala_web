@@ -3,7 +3,9 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import logo from '../assets/images/logo_transparent_v2.webp';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAudio } from '../context/AudioContext';
+import { PlayIcon, PauseIcon, SpeakerWaveIcon, SpeakerXMarkIcon, ArrowsPointingOutIcon, ForwardIcon, BackwardIcon } from '@heroicons/react/24/solid';
 
 const LANGUAGES = [
     { code: 'es', label: 'ES' },
@@ -13,8 +15,24 @@ const LANGUAGES = [
 
 const Header: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const [showVolume, setShowVolume] = React.useState(false);
     const navigate = useNavigate();
     const { t, i18n } = useTranslation();
+    const {
+        playingMeditation,
+        isPlaying,
+        play,
+        pause,
+        stop,
+        next,
+        previous,
+        playlist,
+        volume,
+        isMuted,
+        setVolume,
+        setIsMuted,
+        setIsPlayerModalOpen
+    } = useAudio();
 
     const handleNavigation = (path: string) => {
         handleLinkClick();
@@ -30,10 +48,14 @@ const Header: React.FC = () => {
         i18n.changeLanguage(lng);
     };
 
+    const currentLang = i18n.language.split('-')[0];
+    const displayTitle = playingMeditation?.translations?.[currentLang]?.title || playingMeditation?.title;
+
     return (
         <>
             <header className="fixed top-0 left-0 w-full z-50 p-4 md:py-3 md:px-8 flex justify-between items-center bg-[#5c6b3c] shadow-md transition-colors duration-300">
-                <div className="cursor-pointer" onClick={() => handleNavigation('/')}>
+                {/* Logo Section */}
+                <div className="cursor-pointer flex items-center gap-4" onClick={() => handleNavigation('/')}>
                     <img
                         src={logo}
                         alt="Arunachala"
@@ -41,10 +63,141 @@ const Header: React.FC = () => {
                     />
                 </div>
 
-                <div className="flex items-center gap-4">
+                {/* Right Side Controls */}
+                <div className="flex items-center gap-2 md:gap-4">
+                    {/* Mini Player */}
+                    <AnimatePresence>
+                        {playingMeditation && (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9, x: 20 }}
+                                animate={{ opacity: 1, scale: 1, x: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, x: 20 }}
+                                className="flex items-center"
+                            >
+                                {/* Desktop Version */}
+                                <div className="hidden lg:flex items-center bg-[#F5F5DC]/10 backdrop-blur-md rounded-full border border-white/20 text-white mr-2 shadow-lg h-10 overflow-hidden">
+                                    {/* Controls Group */}
+                                    <div className="flex items-center gap-1 px-3 border-r border-white/10 h-full">
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); previous(); }}
+                                            disabled={playlist.length <= 1}
+                                            className="hover:scale-110 transition-transform disabled:opacity-20 p-1"
+                                            title="Anterior"
+                                        >
+                                            <BackwardIcon className="w-3.5 h-3.5" />
+                                        </button>
+
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); isPlaying ? pause() : play(playingMeditation); }}
+                                            className="hover:scale-110 transition-transform bg-white/20 p-1.5 rounded-full"
+                                        >
+                                            {isPlaying ? <PauseIcon className="w-4 h-4" /> : <PlayIcon className="w-4 h-4 pl-0.5" />}
+                                        </button>
+
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); next(); }}
+                                            disabled={playlist.length <= 1}
+                                            className="hover:scale-110 transition-transform disabled:opacity-20 p-1"
+                                            title="Siguiente"
+                                        >
+                                            <ForwardIcon className="w-3.5 h-3.5" />
+                                        </button>
+                                    </div>
+
+                                    {/* Info & Volume Group */}
+                                    <div className="flex items-center max-w-[250px] px-3 h-full gap-2">
+                                        <div className="flex flex-col min-w-[50px] max-w-[120px]">
+                                            <span className="text-[10px] font-medium truncate leading-none text-white/90">
+                                                {displayTitle}
+                                            </span>
+                                        </div>
+
+                                        {/* Animated Volume Control */}
+                                        <motion.div
+                                            className="flex items-center h-8 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+                                            initial={false}
+                                            animate={{ width: showVolume ? 'auto' : '32px' }}
+                                            onMouseEnter={() => setShowVolume(true)}
+                                            onMouseLeave={() => setShowVolume(false)}
+                                        >
+                                            <div className="flex items-center px-2">
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); setIsMuted(!isMuted); }}
+                                                    className="text-white hover:text-white transition-opacity flex-shrink-0"
+                                                >
+                                                    {isMuted ? <SpeakerXMarkIcon className="w-4 h-4 opacity-100" /> : <SpeakerWaveIcon className="w-4 h-4" />}
+                                                </button>
+
+                                                <AnimatePresence>
+                                                    {showVolume && (
+                                                        <motion.div
+                                                            initial={{ opacity: 0, width: 0, marginLeft: 0 }}
+                                                            animate={{ opacity: 1, width: 60, marginLeft: 8 }}
+                                                            exit={{ opacity: 0, width: 0, marginLeft: 0 }}
+                                                            transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                                                            className="flex items-center overflow-hidden"
+                                                        >
+                                                            <input
+                                                                type="range"
+                                                                min="0" max="1" step="0.01"
+                                                                value={isMuted ? 0 : volume}
+                                                                onChange={(e) => setVolume(parseFloat(e.target.value))}
+                                                                onClick={(e) => e.stopPropagation()}
+                                                                className="w-14 h-1 bg-white/30 rounded-full appearance-none cursor-pointer accent-white"
+                                                            />
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
+                                        </motion.div>
+                                    </div>
+
+                                    {/* Action Group */}
+                                    <div className="flex items-center px-2 gap-1 h-full bg-white/5 border-l border-white/10">
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); setIsPlayerModalOpen(true); }}
+                                            className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-white"
+                                            title="Abrir reproductor"
+                                        >
+                                            <ArrowsPointingOutIcon className="w-4 h-4" />
+                                        </button>
+
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); stop(); }}
+                                            className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-white/40 hover:text-white"
+                                            title="Cerrar reproductor"
+                                        >
+                                            <XMarkIcon className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Mobile/Tablet Version: Improved dual controls */}
+                                <div className="lg:hidden flex items-center gap-2 bg-[#F5F5DC] p-1.5 rounded-full shadow-lg border border-[#5c6b3c]/20 mr-1">
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); isPlaying ? pause() : play(playingMeditation); }}
+                                        className="w-8 h-8 flex items-center justify-center bg-[#5c6b3c] text-[#F5F5DC] rounded-full active:scale-90 transition-transform"
+                                    >
+                                        {isPlaying ? (
+                                            <PauseIcon className="w-4 h-4" />
+                                        ) : (
+                                            <PlayIcon className="w-4 h-4 pl-0.5" />
+                                        )}
+                                    </button>
+
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); setIsPlayerModalOpen(true); }}
+                                        className="w-8 h-8 flex items-center justify-center text-[#5c6b3c]/80 hover:text-[#5c6b3c] active:scale-90 transition-transform"
+                                    >
+                                        <ArrowsPointingOutIcon className="w-4.5 h-4.5" />
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
                     {/* Language Switcher Mini */}
-                    {/* Language Switcher Mini */}
-                    <div className="flex items-center bg-[#4a5730]/50 backdrop-blur-sm rounded-full p-1 border border-[#F5F5DC]/20 mr-2 z-50 overflow-hidden relative">
+                    <div className="flex items-center bg-[#4a5730]/50 backdrop-blur-sm rounded-full p-1 border border-[#F5F5DC]/20 z-50 overflow-hidden relative">
                         {LANGUAGES.map((lang) => {
                             const isActive = i18n.language.startsWith(lang.code);
                             return (
@@ -94,12 +247,6 @@ const Header: React.FC = () => {
                     <button onClick={() => handleNavigation('/quienes-somos')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.about')}</button>
                     <button onClick={() => handleNavigation('/contacto')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.contact')}</button>
 
-                    {/* Mobile Language Switcher */}
-                    <div className="flex gap-6 mt-8 md:hidden">
-                        <button onClick={() => changeLanguage('es')} className={`text-xl font-body ${i18n.language.startsWith('es') ? 'text-matcha font-bold' : 'text-[#F5F5DC]'}`}>ES</button>
-                        <button onClick={() => changeLanguage('ca')} className={`text-xl font-body ${i18n.language.startsWith('ca') ? 'text-matcha font-bold' : 'text-[#F5F5DC]'}`}>CA</button>
-                        <button onClick={() => changeLanguage('en')} className={`text-xl font-body ${i18n.language.startsWith('en') ? 'text-matcha font-bold' : 'text-[#F5F5DC]'}`}>EN</button>
-                    </div>
                 </nav>
             </div>
         </>

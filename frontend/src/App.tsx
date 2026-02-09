@@ -4,6 +4,10 @@ import PageLoader from './components/PageLoader';
 import DashboardLayout from './layouts/DashboardLayout';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import { AudioProvider } from './context/AudioContext';
+import MeditationsPage from './pages/MeditationsPage';
+import ChatBot from './components/ChatBot';
+import MeditationPlayerModal from './components/MeditationPlayerModal';
 
 
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -39,8 +43,9 @@ const AboutPage = lazy(() => import('./pages/AboutPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const LegalNoticePage = lazy(() => import('./pages/LegalNoticePage'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
-const MeditationsPage = lazy(() => import('./pages/MeditationsPage'));
-const ChatBot = lazy(() => import('./components/ChatBot'));
+
+
+
 
 const AppContent = () => {
     const location = useLocation();
@@ -56,6 +61,7 @@ const AppContent = () => {
     return (
         <Suspense fallback={<PageLoader />}>
             {!hideChatBot && <ChatBot />}
+            <MeditationPlayerModal />
             <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<HomePage />} />
@@ -77,6 +83,7 @@ const AppContent = () => {
                 <Route path="/aviso-legal" element={<LegalNoticePage />} />
                 <Route path="/politica-de-privacidad" element={<PrivacyPolicyPage />} />
                 <Route path="/meditaciones" element={<MeditationsPage />} />
+                <Route path="/meditaciones/:slug" element={<MeditationsPage />} />
 
                 {/* Auth Route */}
                 <Route path="/login" element={<LoginPage />} />
@@ -109,9 +116,11 @@ const AppContent = () => {
 function App() {
     return (
         <AuthProvider>
-            <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
-                <AppContent />
-            </BrowserRouter>
+            <AudioProvider>
+                <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+                    <AppContent />
+                </BrowserRouter>
+            </AudioProvider>
         </AuthProvider>
     );
 }

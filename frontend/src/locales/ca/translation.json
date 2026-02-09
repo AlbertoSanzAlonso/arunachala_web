@@ -138,6 +138,7 @@
     },
     "common": {
         "view_all": "Veure tots",
+        "back": "Atrere",
         "back_home": "Tornar a l'inici",
         "days": {
             "monday": "Dilluns",
@@ -183,42 +184,99 @@
             }
         ],
         "quiz": {
-            "title": "Com estàs avui?",
-            "subtitle": "Descobreix quina experiència d'Arunachala ressona millor amb tu en aquest moment.\nNomés et prendrà uns segons.",
-            "cta_start": "Descobrir el meu moment",
-            "progress": "Pregunta {{current}} de {{total}}",
+            "title": "Un moment per Escoltar-te",
+            "subtitle": "Pren-te un segon per sentir la teva respiració abans de respondre.\nDescobreix què necessita el teu cos i ment avui.",
+            "cta_start": "Començar",
+            "progress": "Pas {{current}} de 4",
             "restart": "Tornar a començar",
-            "recommendation_title": "La Teva Recomanació Personalitzada",
-            "questions": [
-                {
-                    "question": "Com et sents avui?",
+            "other": "Altres... (Explica'ns més)",
+            "custom_placeholder": "Escriu aquí la teva resposta...",
+            "cancel": "Cancel·lar",
+            "confirm": "Confirmar",
+            "appointment": "Reservar Cita",
+            "recommendation_title": "La Teva Recomanació Personalizada",
+            "loading_ai": "Consultant amb l'especialista...",
+            "analyzing": "Analitzant les teves respostes per oferir-te la millor recomanació...",
+            "l1": {
+                "question": "Com arribes avui aquí?",
+                "options": {
+                    "A": "Sento que el meu cos m'envia senyals d'alerta (dolor, rigidesa).",
+                    "B": "La meva ment està molt sorollosa o em sento emocionalment cansat/da.",
+                    "C": "Busco un espai per aprofundir en la meva autocura, sense una molèstia urgent."
+                }
+            },
+            "l2": {
+                "A": {
+                    "question": "Com es manifesta aquest missatge del teu cos?",
                     "options": {
-                        "tired": "Cansat i estressat",
-                        "stiff": "Amb tensió física",
-                        "energetic": "Amb energia per moure'm",
-                        "seeking": "Busca pau interior"
+                        "A1": "És una cosa punxant o localitzada que limita els meus moviments.",
+                        "A2": "És una sensació de pesadesa general, com si portés una motxilla molt pesada."
                     }
                 },
-                {
-                    "question": "Què és el que més necessites ara mateix?",
+                "B": {
+                    "question": "Què és el que més pesa al teu interior?",
                     "options": {
-                        "relax": "Desconnectar i relaxar-me",
-                        "heal": "Alleujar dolor muscular",
-                        "flow": "Fluir i enfortir",
-                        "clarity": "Claredat mental"
+                        "B1": "La pressa, el \"no arribar a tot\" i la sensació d'alerta constant.",
+                        "B2": "Una sensació d'estancament, tristesa o falta de claredat."
+                    }
+                },
+                "C": {
+                    "question": "Quin tipus d'experiència et crida més avui?",
+                    "options": {
+                        "C1": "Moviment conscient i vitalitat.",
+                        "C2": "Calma profunda i relaxació."
                     }
                 }
-            ],
-            "results": {
-                "yoga": {
-                    "title": "El teu camí és el Ioga",
-                    "description": "El teu cos demana moviment conscient i connexió. Et recomanem unir-te a les nostres classes de Vinyasa Flow o Hatha Ioga per canalitzar aquesta energia.",
-                    "cta": "Veure Horaris de Ioga"
+            },
+            "l3": {
+                "A1": {
+                    "question": "Aquest dolor ha aparegut per un esforç puntual o t'acompanya des de fa temps?",
+                    "options": {
+                        "1": "És una cosa puntual.",
+                        "2": "És una cosa crònica."
+                    }
                 },
-                "therapy": {
-                    "title": "Necessites Sanació i Descans",
-                    "description": "És moment de parar i cuidar de tu. Les nostres teràpies holístiques o un massatge relaxant són just el que necessites per restaurar el teu equilibri.",
-                    "cta": "Reservar Teràpia"
+                "A2": {
+                    "question": "Sents que el teu cos necessita deixar anar tensió o que necessita enfortir-se per sostenir-te millor?",
+                    "options": {
+                        "1": "Necessito deixar anar tensió.",
+                        "2": "Necessito guanyar força."
+                    }
+                },
+                "B1": {
+                    "question": "Et costa més desconnectar durant el dia o agafar el son a la nit?",
+                    "options": {
+                        "1": "El dia és el repte.",
+                        "2": "La nit és el repte."
+                    }
+                },
+                "B2": {
+                    "question": "Prefereixes el silenci per mirar cap a dins o necessites que algú et guiï amb suavitat?",
+                    "options": {
+                        "1": "Prefereixo el silenci.",
+                        "2": "Prefereixo que em guiïn."
+                    }
+                },
+                "C1": {
+                    "question": "Prefereixes una pràctica dinàmica o alguna cosa més suau?",
+                    "options": {
+                        "1": "Dinàmica.",
+                        "2": "Suau."
+                    }
+                },
+                "C2": {
+                    "question": "Busques un treball físic o energètic?",
+                    "options": {
+                        "1": "Físic (Massatge).",
+                        "2": "Energètic (Reiki/Flors)."
+                    }
+                }
+            },
+            "l4": {
+                "question": "Vols explicar-nos més a fons la teva molèstia o situació actual?",
+                "options": {
+                    "no": "No, veure la meva recomanació ara",
+                    "yes": "Sí, m'agradaria explicar-ho millor"
                 }
             }
         }

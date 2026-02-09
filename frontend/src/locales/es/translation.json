@@ -138,6 +138,7 @@
     },
     "common": {
         "view_all": "Ver todos",
+        "back": "Atrás",
         "back_home": "Volver al inicio",
         "days": {
             "monday": "Lunes",
@@ -183,42 +184,99 @@
             }
         ],
         "quiz": {
-            "title": "¿Cómo estás hoy?",
-            "subtitle": "Descubre qué experiencia de Arunachala resuena mejor contigo en este momento.\nToma solo unos segundos.",
-            "cta_start": "Descubrir mi momento",
-            "progress": "Pregunta {{current}} de {{total}}",
+            "title": "Un Momento para Escucharte",
+            "subtitle": "Tómate un segundo para sentir tu respiración antes de responder.\nDescubre qué necesita tu cuerpo y mente hoy.",
+            "cta_start": "Empezar",
+            "progress": "Paso {{current}} de 4",
             "restart": "Volver a empezar",
+            "other": "Otros... (Cuéntanos más)",
+            "custom_placeholder": "Escribe aquí tu respuesta...",
+            "cancel": "Cancelar",
+            "confirm": "Confirmar",
+            "appointment": "Reservar Cita",
             "recommendation_title": "Tu Recomendación Personalizada",
-            "questions": [
-                {
-                    "question": "¿Cómo te sientes hoy?",
+            "loading_ai": "Consultando con el especialista...",
+            "analyzing": "Analizando tus respuestas para ofrecerte la mejor recomendación...",
+            "l1": {
+                "question": "¿Cómo llegas hoy aquí?",
+                "options": {
+                    "A": "Siento que mi cuerpo me está enviando señales de alerta (dolor, rigidez).",
+                    "B": "Mi mente está muy ruidosa o me siento emocionalmente cansado/a.",
+                    "C": "Busco un espacio para profundizar en mi autocuidado, sin una molestia urgente."
+                }
+            },
+            "l2": {
+                "A": {
+                    "question": "¿Cómo se manifiesta ese mensaje de tu cuerpo?",
                     "options": {
-                        "tired": "Cansado y estresado",
-                        "stiff": "Con tensión física",
-                        "energetic": "Con energía para moverme",
-                        "seeking": "Buscando paz interior"
+                        "A1": "Es algo punzante o localizado que limita mis movimientos.",
+                        "A2": "Es una sensación de pesadez general, como si cargara una mochila muy pesada."
                     }
                 },
-                {
-                    "question": "¿Qué es lo que más necesitas ahora mismo?",
+                "B": {
+                    "question": "¿Qué es lo que más pesa en tu interior?",
                     "options": {
-                        "relax": "Desconectar y relajarme",
-                        "heal": "Aliviar dolor muscular",
-                        "flow": "Fluir y fortalecer",
-                        "clarity": "Claridad mental"
+                        "B1": "La prisa, el \"no llegar a todo\" y la sensación de alerta constante.",
+                        "B2": "Una sensación de estancamiento, tristeza o falta de claridad."
+                    }
+                },
+                "C": {
+                    "question": "¿Qué tipo de experiencia te llama más hoy?",
+                    "options": {
+                        "C1": "Movimiento consciente y vitalidad.",
+                        "C2": "Calma profunda y relajación."
                     }
                 }
-            ],
-            "results": {
-                "yoga": {
-                    "title": "Tu camino es el Yoga",
-                    "description": "Tu cuerpo pide movimiento consciente y conexión. Te recomendamos unirte a nuestras clases de Vinyasa Flow o Hatha Yoga para canalizar esa energía.",
-                    "cta": "Ver Horarios de Yoga"
+            },
+            "l3": {
+                "A1": {
+                    "question": "¿Este dolor ha aparecido por un esfuerzo puntual o te acompaña desde hace tiempo?",
+                    "options": {
+                        "1": "Es algo puntual.",
+                        "2": "Es algo crónico."
+                    }
                 },
-                "therapy": {
-                    "title": "Necesitas Sanación y Descanso",
-                    "description": "Es momento de parar y cuidar de ti. Nuestras terapias holísticas o un masaje relajante son justo lo que necesitas para restaurar tu equilibrio.",
-                    "cta": "Reservar Terapia"
+                "A2": {
+                    "question": "¿Sientes que tu cuerpo necesita soltar tensión o que necesita fortalecerse para sostenerte mejor?",
+                    "options": {
+                        "1": "Necesito soltar tensión.",
+                        "2": "Necesito ganar fuerza."
+                    }
+                },
+                "B1": {
+                    "question": "¿Te cuesta más desconectar durante el día o conciliar el sueño por la noche?",
+                    "options": {
+                        "1": "El día es el reto.",
+                        "2": "La noche es el reto."
+                    }
+                },
+                "B2": {
+                    "question": "¿Prefieres el silencio para mirar hacia dentro o necesitas que alguien te guíe con suavidad?",
+                    "options": {
+                        "1": "Prefiero el silencio.",
+                        "2": "Prefiero que me guíen."
+                    }
+                },
+                "C1": {
+                    "question": "¿Prefieres una práctica dinámica o algo más suave?",
+                    "options": {
+                        "1": "Dinámica.",
+                        "2": "Suave."
+                    }
+                },
+                "C2": {
+                    "question": "¿Buscas un trabajo físico o energético?",
+                    "options": {
+                        "1": "Físico (Masaje).",
+                        "2": "Energético (Reiki/Flores)."
+                    }
+                }
+            },
+            "l4": {
+                "question": "¿Deseas profundizar más en tu malestar o compartir algún detalle adicional?",
+                "options": {
+                    "no": "No, ver mi recomendación ahora",
+                    "yes": "Sí, me gustaría explicarlo más a fondo"
                 }
             }
         }

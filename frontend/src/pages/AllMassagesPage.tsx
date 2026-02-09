@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
-import { XMarkIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import FadeInSection from '../components/FadeInSection';
@@ -27,27 +27,59 @@ interface Treatment {
 const AllMassagesPage: React.FC = () => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [massages, setMassages] = useState<Treatment[]>([]);
     const [selectedTreatment, setSelectedTreatment] = useState<Treatment | null>(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchMassages = async () => {
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/treatments/massages`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setMassages(data);
-                }
-            } catch (error) {
-                console.error("Failed to load massages:", error);
-            } finally {
-                setLoading(false);
+    const fetchMassages = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/treatments/massages`);
+            if (response.ok) {
+                const data = await response.json();
+                setMassages(data);
             }
-        };
+        } catch (error) {
+            console.error("Failed to load massages:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchMassages();
     }, []);
+
+    // Auto-open from URL parameter
+    useEffect(() => {
+        if (!loading && massages.length > 0) {
+            const itemParam = searchParams.get('item')?.toLowerCase().trim();
+            if (itemParam) {
+                const normalize = (str: string) =>
+                    str.toLowerCase().trim()
+                        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove accents
+                        .replace(/\s+/g, '-');
+
+                const treatment = massages.find(m =>
+                    normalize(m.name) === itemParam ||
+                    String(m.id) === itemParam
+                );
+                if (treatment) {
+                    setSelectedTreatment(treatment);
+                }
+            }
+        }
+    }, [loading, massages, searchParams]);
+
+    const handleCloseModal = () => {
+        setSelectedTreatment(null);
+        // Clear query param
+        if (searchParams.has('item')) {
+            const newParams = new URLSearchParams(searchParams);
+            newParams.delete('item');
+            setSearchParams(newParams);
+        }
+    };
 
     return (
         <div className="font-body text-bark min-h-screen flex flex-col bg-bone">
@@ -66,7 +98,7 @@ const AllMassagesPage: React.FC = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-                        onClick={() => setSelectedTreatment(null)}
+                        onClick={handleCloseModal}
                     >
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -76,7 +108,7 @@ const AllMassagesPage: React.FC = () => {
                             className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col md:flex-row relative"
                         >
                             <button
-                                onClick={() => setSelectedTreatment(null)}
+                                onClick={handleCloseModal}
                                 className="absolute top-4 right-4 p-2 bg-white/80 rounded-full hover:bg-forest hover:text-white transition-colors z-10"
                             >
                                 <XMarkIcon className="w-6 h-6" />
@@ -88,6 +120,13 @@ const AllMassagesPage: React.FC = () => {
                                         src={selectedTreatment.image_url.startsWith('http') ? selectedTreatment.image_url : `${API_BASE_URL}${selectedTreatment.image_url}`}
                                         alt={getTranslated(selectedTreatment, 'name', i18n.language)}
                                         className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                            const target = e.currentTarget;
+                                            if (target.src !== lotusFlower) {
+                                                target.src = lotusFlower;
+                                                target.className = "w-full h-full object-contain p-12 opacity-20";
+                                            }
+                                        }}
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-forest/20">
@@ -140,7 +179,7 @@ const AllMassagesPage: React.FC = () => {
                                         {t('therapies.appointment.cta')}
                                     </button>
                                     <button
-                                        onClick={() => setSelectedTreatment(null)}
+                                        onClick={handleCloseModal}
                                         className="text-sm font-bold text-forest hover:text-matcha uppercase tracking-widest transition-colors"
                                     >
                                         {t('therapies.modal.close')}
@@ -154,7 +193,6 @@ const AllMassagesPage: React.FC = () => {
 
             <main className="flex-grow pt-32 pb-20">
                 <div className="max-w-7xl mx-auto px-8">
-                    {/* Back Button */}
                     {/* Back Button */}
                     <div className="mb-8">
                         <BackButton to="/terapias-y-masajes" label={t('blog.back_to_therapies', 'Volver a Terapias')} className="text-forest hover:text-matcha mb-0" />
@@ -185,15 +223,25 @@ const AllMassagesPage: React.FC = () => {
                                     >
                                         <div className="absolute inset-0 bg-white/0 group-hover:bg-bone/20 transition-colors duration-500" />
 
-                                        {massage.image_url && (
-                                            <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden">
+                                        <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden flex items-center justify-center bg-forest/5">
+                                            {massage.image_url ? (
                                                 <img
                                                     src={massage.image_url.startsWith('http') ? massage.image_url : `${API_BASE_URL}${massage.image_url}`}
                                                     alt={getTranslated(massage, 'name', i18n.language)}
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                                    onError={(e) => {
+                                                        const target = e.currentTarget;
+                                                        if (target.src !== lotusFlower) {
+                                                            target.src = lotusFlower;
+                                                            target.className = "w-24 h-24 object-contain opacity-20 group-hover:scale-110 transition-transform duration-500 m-auto";
+                                                            target.parentElement?.classList.add("flex", "items-center", "justify-center", "bg-forest/5");
+                                                        }
+                                                    }}
                                                 />
-                                            </div>
-                                        )}
+                                            ) : (
+                                                <img src={lotusFlower} alt="Detalle" className="w-24 h-24 object-contain opacity-20 group-hover:scale-110 transition-transform duration-500" />
+                                            )}
+                                        </div>
 
                                         <h3 className="text-2xl font-headers text-forest mb-4 uppercase relative z-10">{getTranslated(massage, 'name', i18n.language)}</h3>
                                         <p className="text-bark/80 mb-4 leading-relaxed line-clamp-3 relative z-10">{getTranslated(massage, 'excerpt', i18n.language) || getTranslated(massage, 'description', i18n.language)}</p>
@@ -219,7 +267,7 @@ const AllMassagesPage: React.FC = () => {
             </main>
 
             <Footer />
-        </div >
+        </div>
     );
 };
 

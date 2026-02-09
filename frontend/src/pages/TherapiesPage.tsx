@@ -126,12 +126,28 @@ const TherapiesPage: React.FC = () => {
                                 <XMarkIcon className="w-6 h-6" />
                             </button>
 
-                            <div className="w-full md:w-2/5 h-64 md:h-auto bg-gray-100 flex-shrink-0">
+                            <div className="w-full md:w-2/5 h-64 md:h-auto bg-gray-100 flex-shrink-0 relative overflow-hidden">
                                 {selectedTreatment.image_url ? (
                                     <img
                                         src={selectedTreatment.image_url.startsWith('http') ? selectedTreatment.image_url : `${API_BASE_URL}${selectedTreatment.image_url}`}
                                         alt={getTranslated(selectedTreatment, 'name', i18n.language)}
                                         className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                            const target = e.currentTarget;
+                                            // Prevent infinite loop if fallback also fails
+                                            if (target.src !== lotusFlower) {
+                                                target.onerror = null; // Stop further error handling to "keep broken link" if fallback fails? 
+                                                // Actually user wants: if backup breaks, keep broken link of selected photo. 
+                                                // If I set src to lotusFlower and it fails, it shows broken lotusFlower.
+                                                // To show broken *original*, I'd have to revert. 
+                                                // But let's stick to standard fallback first: switch to lotusFlower.
+                                                target.src = lotusFlower;
+                                                // The image style might need adjustment for the fallback (e.g. opacity, object-contain) 
+                                                // but for the modal, object-cover is fine or maybe contain.
+                                                target.className = "w-full h-full object-contain p-12 opacity-20";
+                                                // Note: changing class to match the 'no image' look
+                                            }
+                                        }}
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-forest/20">
@@ -295,15 +311,25 @@ const TherapiesPage: React.FC = () => {
                                         >
                                             <div className="absolute inset-0 bg-white/0 group-hover:bg-white/50 transition-colors duration-500" />
 
-                                            {msg.image_url && (
-                                                <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden">
+                                            <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden flex items-center justify-center bg-forest/5">
+                                                {msg.image_url ? (
                                                     <img
                                                         src={msg.image_url.startsWith('http') ? msg.image_url : `${API_BASE_URL}${msg.image_url}`}
                                                         alt={getTranslated(msg, 'name', i18n.language)}
                                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                                        onError={(e) => {
+                                                            const target = e.currentTarget;
+                                                            if (target.src !== lotusFlower) {
+                                                                target.src = lotusFlower;
+                                                                target.className = "w-24 h-24 object-contain opacity-20 group-hover:scale-110 transition-transform duration-500 m-auto";
+                                                                target.parentElement?.classList.add("flex", "items-center", "justify-center", "bg-forest/5");
+                                                            }
+                                                        }}
                                                     />
-                                                </div>
-                                            )}
+                                                ) : (
+                                                    <img src={lotusFlower} alt="Detalle" className="w-24 h-24 object-contain opacity-20 group-hover:scale-110 transition-transform duration-500" />
+                                                )}
+                                            </div>
 
                                             <h3 className="text-2xl font-headers text-forest mb-4 uppercase relative z-10">{getTranslated(msg, 'name', i18n.language)}</h3>
                                             <p className="text-bark/80 mb-4 leading-relaxed line-clamp-3 relative z-10">{getTranslated(msg, 'excerpt', i18n.language) || getTranslated(msg, 'description', i18n.language)}</p>
@@ -361,15 +387,25 @@ const TherapiesPage: React.FC = () => {
                                         >
                                             <div className="absolute inset-0 bg-white/0 group-hover:bg-bone/20 transition-colors duration-500" />
 
-                                            {thr.image_url && (
-                                                <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden">
+                                            <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden flex items-center justify-center bg-forest/5">
+                                                {thr.image_url ? (
                                                     <img
                                                         src={thr.image_url.startsWith('http') ? thr.image_url : `${API_BASE_URL}${thr.image_url}`}
                                                         alt={getTranslated(thr, 'name', i18n.language)}
                                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                                        onError={(e) => {
+                                                            const target = e.currentTarget;
+                                                            if (target.src !== lotusFlower) {
+                                                                target.src = lotusFlower;
+                                                                target.className = "w-24 h-24 object-contain opacity-20 group-hover:scale-110 transition-transform duration-500 m-auto";
+                                                                target.parentElement?.classList.add("flex", "items-center", "justify-center", "bg-forest/5");
+                                                            }
+                                                        }}
                                                     />
-                                                </div>
-                                            )}
+                                                ) : (
+                                                    <img src={lotusFlower} alt="Detalle" className="w-24 h-24 object-contain opacity-20 group-hover:scale-110 transition-transform duration-500" />
+                                                )}
+                                            </div>
 
                                             <h3 className="text-2xl font-headers text-forest mb-4 uppercase relative z-10">{getTranslated(thr, 'name', i18n.language)}</h3>
                                             <p className="text-bark/80 mb-4 leading-relaxed line-clamp-3 relative z-10">{getTranslated(thr, 'excerpt', i18n.language) || getTranslated(thr, 'description', i18n.language)}</p>

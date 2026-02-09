@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Usuario - Arunachala AI</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --forest: #2C4A3E;
+            --matcha: #8BA888;
+            --bark: #3D332D;
+            --sand: #F9F7F2;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--sand);
+            color: var(--bark);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--forest);
+            color: var(--white);
+            padding: 4rem 2rem;
+            text-align: center;
+            border-bottom: 8px solid var(--matcha);
+        }
+
+        header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: -3rem auto 4rem;
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 2rem;
+            shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 30px rgba(44, 74, 62, 0.05);
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--forest);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3 {
+            color: var(--forest);
+            margin: 1.5rem 0 1rem;
+            font-size: 1.3rem;
+        }
+
+        .badge {
+            background: var(--matcha);
+            color: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .card {
+            background: #fdfdfd;
+            border: 1px solid #f0f0f0;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            margin: 1rem 0;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--matcha);
+        }
+
+        .tip {
+            background-color: #e8f0ed;
+            border-left: 5px solid var(--forest);
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0.5rem;
+            font-style: italic;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        li {
+            margin-bottom: 0.8rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--matcha);
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin-top: 0;
+                border-radius: 0;
+                padding: 1.5rem;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Arunachala Dashboard</h1>
+        <p>Manual de Usuario | Gestión de Web e Inteligencia Artificial</p>
+    </header>
+
+    <div class="container">
+
+        <div class="section">
+            <h2>🤖 Control de la IA <span class="badge">Crítico</span></h2>
+            <p>Tu asistente virtual es el primer contacto con tus clientes. Aquí controlas su "mente".</p>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>🎭 Personalidad</h3>
+                    <p>Ajusta el tono (Amable, Místico o Formal) según quieras que se perciba Arunachala.</p>
+                </div>
+                <div class="card">
+                    <h3>🎯 Objetivos</h3>
+                    <p>Configura si el bot debe limitarse a informar o si debe intentar captar reservas activamente.</p>
+                </div>
+            </div>
+
+            <div class="tip">
+                <strong>Pro Tip:</strong> Si has añadido clases u horarios nuevos, dale siempre al botón de
+                <strong>Sincronizar</strong> para que el bot los aprenda.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⏰ Automatización <span class="badge">Smart</span></h2>
+            <p>Gestiona el sistema de programación de artículos automáticos (ESC).</p>
+            <div class="card">
+                <h3>Planificador Semanal</h3>
+                <p>Selecciona qué días quieres que se publiquen artículos. El motor <strong>APScheduler</strong> se
+                    encargará de lanzarlos en el minuto exacto.</p>
+                <ul>
+                    <li>Estado <strong>Activa</strong>: El sistema trabaja por ti.</li>
+                    <li>Estado <strong>Inactiva</strong>: El sistema se detiene.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📝 Contenidos y Blog <span class="badge">Multi-Idiomas</span></h2>
+            <p>Tus artículos se traducen solos a <strong>Catalán e Inglés</strong>.</p>
+            <ul>
+                <li><strong>Imágenes WebP</strong>: Al subir una foto, el sistema la optimiza para Google.</li>
+                <li><strong>SEO Integrado</strong>: Configura cómo te ven en Google desde la misma ficha del artículo.
+                </li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🧘 Horarios y Servicios</h2>
+            <p>Edita visualmente tu agenda de clases y terapias.</p>
+            <div class="card">
+                <h3>Agenda Visual</h3>
+                <p>Cambia clases de Hatha, Vinyasa o Terapias. El bot conocerá estos cambios inmediatamente tras la
+                    sincronización.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚠️ Panic Reset</h2>
+            <p>Si notas que el bot dice cosas incoherentes o datos muy antiguos:</p>
+            <div class="card" style="border-left: 5px solid #ff4444;">
+                <p>Pulsa <strong>Panic Reset</strong> en el panel de control. Esto obligará al bot a borrar su memoria
+                    temporal y re-estudiar toda la web.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        Namasté 🙏 | Arunachala Yoga & Terapias - Cornellà de Llobregat
+    </footer>
+
+</body>
+
+</html>
