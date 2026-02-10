@@ -428,6 +428,26 @@ async def create_content(
     db.refresh(db_content)
     
     cleanup_orphan_tags(db)
+
+    # Log to dashboard activity
+    type_label = {
+        'article': 'Artículo',
+        'meditation': 'Meditación',
+        'mantra': 'Mantra',
+        'service': 'Servicio',
+        'announcement': 'Anuncio'
+    }.get(db_content.type, 'Contenido')
+    
+    prefix = "Nueva" if db_content.type == 'meditation' else "Nuevo"
+    
+    activity_log = DashboardActivity(
+        type='content',
+        action='created',
+        title=f"{prefix} {type_label}: {db_content.title}",
+        entity_id=db_content.id
+    )
+    db.add(activity_log)
+    db.commit()
     
     # Notify n8n for RAG update if published
     if db_content.status == "published":

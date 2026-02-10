@@ -52,34 +52,51 @@ async def notify_n8n_content_change(
             
         # Extract useful data for RAG (FLAT STRUCTURE)
         if db_entity:
-            if hasattr(db_entity, 'title'):
-                flat_payload['title'] = db_entity.title
-            elif hasattr(db_entity, 'name'):
-                flat_payload['title'] = db_entity.name
+            import re
+            
+            # Extract title - ensure it's a non-empty string
+            if hasattr(db_entity, 'title') and db_entity.title:
+                flat_payload['title'] = str(db_entity.title).strip()
+            elif hasattr(db_entity, 'name') and db_entity.name:
+                flat_payload['title'] = str(db_entity.name).strip()
+            else:
+                flat_payload['title'] = f"Entity {content_id}"  # Fallback title
                 
-            if hasattr(db_entity, 'body'):
-                flat_payload['content'] = db_entity.body
-            elif hasattr(db_entity, 'description'):
-                flat_payload['content'] = db_entity.description
+            # Extract content/description
+            if hasattr(db_entity, 'body') and db_entity.body:
+                flat_payload['content'] = str(db_entity.body).strip()
+            elif hasattr(db_entity, 'description') and db_entity.description:
+                flat_payload['content'] = str(db_entity.description).strip()
+            else:
+                flat_payload['content'] = ""
                 
-            # Fallback for empty content
+            # Ensure content is never empty
             if not flat_payload.get('content'):
-                flat_payload['content'] = getattr(db_entity, 'excerpt', '') or ''
+                flat_payload['content'] = f"{flat_payload.get('title', 'Content')}"
                 
-            # Add url/slug if available
-            if hasattr(db_entity, 'slug'):
-                flat_payload['slug'] = db_entity.slug
+            # CRITICAL: Add url/slug - ALWAYS GENERATE if missing or null
+            title_for_slug = flat_payload.get('title', f'entity-{content_id}')
+            
+            # First try to use existing slug
+            if hasattr(db_entity, 'slug') and db_entity.slug and db_entity.slug.strip():
+                flat_payload['slug'] = str(db_entity.slug).strip()
+            else:
+                # Generate slug from title
+                generated_slug = re.sub(r'[^\w\s-]', '', str(title_for_slug).lower())
+                generated_slug = re.sub(r'[-\s]+', '-', generated_slug).strip('-')
+                flat_payload['slug'] = generated_slug or f'entity-{content_id}'
+                print(f"⚠️  Generated slug for {content_type} {content_id}: '{flat_payload['slug']}'")
                 
             # Add extra metadata
-            if hasattr(db_entity, 'category'):
-                flat_payload['category'] = db_entity.category
+            if hasattr(db_entity, 'category') and db_entity.category:
+                flat_payload['category'] = str(db_entity.category).strip()
 
             # Add tags if available (critical for search)
             if hasattr(db_entity, 'tags') and db_entity.tags:
                 # If tags is a list, join it; if string, keep it.
                 t = db_entity.tags
                 if isinstance(t, list):
-                    flat_payload['tags'] = ", ".join(t)
+                    flat_payload['tags'] = ", ".join(str(tag) for tag in t if tag)
                 else:
                     flat_payload['tags'] = str(t)
 
@@ -111,22 +128,62 @@ async def notify_n8n_content_change(
     
     async def _send(l_id, v_id, e_data):
         from app.models.models import RAGSyncLog
+        import re
         async with httpx.AsyncClient() as client:
             try:
-                # Send webhook with FLAT DATA so n8n maps keys automatically
+                # STEP 1: SANITIZE - Remove None/empty values and ensure all strings are non-empty
+                sanitized_data = {}
+                for key, value in e_data.items():
+                    # Skip None and empty string values
+                    if value is None or value == "":
+                        continue
+                    
+                    # Convert to string and strip if needed
+                    if isinstance(value, str):
+                        clean_value = value.strip()
+                        if clean_value:  # Only add if non-empty after strip
+                            sanitized_data[key] = clean_value
+                    else:
+                        sanitized_data[key] = value
+                
+                # STEP 2: ENSURE CRITICAL FIELDS - NEVER ALLOW NULL/EMPTY
+                # Title is mandatory
+                if 'title' not in sanitized_data or not sanitized_data['title']:
+                    sanitized_data['title'] = f"Entity {content_id}"
+                
+                # Content is mandatory
+                if 'content' not in sanitized_data or not sanitized_data['content']:
+                    sanitized_data['content'] = sanitized_data.get('title', f'Entity {content_id}')
+                
+                # SLUG is mandatory - GENERATE IF MISSING
+                if 'slug' not in sanitized_data or not sanitized_data['slug']:
+                    title_str = sanitized_data.get('title', f'entity-{content_id}')
+                    # Generate slug: lowercase, remove non-word chars, replace spaces with hyphens
+                    generated_slug = re.sub(r'[^\w\s-]', '', str(title_str).lower())
+                    generated_slug = re.sub(r'[-\s]+', '-', generated_slug).strip('-')
+                    sanitized_data['slug'] = generated_slug or f'entity-{content_id}'
+                
+                # STEP 3: BUILD PAYLOAD with sanitized data
                 payload = {
                     "id": content_id,
                     "type": content_type,
                     "action": action,
                     "log_id": l_id or 0,
                     "vector_id": v_id or "",
-                    **e_data # Merge entity data at root level
+                    **sanitized_data  # Merge entity data at root level
                 }
                 
                 # Also include 'data' nested object for backward compatibility if needed
-                payload['data'] = e_data
+                payload['data'] = sanitized_data
                 
-                await client.post(N8N_WEBHOOK_URL, json=payload, timeout=10.0)
+                print(f"📤 Sending webhook payload for {content_type} {content_id}:")
+                print(f"   title: '{sanitized_data.get('title')}'")
+                print(f"   slug: '{sanitized_data.get('slug')}'")
+                print(f"   content preview: '{sanitized_data.get('content')[:100] if sanitized_data.get('content') else 'N/A'}'")
+                print(f"   Full payload keys: {list(payload.keys())}")
+                
+                response = await client.post(N8N_WEBHOOK_URL, json=payload, timeout=10.0)
+                print(f"   n8n response status: {response.status_code}")
                 print(f"✅ Successfully notified n8n for {content_type} {content_id} ({action}) with log_id={l_id}")
                 
                 # Update log entry with its own session
@@ -143,6 +200,8 @@ async def notify_n8n_content_change(
                         
             except Exception as e:
                 print(f"❌ Error notifying n8n for {content_type} {content_id}: {e}")
+                import traceback
+                traceback.print_exc()
                 # Log failure logic omitted for brevity
 
     # Get vector_id safely

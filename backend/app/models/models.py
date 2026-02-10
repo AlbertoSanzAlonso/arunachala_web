@@ -192,6 +192,7 @@ class Activity(Base):
     activity_data = Column(JSON, nullable=True)
     slug = Column(String, unique=True, index=True)
     is_active = Column(Boolean, default=True)
+    is_finished_acknowledged = Column(Boolean, default=False)
     # RAG sync fields
     vector_id = Column(String, nullable=True)
     vectorized_at = Column(DateTime(timezone=True), nullable=True)
@@ -257,6 +258,7 @@ class Suggestion(Base):
     custom_suggestion = Column(String, nullable=True) # User's own suggestion
     comments = Column(Text, nullable=True)
     status = Column(String, default="pending") # pending, reviewed, implemented
+    ip_address = Column(String, nullable=True) # Track IP to prevent multiple votes
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Optional relationship

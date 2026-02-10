@@ -88,7 +88,7 @@ export default function VisualScheduleEditor({ onBack }: { onBack: () => void })
                         isCourse: item.id < 0 || item.is_course, // Check for negative ID or flag
                         classInfo: item.yoga_class || {
                             name: item.class_name || 'Clase',
-                            color: item.id < 0 ? 'bg-sky-100 border-sky-300 text-sky-900 border-l-4' : 'bg-emerald-100 border-emerald-300 text-emerald-800',
+                            color: item.id < 0 ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : 'bg-gray-100',
                             age_range: item.id < 0 ? "CURSO" : null
                         }
                     };

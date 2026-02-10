@@ -59,7 +59,7 @@ const Header: React.FC = () => {
 
     return (
         <>
-            <header className="fixed top-0 left-0 w-full z-50 p-4 md:py-3 md:px-8 flex justify-between items-center bg-[#5c6b3c] shadow-md transition-colors duration-300">
+            <header className="fixed top-0 left-0 right-0 z-50 p-4 md:py-3 md:px-8 flex justify-between items-center bg-[#5c6b3c] shadow-md transition-colors duration-300">
                 {/* Logo Section */}
                 <div className="cursor-pointer flex items-center gap-4" onClick={() => handleNavigation('/')}>
                     <img

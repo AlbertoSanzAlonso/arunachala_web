@@ -44,7 +44,7 @@ const ToastNotification: React.FC<ToastNotificationProps> = ({ toasts, onRemove 
     };
 
     return (
-        <div className="fixed top-4 right-4 z-[100] space-y-2 max-w-md w-full pointer-events-none">
+        <div className="fixed top-4 left-4 right-4 sm:left-auto sm:right-4 z-[100] space-y-2 sm:max-w-md w-auto pointer-events-none">
             <AnimatePresence>
                 {toasts.map((toast) => (
                     <motion.div

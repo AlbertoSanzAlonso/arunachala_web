@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
 from app.core.database import get_db
-from app.models.models import MassageType, TherapyType, User
+from app.models.models import MassageType, TherapyType, User, DashboardActivity
 from app.api.auth import get_current_user
 from app.core.image_utils import save_upload_file, delete_file
 from app.core.webhooks import notify_n8n_content_change
@@ -116,6 +116,16 @@ async def create_massage(
     # Notify n8n for RAG update
     await notify_n8n_content_change(db_massage.id, "massage", "create", db=db)
     
+    # Log to dashboard activity
+    activity_log = DashboardActivity(
+        type='massage',
+        action='created',
+        title=f"Nuevo masaje: {db_massage.name}",
+        entity_id=db_massage.id
+    )
+    db.add(activity_log)
+    db.commit()
+    
     # Auto-translate if no translations provided
     if not translations and background_tasks:
         fields = {"name": name, "excerpt": excerpt, "description": description, "benefits": benefits}
@@ -214,6 +224,15 @@ async def delete_massage(
     # Notify n8n with entity before it's gone
     await notify_n8n_content_change(db_massage.id, "massage", "delete", db=db, entity=db_massage)
     
+    # Log to dashboard activity
+    activity_log = DashboardActivity(
+        type='massage',
+        action='deleted',
+        title=db_massage.name,
+        entity_id=massage_id
+    )
+    db.add(activity_log)
+
     db.delete(db_massage)
     db.commit()
     return {"message": "Massage deleted successfully"}
@@ -286,6 +305,16 @@ async def create_therapy(
     
     # Notify n8n for RAG update
     await notify_n8n_content_change(db_therapy.id, "therapy", "create", db=db)
+    
+    # Log to dashboard activity
+    activity_log = DashboardActivity(
+        type='therapy',
+        action='created',
+        title=f"Nueva terapia: {db_therapy.name}",
+        entity_id=db_therapy.id
+    )
+    db.add(activity_log)
+    db.commit()
     
     # Auto-translate if no translations provided
     if not translations and background_tasks:
@@ -384,6 +413,15 @@ async def delete_therapy(
     # Notify n8n with entity before it's gone
     await notify_n8n_content_change(therapy_id, "therapy", "delete", db=db, entity=db_therapy)
     
+    # Log to dashboard activity
+    activity_log = DashboardActivity(
+        type='therapy',
+        action='deleted',
+        title=db_therapy.name,
+        entity_id=therapy_id
+    )
+    db.add(activity_log)
+
     db.delete(db_therapy)
     db.commit()
     return {"message": "Therapy deleted successfully"}

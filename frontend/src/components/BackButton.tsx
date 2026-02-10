@@ -14,7 +14,7 @@ const BackButton: React.FC<BackButtonProps> = ({ className = '', to = '/', label
     return (
         <button
             onClick={() => navigate(to)}
-            className={`flex items-center gap-2 text-bark/60 hover:text-forest transition-colors duration-300 text-sm md:text-base font-light mb-8 hover:-translate-x-1 transform ${className}`}
+            className={`flex items-center gap-2 text-bark/60 hover:text-forest transition-colors duration-300 text-sm md:text-base font-light mb-8 hover:-translate-x-1 transform pl-6 md:pl-0 ${className}`}
         >
             <ArrowLeftIcon className="h-4 w-4 md:h-5 md:w-5" />
             <span>{label}</span>

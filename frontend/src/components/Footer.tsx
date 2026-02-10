@@ -60,7 +60,7 @@ const Footer: React.FC = () => {
                         <li><Link to="/" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.home')}</Link></li>
                         <li><Link to="/clases-de-yoga" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.yoga')}</Link></li>
                         <li><Link to="/terapias-y-masajes" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.therapies')}</Link></li>
-                        <li><span className="opacity-50">{t('footer.labels.blog')}</span></li>
+                        <li><Link to="/blog" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.blog')}</Link></li>
                     </ul>
                 </div>
 

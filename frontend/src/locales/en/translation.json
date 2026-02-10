@@ -4,7 +4,7 @@
             "home": "Home",
             "yoga": "Yoga & Schedule",
             "therapies": "Massage & Therapies",
-            "blog": "Blog (Coming Soon)",
+            "blog": "Blog",
             "legal": "Legal Notice",
             "privacy": "Privacy Policy",
             "instagram": "Follow us on Instagram",
@@ -138,10 +138,13 @@
     },
     "common": {
         "view_all": "View all",
+        "thanks": "Thanks!",
         "back": "Back",
         "back_home": "Back to home",
         "loading": "Loading...",
         "sending": "Sending...",
+        "close": "Close",
+        "read_more": "Read more",
         "days": {
             "monday": "Monday",
             "tuesday": "Tuesday",
@@ -303,9 +306,19 @@
             "suggestions": "Suggestions"
         },
         "consult_price": "Consult price",
-        "no_courses": "No courses scheduled at this time.",
-        "no_events": "No workshops or events scheduled soon.",
+        "no_courses": "There are no courses at this time.",
+        "no_events": "There are no workshops or events at this time.",
         "no_polls": "No active polls at this time.",
+        "contact_to_signup": "Contact to sign up",
+        "add_to_calendar": "Add to calendar",
+        "labels": {
+            "date": "Start Date",
+            "end_date": "End Date",
+            "location": "Location",
+            "price": "Investment",
+            "info": "Booking",
+            "info_desc": "Limited spots by registration order."
+        },
         "suggestions": {
             "vote_now": "Register my vote",
             "vote_recorded": "Your vote has been recorded successfully.",
@@ -313,7 +326,7 @@
             "placeholder_comments": "Tell us more...",
             "voto_unit": "vote",
             "voto_plural": "votes",
-            "label_custom_tag": "Do you have another idea?",
+            "label_custom_tag": "Do you have any idea?",
             "custom_title": "Send us your proposal",
             "custom_subtitle": "If you are looking for something specific that is not on the list above, tell us here.",
             "custom_label": "Your proposal",
@@ -323,7 +336,11 @@
             "idea_received": "Idea received!",
             "thanks_desc": "Thank you very much for your proposal, we will study it with care.",
             "suggest_another": "Suggest another idea",
-            "vote_again": "Vote again"
+            "vote_again": "Vote again",
+            "already_voted_title": "We have already received your participation",
+            "already_voted_desc": "Thank you very much for your interest, we will take your opinion into account for future activities.",
+            "other_option": "Other proposal...",
+            "placeholder_custom_poll": "Write your idea here..."
         }
     },
     "space": {

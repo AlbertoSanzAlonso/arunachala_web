@@ -50,6 +50,7 @@
 .custom-scrollbar::-webkit-scrollbar-track {
   background: rgba(47, 79, 79, 0.05);
   border-radius: 10px;
+  margin: 1.5rem 0;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {

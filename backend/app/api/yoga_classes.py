@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from pydantic import BaseModel
 from app.core.database import get_db
-from app.models.models import YogaClassDefinition, User
+from app.models.models import YogaClassDefinition, User, DashboardActivity
 from app.api.auth import get_current_user
 from app.core.webhooks import notify_n8n_content_change
 from app.core.translation_utils import auto_translate_background
@@ -79,6 +79,16 @@ async def create_yoga_class(
     # Notify n8n for RAG update
     await notify_n8n_content_change(db_class.id, "yoga_class", "create", db=db)
     
+    # Log to dashboard activity
+    activity_log = DashboardActivity(
+        type='yoga_class',
+        action='created',
+        title=f"Nueva clase de yoga: {db_class.name}",
+        entity_id=db_class.id
+    )
+    db.add(activity_log)
+    db.commit()
+    
     # Auto-translate if no translations provided
     if not class_data.translations and background_tasks:
         fields = {"name": class_data.name, "description": class_data.description}
@@ -148,6 +158,15 @@ async def delete_yoga_class(
     # Notify n8n BEFORE delete for reference if needed, or just action
     await notify_n8n_content_change(db_class.id, "yoga_class", "delete", db=db, entity=db_class)
     
+    # Log to dashboard activity
+    activity_log = DashboardActivity(
+        type='yoga_class',
+        action='deleted',
+        title=db_class.name,
+        entity_id=class_id
+    )
+    db.add(activity_log)
+
     db.delete(db_class)
     db.commit()
     return {"message": "Class deleted successfully"}

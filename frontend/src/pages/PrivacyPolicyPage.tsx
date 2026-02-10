@@ -72,9 +72,9 @@ const PrivacyPolicyPage: React.FC = () => {
 
             <Header />
 
-            <main className="flex-grow pt-32 pb-16 relative">
+            <main className="flex-grow pt-40 md:pt-48 pb-16 relative">
                 <div className="max-w-7xl mx-auto px-6 relative w-full">
-                    <div className="mb-8 md:mb-0 md:absolute md:top-0 md:left-2 z-20">
+                    <div className="-mt-8 md:-mt-16 mb-8 md:mb-0 md:absolute md:top-0 md:left-2 z-20">
                         <BackButton />
                     </div>
 

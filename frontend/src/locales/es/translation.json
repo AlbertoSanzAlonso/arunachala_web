@@ -4,7 +4,7 @@
             "home": "Inicio",
             "yoga": "Yoga & Horarios",
             "therapies": "Masaje y terapias",
-            "blog": "Blog (Próximamente)",
+            "blog": "Blog",
             "legal": "Aviso Legal",
             "privacy": "Política de Privacidad",
             "instagram": "Síguenos en Instagram",
@@ -138,10 +138,13 @@
     },
     "common": {
         "view_all": "Ver todos",
+        "thanks": "¡Gracias!",
         "back": "Atrás",
         "back_home": "Volver al inicio",
         "loading": "Cargando...",
         "sending": "Enviando...",
+        "close": "Cerrar",
+        "read_more": "Leer más",
         "days": {
             "monday": "Lunes",
             "tuesday": "Martes",
@@ -303,9 +306,19 @@
             "suggestions": "Sugerencias"
         },
         "consult_price": "Consultar precio",
-        "no_courses": "No hay cursos programados en este momento.",
-        "no_events": "No hay talleres o eventos programados próximamente.",
+        "no_courses": "No existen cursos en estos momentos.",
+        "no_events": "No existen talleres o eventos en estos momentos.",
         "no_polls": "No hay votaciones activas en este momento.",
+        "contact_to_signup": "Contactar para apuntarme",
+        "add_to_calendar": "Añadir al calendario",
+        "labels": {
+            "date": "Fecha de inicio",
+            "end_date": "Fecha de finalización",
+            "location": "Ubicación",
+            "price": "Inversión",
+            "info": "Reserva",
+            "info_desc": "Plazas limitadas por orden de inscripción."
+        },
         "suggestions": {
             "vote_now": "Registrar mi voto",
             "vote_recorded": "Tu voto ha sido registrado correctamente.",
@@ -313,7 +326,7 @@
             "placeholder_comments": "Cuéntanos un poco más...",
             "voto_unit": "voto",
             "voto_plural": "votos",
-            "label_custom_tag": "¿Tienes otra idea?",
+            "label_custom_tag": "¿Tienes alguna idea?",
             "custom_title": "Mándanos tu propuesta",
             "custom_subtitle": "Si buscas algo muy específico que no está en la lista anterior, cuéntanoslo aquí.",
             "custom_label": "Tu propuesta",
@@ -323,7 +336,11 @@
             "idea_received": "¡Idea recibida!",
             "thanks_desc": "Muchas gracias por tu propuesta, la estudiaremos con cariño.",
             "suggest_another": "Sugerir otra idea",
-            "vote_again": "Votar de nuevo"
+            "vote_again": "Votar de nuevo",
+            "already_voted_title": "Ya hemos recibido tu participación",
+            "already_voted_desc": "Muchas gracias por tu interés, tendremos en cuenta tu opinión para futuras actividades.",
+            "other_option": "Otra propuesta...",
+            "placeholder_custom_poll": "Escribe tu idea aquí..."
         }
     },
     "space": {

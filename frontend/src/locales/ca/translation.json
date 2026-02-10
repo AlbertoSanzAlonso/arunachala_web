@@ -4,7 +4,7 @@
             "home": "Inici",
             "yoga": "Ioga i Horaris",
             "therapies": "Massatge i teràpies",
-            "blog": "Blog (Properament)",
+            "blog": "Blog",
             "legal": "Avís Legal",
             "privacy": "Política de Privadesa",
             "instagram": "Seguiu-nos a Instagram",
@@ -138,10 +138,13 @@
     },
     "common": {
         "view_all": "Veure tots",
-        "back": "Atrere",
+        "thanks": "Gràcies!",
+        "back": "Enrere",
         "back_home": "Tornar a l'inici",
         "loading": "Carregant...",
         "sending": "Enviant...",
+        "close": "Tancar",
+        "read_more": "Llegir més",
         "days": {
             "monday": "Dilluns",
             "tuesday": "Dimarts",
@@ -303,9 +306,19 @@
             "suggestions": "Suggeriments"
         },
         "consult_price": "Consultar preu",
-        "no_courses": "No hi ha cursos programats en aquest moment.",
-        "no_events": "No hi ha tallers o esdeveniments programats properament.",
+        "no_courses": "No existeixen cursos en aquests moments.",
+        "no_events": "No existeixen tallers o esdeveniments en aquests moments.",
         "no_polls": "No hi ha votacions actives en aquest moment.",
+        "contact_to_signup": "Contactar per apuntar-me",
+        "add_to_calendar": "Afegir al calendari",
+        "labels": {
+            "date": "Data d'inici",
+            "end_date": "Data de finalització",
+            "location": "Ubicació",
+            "price": "Inversió",
+            "info": "Reserva",
+            "info_desc": "Places limitades per ordre d'inscripció."
+        },
         "suggestions": {
             "vote_now": "Registrar el meu vot",
             "vote_recorded": "El teu vot ha estat registrat correctament.",
@@ -313,7 +326,7 @@
             "placeholder_comments": "Explica'ns una mica més...",
             "voto_unit": "vot",
             "voto_plural": "vots",
-            "label_custom_tag": "Tens una altra idea?",
+            "label_custom_tag": "Tens alguna idea?",
             "custom_title": "Envia'ns la teva proposta",
             "custom_subtitle": "Si busques alguna cosa molt específica que no està a la llista anterior, explica'ns-ho aquí.",
             "custom_label": "La teva proposta",
@@ -323,7 +336,11 @@
             "idea_received": "Idea rebuda!",
             "thanks_desc": "Moltes gràcies per la teva proposta, la estudiarem amb afecte.",
             "suggest_another": "Suggerir una altra idea",
-            "vote_again": "Votar de nou"
+            "vote_again": "Votar de nou",
+            "already_voted_title": "Ja hem rebut la teva participació",
+            "already_voted_desc": "Moltes gràcies pel teu interès, tindrem en compte la teva opinió per a futures activitats.",
+            "other_option": "Altra proposta...",
+            "placeholder_custom_poll": "Escriu la teva idea aquí..."
         }
     },
     "space": {

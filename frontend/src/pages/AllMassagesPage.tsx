@@ -105,7 +105,7 @@ const AllMassagesPage: React.FC = () => {
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 20 }}
                             onClick={(e) => e.stopPropagation()}
-                            className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col md:flex-row relative"
+                            className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col md:flex-row relative"
                         >
                             <button
                                 onClick={handleCloseModal}
@@ -191,10 +191,10 @@ const AllMassagesPage: React.FC = () => {
                 )}
             </AnimatePresence>
 
-            <main className="flex-grow pt-32 pb-20">
+            <main className="flex-grow pt-40 md:pt-48 pb-20">
                 <div className="max-w-7xl mx-auto px-8">
                     {/* Back Button */}
-                    <div className="mb-8">
+                    <div className="-mt-8 md:-mt-16 mb-8">
                         <BackButton to="/terapias-y-masajes" label={t('blog.back_to_therapies', 'Volver a Terapias')} className="text-forest hover:text-matcha mb-0" />
                     </div>
 

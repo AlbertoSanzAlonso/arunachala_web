@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from pydantic import BaseModel
 from app.core.database import get_db
-from app.models.models import ClassSchedule, User, Activity
+from app.models.models import ClassSchedule, User, Activity, DashboardActivity
 import json
 from datetime import datetime
 
@@ -148,7 +148,7 @@ def get_schedules(
                 id=-course.id, 
                 name=course.title,
                 description=course.description,
-                color="bg-blue-100 border-blue-300 text-blue-900",
+                color=data.get('color', "bg-emerald-100 border-emerald-300 text-emerald-800"),
                 age_range=date_info, # Display end date here
                 translations=course.translations
             )
@@ -224,6 +224,17 @@ async def create_schedule(
     if new_schedule.class_id:
         await notify_n8n_content_change(new_schedule.class_id, "yoga_class", "update", db=db)
     
+    # Log to dashboard activity
+    class_name = new_schedule.yoga_class.name if new_schedule.yoga_class else new_schedule.class_name or "Clase"
+    activity_log = DashboardActivity(
+        type='schedule',
+        action='created',
+        title=f"Nuevo horario: {class_name} - {new_schedule.day_of_week} {new_schedule.start_time}",
+        entity_id=new_schedule.id
+    )
+    db.add(activity_log)
+    db.commit()
+    
     return new_schedule
 
 @router.put("/{schedule_id}", response_model=ScheduleResponse)
@@ -294,7 +305,17 @@ async def delete_schedule(
         raise HTTPException(status_code=404, detail="Schedule not found")
     
     class_id = schedule.class_id
+    class_name = schedule.yoga_class.name if schedule.yoga_class else schedule.class_name or "Clase"
     
+    # Log to dashboard activity before deleting
+    activity_log = DashboardActivity(
+        type='schedule',
+        action='deleted',
+        title=f"{class_name} ({schedule.day_of_week} {schedule.start_time})",
+        entity_id=schedule_id
+    )
+    db.add(activity_log)
+
     db.delete(schedule)
     db.commit()
     

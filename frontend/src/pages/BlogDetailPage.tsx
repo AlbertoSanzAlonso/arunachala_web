@@ -6,6 +6,7 @@ import { Helmet } from 'react-helmet-async';
 import { CalendarIcon, TagIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import BackButton from '../components/BackButton';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
 import { getImageUrl } from '../utils/imageUtils';
@@ -137,16 +138,12 @@ const BlogDetailPage: React.FC = () => {
 
             <Header />
 
-            <main className="flex-grow pt-32 pb-16">
+            <main className="flex-grow pt-40 md:pt-48 pb-16">
                 <article className="max-w-4xl mx-auto px-6">
                     {/* Back Button */}
-                    <button
-                        onClick={() => navigate('/blog')}
-                        className="flex items-center gap-2 text-bark/60 hover:text-forest transition-colors mb-8 group"
-                    >
-                        <ArrowLeftIcon className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                        <span className="font-headers uppercase tracking-wider text-sm">{t('blog.back_to_blog', 'Volver al Blog')}</span>
-                    </button>
+                    <div className="-mt-8 md:-mt-16">
+                        <BackButton to="/blog" label={t('blog.back_to_blog', 'Volver al Blog')} />
+                    </div>
 
                     {/* Category Badge */}
                     <div className="mb-6">

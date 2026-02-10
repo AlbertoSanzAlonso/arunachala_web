@@ -35,8 +35,8 @@ Debes devolver ÚNICAMENTE un objeto JSON donde las claves raíz sean los códig
 
 REGLAS IMPORTANTES:
 1. Si un campo es una cadena de texto, tradúcelo normalmente.
-2. Si un campo es una LISTA (array) de cadenas (como 'tags'), traduce CADA ELEMENTO de la lista manteniendo el orden.
-3. Mantén el formato JSON válido.
+2. Si un campo es una LISTA (array) de cadenas (como 'options', 'tags', 'items'), traduce CADA ELEMENTO de la lista manteniendo el orden exacto.
+3. Mantén el formato JSON válido y las mismas claves raíz.
 
 Ejemplo de entrada: {{ "title": "Hola", "tags": ["uno", "dos"] }}
 Ejemplo de salida:
