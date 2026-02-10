@@ -92,24 +92,41 @@ return $input.all().map(item => {
   const qdrantId = createUUID(uniqueIdString);
   
   // Extraemos slug si existe (importante para Activities y Articles)
-  const slug = data.slug || '';
+  // CRÍTICO: Asegurar que NUNCA sean undefined
+  let slug = data.slug || '';
+  
+  // Si slug sigue vacío, generarlo desde name
+  if (!slug || slug === '' || slug === 'undefined') {
+    const slugFromName = String(name || '')
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w-]/g, '')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+    slug = slugFromName || `${type}-${data.id}`;
+  }
+  
+  // Conversión final de name a string asegurado
+  const finalTitle = String(name || `${type}-${data.id}`).trim();
+  const finalSlug = String(slug || `${type}-${data.id}`).trim();
   
   return {
     json: {
       id: data.id,
       type: type,
       qdrant_id: qdrantId,
-      title: name,           // CRÍTICO: incluir title
-      slug: slug,            // CRÍTICO: incluir slug
+      title: finalTitle,           // ✅ NUNCA undefined - sempre string
+      slug: finalSlug,             // ✅ NUNCA undefined - sempre string
       full_text: fullText,
       metadata: {
-        name: name,
-        title: name,         // Duplicado para compatibilidad
-        slug: slug,          // Duplicado para compatibilidad
-        excerpt: excerpt || null,
-        description: description || null,
-        benefits: data.benefits || null,
-        duration_min: data.duration_min || null,
+        name: finalTitle,
+        title: finalTitle,         // Duplicado para compatibilidad
+        slug: finalSlug,           // Duplicado para compatibilidad
+        excerpt: (excerpt && String(excerpt).trim()) || '',
+        description: (description && String(description).trim()) || '',
+        benefits: (data.benefits && String(data.benefits).trim()) || '',
+        duration_min: data.duration_min || 0,
         category: type,
         updated_at: data.updated_at || new Date().toISOString()
       }

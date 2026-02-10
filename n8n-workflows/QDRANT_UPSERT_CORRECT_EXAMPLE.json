@@ -1,0 +1,50 @@
+// EJEMPLO CORRECTO: Paso de Qdrant Upsert en N8N
+// Este es el body que debe tener el nodo HTTP Request que hace upsert a Qdrant
+
+{
+  "points": [
+    {
+      "id": "{{ $node['GET_ITEM_DETAILS'].json.qdrant_id }}",
+      "vector": {{ $node["GENERATE_EMBEDDINGS"].json.vector }},
+      "payload": {
+        "title": "{{ $node['GET_ITEM_DETAILS'].json.title }}",
+        "slug": "{{ $node['GET_ITEM_DETAILS'].json.slug }}",
+        "content": "{{ $node['GET_ITEM_DETAILS'].json.full_text }}",
+        "type": "{{ $node['GET_ITEM_DETAILS'].json.type }}",
+        "source": "dashboard",
+        "metadata": {{ JSON.stringify($node['GET_ITEM_DETAILS'].json.metadata) }},
+        "updated_at": "{{ new Date().toISOString() }}"
+      }
+    }
+  ]
+}
+
+// IMPORTANTE: Nota que:
+// ✅ title y slug están entre comillas dobles y usan template {{ }}
+// ✅ vector NO está entre comillas (es un array de números)
+// ✅ metadata TIENE JSON.stringify porque es un objeto complejo
+// ✅ NO hay JSON.stringify en title/slug/content/type (son strings primitivos)
+
+// INCORRECTO (lo que probablemente tienes ahora):
+// {
+//   "points": [
+//     {
+//       "id": "{{ ... }}",
+//       "vector": ...,
+//       "payload": {
+//         "title": {{ JSON.stringify($node['GET_ITEM_DETAILS'].json.title) }},  // ❌ MALO
+//         "slug": {{ JSON.stringify($node['GET_ITEM_DETAILS'].json.slug) }},    // ❌ MALO
+//         ...
+//       }
+//     }
+//   ]
+// }
+
+// Por qué es incorrecto:
+// Si title = "Masaje Ayurvédico"
+// Entonces JSON.stringify("Masaje Ayurvédico") = "\"Masaje Ayurvédico\""
+// Que en JSON resulta en: "title": "\"Masaje Ayurvédico\""  ❌ Strings dobles
+
+// O si title = undefined
+// Entonces JSON.stringify(undefined) = undefined (literal)
+// Que en JSON resulta en: "title": [undefined]  ❌ Array con undefined
