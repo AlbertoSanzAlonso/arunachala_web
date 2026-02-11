@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, Suspense, lazy } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -103,11 +103,6 @@ const TherapiesPage: React.FC = () => {
         return () => container.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const SectionLoader = () => (
-        <div className="w-full h-96 flex items-center justify-center bg-bone/20 rounded-xl animate-pulse">
-            <div className="text-forest/40 font-headers text-xl">{t('home.loading.experience')}</div>
-        </div>
-    );
 
     return (
         <div ref={containerRef} className="font-body text-bark h-screen overflow-y-auto flex flex-col relative snap-y snap-proximity scroll-smooth">

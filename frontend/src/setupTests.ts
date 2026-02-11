@@ -21,19 +21,17 @@ Object.defineProperty(window, 'matchMedia', {
 
 // Mock de IntersectionObserver para componentes que usan useInView (framer-motion)
 global.IntersectionObserver = class IntersectionObserver {
-  constructor() {}
-  disconnect() {}
-  observe() {}
+  disconnect() { }
+  observe() { }
   takeRecords() {
     return [];
   }
-  unobserve() {}
+  unobserve() { }
 } as any;
 
 // Mock de ResizeObserver (usado por @headlessui/react)
 global.ResizeObserver = class ResizeObserver {
-  constructor() {}
-  disconnect() {}
-  observe() {}
-  unobserve() {}
+  disconnect() { }
+  observe() { }
+  unobserve() { }
 } as any;

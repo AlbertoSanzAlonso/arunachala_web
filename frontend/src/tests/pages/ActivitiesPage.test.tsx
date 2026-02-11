@@ -89,6 +89,8 @@ describe("ActivitiesPage", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("header")).toBeInTheDocument();
+    });
+    await waitFor(() => {
       expect(screen.getByTestId("footer")).toBeInTheDocument();
     });
   });

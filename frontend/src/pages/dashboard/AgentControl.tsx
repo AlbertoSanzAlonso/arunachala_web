@@ -31,7 +31,6 @@ const AgentControl: React.FC = () => {
 
     // Automation Tasks State
     const [tasks, setTasks] = useState<any[]>([]);
-    const [tasksLoading, setTasksLoading] = useState(false);
     const [triggerLoading, setTriggerLoading] = useState<string | null>(null);
 
     useEffect(() => {
@@ -292,7 +291,6 @@ const AgentControl: React.FC = () => {
     };
 
     const fetchTasks = async () => {
-        setTasksLoading(true);
         try {
             const response = await fetch(`${API_BASE_URL}/api/automation/tasks`);
             if (response.ok) {
@@ -302,7 +300,6 @@ const AgentControl: React.FC = () => {
         } catch (error) {
             console.error("Failed to fetch automation tasks", error);
         } finally {
-            setTasksLoading(false);
         }
     };
 

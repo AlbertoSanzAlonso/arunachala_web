@@ -281,11 +281,6 @@ const PollOptionsEditor = ({ options, setOptions, allowCustom, setAllowCustom }:
     );
 };
 
-const formatShortDate = (dateStr: string | null) => {
-    if (!dateStr) return 'No especificada';
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-};
 
 export default function ActivityManager() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -293,8 +288,6 @@ export default function ActivityManager() {
     const [isLoading, setIsLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingItem, setEditingItem] = useState<Activity | null>(null);
-    const [expandedComments, setExpandedComments] = useState<Record<number, boolean>>({});
-    const [selectedComment, setSelectedComment] = useState<{ text: string; option: string; date: string } | null>(null);
     const [showCommentModal, setShowCommentModal] = useState(false);
 
     // Initialize tab from URL
@@ -342,18 +335,17 @@ export default function ActivityManager() {
     const [isSaving, setIsSaving] = useState(false);
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
-    useEffect(() => {
-        fetchItems();
+    const removeToast = useCallback((id: string) => {
+        setToasts(prev => prev.filter(t => t.id !== id));
     }, []);
 
-    useEffect(() => {
-        if (activeTab === 'cursos') setType('curso');
-        else if (activeTab === 'eventos') setType('taller');
-        else if (activeTab === 'sugerencias') setType('sugerencia');
-        handleCloseModal();
-    }, [activeTab]);
+    const addToast = useCallback((type: 'success' | 'error' | 'warning' | 'info', message: string) => {
+        const id = Math.random().toString(36).substr(2, 9);
+        setToasts(prev => [...prev, { id, type, message }]);
+        setTimeout(() => removeToast(id), 5000);
+    }, [removeToast]);
 
-    const fetchItems = async () => {
+    const fetchItems = useCallback(async () => {
         setIsLoading(true);
         try {
             const response = await fetch(`${API_URL}/api/activities?active_only=false`);
@@ -367,23 +359,20 @@ export default function ActivityManager() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [addToast]);
 
-    const handleAuthError = () => {
-        sessionStorage.removeItem('access_token');
-        sessionStorage.removeItem('user_role');
-        window.location.href = '/login';
-    };
+    useEffect(() => {
+        fetchItems();
+    }, [fetchItems]);
 
-    const addToast = (type: 'success' | 'error' | 'warning' | 'info', message: string) => {
-        const id = Math.random().toString(36).substr(2, 9);
-        setToasts(prev => [...prev, { id, type, message }]);
-        setTimeout(() => removeToast(id), 5000);
-    };
+    useEffect(() => {
+        if (activeTab === 'cursos') setType('curso');
+        else if (activeTab === 'eventos') setType('taller');
+        else if (activeTab === 'sugerencias') setType('sugerencia');
+        handleCloseModal();
+    }, [activeTab]);
 
-    const removeToast = (id: string) => {
-        setToasts(prev => prev.filter(t => t.id !== id));
-    };
+
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -701,7 +690,6 @@ export default function ActivityManager() {
                                             <button
                                                 onClick={() => {
                                                     setEditingItem(item);
-                                                    setSelectedComment(item.user_comments?.[0] || null);
                                                     setShowCommentModal(true);
                                                 }}
                                                 className="w-full mt-2 py-2.5 px-3 bg-white border border-gray-200 rounded-xl text-[11px] font-bold text-gray-700 hover:border-primary-400 hover:text-primary-600 flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm"
@@ -892,7 +880,7 @@ export default function ActivityManager() {
                                                 <div onClick={() => document.getElementById('file-upload')?.click()} className="mt-2 flex justify-center rounded-2xl border-2 border-dashed border-gray-200 px-6 py-10 cursor-pointer hover:bg-primary-50/30 hover:border-primary-300 transition-all relative group">
                                                     {previewUrl ? (
                                                         <div className="relative">
-                                                            <img src={previewUrl} className="h-44 w-full object-cover rounded-xl shadow-lg" />
+                                                            <img src={previewUrl} alt="Preview" className="h-44 w-full object-cover rounded-xl shadow-lg" />
                                                             <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
                                                                 <PhotoIcon className="h-10 w-10 text-white" />
                                                             </div>

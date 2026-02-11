@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import { ChevronLeftIcon, PlusIcon, PencilSquareIcon, TrashIcon, CheckIcon, XMarkIcon, MagnifyingGlassIcon, Bars3Icon, PhotoIcon, SpeakerWaveIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, PencilSquareIcon, TrashIcon, CheckIcon, MagnifyingGlassIcon, ClockIcon } from '@heroicons/react/24/outline';
 import ChevronUpIcon from '@heroicons/react/24/outline/ChevronUpIcon';
 import ChevronDownIcon from '@heroicons/react/24/outline/ChevronDownIcon';
 import SparklesIcon from '@heroicons/react/24/outline/SparklesIcon';
