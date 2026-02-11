@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useState, useEffect } from 'react';
+import React, { Suspense, lazy, useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import videoBgWebm from '../assets/videos/hero_optimized.webm';
@@ -21,6 +21,7 @@ const FeaturedActivities = lazy(() => import('../components/FeaturedActivities')
 
 const HomePage: React.FC = () => {
     const { t } = useTranslation();
+    const containerRef = useRef<HTMLDivElement>(null);
     const [galleryImages, setGalleryImages] = useState<string[]>([yogaImg, therapyImg, gardenImg]);
     const [showBackToTop, setShowBackToTop] = useState(false);
 
@@ -56,19 +57,22 @@ const HomePage: React.FC = () => {
     }, []);
 
     useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
         const handleScroll = () => {
-            setShowBackToTop(window.scrollY > 500);
+            setShowBackToTop(container.scrollTop > 500);
         };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+        container.addEventListener('scroll', handleScroll);
+        return () => container.removeEventListener('scroll', handleScroll);
     }, []);
 
     const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     return (
-        <div className="font-body text-bark relative min-h-screen">
+        <div ref={containerRef} className="font-body text-bark relative h-screen overflow-y-auto snap-y snap-proximity scroll-smooth">
             <Header />
 
             {/* Floating Back to Top Button */}
@@ -90,7 +94,7 @@ const HomePage: React.FC = () => {
             </AnimatePresence>
 
             {/* Hero Section with Video */}
-            <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center snap-start">
+            <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center snap-center">
                 <video
                     className="absolute top-0 left-0 w-full h-full object-cover opacity-85"
                     autoPlay
@@ -105,7 +109,7 @@ const HomePage: React.FC = () => {
                 <div className="absolute top-0 left-0 w-full h-full bg-black/50"></div>
 
                 {/* Main Content Container */}
-                <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-4xl px-4 gap-6 md:gap-16 pt-28 pb-32 md:pt-0 md:pb-0">
+                <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-4xl px-4 gap-6 md:gap-16 pt-40 pb-32 md:pt-24 md:pb-0">
 
                     {/* Navigation Buttons */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-12 w-full text-center">
@@ -149,7 +153,7 @@ const HomePage: React.FC = () => {
             {/* Content Sections */}
             <main className="bg-bone relative z-10">
                 {/* Wellness Quiz Section - Snap Start to align with Hero Border */}
-                <section className="snap-start scroll-mt-24 pt-12">
+                <section className="snap-center scroll-mt-24 pt-12">
                     <Suspense fallback={<div className="h-64 flex items-center justify-center">{t('home.loading.experience')}</div>}>
                         <FadeInSection>
                             <WellnessQuiz />
@@ -158,7 +162,7 @@ const HomePage: React.FC = () => {
                 </section>
 
                 {/* Featured Activities Section */}
-                <section className="snap-start scroll-mt-24">
+                <section className="snap-center scroll-mt-24">
                     <Suspense fallback={<div className="h-32 flex items-center justify-center">{t('home.loading.activities', 'Cargando actividades...')}</div>}>
                         <FadeInSection delay={0.1}>
                             <FeaturedActivities />
@@ -176,7 +180,7 @@ const HomePage: React.FC = () => {
                 </section>
 
                 {/* Reviews Section - Snap Start to ensure title visibility */}
-                <section className="w-full max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-12 snap-start scroll-mt-24">
+                <section className="w-full max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-12 snap-center scroll-mt-24">
                     <Suspense fallback={<div className="h-64 flex items-center justify-center">{t('home.loading.reviews')}</div>}>
                         <FadeInSection delay={0.3}>
                             <ReviewsSection />
@@ -187,7 +191,7 @@ const HomePage: React.FC = () => {
                 </section>
             </main>
 
-            <div className="snap-start">
+            <div className="snap-center">
                 <Footer />
             </div>
         </div>

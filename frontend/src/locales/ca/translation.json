@@ -1,5 +1,6 @@
 {
     "footer": {
+        "address": "Yoga y Terapias Arunachala\nPassatge de Mateu Oliva 3, baixos\n(junt a Plaça Pallars)\n08940 Cornellà de Llobregat\nBarcelona",
         "labels": {
             "home": "Inici",
             "yoga": "Ioga i Horaris",
@@ -138,6 +139,7 @@
     },
     "common": {
         "view_all": "Veure tots",
+        "see_all": "Veure totes",
         "thanks": "Gràcies!",
         "back": "Enrere",
         "back_home": "Tornar a l'inici",
@@ -164,7 +166,11 @@
         "loading": {
             "experience": "Carregant Experiència...",
             "gallery": "Carregant Galeria...",
-            "reviews": "Carregant Ressenyes..."
+            "reviews": "Carregant Ressenyes...",
+            "activities": "Carregant Activitats..."
+        },
+        "featured_activities": {
+            "title": "Properament Activitats"
         },
         "mantras": [
             {
@@ -341,6 +347,19 @@
             "already_voted_desc": "Moltes gràcies pel teu interès, tindrem en compte la teva opinió per a futures activitats.",
             "other_option": "Altra proposta...",
             "placeholder_custom_poll": "Escriu la teva idea aquí..."
+        },
+        "subscription": {
+            "title": "Rep les nostres novetats",
+            "subtitle": "Subscriu-te per rebre un correu cada vegada que publiquem una nova activitat o taller.",
+            "placeholder": "El teu correu electrònic",
+            "name_placeholder": "El teu nom (opcional)",
+            "button": "Subscriure'm",
+            "success_title": "Genial!",
+            "success_msg": "Ja estàs subscrit. T'avisarem aviat.",
+            "error_msg": "Hi ha hagut un error en subscriure't. Intenta-ho de nou.",
+            "unsubscribed_title": "Subscripció Cancel·lada",
+            "unsubscribed_msg": "El teu correu ha estat eliminat de la nostra llista correctament. Lamentem veure't marxar.",
+            "unsubscribe_error": "No hem pogut processar la teva sol·licitud. Si us plau, contacta directament amb nosaltres."
         }
     },
     "space": {
@@ -399,6 +418,7 @@
         },
         "info": {
             "title": "Informació de Contacte",
+            "address_label": "Adreça",
             "address": "Yoga y Terapias Arunachala - Passatge de Mateu Oliva, 3, 08940 Cornellà de Llobregat, Barcelona",
             "phone_label": "Telèfon / WhatsApp",
             "email_label": "Email",

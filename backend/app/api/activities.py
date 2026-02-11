@@ -12,7 +12,9 @@ from app.core.translation_utils import auto_translate_background
 from app.core.schedule_utils import check_global_overlap
 import json
 from sqlalchemy import func
-from app.models.models import Gallery, DashboardActivity
+from app.models.models import Gallery, DashboardActivity, Subscription
+from app.services.email import email_service
+import os
 
 
 router = APIRouter(prefix="/api/activities", tags=["activities"])
@@ -97,6 +99,45 @@ def validate_course_schedule(db: Session, activity_data_str: str | None, type: s
                 status_code=400, 
                 detail=f"Conflicto de horario: Ya existe '{overlap.name}' el {day} de {overlap.start} a {overlap.end}."
             )
+
+async def notify_subscribers_activity_change(activity_id: int, db_session_factory, notification_type: str = "new", deleted_data: dict = None):
+    """Background task to notify subscribers about activity changes (new, update, delete)"""
+    db = db_session_factory()
+    try:
+        activity_data = None
+        activity_id_for_url = activity_id
+
+        if deleted_data:
+            activity_data = deleted_data
+        else:
+            activity = db.query(Activity).filter(Activity.id == activity_id).first()
+            if not activity:
+                return
+            activity_data = {
+                "title": activity.title,
+                "translations": activity.translations
+            }
+        
+        subscribers = db.query(Subscription).filter(Subscription.is_active == True).all()
+        recipients = [
+            {
+                "email": s.email, 
+                "first_name": s.first_name, 
+                "language": s.language or 'es'
+            } for s in subscribers
+        ]
+        
+        if not recipients:
+            return
+        
+        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+        activity_url = f"{frontend_url}/actividades?activity={activity_id_for_url}"
+        
+        await email_service.send_activity_notification(recipients, activity_data, activity_url, notification_type)
+    except Exception as e:
+        print(f"Error in notify_subscribers_activity_change: {e}")
+    finally:
+        db.close()
 
 @router.get("", response_model=List[ActivityResponse])
 def get_activities(db: Session = Depends(get_db), active_only: bool = True):
@@ -360,7 +401,7 @@ async def create_activity(
     )
     db.add(activity_log)
     db.commit()
-
+    
     # Notify RAG system (n8n) with complete entity
     await notify_n8n_content_change(new_activity.id, "activity", "create", db=db, entity=new_activity)
     
@@ -382,7 +423,6 @@ async def create_activity(
                         o.get('text', '') if isinstance(o, dict) else str(o) 
                         for o in opts if o
                     ]
-                    print(f"DEBUG EXPLICIT: Found {len(translation_fields['options'])} options in raw form data")
         except Exception as e:
             print(f"Error parsing raw activity_data for translation: {e}")
 
@@ -396,6 +436,14 @@ async def create_activity(
             Activity, 
             new_activity.id, 
             translation_fields
+        )
+    
+    if new_activity.is_active and type != 'sugerencia':
+        background_tasks.add_task(
+            notify_subscribers_activity_change,
+            new_activity.id,
+            SessionLocal,
+            "new"
         )
     
     return new_activity
@@ -486,7 +534,6 @@ async def update_activity(
                         o.get('text', '') if isinstance(o, dict) else str(o) 
                         for o in opts if o
                     ]
-                    print(f"DEBUG EXPLICIT UPDATE: Found {len(translation_fields['options'])} options")
         except Exception as e:
             print(f"Error parsing activity_data for update translation: {e}")
 
@@ -501,11 +548,21 @@ async def update_activity(
             translation_fields
         )
 
+    # Notify subscribers if it's active and not a suggestion
+    if activity.is_active and (type or activity.type) != 'sugerencia':
+        background_tasks.add_task(
+            notify_subscribers_activity_change,
+            activity.id,
+            SessionLocal,
+            "update"
+        )
+
     return activity
 
 @router.post("/{activity_id}/acknowledge-finish")
 async def acknowledge_activity_finish(
     activity_id: int,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -522,6 +579,16 @@ async def acknowledge_activity_finish(
     # Notify RAG system BEFORE deleting
     await notify_n8n_content_change(activity_id, "activity", "delete", db=db, entity=activity)
     
+    # Notify subscribers BEFORE deleting
+    if activity.is_active and activity.type != 'sugerencia':
+        background_tasks.add_task(
+            notify_subscribers_activity_change,
+            activity.id,
+            SessionLocal,
+            "delete",
+            {"title": activity.title, "translations": activity.translations}
+        )
+    
     db.delete(activity)
     db.commit()
     
@@ -530,6 +597,7 @@ async def acknowledge_activity_finish(
 @router.delete("/{activity_id}")
 async def delete_activity(
     activity_id: int,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -555,6 +623,16 @@ async def delete_activity(
     )
     db.add(activity_log)
 
+    # Notify subscribers BEFORE deleting
+    if activity.is_active and activity.type != 'sugerencia':
+        background_tasks.add_task(
+            notify_subscribers_activity_change,
+            activity.id,
+            SessionLocal,
+            "delete",
+            {"title": activity.title, "translations": activity.translations}
+        )
+    
     db.delete(activity)
     db.commit()
     

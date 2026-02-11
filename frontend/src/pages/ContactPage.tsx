@@ -67,7 +67,7 @@ const ContactPage: React.FC = () => {
                                             <MapPinIcon className="w-6 h-6" />
                                         </div>
                                         <div>
-                                            <h3 className="font-headers text-forest text-lg uppercase tracking-wide">Dirección</h3>
+                                            <h3 className="font-headers text-forest text-lg uppercase tracking-wide">{t('contact_page.info.address_label')}</h3>
                                             <a
                                                 href="https://www.google.com/maps/search/?api=1&query=Yoga+y+Terapias+Arunachala"
                                                 target="_blank"

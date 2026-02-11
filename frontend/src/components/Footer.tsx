@@ -59,11 +59,12 @@ const Footer: React.FC = () => {
                             rel="noopener noreferrer"
                             className="text-[#F5F5DC]/90 leading-relaxed text-sm hover:text-[#becf81] transition-colors"
                         >
-                            Yoga y Terapias Arunachala<br />
-                            Pasaje de Mateu Oliva 3, bajos<br />
-                            (junto Plaza Pallars)<br />
-                            08940 Cornellà de Llobregat<br />
-                            Barcelona
+                            {t('footer.address').split('\n').map((line, i) => (
+                                <React.Fragment key={i}>
+                                    {line}
+                                    {i < t('footer.address').split('\n').length - 1 && <br />}
+                                </React.Fragment>
+                            ))}
                         </a>
                     </address>
                     <p className="text-[#F5F5DC]/80 text-sm">

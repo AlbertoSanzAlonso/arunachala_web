@@ -135,8 +135,8 @@ const BlogSection: React.FC<BlogSectionProps> = ({
 
     return (
         <section className="py-16 bg-bone">
-            <div className="max-w-7xl mx-auto px-6">
-                <div className="text-center mb-12">
+            <div className="max-w-7xl mx-auto md:px-6">
+                <div className="text-center mb-12 px-6">
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -191,9 +191,10 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                             <div
                                 ref={scrollRef}
                                 onScroll={handleScroll}
-                                className={`flex gap-6 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-8 pt-4 px-1 w-full ${isSlider ? '' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}
+                                className={`flex gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-8 pt-4 px-0 md:px-1 w-full ${isSlider ? '' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}
                                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                             >
+                                {isSlider && <div className="flex-none w-[7.5vw] md:hidden" />}
                                 {articles.map((article, index) => (
                                     <motion.article
                                         key={article.id}
@@ -282,6 +283,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                         </div>
                                     </motion.article>
                                 ))}
+                                {isSlider && <div className="flex-none w-[7.5vw] md:hidden" />}
                             </div>
                         </div>
                     </div>

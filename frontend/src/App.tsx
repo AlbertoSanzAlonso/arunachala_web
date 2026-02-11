@@ -43,6 +43,7 @@ const AboutPage = lazy(() => import('./pages/AboutPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const LegalNoticePage = lazy(() => import('./pages/LegalNoticePage'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
+const UnsubscribePage = lazy(() => import('./pages/UnsubscribePage'));
 
 
 
@@ -55,7 +56,8 @@ const AppContent = () => {
         location.pathname.startsWith('/login') ||
         location.pathname.startsWith('/dashboard') ||
         location.pathname.startsWith('/forgot-password') ||
-        location.pathname.startsWith('/reset-password');
+        location.pathname.startsWith('/reset-password') ||
+        location.pathname.startsWith('/unsubscribe');
 
     return (
         <Suspense fallback={<PageLoader />}>
@@ -81,6 +83,7 @@ const AppContent = () => {
                 <Route path="/contacto" element={<ContactPage />} />
                 <Route path="/aviso-legal" element={<LegalNoticePage />} />
                 <Route path="/politica-de-privacidad" element={<PrivacyPolicyPage />} />
+                <Route path="/unsubscribe" element={<UnsubscribePage />} />
                 <Route path="/meditaciones" element={<MeditationsPage />} />
                 <Route path="/meditaciones/:slug" element={<MeditationsPage />} />
 

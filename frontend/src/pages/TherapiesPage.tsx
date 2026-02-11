@@ -231,7 +231,7 @@ const TherapiesPage: React.FC = () => {
             )}
 
             <main className="flex-grow bg-bone">
-                <div className="relative w-full min-h-[100vh] md:min-h-[90vh] flex items-center justify-center snap-start">
+                <div className="relative w-full min-h-[100vh] md:min-h-[90vh] flex items-center justify-center snap-center">
                     <div
                         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
                         style={{ backgroundImage: `url(${customHero ? `${API_BASE_URL}${customHero}` : therapyHero})` }}
@@ -286,9 +286,9 @@ const TherapiesPage: React.FC = () => {
                     </div>
                 </div>
 
-                <section ref={massagesRef} className="py-32 md:py-48 bg-white scroll-mt-24 snap-start relative">
-                    <FadeInSection className="max-w-7xl mx-auto px-8">
-                        <div className="text-center mb-16">
+                <section ref={massagesRef} className="py-32 md:py-48 bg-white scroll-mt-24 snap-center relative">
+                    <FadeInSection className="max-w-7xl mx-auto md:px-8">
+                        <div className="text-center mb-16 px-8">
                             <h2 className="text-4xl md:text-6xl font-headers text-forest mb-4 uppercase">{t('therapies.sections.massages')}</h2>
                             <p className="text-bark/70 text-lg md:text-xl">{t('therapies.sections.massages_sub')}</p>
                         </div>
@@ -316,9 +316,10 @@ const TherapiesPage: React.FC = () => {
 
                                 <div
                                     ref={massageScrollRef}
-                                    className="flex gap-8 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-8 pt-4 px-1"
+                                    className="flex gap-4 md:gap-8 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-8 pt-4 px-0 md:px-8"
                                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                                 >
+                                    <div className="flex-none w-[7.5vw] md:hidden" />
                                     {massages.map((msg) => (
                                         <motion.div
                                             key={msg.id}
@@ -358,6 +359,7 @@ const TherapiesPage: React.FC = () => {
                                             </div>
                                         </motion.div>
                                     ))}
+                                    <div className="flex-none w-[7.5vw] md:hidden" />
                                 </div>
                             </div>
                         ) : (
@@ -379,9 +381,9 @@ const TherapiesPage: React.FC = () => {
                     </FadeInSection>
                 </section>
 
-                <section ref={therapiesRef} className="py-32 md:py-48 bg-bone scroll-mt-24 snap-start">
-                    <FadeInSection className="max-w-7xl mx-auto px-8">
-                        <div className="text-center mb-16">
+                <section ref={therapiesRef} className="py-32 md:py-48 bg-bone scroll-mt-24 snap-center">
+                    <FadeInSection className="max-w-7xl mx-auto md:px-8">
+                        <div className="text-center mb-16 px-8">
                             <h2 className="text-4xl md:text-6xl font-headers text-forest mb-4 uppercase">{t('therapies.sections.therapies')}</h2>
                             <p className="text-bark/70 text-lg md:text-xl">{t('therapies.sections.therapies_sub')}</p>
                         </div>
@@ -409,9 +411,10 @@ const TherapiesPage: React.FC = () => {
 
                                 <div
                                     ref={therapyScrollRef}
-                                    className="flex gap-8 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-8 pt-4 px-1"
+                                    className="flex gap-4 md:gap-8 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-8 pt-4 px-0 md:px-8"
                                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                                 >
+                                    <div className="flex-none w-[7.5vw] md:hidden" />
                                     {therapies.map((thr) => (
                                         <motion.div
                                             key={thr.id}
@@ -451,6 +454,7 @@ const TherapiesPage: React.FC = () => {
                                             </div>
                                         </motion.div>
                                     ))}
+                                    <div className="flex-none w-[7.5vw] md:hidden" />
                                 </div>
                             </div>
                         ) : (
@@ -472,7 +476,7 @@ const TherapiesPage: React.FC = () => {
                     </FadeInSection>
                 </section>
 
-                <section ref={appointmentRef} className="py-24 md:py-32 bg-forest text-bone snap-start relative overflow-hidden scroll-mt-24">
+                <section ref={appointmentRef} className="py-24 md:py-32 bg-forest text-bone snap-center relative overflow-hidden scroll-mt-24">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-matcha/10 rounded-full -mr-32 -mt-32 blur-3xl" />
                     <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full -ml-32 -mb-32 blur-2xl" />
                     <FadeInSection className="max-w-4xl mx-auto px-8 relative z-10">
@@ -508,7 +512,7 @@ const TherapiesPage: React.FC = () => {
                     </FadeInSection>
                 </section>
 
-                <section ref={blogRef} className="scroll-mt-24 snap-start">
+                <section ref={blogRef} className="scroll-mt-24 snap-center">
                     <BlogSection
                         category="therapy"
                         limit={6}
@@ -519,7 +523,7 @@ const TherapiesPage: React.FC = () => {
                     />
                 </section>
             </main>
-            <div className="snap-start" id="footer-snap">
+            <div className="snap-center" id="footer-snap">
                 <Footer />
             </div>
         </div>
