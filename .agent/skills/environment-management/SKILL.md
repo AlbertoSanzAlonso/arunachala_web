@@ -24,7 +24,7 @@ The project is a monorepo with distinct environments:
 **Correct Command:**
 From the `/backend` directory:
 ```bash
-../venv/bin/uvicorn app.main:app --reload
+../venv/bin/uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 **Setup/Install Dependencies:**
@@ -32,6 +32,11 @@ If you need to install new python packages:
 ```bash
 # From root or backend (adjust path to pip accordingly)
 /path/to/root/venv/bin/pip install -r backend/requirements.txt
+```
+
+⚠️ **Dependency Version Fix**: If you encounter `AttributeError: 'FieldInfo' object has no attribute 'in_'`, upgrade FastAPI:
+```bash
+/path/to/root/venv/bin/pip install "fastapi>=0.109.0" "pydantic>=2.7.4,<3.0.0"
 ```
 
 ### ⚛️ Frontend (React)

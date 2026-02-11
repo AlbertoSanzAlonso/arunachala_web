@@ -131,6 +131,12 @@ arunachala_web/
     - **Translations**: Standardized `common.loading` and `common.sending` keys across ES/CA/EN locales to eliminate hydration warnings and console errors.
     - **API Stability**: Resolved backend server process conflicts and ensured stable endpoint availability.
 
-## 🏗️ Upcoming Tasks
-- **RAG for Activities**: Ensure the new activities and user suggestions are correctly indexed for the AI assistant.
+## 📝 Recent Updates (2026-02-11)
+- **Dependency Compatibility**:
+    - **FastAPI/Pydantic Fix**: Updated backend to use FastAPI >= 0.109.0 with Pydantic >= 2.7.4 to resolve `'FieldInfo' object has no attribute 'in_'` errors.
+    - **Environment Management**: Enhanced skill documentation with version pinning guidance and troubleshooting steps for dependency conflicts.
+- **Local Deployment**:
+    - **Docker Infrastructure**: Verified all containers (PostgreSQL, n8n, Qdrant, NocoDB, Portainer) running successfully on standard ports.
+    - **Development Servers**: Both Frontend (React) and Backend (FastAPI) running stably with hot-reload enabled.
+
 
