@@ -154,10 +154,22 @@ arunachala_web/
 154: - **UI/UX Consistency & Sliders**:
 155:     - **Header Overlap Fix**: Adjusted `BackButton` positioning across all pages (`Yoga`, `Therapies`, `Blog`, `Activities`, `Our Space`, etc.) to resolve visibility issues with the enlarged header. Removed negative margins and standardized absolute offsets.
 156:     - **Interactive Content Sliders**: Implemented smooth horizontal scrolling sliders for Blog and Therapy sections. 
-157:         - Added animated arrow navigation for desktop and touch-scroll for mobile.
-158:         - Integrated with dynamic filtering and `i18next` for seamless navigation.
-159: - **Security & System Hygiene**:
-160:     - **Public Registration Closed**: Removed the public `/register` route and secured the registration endpoint. User creation is now restricted to administrators via the dashboard.
-161:     - **Site Personalization**: Refined the "Nuestro Espacio" main image selection to use a fixed, high-quality WebP image from the customization panel instead of the dynamic gallery.
-162: - **Mobile Media Experience**:
-163:     - **Background Audio & Media Session**: Integrated the **Media Session API** in `AudioContext.tsx`. Meditations now continue playing in the background on mobile, with complete lock screen and notification controls (Play, Pause, Next, Previous, Seek) and rich metadata (Title, Artwork).
+
+## 📝 Recent Updates (2026-02-11 - Late Afternoon)
+- **UI/UX Consistency & Sliders**:
+    - **Header Overlap Fix**: Adjusted `BackButton` positioning across all pages (`Yoga`, `Therapies`, `Blog`, `Activities`, `Our Space`, etc.) to resolve visibility issues with the enlarged header. Removed negative margins and standardized absolute offsets.
+    - **Interactive Content Sliders**: Implemented smooth horizontal scrolling sliders for Blog and Therapy sections. 
+        - Added animated arrow navigation for desktop and touch-scroll for mobile.
+        - Integrated with dynamic filtering and `i18next` for seamless navigation.
+- **Security & System Hygiene**:
+    - **Public Registration Closed**: Removed the public `/register` route and secured the registration endpoint. User creation is now restricted to administrators via the dashboard.
+    - **Site Personalization**: Refined the "Nuestro Espacio" main image selection to use a fixed, high-quality WebP image from the customization panel instead of the dynamic gallery.
+- **Mobile Media Experience**:
+    - **Background Audio & Media Session**: Integrated the **Media Session API** in `AudioContext.tsx`. Meditations now continue playing in the background on mobile, with complete lock screen and notification controls (Play, Pause, Next, Previous, Seek) and rich metadata (Title, Artwork).
+## 📝 Recent Updates (2026-02-12 - Night)
+- **Activity Change Notifications System**:
+    - **Multilingual Support**: Implemented a comprehensive notification system (ES/CA/EN) in `activities.py` and `email.py` for new, updated, and deleted activities. 
+    - **Smart Templates**: Redesigned email templates with dynamic branding, using `FRONTEND_URL` to automatically load logos and set direct access buttons to activity modals.
+    - **Background Execution**: Notifications are processed as asynchronous background tasks to ensure high API performance and prevent UI blocking.
+    - **Automatic Triggers**: Integrated notification logic directly into `create_activity`, `update_activity`, `delete_activity`, and `acknowledge_activity_finish` endpoints.
+    - **Newsletter & Subscription**: Added `NewsletterForm.tsx` and `UnsubscribePage.tsx` to handle user subscriptions and opt-outs securely.
