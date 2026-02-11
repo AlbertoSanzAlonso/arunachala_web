@@ -1,12 +1,14 @@
 import React from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import logo from '../assets/images/logo_transparent_v2.webp';
+import christmasLogo from '../assets/images/arunachala-yoga-navidad-logo.webp';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAudio } from '../context/AudioContext';
 import { PlayIcon, PauseIcon, SpeakerWaveIcon, SpeakerXMarkIcon, ArrowsPointingOutIcon, ForwardIcon, BackwardIcon } from '@heroicons/react/24/solid';
 import { API_BASE_URL } from '../config';
+import { isChristmasSeason } from '../utils/dateUtils';
 
 const LANGUAGES = [
     { code: 'es', label: 'ES' },
@@ -20,6 +22,10 @@ const Header: React.FC = () => {
     const [showVolume, setShowVolume] = React.useState(false);
     const navigate = useNavigate();
     const { t, i18n } = useTranslation();
+
+    // Automatically detect Christmas mode based on date
+    const isChristmas = isChristmasSeason();
+
     const {
         playingMeditation,
         isPlaying,
@@ -75,16 +81,26 @@ const Header: React.FC = () => {
 
     return (
         <>
-            <header className="fixed top-0 left-0 right-0 z-50 p-4 md:py-3 md:px-8 flex justify-between items-center bg-[#5c6b3c] shadow-md transition-colors duration-300">
+            <header className="fixed top-0 left-0 right-0 z-50 p-5 md:py-6 md:px-10 flex justify-between items-center bg-[#5c6b3c] shadow-md transition-colors duration-300">
                 {/* Logo Section */}
                 <div
-                    className="cursor-pointer flex items-center justify-center h-16 w-16 md:h-20 md:w-20 rounded-full border border-[#F5F5DC] bg-[#F5F5DC] p-0.5 md:p-1 transition-transform duration-300 hover:scale-105 shadow-sm"
+                    className={`cursor-pointer flex items-center justify-center h-20 w-20 md:h-24 md:w-24 rounded-full border border-[#F5F5DC] transition-transform duration-300 hover:scale-110 shadow-sm ${isChristmas
+                        ? 'bg-[#F5F5DC] p-1 md:p-1.5' // Use same beige as before
+                        : 'bg-[#F5F5DC] p-1.5 md:p-2'
+                        }`}
                     onClick={() => handleNavigation('/')}
                 >
                     <img
-                        src={logoUrl || logo}
-                        alt="Arunachala"
-                        className="w-full h-full object-contain"
+                        src={isChristmas ? christmasLogo : (logoUrl || logo)}
+                        alt="Arunachala Yoga y Terapias - Logo Navidad"
+                        className={`w-full h-full object-contain ${isChristmas ? 'mix-blend-multiply' : ''}`}
+                        onError={(e) => {
+                            if (isChristmas) {
+                                // Fallback to normal logo if christmas one is missing
+                                e.currentTarget.src = logoUrl || logo;
+                                e.currentTarget.parentElement!.className = "cursor-pointer flex items-center justify-center h-20 w-20 md:h-24 md:w-24 rounded-full border border-[#F5F5DC] bg-[#F5F5DC] p-1.5 md:p-2 transition-transform duration-300 hover:scale-105 shadow-sm";
+                            }
+                        }}
                     />
                 </div>
 

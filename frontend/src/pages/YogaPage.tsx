@@ -118,7 +118,7 @@ const YogaPage: React.FC = () => {
                     </div>
 
                     <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 max-w-7xl mx-auto w-full pt-36 pb-32 md:pt-48 md:pb-24">
-                        <div className="self-start md:absolute md:top-32 md:left-10 w-full md:w-auto mb-4 md:mb-0">
+                        <div className="self-start md:absolute md:top-44 md:left-10 w-full md:w-auto mb-4 md:mb-0">
                             <BackButton className="text-white hover:text-matcha transition-colors" label={t('common.back_home')} />
                         </div>
 
@@ -206,7 +206,7 @@ const YogaPage: React.FC = () => {
                 <section ref={blogRef} className="scroll-mt-24 snap-start">
                     <BlogSection
                         category="yoga"
-                        limit={3}
+                        limit={6}
                         showViewAll={true}
                         viewAllUrl="/blog/yoga"
                         title={t('yoga.blog.title', 'Blog de Yoga')}

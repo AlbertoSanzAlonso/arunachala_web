@@ -149,3 +149,13 @@ arunachala_web/
     - **Agent Control Panel**: Fixed layout overflow issues on mobile, making action buttons and day selectors stack correctly.
     - **Content Manager**: Resolved a TypeScript error in content filtering logic.
     - **RAG Stability**: Improved error handling for treatment prices in automated sync tasks.
+152: 
+153: ## 📝 Recent Updates (2026-02-11 - Late Afternoon)
+154: - **UI/UX Consistency & Sliders**:
+155:     - **Header Overlap Fix**: Adjusted `BackButton` positioning across all pages (`Yoga`, `Therapies`, `Blog`, `Activities`, `Our Space`, etc.) to resolve visibility issues with the enlarged header. Removed negative margins and standardized absolute offsets.
+156:     - **Interactive Content Sliders**: Implemented smooth horizontal scrolling sliders for Blog and Therapy sections. 
+157:         - Added animated arrow navigation for desktop and touch-scroll for mobile.
+158:         - Integrated with dynamic filtering and `i18next` for seamless navigation.
+159: - **Security & System Hygiene**:
+160:     - **Public Registration Closed**: Removed the public `/register` route and secured the registration endpoint. User creation is now restricted to administrators via the dashboard.
+161:     - **Site Personalization**: Refined the "Nuestro Espacio" main image selection to use a fixed, high-quality WebP image from the customization panel instead of the dynamic gallery.

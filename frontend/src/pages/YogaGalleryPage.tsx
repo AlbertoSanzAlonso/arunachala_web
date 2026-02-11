@@ -66,7 +66,7 @@ const YogaGalleryPage: React.FC = () => {
             <main className="flex-grow pt-40 md:pt-48 pb-16 relative">
                 <div className="max-w-7xl mx-auto px-4 md:px-8 relative w-full">
                     {/* Back Button matching Blog styles */}
-                    <div className="-mt-8 md:-mt-16 mb-8 md:mb-0 md:absolute md:top-0 md:left-8 z-20">
+                    <div className="mb-8 md:mb-0 md:absolute md:top-0 md:left-8 z-20">
                         <BackButton to="/clases-de-yoga" label={t('gallery.yoga.back')} />
                     </div>
 

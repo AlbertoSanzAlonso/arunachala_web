@@ -45,6 +45,12 @@ const CUSTOMIZABLE_IMAGES: CustomizableImage[] = [
         label: 'Foto Principal de Terapias',
         description: 'Esta imagen es el fondo de la sección principal de la página de Terapias y Masajes.',
         recommendedSize: '1920x1080px'
+    },
+    {
+        key: 'our_space_main_image',
+        label: 'Foto Principal de Nuestro Espacio',
+        description: 'La imagen principal que se muestra en la sección "Nuestro Espacio".',
+        recommendedSize: '1000x800px'
     }
 ];
 

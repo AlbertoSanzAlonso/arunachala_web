@@ -141,7 +141,7 @@ const BlogDetailPage: React.FC = () => {
             <main className="flex-grow pt-40 md:pt-48 pb-16">
                 <article className="max-w-4xl mx-auto px-6">
                     {/* Back Button */}
-                    <div className="-mt-8 md:-mt-16">
+                    <div className="mb-0">
                         <BackButton to="/blog" label={t('blog.back_to_blog', 'Volver al Blog')} />
                     </div>
 

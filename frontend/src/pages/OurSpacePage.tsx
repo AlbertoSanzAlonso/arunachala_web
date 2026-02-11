@@ -25,13 +25,25 @@ const OurSpacePage: React.FC = () => {
     useEffect(() => {
         const fetchImages = async () => {
             try {
+                // Fetch Main Image from Config
+                const configRes = await fetch(`${API_BASE_URL}/api/site-config/our_space_main_image`);
+                if (configRes.ok) {
+                    const configData = await configRes.json();
+                    if (configData.value) {
+                        setMainImage({ id: 0, url: configData.value, alt_text: 'Nuestro Espacio' });
+                    }
+                }
+
+                // Fetch Slider Images
                 const response = await fetch(`${API_BASE_URL}/api/gallery?category=center`);
                 if (response.ok) {
                     const data: GalleryImage[] = await response.json();
-
-                    const main = data.find(img => img.alt_text?.includes('[MAIN]')) || data[0];
-                    setMainImage(main);
                     setSliderImages(data);
+
+                    // Fallback for main image if not in config
+                    if (data.length > 0) {
+                        setMainImage(prev => prev || data[0]);
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching space images:", error);
@@ -65,7 +77,7 @@ const OurSpacePage: React.FC = () => {
 
             <main className="flex-grow bg-bone pt-40 md:pt-48 pb-16 relative">
                 <div className="max-w-7xl mx-auto px-6 relative w-full">
-                    <div className="-mt-8 md:-mt-16 mb-8 md:mb-0 md:absolute md:top-0 md:left-2 z-20">
+                    <div className="mb-8 md:mb-0 md:absolute md:top-0 md:left-2 z-20">
                         <BackButton />
                     </div>
 

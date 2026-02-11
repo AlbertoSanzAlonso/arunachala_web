@@ -462,6 +462,8 @@ function VisualTimeBlock({ block, items, onDragStart, onResizeStart, isInteracti
                                 });
 
                                 const isLocked = item.id < 0;
+                                const isShort = item.duration <= 45;
+                                const isVeryShort = item.duration <= 30;
 
                                 return (
                                     <div
@@ -470,33 +472,49 @@ function VisualTimeBlock({ block, items, onDragStart, onResizeStart, isInteracti
                                         onTouchStart={(e) => handleTouchStart(e, item)}
                                         onTouchMove={cancelTouch}
                                         onTouchEnd={cancelTouch}
-                                        className={`absolute left-1 right-1 rounded-lg border-l-4 shadow-sm flex flex-col justify-center px-2 py-1 select-none hover:shadow-md z-20 group transition-all 
+                                        className={`absolute left-1 right-1 rounded-lg border-l-4 shadow-sm flex flex-col items-start px-2 py-0.5 select-none hover:shadow-md z-20 group transition-all overflow-hidden
                                             ${!isLocked ? 'cursor-move' : 'cursor-default opacity-90'}
                                             ${isInteracting && !isLocked ? 'duration-0 scale-105 shadow-xl z-50 ring-2 ring-primary-400' : 'duration-500 ease-in-out'}
                                             ${conflict
                                                 ? 'bg-red-50 border-red-500 ring-2 ring-red-500 ring-inset opacity-90'
-                                                : (item.classInfo.color || 'bg-gray-100')
-                                            }`}
+                                                : (item.classInfo.color || 'bg-gray-100 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.05)]')
+                                            }
+                                            ${isVeryShort ? 'justify-center' : 'justify-center'}`}
                                         style={getPositionStyle(item.time, item.duration)}
+                                        title={`${item.classInfo.name} (${item.time} - ${item.duration} min)`}
                                     >
                                         {conflict && (
                                             <div className="absolute inset-0 bg-red-600/10 rounded-lg pointer-events-none animate-pulse" />
                                         )}
-                                        <div className="flex justify-between items-center mb-0.5 pointer-events-none">
-                                            <div className="flex items-center gap-1">
-                                                {isLocked && <LockClosedIcon className="h-3 w-3 text-current opacity-50" />}
-                                                <span className={`font-bold text-[10px] lg:text-xs leading-none ${conflict ? 'text-red-700' : ''}`}>{item.time}</span>
+
+                                        {/* Row 1: Time and Info */}
+                                        {!isVeryShort && (
+                                            <div className="flex justify-between items-center w-full mb-0 pointer-events-none">
+                                                <div className="flex items-center gap-1">
+                                                    {isLocked && <LockClosedIcon className="h-2.5 w-2.5 text-current opacity-50" />}
+                                                    <span className={`font-bold text-[9px] lg:text-[10px] leading-none ${conflict ? 'text-red-700' : 'opacity-80'}`}>{item.time}</span>
+                                                </div>
+                                                <div className="flex gap-1 items-center">
+                                                    {item.classInfo.age_range && !isShort && (
+                                                        <span className="text-[7px] font-black uppercase bg-black/10 px-1 rounded truncate max-w-[30px]">
+                                                            {item.classInfo.age_range}
+                                                        </span>
+                                                    )}
+                                                    <span className={`text-[8px] opacity-60 font-medium ${conflict ? 'text-red-600' : ''}`}>{item.duration}'</span>
+                                                </div>
                                             </div>
-                                            <div className="flex gap-1 items-center">
-                                                {item.classInfo.age_range && (
-                                                    <span className="text-[7px] lg:text-[8px] font-black uppercase bg-black/10 px-1 rounded truncate max-w-[40px]">
-                                                        {item.classInfo.age_range}
-                                                    </span>
-                                                )}
-                                                <span className={`text-[8px] opacity-70 border border-current px-1 rounded-full ${conflict ? 'border-red-300 text-red-600' : ''}`}>{item.duration} min</span>
-                                            </div>
+                                        )}
+
+                                        {/* Row 2: Title */}
+                                        <div className="w-full flex items-center gap-1 min-w-0">
+                                            {isVeryShort && isLocked && <LockClosedIcon className="h-2.5 w-2.5 flex-none text-current opacity-50" />}
+                                            <span className={`font-bold truncate w-full pointer-events-none ${conflict ? 'text-red-900' : 'text-gray-800'} 
+                                                ${isVeryShort ? 'text-[9px] lg:text-[11px]' : 'text-[10px] lg:text-[12px]'}
+                                                ${isShort ? 'line-clamp-1' : 'line-clamp-2'}`}>
+                                                {item.classInfo.name}
+                                                {isVeryShort && <span className="ml-1 opacity-60 font-normal text-[8px]">({item.time})</span>}
+                                            </span>
                                         </div>
-                                        <span className={`font-medium text-[10px] lg:text-sm leading-tight line-clamp-2 pointer-events-none ${conflict ? 'text-red-900' : ''}`}>{item.classInfo.name}</span>
 
                                         {!isLocked && (
                                             <div

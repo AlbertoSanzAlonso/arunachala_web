@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Reorder } from 'framer-motion';
-import { PhotoIcon, TrashIcon, ArrowsUpDownIcon, ArrowPathIcon, CheckCircleIcon, ScissorsIcon, StarIcon } from '@heroicons/react/24/outline';
+import { PhotoIcon, TrashIcon, ArrowsUpDownIcon, ArrowPathIcon, CheckCircleIcon, ScissorsIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import PageLoader from '../../components/PageLoader';
 import ConfirmModal from '../../components/ConfirmModal';
@@ -53,8 +53,7 @@ export default function GalleryManager() {
         deleteImage,
         deleteMultipleImages,
         saveOrder,
-        cropImage,
-        toggleMainImage
+        cropImage
     } = useGallery(selectedCategory);
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -397,21 +396,6 @@ export default function GalleryManager() {
                                                 <TrashIcon className="h-5 w-5" />
                                             </button>
 
-                                            {selectedCategory === 'center' && (
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        toggleMainImage(image.id);
-                                                    }}
-                                                    className={`p-2 rounded-full shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-all ${image.alt_text?.includes('[MAIN]')
-                                                        ? 'bg-yellow-400 text-white hover:bg-yellow-500'
-                                                        : 'bg-white text-gray-400 hover:text-yellow-400'
-                                                        }`}
-                                                    title={image.alt_text?.includes('[MAIN]') ? "Quitar imagen principal" : "Marcar como principal"}
-                                                >
-                                                    <StarIcon className="h-5 w-5" />
-                                                </button>
-                                            )}
                                         </div>
                                     )}
 

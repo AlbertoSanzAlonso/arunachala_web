@@ -193,7 +193,7 @@ const AllTherapiesPage: React.FC = () => {
             <main className="flex-grow pt-40 md:pt-48 pb-20">
                 <div className="max-w-7xl mx-auto px-8">
                     {/* Back Button */}
-                    <div className="-mt-8 md:-mt-16 mb-8">
+                    <div className="mb-8">
                         <BackButton to="/terapias-y-masajes" label={t('blog.back_to_therapies', 'Volver a Terapias')} className="text-forest hover:text-matcha mb-0" />
                     </div>
 

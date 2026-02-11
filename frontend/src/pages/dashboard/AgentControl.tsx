@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../../config';
 import { useNavigate } from 'react-router-dom';
 import { Cog6ToothIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const AgentControl: React.FC = () => {
     const navigate = useNavigate();
@@ -22,6 +22,7 @@ const AgentControl: React.FC = () => {
     const [resetScope, setResetScope] = useState<string | null>(null);
     const [resetLoading, setResetLoading] = useState(false);
     const [showTriggerModal, setShowTriggerModal] = useState(false);
+    const [showAdvanced, setShowAdvanced] = useState(false);
 
     // RAG Status State
     const [ragStatus, setRagStatus] = useState<any>(null);
@@ -482,101 +483,132 @@ const AgentControl: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-gray-50">
-                    {/* Quiz Model Selector */}
-                    <div>
-                        <label className="block text-sm font-bold text-bark mb-4 flex items-center gap-2">
-                            <span className="w-6 h-6 bg-forest/10 rounded-full flex items-center justify-center text-xs">1</span>
-                            Cerebro del Cuestionario Inicial
-                        </label>
-                        <div className="space-y-3">
-                            {[
-                                { val: 'groq', label: 'Llama 3.3 70B', cost: 'Gratuito', intel: 'Máxima', desc: 'Rápido y muy inteligente. Recomendado.' },
-                                { val: 'openai', label: 'GPT-4o-mini', cost: 'De Pago', intel: 'Alta', desc: 'Muy fiable y con buen formato.' },
-                                { val: 'gemini', label: 'Gemini 1.5 Flash', cost: 'Gratuito', intel: 'Media', desc: 'Buen equilibrio pero menos creativo.' }
-                            ].map((m) => (
-                                <button
-                                    key={m.val}
-                                    type="button"
-                                    onClick={() => setQuizModel(m.val)}
-                                    className={`w-full p-4 rounded-xl border-2 text-left transition-all ${quizModel === m.val
-                                        ? 'border-forest bg-forest/5 ring-1 ring-forest/20'
-                                        : 'border-gray-50 hover:border-gray-200 text-gray-600'
-                                        }`}
-                                >
-                                    <div className="flex justify-between items-start mb-1">
-                                        <span className="font-bold text-sm">{m.label}</span>
-                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${m.cost === 'Gratuito' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
-                                            {m.cost}
-                                        </span>
-                                    </div>
-                                    <p className="text-[11px] text-gray-500 mb-2">{m.desc}</p>
-                                    <div className="flex items-center gap-1">
-                                        <span className="text-[10px] text-gray-400 uppercase font-bold">Inteligencia:</span>
-                                        <div className="flex gap-0.5">
-                                            {[1, 2, 3].map((star) => (
-                                                <div key={star} className={`w-2 h-2 rounded-full ${m.intel === 'Máxima' || (m.intel === 'Alta' && star <= 2) || (m.intel === 'Media' && star === 1) ? 'bg-forest' : 'bg-gray-200'}`} />
+                <div className="pt-4 border-t border-gray-50">
+                    <button
+                        type="button"
+                        onClick={() => setShowAdvanced(!showAdvanced)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-gray-500 hover:text-forest transition-colors group"
+                    >
+                        <Cog6ToothIcon className={`w-5 h-5 transition-transform duration-500 ${showAdvanced ? 'rotate-90 text-forest' : ''}`} />
+                        <span>Configuración avanzada (Modelos IA)</span>
+                        <svg
+                            className={`w-4 h-4 transition-transform duration-300 ${showAdvanced ? 'rotate-180' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <AnimatePresence>
+                        {showAdvanced && (
+                            <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.4, ease: "easeInOut" }}
+                                className="overflow-hidden"
+                            >
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 pb-4">
+                                    {/* Quiz Model Selector */}
+                                    <div>
+                                        <label className="block text-sm font-bold text-bark mb-4 flex items-center gap-2">
+                                            <span className="w-6 h-6 bg-forest/10 rounded-full flex items-center justify-center text-xs">1</span>
+                                            Cerebro del Cuestionario Inicial
+                                        </label>
+                                        <div className="space-y-3">
+                                            {[
+                                                { val: 'groq', label: 'Llama 3.3 70B', cost: 'Gratuito', intel: 'Máxima', desc: 'Rápido y muy inteligente. Recomendado.' },
+                                                { val: 'openai', label: 'GPT-4o-mini', cost: 'De Pago', intel: 'Alta', desc: 'Muy fiable y con buen formato.' },
+                                                { val: 'gemini', label: 'Gemini 1.5 Flash', cost: 'Gratuito', intel: 'Media', desc: 'Buen equilibrio pero menos creativo.' }
+                                            ].map((m) => (
+                                                <button
+                                                    key={m.val}
+                                                    type="button"
+                                                    onClick={() => setQuizModel(m.val)}
+                                                    className={`w-full p-4 rounded-xl border-2 text-left transition-all ${quizModel === m.val
+                                                        ? 'border-forest bg-forest/5 ring-1 ring-forest/20'
+                                                        : 'border-gray-50 hover:border-gray-200 text-gray-600'
+                                                        }`}
+                                                >
+                                                    <div className="flex justify-between items-start mb-1">
+                                                        <span className="font-bold text-sm">{m.label}</span>
+                                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${m.cost === 'Gratuito' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                                                            {m.cost}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-[11px] text-gray-500 mb-2">{m.desc}</p>
+                                                    <div className="flex items-center gap-1">
+                                                        <span className="text-[10px] text-gray-400 uppercase font-bold">Inteligencia:</span>
+                                                        <div className="flex gap-0.5">
+                                                            {[1, 2, 3].map((star) => (
+                                                                <div key={star} className={`w-2 h-2 rounded-full ${m.intel === 'Máxima' || (m.intel === 'Alta' && star <= 2) || (m.intel === 'Media' && star === 1) ? 'bg-forest' : 'bg-gray-200'}`} />
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </button>
                                             ))}
                                         </div>
                                     </div>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
 
-                    {/* Chatbot Model Selector */}
-                    <div>
-                        <label className="block text-sm font-bold text-bark mb-4 flex items-center gap-2">
-                            <span className="w-6 h-6 bg-forest/10 rounded-full flex items-center justify-center text-xs">2</span>
-                            Cerebro del Chatbot General
-                        </label>
-                        <div className="space-y-3">
-                            {[
-                                { val: 'openai', label: 'GPT-4o-mini', cost: 'De Pago', intel: 'Alta', desc: 'Excelente siguiendo reglas. Recomendado.' },
-                                { val: 'groq', label: 'Llama 3.3 70B', cost: 'Gratuito', intel: 'Máxima', desc: 'Muy potente para conversaciones naturales.' },
-                                { val: 'gemini', label: 'Gemini 1.5 Flash', cost: 'Gratuito', intel: 'Media', desc: 'Versátil pero a veces más simple.' }
-                            ].map((m) => (
-                                <button
-                                    key={m.val}
-                                    type="button"
-                                    onClick={() => setChatbotModel(m.val)}
-                                    className={`w-full p-4 rounded-xl border-2 text-left transition-all ${chatbotModel === m.val
-                                        ? 'border-forest bg-forest/5 ring-1 ring-forest/20'
-                                        : 'border-gray-50 hover:border-gray-200 text-gray-600'
-                                        }`}
-                                >
-                                    <div className="flex justify-between items-start mb-1">
-                                        <span className="font-bold text-sm">{m.label}</span>
-                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${m.cost === 'Gratuito' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
-                                            {m.cost}
-                                        </span>
-                                    </div>
-                                    <p className="text-[11px] text-gray-500 mb-2">{m.desc}</p>
-                                    <div className="flex items-center gap-1">
-                                        <span className="text-[10px] text-gray-400 uppercase font-bold">Inteligencia:</span>
-                                        <div className="flex gap-0.5">
-                                            {[1, 2, 3].map((star) => (
-                                                <div key={star} className={`w-2 h-2 rounded-full ${m.intel === 'Máxima' || (m.intel === 'Alta' && star <= 2) || (m.intel === 'Media' && star === 1) ? 'bg-forest' : 'bg-gray-200'}`} />
+                                    {/* Chatbot Model Selector */}
+                                    <div>
+                                        <label className="block text-sm font-bold text-bark mb-4 flex items-center gap-2">
+                                            <span className="w-6 h-6 bg-forest/10 rounded-full flex items-center justify-center text-xs">2</span>
+                                            Cerebro del Chatbot General
+                                        </label>
+                                        <div className="space-y-3">
+                                            {[
+                                                { val: 'openai', label: 'GPT-4o-mini', cost: 'De Pago', intel: 'Alta', desc: 'Excelente siguiendo reglas. Recomendado.' },
+                                                { val: 'groq', label: 'Llama 3.3 70B', cost: 'Gratuito', intel: 'Máxima', desc: 'Muy potente para conversaciones naturales.' },
+                                                { val: 'gemini', label: 'Gemini 1.5 Flash', cost: 'Gratuito', intel: 'Media', desc: 'Versátil pero a veces más simple.' }
+                                            ].map((m) => (
+                                                <button
+                                                    key={m.val}
+                                                    type="button"
+                                                    onClick={() => setChatbotModel(m.val)}
+                                                    className={`w-full p-4 rounded-xl border-2 text-left transition-all ${chatbotModel === m.val
+                                                        ? 'border-forest bg-forest/5 ring-1 ring-forest/20'
+                                                        : 'border-gray-50 hover:border-gray-200 text-gray-600'
+                                                        }`}
+                                                >
+                                                    <div className="flex justify-between items-start mb-1">
+                                                        <span className="font-bold text-sm">{m.label}</span>
+                                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${m.cost === 'Gratuito' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                                                            {m.cost}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-[11px] text-gray-500 mb-2">{m.desc}</p>
+                                                    <div className="flex items-center gap-1">
+                                                        <span className="text-[10px] text-gray-400 uppercase font-bold">Inteligencia:</span>
+                                                        <div className="flex gap-0.5">
+                                                            {[1, 2, 3].map((star) => (
+                                                                <div key={star} className={`w-2 h-2 rounded-full ${m.intel === 'Máxima' || (m.intel === 'Alta' && star <= 2) || (m.intel === 'Media' && star === 1) ? 'bg-forest' : 'bg-gray-200'}`} />
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </button>
                                             ))}
                                         </div>
                                     </div>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
 
-                    {/* Disclaimer */}
-                    <div className="md:col-span-2 bg-amber-50 p-4 rounded-xl border border-amber-100 flex gap-3">
-                        <div className="text-amber-500">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <p className="text-xs text-amber-800 leading-relaxed">
-                            <strong>Nota importante:</strong> Esta configuración solo afecta a los modelos que interactúan con los usuarios.
-                            <strong> NO interfiere</strong> en absoluto con la programación o publicación de artículos y meditaciones automáticas.
-                        </p>
-                    </div>
+                                    {/* Disclaimer */}
+                                    <div className="md:col-span-2 bg-amber-50 p-4 rounded-xl border border-amber-100 flex gap-3">
+                                        <div className="text-amber-500">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                        <p className="text-xs text-amber-800 leading-relaxed">
+                                            <strong>Nota importante:</strong> Esta configuración solo afecta a los modelos que interactúan con los usuarios.
+                                            <strong> NO interfiere</strong> en absoluto con la programación o publicación de artículos y meditaciones automáticas.
+                                        </p>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-gray-50">
@@ -715,7 +747,7 @@ const AgentControl: React.FC = () => {
                 <div className="border-t border-gray-100 pt-8">
                     <div className="flex items-center justify-between mb-6">
                         <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Programación Automática</h3>
-                        <span className="text-[10px] bg-matcha/10 text-forest px-2 py-1 rounded-full font-bold">RETIROS Y BLOG</span>
+                        <span className="text-[10px] bg-matcha/10 text-forest px-2 py-1 rounded-full font-bold">BLOG</span>
                     </div>
 
                     <div className="grid grid-cols-1 gap-4">

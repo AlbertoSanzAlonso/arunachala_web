@@ -50,6 +50,7 @@ export default function TreatmentsManager() {
     const [benefits, setBenefits] = useState('');
     const [durationMin, setDurationMin] = useState('');
     const [price, setPrice] = useState('');
+    const [isActive, setIsActive] = useState(true);
     const [selectedFile, setSelectedFile] = useState<File | Blob | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -159,6 +160,7 @@ export default function TreatmentsManager() {
                 const finalPrice = price.includes('€') ? price : `${price}€`;
                 formData.append('price', finalPrice);
             }
+            formData.append('is_active', String(isActive));
             // If editing and cleared, send empty? The backend expects int or None.
             // If we send nothing, and it's PUT, it might keep old value if DB logic checks for None.
             // However, FormData entries are strings. We need to handle clearing.
@@ -254,6 +256,7 @@ export default function TreatmentsManager() {
         } else {
             setDurationMin('');
         }
+        setIsActive(item.is_active ?? true);
 
         setPreviewUrl(item.image_url ? (item.image_url.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`) : null);
         setSelectedFile(null);
@@ -269,6 +272,7 @@ export default function TreatmentsManager() {
         setBenefits('');
         setDurationMin('');
         setPrice('');
+        setIsActive(true);
         setSelectedFile(null);
         setPreviewUrl(null);
         setImageSrc(null);
@@ -331,7 +335,7 @@ export default function TreatmentsManager() {
                         Gestión de Tratamientos
                     </h1>
                     <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-500">
-                        Administra los tipos de masajes y terapias disponibles.
+                        Administra los tipos de masajes y terapias. Los elementos <b>activos</b> aparecen en la web, los <b>inactivos</b> son borradores.
                     </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 sm:flex-none">
@@ -399,7 +403,7 @@ export default function TreatmentsManager() {
                                 )}
                                 <div className="absolute top-3 right-3">
                                     <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm ${item.is_active ? 'bg-green-500 text-white' : 'bg-gray-400 text-white'}`}>
-                                        {item.is_active ? 'Activo' : 'Inactivo'}
+                                        {item.is_active ? 'Público (Web)' : 'Borrador'}
                                     </span>
                                 </div>
                             </div>
@@ -522,6 +526,22 @@ export default function TreatmentsManager() {
                                             <span className="text-gray-500 sm:text-sm">€</span>
                                         </div>
                                     </div>
+                                </div>
+
+                                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-bold text-gray-700">Estado del Tratamiento</span>
+                                        <span className="text-xs text-gray-500">{isActive ? 'Público en la web' : 'Borrador (Oculto)'}</span>
+                                    </div>
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={isActive}
+                                            onChange={(e) => setIsActive(e.target.checked)}
+                                            className="sr-only peer"
+                                        />
+                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                                    </label>
                                 </div>
 
                                 <div>
