@@ -90,30 +90,6 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     }, []);
 
-    const next = useCallback(() => {
-        const currentM = currentMeditationRef.current;
-        const currentP = playlistRef.current;
-        if (!currentM || currentP.length === 0) return;
-        const currentIndex = currentP.findIndex(m => m.id === currentM.id);
-        if (currentIndex !== -1 && currentIndex < currentP.length - 1) {
-            play(currentP[currentIndex + 1]);
-        } else if (currentIndex === currentP.length - 1) {
-            play(currentP[0]);
-        }
-    }, []);
-
-    const previous = useCallback(() => {
-        const currentM = currentMeditationRef.current;
-        const currentP = playlistRef.current;
-        if (!currentM || currentP.length === 0) return;
-        const currentIndex = currentP.findIndex(m => m.id === currentM.id);
-        if (currentIndex !== -1 && currentIndex > 0) {
-            play(currentP[currentIndex - 1]);
-        } else if (currentIndex === 0) {
-            play(currentP[currentP.length - 1]);
-        }
-    }, []);
-
     const play = useCallback((meditation: Meditation, shouldOpenModal: boolean = false, newPlaylist?: Meditation[]) => {
         if (!meditation) return;
 
@@ -182,6 +158,30 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             setIsPlayerModalOpen(true);
         }
     }, [volume, isMuted, pause, stop]);
+
+    const next = useCallback(() => {
+        const currentM = currentMeditationRef.current;
+        const currentP = playlistRef.current;
+        if (!currentM || currentP.length === 0) return;
+        const currentIndex = currentP.findIndex(m => m.id === currentM.id);
+        if (currentIndex !== -1 && currentIndex < currentP.length - 1) {
+            play(currentP[currentIndex + 1]);
+        } else if (currentIndex === currentP.length - 1) {
+            play(currentP[0]);
+        }
+    }, [play]);
+
+    const previous = useCallback(() => {
+        const currentM = currentMeditationRef.current;
+        const currentP = playlistRef.current;
+        if (!currentM || currentP.length === 0) return;
+        const currentIndex = currentP.findIndex(m => m.id === currentM.id);
+        if (currentIndex !== -1 && currentIndex > 0) {
+            play(currentP[currentIndex - 1]);
+        } else if (currentIndex === 0) {
+            play(currentP[currentP.length - 1]);
+        }
+    }, [play]);
 
     const setVolume = useCallback((val: number) => {
         setVolumeState(val);

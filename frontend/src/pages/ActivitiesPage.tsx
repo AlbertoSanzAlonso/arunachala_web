@@ -59,7 +59,7 @@ const DynamicPoll = ({ activity, userSuggestions, onVote }: { activity: Activity
                 .then(data => setExistingProposals(data))
                 .catch(err => console.error('Error loading proposals:', err));
         }
-    }, [isCustomActive, activity.id]);
+    }, [isCustomActive, activity.id, existingProposals.length]);
 
     // Filter proposals based on input
     useEffect(() => {
