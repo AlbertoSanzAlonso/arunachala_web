@@ -159,3 +159,5 @@ arunachala_web/
 159: - **Security & System Hygiene**:
 160:     - **Public Registration Closed**: Removed the public `/register` route and secured the registration endpoint. User creation is now restricted to administrators via the dashboard.
 161:     - **Site Personalization**: Refined the "Nuestro Espacio" main image selection to use a fixed, high-quality WebP image from the customization panel instead of the dynamic gallery.
+162: - **Mobile Media Experience**:
+163:     - **Background Audio & Media Session**: Integrated the **Media Session API** in `AudioContext.tsx`. Meditations now continue playing in the background on mobile, with complete lock screen and notification controls (Play, Pause, Next, Previous, Seek) and rich metadata (Title, Artwork).

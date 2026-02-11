@@ -1,5 +1,10 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_BASE_URL } from '../config';
+import { getTranslated } from '../utils/translate';
+import { getImageUrl } from '../utils/imageUtils';
+
+import lotusFlower from '../assets/images/lotus_flower.png';
 
 interface Meditation {
     id: number;
@@ -59,6 +64,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const playlistRef = useRef<Meditation[]>([]);
     const currentMeditationRef = useRef<Meditation | null>(null);
     const playMeditationRef = useRef<any>(null);
+    const { i18n } = useTranslation();
 
     // Keep refs in sync with state for use in event listeners
     useEffect(() => {
@@ -186,6 +192,66 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             playMeditation(currentP[currentP.length - 1]);
         }
     }, [playMeditation]);
+
+    // Media Session API for background playback and lock screen controls
+    useEffect(() => {
+        if (!('mediaSession' in navigator)) return;
+
+        if (playingMeditation) {
+            const title = getTranslated(playingMeditation, 'title', i18n.language);
+            const artworkUrl = playingMeditation.thumbnail_url
+                ? getImageUrl(playingMeditation.thumbnail_url)
+                : getImageUrl(lotusFlower);
+
+            navigator.mediaSession.metadata = new window.MediaMetadata({
+                title: title,
+                artist: 'Arunachala Yoga',
+                album: 'Meditaciones',
+                artwork: [
+                    { src: artworkUrl, sizes: '96x96', type: 'image/png' },
+                    { src: artworkUrl, sizes: '128x128', type: 'image/png' },
+                    { src: artworkUrl, sizes: '192x192', type: 'image/png' },
+                    { src: artworkUrl, sizes: '256x256', type: 'image/png' },
+                    { src: artworkUrl, sizes: '384x384', type: 'image/png' },
+                    { src: artworkUrl, sizes: '512x512', type: 'image/png' },
+                ]
+            });
+
+            // Action Handlers
+            navigator.mediaSession.setActionHandler('play', () => {
+                if (audioRef.current) {
+                    audioRef.current.play().catch(console.error);
+                }
+            });
+            navigator.mediaSession.setActionHandler('pause', () => {
+                pause();
+            });
+            navigator.mediaSession.setActionHandler('previoustrack', () => {
+                previous();
+            });
+            navigator.mediaSession.setActionHandler('nexttrack', () => {
+                next();
+            });
+
+            // Optional: seekto
+            try {
+                navigator.mediaSession.setActionHandler('seekto', (details) => {
+                    if (details.seekTime !== undefined && audioRef.current) {
+                        audioRef.current.currentTime = details.seekTime;
+                    }
+                });
+            } catch (error) {
+                // Older browsers might not support seekto
+            }
+        } else {
+            navigator.mediaSession.metadata = null;
+        }
+    }, [playingMeditation, next, previous, pause, i18n.language]);
+
+    useEffect(() => {
+        if (!('mediaSession' in navigator)) return;
+        navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+    }, [isPlaying]);
 
     const setVolume = useCallback((val: number) => {
         setVolumeState(val);
