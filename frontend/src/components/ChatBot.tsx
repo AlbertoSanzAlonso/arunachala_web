@@ -23,6 +23,7 @@ const ChatBot: React.FC = () => {
     const { i18n, t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [isActive, setIsActive] = useState(true);
+    const [botAvatar, setBotAvatar] = useState<string | null>(null);
 
     // Initial state with translation
     const [messages, setMessages] = useState<Message[]>([{
@@ -58,6 +59,18 @@ const ChatBot: React.FC = () => {
     };
 
     useEffect(() => {
+        const fetchPersonalization = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/site-config/chatbot_avatar_url`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.value) setBotAvatar(`${API_BASE_URL}${data.value}`);
+                }
+            } catch (error) {
+                console.error("Error fetching bot avatar:", error);
+            }
+        };
+
         const fetchConfig = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/config`);
@@ -69,7 +82,9 @@ const ChatBot: React.FC = () => {
                 console.error("Error fetching bot config:", error);
             }
         };
+
         fetchConfig();
+        fetchPersonalization();
     }, []);
 
     useEffect(() => {
@@ -253,7 +268,11 @@ const ChatBot: React.FC = () => {
                                     transition={{ repeat: Infinity, duration: 4 }}
                                     className="w-12 h-12 bg-white/30 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/40 shadow-inner"
                                 >
-                                    <img src={omSymbol} alt="ArunachalaBot" className="w-7 h-7 object-contain opacity-90 invert brightness-0" />
+                                    {botAvatar ? (
+                                        <img src={botAvatar} alt="ArunachalaBot" className="w-full h-full object-cover rounded-2xl" />
+                                    ) : (
+                                        <img src={omSymbol} alt="ArunachalaBot" className="w-7 h-7 object-contain opacity-90 invert brightness-0" />
+                                    )}
                                 </motion.div>
                                 <div>
                                     <h3 className="font-headers text-white font-bold text-xl leading-none">Arunachala Bot</h3>

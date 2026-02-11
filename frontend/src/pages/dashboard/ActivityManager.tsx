@@ -573,13 +573,13 @@ export default function ActivityManager() {
     });
 
     return (
-        <div className="p-6 max-w-7xl mx-auto space-y-6">
+        <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
             {isSaving && <PageLoader />}
             <ToastNotification toasts={toasts} onRemove={removeToast} />
 
             {/* Cropper Modal */}
             <Transition show={isCropping && !!imageSrc} as={Fragment}>
-                <Dialog as="div" className="relative z-[70]" onClose={handleCropCancel}>
+                <Dialog as="div" className="relative z-[70]" onClose={() => { }} static>
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -604,7 +604,7 @@ export default function ActivityManager() {
                                 leaveTo="opacity-0 scale-95"
                             >
                                 <Dialog.Panel className="relative w-full max-w-2xl bg-gray-900 rounded-xl overflow-hidden shadow-2xl flex flex-col items-center p-4">
-                                    <div className="relative w-full h-[400px] bg-gray-900 rounded-lg overflow-hidden">
+                                    <div className="relative w-full h-[300px] sm:h-[400px] bg-gray-900 rounded-lg overflow-hidden">
                                         <Cropper
                                             image={imageSrc || ''}
                                             crop={crop}
@@ -616,8 +616,8 @@ export default function ActivityManager() {
                                         />
                                     </div>
                                     <div className="mt-6 flex gap-4">
-                                        <button onClick={handleCropCancel} className="px-6 py-2 bg-white rounded-md font-bold text-gray-900 hover:bg-gray-100">Cancelar</button>
-                                        <button onClick={handleCropSave} className="px-6 py-2 bg-primary-600 text-white rounded-md font-bold hover:bg-primary-500">Guardar Recorte</button>
+                                        <button onClick={handleCropCancel} className="px-6 py-2 bg-white rounded-md font-bold text-gray-900 hover:bg-gray-100 text-sm">Cancelar</button>
+                                        <button onClick={handleCropSave} className="px-6 py-2 bg-primary-600 text-white rounded-md font-bold hover:bg-primary-500 text-sm">Guardar Recorte</button>
                                     </div>
                                 </Dialog.Panel>
                             </Transition.Child>
@@ -626,29 +626,29 @@ export default function ActivityManager() {
                 </Dialog>
             </Transition>
 
-            <div className="sm:flex sm:items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-semibold text-gray-900">Gestión de Actividades</h1>
-                    <p className="mt-2 text-sm text-gray-700">Administra cursos, talleres, eventos y sugerencias.</p>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Gestión de Actividades</h1>
+                    <p className="mt-1 text-xs sm:text-sm text-gray-500">Administra cursos, talleres y sugerencias.</p>
                 </div>
-                <button onClick={() => setShowModal(true)} className="inline-flex items-center gap-2 rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500">
+                <button onClick={() => setShowModal(true)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary-100 hover:bg-primary-500 transition-all active:scale-95">
                     <PlusIcon className="h-5 w-5" />
                     Nueva {activeTab === 'sugerencias' ? 'Sugerencia' : activeTab === 'cursos' ? 'Curso' : 'Actividad'}
                 </button>
             </div>
 
             {/* Tabs */}
-            <div className="border-b border-gray-200">
-                <nav className="-mb-px flex space-x-8">
+            <div className="border-b border-gray-100 bg-white/50 -mx-4 px-4 sm:mx-0 sm:px-0 sticky top-16 lg:top-24 z-30 backdrop-blur-md">
+                <nav className="mobile-tabs-container hide-scrollbar -mb-px flex space-x-6 sm:space-x-8">
                     {['cursos', 'eventos', 'sugerencias'].map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab as any)}
-                            className={`${activeTab === tab ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700'} whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium capitalize flex items-center gap-2`}
+                            className={`${activeTab === tab ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-400 hover:text-gray-600'} whitespace-nowrap border-b-2 py-4 px-1 text-sm font-bold capitalize flex items-center gap-2 transition-all`}
                         >
-                            {tab === 'cursos' && <CalendarIcon className="h-5 w-5" />}
-                            {tab === 'eventos' && <SparklesIcon className="h-5 w-5" />}
-                            {tab === 'sugerencias' && <ChatBubbleLeftRightIcon className="h-5 w-5" />}
+                            {tab === 'cursos' && <CalendarIcon className="h-5 w-5 shrink-0" />}
+                            {tab === 'eventos' && <SparklesIcon className="h-5 w-5 shrink-0" />}
+                            {tab === 'sugerencias' && <ChatBubbleLeftRightIcon className="h-5 w-5 shrink-0" />}
                             {tab}
                         </button>
                     ))}
@@ -656,60 +656,67 @@ export default function ActivityManager() {
             </div>
 
             {isLoading ? (
-                <div className="text-center py-12">Cargando...</div>
+                <div className="flex flex-col items-center justify-center py-20 gap-4">
+                    <div className="w-10 h-10 border-4 border-primary-100 border-t-primary-600 rounded-full animate-spin"></div>
+                    <p className="text-sm font-medium text-gray-400">Cargando...</p>
+                </div>
             ) : (
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {filteredItems.map((item) => (
-                        <div key={item.id} className="flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all">
-                            <div className="h-40 bg-gray-100 relative">
+                        <div key={item.id} className="flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-all group">
+                            <div className="h-40 sm:h-48 bg-gray-50 relative overflow-hidden">
                                 {item.image_url ? (
-                                    <img src={item.image_url.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`} alt={item.title} className="w-full h-full object-cover" />
+                                    <img src={item.image_url.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                 ) : (
-                                    <div className="flex h-full items-center justify-center opacity-20"><SparklesIcon className="h-12 w-12" /></div>
+                                    <div className="flex h-full items-center justify-center opacity-10"><SparklesIcon className="h-16 w-16" /></div>
+                                )}
+                                {/* Featured Badge */}
+                                {['taller', 'evento', 'retiro'].includes(item.type) && item.activity_data?.has_reminder && (
+                                    <div className="absolute top-3 right-3 bg-amber-400 text-amber-900 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg flex items-center gap-1">
+                                        <span>✨</span>
+                                        <span>Destacado</span>
+                                    </div>
                                 )}
                             </div>
-                            <div className="flex-1 p-6">
-                                <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase mb-2 bg-primary-100 text-primary-700">{item.type}</span>
-                                <h3 className="text-lg font-semibold text-gray-900">{item.title}</h3>
-                                {item.description && <p className="mt-1 text-xs text-gray-500 line-clamp-2">{item.description}</p>}
+                            <div className="flex-1 p-5 sm:p-6">
+                                <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase mb-2 bg-primary-50 text-primary-700 tracking-wider transition-colors">{item.type}</span>
+                                <h3 className="text-lg font-bold text-gray-900 leading-tight">{item.title}</h3>
+                                {item.description && <p className="mt-2 text-xs text-gray-500 line-clamp-2 leading-relaxed">{item.description}</p>}
 
                                 {item.type === 'sugerencia' && (
                                     <div className="mt-4 space-y-3">
-                                        <div className="space-y-1.5">
-                                            {item.activity_data?.options?.map((o: any, idx: number) => (
-                                                <div key={idx} className="flex justify-between text-[11px] text-gray-500 bg-gray-50 px-2 py-1 rounded">
-                                                    <span>{o.text}</span>
-                                                    <span className="font-bold text-primary-600">{item.vote_results?.[o.text] || 0}</span>
+                                        <div className="space-y-1.5 min-h-[60px]">
+                                            {item.activity_data?.options?.slice(0, 3).map((o: any, idx: number) => (
+                                                <div key={idx} className="flex justify-between text-[11px] text-gray-600 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100/50">
+                                                    <span className="truncate pr-2">{o.icon} {o.text}</span>
+                                                    <span className="font-bold text-primary-600 shrink-0">{item.vote_results?.[o.text] || 0}</span>
                                                 </div>
                                             ))}
-                                            {(item.vote_results?.['custom'] || 0) > 0 && (
-                                                <div className="flex justify-between text-[11px] text-gray-500 bg-primary-50 px-2 py-1 rounded border border-primary-100">
-                                                    <span className="font-medium italic">Otras propuestas</span>
-                                                    <span className="font-bold text-primary-600">{item.vote_results?.['custom']}</span>
-                                                </div>
+                                            {(item.activity_data?.options?.length || 0) > 3 && (
+                                                <p className="text-[10px] text-gray-400 italic pl-1">Y {(item.activity_data.options.length - 3)} más...</p>
                                             )}
                                         </div>
 
                                         {item.user_comments && item.user_comments.length > 0 && (
                                             <button
                                                 onClick={() => {
-                                                    setEditingItem(item); // We reuse this to know which activity we are looking at if needed
-                                                    // In this case we just need the comments
-                                                    setSelectedComment(item.user_comments?.[0] || null); // Show first to start or we could show a list
+                                                    setEditingItem(item);
+                                                    setSelectedComment(item.user_comments?.[0] || null);
                                                     setShowCommentModal(true);
                                                 }}
-                                                className="w-full mt-2 py-2 px-3 bg-white border border-gray-200 rounded-lg text-[11px] font-bold text-gray-600 hover:bg-gray-50 flex items-center justify-center gap-2 transition-colors"
+                                                className="w-full mt-2 py-2.5 px-3 bg-white border border-gray-200 rounded-xl text-[11px] font-bold text-gray-700 hover:border-primary-400 hover:text-primary-600 flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm"
                                             >
-                                                <ChatBubbleLeftRightIcon className="h-4 w-4" />
-                                                Ver {item.user_comments.length} comentarios / ideas
+                                                <ChatBubbleLeftRightIcon className="h-4 w-4 text-primary-500" />
+                                                Ver {item.user_comments.length} ideas
                                             </button>
                                         )}
                                     </div>
                                 )}
                             </div>
-                            <div className="flex border-t border-gray-200 divide-x divide-gray-200">
-                                <button onClick={() => handleEdit(item)} className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-2"><PencilIcon className="h-4 w-4" /> Editar</button>
-                                <button onClick={() => handleDeleteClick(item.id)} className="flex-1 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 flex items-center justify-center gap-2"><TrashIcon className="h-4 w-4" /> Eliminar</button>
+                            <div className="flex border-t border-gray-100 bg-gray-50/30">
+                                <button onClick={() => handleEdit(item)} className="flex-1 px-4 py-3 text-sm font-bold text-gray-600 hover:bg-white hover:text-primary-600 transition-all flex items-center justify-center gap-2 leading-none"><PencilIcon className="h-4 w-4" /> Editar</button>
+                                <div className="w-px bg-gray-100"></div>
+                                <button onClick={() => handleDeleteClick(item.id)} className="flex-1 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-all flex items-center justify-center gap-2 leading-none"><TrashIcon className="h-4 w-4" /> Borrar</button>
                             </div>
                         </div>
                     ))}
@@ -717,7 +724,7 @@ export default function ActivityManager() {
             )}
 
             <Transition show={showModal} as={Fragment}>
-                <Dialog as="div" className="relative z-[60]" onClose={handleCloseAttempt}>
+                <Dialog as="div" className="relative z-[60]" onClose={() => !isCropping && handleCloseAttempt()}>
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"

@@ -498,6 +498,23 @@ const ActivitiesPage: React.FC = () => {
         fetchData();
     }, []);
 
+    // Open modal automatically if activity ID is in URL
+    useEffect(() => {
+        if (activities.length > 0) {
+            const params = new URLSearchParams(window.location.search);
+            const activityId = params.get('activity');
+
+            if (activityId) {
+                const activity = activities.find(a => a.id === parseInt(activityId));
+                if (activity) {
+                    setSelectedActivity(activity);
+                    // Clean URL without reloading
+                    window.history.replaceState({}, '', '/actividades');
+                }
+            }
+        }
+    }, [activities]);
+
     const formatShortDate = (dateStr: string | null) => {
         if (!dateStr) return null;
         const d = new Date(dateStr);
@@ -604,6 +621,14 @@ const ActivitiesPage: React.FC = () => {
             const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}&dates=${start}/${end}`;
             window.open(url, '_blank');
         };
+
+        // Block body scroll when modal is open
+        useEffect(() => {
+            document.body.style.overflow = 'hidden';
+            return () => {
+                document.body.style.overflow = 'unset';
+            };
+        }, []);
 
         return (
             <motion.div

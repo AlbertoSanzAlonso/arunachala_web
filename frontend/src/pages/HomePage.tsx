@@ -17,10 +17,10 @@ import { useTranslation } from 'react-i18next';
 const ImageSlider = lazy(() => import('../components/ImageSlider'));
 const ReviewsSection = lazy(() => import('../components/ReviewsSection'));
 const WellnessQuiz = lazy(() => import('../components/WellnessQuiz'));
+const FeaturedActivities = lazy(() => import('../components/FeaturedActivities'));
 
 const HomePage: React.FC = () => {
     const { t } = useTranslation();
-    const containerRef = useRef<HTMLDivElement>(null);
     const [galleryImages, setGalleryImages] = useState<string[]>([yogaImg, therapyImg, gardenImg]);
     const [showBackToTop, setShowBackToTop] = useState(false);
 
@@ -56,22 +56,19 @@ const HomePage: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        const container = containerRef.current;
-        if (!container) return;
-
         const handleScroll = () => {
-            setShowBackToTop(container.scrollTop > 500);
+            setShowBackToTop(window.scrollY > 500);
         };
-        container.addEventListener('scroll', handleScroll);
-        return () => container.removeEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     const scrollToTop = () => {
-        containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     return (
-        <div ref={containerRef} className="font-body text-bark relative h-screen overflow-y-auto snap-y snap-proximity scroll-smooth">
+        <div className="font-body text-bark relative min-h-screen">
             <Header />
 
             {/* Floating Back to Top Button */}
@@ -156,6 +153,15 @@ const HomePage: React.FC = () => {
                     <Suspense fallback={<div className="h-64 flex items-center justify-center">{t('home.loading.experience')}</div>}>
                         <FadeInSection>
                             <WellnessQuiz />
+                        </FadeInSection>
+                    </Suspense>
+                </section>
+
+                {/* Featured Activities Section */}
+                <section className="snap-start scroll-mt-24">
+                    <Suspense fallback={<div className="h-32 flex items-center justify-center">{t('home.loading.activities', 'Cargando actividades...')}</div>}>
+                        <FadeInSection delay={0.1}>
+                            <FeaturedActivities />
                         </FadeInSection>
                     </Suspense>
                 </section>

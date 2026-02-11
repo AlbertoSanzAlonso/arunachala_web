@@ -541,7 +541,7 @@ export default function ContentManager() {
             {isSaving && <PageLoader />}
             <ToastNotification toasts={toast.toasts} onRemove={toast.removeToast} />
             <div className="px-4 sm:px-6 lg:px-8">
-                <div className="sm:flex sm:items-center">
+                <div className="sm:flex sm:items-center justify-between gap-4">
                     <div className="sm:flex-auto">
                         <h1 className="text-2xl font-semibold leading-6 text-gray-900">Gestor de Contenido</h1>
                         <p className="mt-2 text-sm text-gray-700">
@@ -552,29 +552,34 @@ export default function ContentManager() {
                         <button
                             type="button"
                             onClick={() => handleOpenModal()}
-                            className="flex items-center justify-center w-full sm:w-auto rounded-md bg-forest px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-forest/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest"
+                            className="inline-flex items-center justify-center w-full sm:w-auto rounded-xl bg-forest px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-forest/10 hover:bg-forest/90 transition-all active:scale-95"
                         >
-                            <PlusIcon className="h-5 w-5 inline-block mr-1" />
+                            <PlusIcon className="h-5 w-5 mr-2" />
                             Crear Contenido
                         </button>
                     </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="mt-6 border-b border-gray-200">
-                    <nav className="-mb-px flex space-x-4 md:space-x-8 overflow-x-auto" aria-label="Tabs">
+                <div className="mt-8 border-b border-gray-100 bg-white/50 -mx-4 px-4 sm:mx-0 sm:px-0 sticky top-16 lg:top-24 z-30 backdrop-blur-md">
+                    <nav className="mobile-tabs-container hide-scrollbar -mb-px flex space-x-6 sm:space-x-8" aria-label="Tabs">
                         {TABS.map((tab) => (
                             <button
                                 key={tab.value}
                                 onClick={() => setCurrentTab(tab.value)}
                                 className={`
-                                whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium flex-shrink-0
-                                ${currentTab === tab.value
+                                    whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-all
+                                    ${currentTab === tab.value
                                         ? 'border-forest text-forest'
-                                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}
-                            `}
+                                        : 'border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-200'}
+                                `}
                             >
                                 {tab.name}
+                                {tab.value !== 'all' && (
+                                    <span className={`ml-2 py-0.5 px-2.5 rounded-full text-xs font-bold ${currentTab === tab.value ? 'bg-forest/10 text-forest' : 'bg-gray-100 text-gray-400'}`}>
+                                        {contents.filter(c => tab.value === 'meditation' ? c.type === 'meditation' : (tab.value === 'yoga_article' ? c.category === 'yoga' : c.category === 'therapy')).length}
+                                    </span>
+                                )}
                             </button>
                         ))}
                     </nav>
@@ -726,85 +731,157 @@ export default function ContentManager() {
                     )}
                 </div>
 
-                {/* Table */}
-                <div className="mt-8 flow-root">
-                    <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                        <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg bg-white">
-                                <table className="min-w-full divide-y divide-gray-300">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th scope="col" className="relative py-3.5 pl-4 pr-3 sm:pl-6 w-12">
-                                                <input
-                                                    type="checkbox"
-                                                    className="h-4 w-4 rounded border-gray-300 text-forest focus:ring-forest"
-                                                    checked={filteredContents.length > 0 && selectedIds.size === filteredContents.length}
-                                                    onChange={toggleSelectAll}
-                                                />
-                                            </th>
-                                            <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Título</th>
-                                            <th scope="col" className="hidden md:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Tipo</th>
-                                            {currentTab !== 'meditation' && (
-                                                <th scope="col" className="hidden lg:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Categoría</th>
-                                            )}
-                                            <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Estado</th>
-                                            <th scope="col" className="hidden xl:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Autor</th>
-                                            <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">Acciones</span></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-200 bg-white">
-                                        {isLoading ? (
-                                            <tr><td colSpan={6} className="text-center py-4">Cargando...</td></tr>
-                                        ) : filteredContents.length === 0 ? (
-                                            <tr><td colSpan={6} className="text-center py-4 text-gray-500">No hay contenido en esta sección.</td></tr>
-                                        ) : (
-                                            filteredContents.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((item) => (
-                                                <tr key={item.id} className={selectedIds.has(item.id) ? 'bg-gray-50' : 'bg-white'}>
-                                                    <td className="relative py-4 pl-4 pr-3 sm:pl-6">
-                                                        <input
-                                                            type="checkbox"
-                                                            className="h-4 w-4 rounded border-gray-300 text-forest focus:ring-forest"
-                                                            checked={selectedIds.has(item.id)}
-                                                            onChange={() => toggleSelect(item.id)}
-                                                        />
-                                                    </td>
-                                                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                                                        {item.title}
-                                                    </td>
-                                                    <td className="hidden md:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize">
-                                                        {item.type === 'meditation' ? 'Meditación' : 'Artículo'}
-                                                    </td>
-                                                    {currentTab !== 'meditation' && (
-                                                        <td className="hidden lg:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize">{item.category || '-'}</td>
-                                                    )}
-                                                    <td className="whitespace-nowrap px-3 py-4 text-sm">
-                                                        <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset 
-                                                        ${item.status === 'published' ? 'bg-green-50 text-green-700 ring-green-600/20' : 'bg-gray-50 text-gray-600 ring-gray-500/10'}`}>
-                                                            {item.status === 'published' ? 'Publicado' : 'Borrador'}
-                                                        </span>
-                                                    </td>
-                                                    <td className="hidden xl:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                                        {item.author?.first_name === 'ArunachalaBot' ? (
-                                                            <span className="inline-flex items-center gap-1 text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full text-xs font-medium">
-                                                                <SparklesIcon className="w-3 h-3" /> IA
-                                                            </span>
-                                                        ) : (
-                                                            <span className="text-gray-600">{item.author?.first_name || 'Admin'}</span>
+                {/* Content View: Cards on Mobile, Table on Desktop */}
+                <div className="mt-8">
+                    {/* Mobile Cards View */}
+                    <div className="grid grid-cols-1 gap-4 sm:hidden">
+                        {isLoading ? (
+                            <div className="text-center py-12 bg-white rounded-2xl border border-gray-100">
+                                <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-forest/20 border-t-forest mb-2"></div>
+                                <p className="text-sm text-gray-500">Cargando contenido...</p>
+                            </div>
+                        ) : filteredContents.length === 0 ? (
+                            <div className="text-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                                <p className="text-sm text-gray-400">No se encontró ningún contenido.</p>
+                            </div>
+                        ) : (
+                            filteredContents.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((item) => (
+                                <div key={item.id} className={`p-4 rounded-2xl border transition-all ${selectedIds.has(item.id) ? 'bg-forest/5 border-forest' : 'bg-white border-gray-100 shadow-sm'}`}>
+                                    <div className="flex items-start gap-3">
+                                        <div className="pt-1">
+                                            <input
+                                                type="checkbox"
+                                                className="h-5 w-5 rounded border-gray-300 text-forest focus:ring-forest"
+                                                checked={selectedIds.has(item.id)}
+                                                onChange={() => toggleSelect(item.id)}
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex flex-wrap gap-2 mb-2">
+                                                <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${item.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                                                    {item.status === 'published' ? 'Publicado' : 'Borrador'}
+                                                </span>
+                                                <span className="inline-flex items-center rounded-md bg-primary-50 px-2 py-0.5 text-[10px] font-bold text-primary-700 uppercase tracking-wider">
+                                                    {item.type === 'meditation' ? 'Meditación' : `Artículo ${item.category || ''}`}
+                                                </span>
+                                                {item.author?.first_name === 'ArunachalaBot' && (
+                                                    <span className="inline-flex items-center gap-1 text-purple-600 bg-purple-50 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider">
+                                                        <SparklesIcon className="w-3 h-3" /> IA
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <h4 className="text-base font-bold text-gray-900 leading-tight">
+                                                {item.title}
+                                            </h4>
+                                            <p className="mt-1 text-xs text-gray-400">
+                                                {new Date(item.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="mt-4 flex gap-2 pt-3 border-t border-gray-50">
+                                        <button
+                                            onClick={() => handleOpenModal(item)}
+                                            className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-gray-50 text-gray-600 rounded-xl text-xs font-bold hover:bg-forest/10 hover:text-forest transition-all"
+                                        >
+                                            <PencilSquareIcon className="h-4 w-4" /> Editar
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(item.id)}
+                                            className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-red-50 text-red-500 rounded-xl text-xs font-bold hover:bg-red-100 transition-all"
+                                        >
+                                            <TrashIcon className="h-4 w-4" /> Borrar
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+
+                    {/* Desktop Table View */}
+                    <div className="hidden sm:block flow-root">
+                        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                            <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                                <div className="overflow-hidden shadow-sm ring-1 ring-gray-200 sm:rounded-2xl bg-white border border-gray-100">
+                                    <table className="min-w-full divide-y divide-gray-200">
+                                        <thead className="bg-gray-50/50">
+                                            <tr>
+                                                <th scope="col" className="relative py-4 pl-4 pr-3 sm:pl-6 w-12">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="h-4 w-4 rounded border-gray-300 text-forest focus:ring-forest"
+                                                        checked={filteredContents.length > 0 && selectedIds.size === filteredContents.length}
+                                                        onChange={toggleSelectAll}
+                                                    />
+                                                </th>
+                                                <th scope="col" className="py-4 pl-4 pr-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider sm:pl-0">Título</th>
+                                                <th scope="col" className="hidden md:table-cell px-3 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Tipo</th>
+                                                {currentTab !== 'meditation' && (
+                                                    <th scope="col" className="hidden lg:table-cell px-3 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Categoría</th>
+                                                )}
+                                                <th scope="col" className="px-3 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Estado</th>
+                                                <th scope="col" className="hidden xl:table-cell px-3 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Autor</th>
+                                                <th scope="col" className="relative py-4 pl-3 pr-4 sm:pr-6"><span className="sr-only">Acciones</span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-100 bg-white">
+                                            {isLoading ? (
+                                                <tr><td colSpan={7} className="text-center py-10">
+                                                    <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-forest/20 border-t-forest mr-2 align-middle"></div>
+                                                    <span className="text-sm text-gray-400 font-medium">Cargando...</span>
+                                                </td></tr>
+                                            ) : filteredContents.length === 0 ? (
+                                                <tr><td colSpan={7} className="text-center py-10 text-gray-400 italic text-sm">No hay contenido en esta sección.</td></tr>
+                                            ) : (
+                                                filteredContents.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((item) => (
+                                                    <tr key={item.id} className={`hover:bg-gray-50/50 transition-colors ${selectedIds.has(item.id) ? 'bg-forest/5' : 'bg-white'}`}>
+                                                        <td className="relative py-4 pl-4 pr-3 sm:pl-6">
+                                                            <input
+                                                                type="checkbox"
+                                                                className="h-4 w-4 rounded border-gray-300 text-forest focus:ring-forest"
+                                                                checked={selectedIds.has(item.id)}
+                                                                onChange={() => toggleSelect(item.id)}
+                                                            />
+                                                        </td>
+                                                        <td className="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0 max-w-md">
+                                                            <div className="truncate" title={item.title}>{item.title}</div>
+                                                        </td>
+                                                        <td className="hidden md:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize">
+                                                            {item.type === 'meditation' ? 'Meditación' : 'Artículo'}
+                                                        </td>
+                                                        {currentTab !== 'meditation' && (
+                                                            <td className="hidden lg:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize">{item.category || '-'}</td>
                                                         )}
-                                                    </td>
-                                                    <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                                        <button onClick={() => handleOpenModal(item)} className="text-forest hover:text-forest/80 mr-4">
-                                                            <PencilSquareIcon className="h-5 w-5" />
-                                                        </button>
-                                                        <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900">
-                                                            <TrashIcon className="h-5 w-5" />
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        )}
-                                    </tbody>
-                                </table>
+                                                        <td className="whitespace-nowrap px-3 py-4 text-sm">
+                                                            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider
+                                                            ${item.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                                                                {item.status === 'published' ? 'Publicado' : 'Borrador'}
+                                                            </span>
+                                                        </td>
+                                                        <td className="hidden xl:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500 font-medium">
+                                                            {item.author?.first_name === 'ArunachalaBot' ? (
+                                                                <span className="inline-flex items-center gap-1 text-purple-600 bg-purple-50 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                                                                    <SparklesIcon className="w-3 h-3" /> IA
+                                                                </span>
+                                                            ) : (
+                                                                <span className="text-gray-600">{item.author?.first_name || 'Admin'}</span>
+                                                            )}
+                                                        </td>
+                                                        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                                            <div className="flex justify-end gap-2">
+                                                                <button onClick={() => handleOpenModal(item)} className="p-2 text-gray-400 hover:text-forest hover:bg-forest/5 rounded-lg transition-all" title="Editar">
+                                                                    <PencilSquareIcon className="h-5 w-5" />
+                                                                </button>
+                                                                <button onClick={() => handleDelete(item.id)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all" title="Borrar">
+                                                                    <TrashIcon className="h-5 w-5" />
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>

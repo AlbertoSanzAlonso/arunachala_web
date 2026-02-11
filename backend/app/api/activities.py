@@ -183,6 +183,31 @@ def get_activities(db: Session = Depends(get_db), active_only: bool = True):
         
     return activities
 
+@router.get("/featured", response_model=List[ActivityResponse])
+def get_featured_activities(db: Session = Depends(get_db)):
+    """
+    Get activities marked as featured (has_reminder=true in activity_data).
+    Only returns active activities of type taller, evento, or retiro.
+    """
+    now = datetime.utcnow()
+    
+    # Get all active activities (excluding sugerencias and cursos)
+    activities = db.query(Activity).filter(
+        Activity.is_active == True,
+        Activity.type.in_(['taller', 'evento', 'retiro']),
+        (Activity.end_date == None) | (Activity.end_date >= now)
+    ).order_by(Activity.start_date.asc().nulls_last()).all()
+    
+    # Filter activities that have has_reminder=true in activity_data
+    featured = []
+    for activity in activities:
+        if activity.activity_data and isinstance(activity.activity_data, dict):
+            if activity.activity_data.get('has_reminder') is True:
+                featured.append(activity)
+    
+    return featured
+
+
 @router.get("/{activity_id}", response_model=ActivityResponse)
 def get_activity(activity_id: int, db: Session = Depends(get_db)):
     activity = db.query(Activity).filter(Activity.id == activity_id).first()

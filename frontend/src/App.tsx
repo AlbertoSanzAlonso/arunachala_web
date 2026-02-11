@@ -24,7 +24,6 @@ const OurSpacePage = lazy(() => import('./pages/OurSpacePage'));
 
 // Dashboard Pages
 const LoginPage = lazy(() => import('./pages/LoginPage'));
-const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 const DashboardHome = lazy(() => import('./pages/dashboard/DashboardHome'));
@@ -39,6 +38,7 @@ const TreatmentsManager = lazy(() => import('./pages/dashboard/TreatmentsManager
 const UserManager = lazy(() => import('./pages/dashboard/UserManager'));
 const AgentControl = lazy(() => import('./pages/dashboard/AgentControl'));
 const ActivityManager = lazy(() => import('./pages/dashboard/ActivityManager'));
+const SiteCustomization = lazy(() => import('./pages/dashboard/SiteCustomization'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const LegalNoticePage = lazy(() => import('./pages/LegalNoticePage'));
@@ -54,7 +54,6 @@ const AppContent = () => {
     const hideChatBot =
         location.pathname.startsWith('/login') ||
         location.pathname.startsWith('/dashboard') ||
-        location.pathname.startsWith('/register') ||
         location.pathname.startsWith('/forgot-password') ||
         location.pathname.startsWith('/reset-password');
 
@@ -87,7 +86,6 @@ const AppContent = () => {
 
                 {/* Auth Route */}
                 <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
 
@@ -106,6 +104,7 @@ const AppContent = () => {
                         <Route path="users" element={<UserManager />} />
                         <Route path="agent" element={<AgentControl />} />
                         <Route path="activities" element={<ActivityManager />} />
+                        <Route path="customize" element={<SiteCustomization />} />
                     </Route>
                 </Route>
             </Routes>

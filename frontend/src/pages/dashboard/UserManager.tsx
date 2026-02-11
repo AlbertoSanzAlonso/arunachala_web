@@ -182,18 +182,18 @@ export default function UserManager() {
     return (
         <div>
             {isSaving && <PageLoader />}
-            <div className="sm:flex sm:items-center">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="sm:flex-auto">
-                    <h1 className="text-2xl font-semibold leading-6 text-gray-900">Gestión de Usuarios</h1>
-                    <p className="mt-2 text-sm text-gray-700">
+                    <h1 className="text-xl sm:text-2xl font-bold leading-6 text-gray-900">Gestión de Usuarios</h1>
+                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-500">
                         Administra los usuarios del sistema, sus roles y permisos.
                     </p>
                 </div>
-                <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+                <div className="sm:flex-none">
                     <button
                         type="button"
                         onClick={() => window.location.href = '/dashboard/create-user'}
-                        className="inline-flex items-center gap-2 rounded-md bg-primary-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-primary-500"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary-100 hover:bg-primary-500 transition-all active:scale-95"
                     >
                         <UserPlusIcon className="h-5 w-5" />
                         Crear Usuario
@@ -203,7 +203,7 @@ export default function UserManager() {
 
             {/* Success Message */}
             {successMessage && (
-                <div className="mt-6 rounded-lg bg-green-50 p-4 border border-green-200 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="mt-6 rounded-xl bg-green-50 p-4 border border-green-200 animate-in fade-in slide-in-from-top-2 duration-300">
                     <div className="flex items-center">
                         <CheckCircleIcon className="h-5 w-5 text-green-600 mr-3" />
                         <p className="text-sm font-medium text-green-800">
@@ -215,8 +215,8 @@ export default function UserManager() {
 
             {/* Search Bar */}
             <div className="mt-6">
-                <div className="relative">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <div className="relative group">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 transition-colors group-focus-within:text-primary-500">
                         <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                     </div>
                     <input
@@ -224,86 +224,148 @@ export default function UserManager() {
                         placeholder="Buscar por email o nombre..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="block w-full rounded-md border-0 py-2 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-xl border-gray-100 py-3 pl-11 pr-4 text-gray-900 ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-4 focus:ring-inset focus:ring-primary-50/50 focus:border-primary-500 transition-all sm:text-sm shadow-sm"
                     />
                 </div>
             </div>
 
-            {/* Users Table */}
-            <div className="mt-8 flow-root">
-                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                        <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-                            <table className="min-w-full divide-y divide-gray-300">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                                            Usuario
-                                        </th>
-                                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                            Email
-                                        </th>
-                                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                            Rol
-                                        </th>
-                                        <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                                            <span className="sr-only">Acciones</span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-200 bg-white">
-                                    {filteredUsers.map((user) => (
-                                        <tr key={user.id} className="hover:bg-gray-50">
-                                            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
-                                                <div className="flex items-center">
-                                                    <div className="h-10 w-10 flex-shrink-0">
-                                                        {user.profile_picture ? (
-                                                            <img
-                                                                className="h-10 w-10 rounded-full object-cover"
-                                                                src={`${API_BASE_URL}${user.profile_picture}`}
-                                                                alt=""
-                                                            />
-                                                        ) : (
-                                                            <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
-                                                                <span className="text-primary-600 font-medium">
-                                                                    {user.email.charAt(0).toUpperCase()}
-                                                                </span>
+            {/* Users View: Cards on Mobile, Table on Desktop */}
+            <div className="mt-8">
+                {/* Mobile Cards */}
+                <div className="grid grid-cols-1 gap-4 sm:hidden">
+                    {filteredUsers.map((user) => (
+                        <div key={user.id} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+                            <div className="flex items-center gap-3">
+                                <div className="h-12 w-12 flex-shrink-0">
+                                    {user.profile_picture ? (
+                                        <img
+                                            className="h-12 w-12 rounded-full object-cover ring-2 ring-gray-50"
+                                            src={`${API_BASE_URL}${user.profile_picture}`}
+                                            alt=""
+                                        />
+                                    ) : (
+                                        <div className="h-12 w-12 rounded-full bg-primary-50 flex items-center justify-center border border-primary-100">
+                                            <span className="text-primary-600 font-bold text-lg">
+                                                {user.email.charAt(0).toUpperCase()}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <h4 className="font-bold text-gray-900 truncate focus:outline-none">
+                                        {user.first_name && user.last_name
+                                            ? `${user.first_name} ${user.last_name}`
+                                            : user.first_name || user.last_name || 'Sin nombre'}
+                                    </h4>
+                                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                                </div>
+                                <div className="shrink-0">
+                                    {getRoleBadge(user.role)}
+                                </div>
+                            </div>
+                            <div className="flex gap-2 pt-2 border-t border-gray-50">
+                                <button
+                                    onClick={() => handleEdit(user)}
+                                    className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-gray-50 text-gray-600 rounded-lg text-xs font-bold hover:bg-primary-50 hover:text-primary-600 transition-all"
+                                >
+                                    <PencilIcon className="h-4 w-4" /> Editar
+                                </button>
+                                <button
+                                    onClick={() => handleDeleteClick(user)}
+                                    className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-red-50 text-red-500 rounded-lg text-xs font-bold hover:bg-red-100 transition-all"
+                                >
+                                    <TrashIcon className="h-4 w-4" /> Borrar
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                    {filteredUsers.length === 0 && (
+                        <div className="text-center py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                            <p className="text-sm text-gray-400">No se encontraron usuarios.</p>
+                        </div>
+                    )}
+                </div>
+
+                {/* Desktop Table */}
+                <div className="hidden sm:block flow-root">
+                    <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                        <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                            <div className="overflow-hidden shadow-sm ring-1 ring-gray-100 sm:rounded-2xl border border-gray-50">
+                                <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gray-50/50 backdrop-blur-sm">
+                                        <tr>
+                                            <th scope="col" className="py-4 pl-4 pr-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider sm:pl-6">
+                                                Usuario
+                                            </th>
+                                            <th scope="col" className="px-3 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
+                                                Email
+                                            </th>
+                                            <th scope="col" className="px-3 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
+                                                Rol
+                                            </th>
+                                            <th scope="col" className="relative py-4 pl-3 pr-4 sm:pr-6">
+                                                <span className="sr-only">Acciones</span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-100 bg-white">
+                                        {filteredUsers.map((user) => (
+                                            <tr key={user.id} className="hover:bg-gray-50 transition-colors group">
+                                                <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
+                                                    <div className="flex items-center">
+                                                        <div className="h-10 w-10 flex-shrink-0">
+                                                            {user.profile_picture ? (
+                                                                <img
+                                                                    className="h-10 w-10 rounded-full object-cover ring-2 ring-gray-50"
+                                                                    src={`${API_BASE_URL}${user.profile_picture}`}
+                                                                    alt=""
+                                                                />
+                                                            ) : (
+                                                                <div className="h-10 w-10 rounded-full bg-primary-50 flex items-center justify-center border border-primary-100">
+                                                                    <span className="text-primary-600 font-bold">
+                                                                        {user.email.charAt(0).toUpperCase()}
+                                                                    </span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="ml-4">
+                                                            <div className="font-bold text-gray-900">
+                                                                {user.first_name && user.last_name
+                                                                    ? `${user.first_name} ${user.last_name}`
+                                                                    : user.first_name || user.last_name || 'Sin nombre'}
                                                             </div>
-                                                        )}
-                                                    </div>
-                                                    <div className="ml-4">
-                                                        <div className="font-medium text-gray-900">
-                                                            {user.first_name && user.last_name
-                                                                ? `${user.first_name} ${user.last_name}`
-                                                                : user.first_name || user.last_name || 'Sin nombre'}
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                                {user.email}
-                                            </td>
-                                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                                {getRoleBadge(user.role)}
-                                            </td>
-                                            <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                                <button
-                                                    onClick={() => handleEdit(user)}
-                                                    className="text-primary-600 hover:text-primary-900 mr-4"
-                                                >
-                                                    <PencilIcon className="h-5 w-5 inline" />
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDeleteClick(user)}
-                                                    className="text-red-600 hover:text-red-900"
-                                                >
-                                                    <TrashIcon className="h-5 w-5 inline" />
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                                </td>
+                                                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 font-medium">
+                                                    {user.email}
+                                                </td>
+                                                <td className="whitespace-nowrap px-3 py-4 text-sm">
+                                                    {getRoleBadge(user.role)}
+                                                </td>
+                                                <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                                    <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <button
+                                                            onClick={() => handleEdit(user)}
+                                                            className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all"
+                                                            title="Editar"
+                                                        >
+                                                            <PencilIcon className="h-5 w-5" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteClick(user)}
+                                                            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                                            title="Borrar"
+                                                        >
+                                                            <TrashIcon className="h-5 w-5" />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

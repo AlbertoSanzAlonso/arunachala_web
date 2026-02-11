@@ -647,18 +647,18 @@ const AgentControl: React.FC = () => {
                 )}
 
                 {/* Submit */}
-                <div className="flex justify-end gap-4">
+                <div className="flex flex-col sm:flex-row justify-end gap-4">
                     <button
                         type="button"
                         onClick={() => setShowResetModal(true)}
-                        className="px-6 py-3 bg-red-50 text-red-600 font-medium rounded-xl hover:bg-red-100 transition-all"
+                        className="order-2 sm:order-1 px-6 py-3 bg-red-50 text-red-600 font-medium rounded-xl hover:bg-red-100 transition-all text-center"
                     >
                         Reiniciar Memoria de la IA
                     </button>
                     <button
                         type="submit"
                         disabled={loading}
-                        className="px-6 py-3 bg-forest text-white font-medium rounded-xl hover:bg-matcha hover:scale-105 transition-all shadow-md disabled:opacity-50 disabled:hover:scale-100"
+                        className="order-1 sm:order-2 px-6 py-3 bg-forest text-white font-medium rounded-xl hover:bg-matcha hover:scale-105 transition-all shadow-md disabled:opacity-50 disabled:hover:scale-100 text-center"
                     >
                         {loading ? 'Guardando...' : 'Guardar Configuración'}
                     </button>
@@ -684,7 +684,7 @@ const AgentControl: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     {/* Yoga Trigger */}
-                    <div className="p-6 rounded-2xl bg-forest/5 border border-forest/10 flex items-center justify-between">
+                    <div className="p-6 rounded-2xl bg-forest/5 border border-forest/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <span className="block font-bold text-forest mb-1">Artículo de Yoga</span>
                             <p className="text-xs text-forest/70 max-w-[200px]">Crea un artículo sobre beneficios, posturas o filosofía.</p>
@@ -692,14 +692,14 @@ const AgentControl: React.FC = () => {
                         <button
                             onClick={() => handleTriggerTask('generate_article', 'yoga')}
                             disabled={triggerLoading === 'generate_article-yoga'}
-                            className="px-4 py-2 bg-forest text-white text-sm font-bold rounded-xl hover:bg-matcha transition-all shadow-sm disabled:opacity-50"
+                            className="w-full sm:w-auto px-4 py-2.5 bg-forest text-white text-sm font-bold rounded-xl hover:bg-matcha transition-all shadow-sm disabled:opacity-50"
                         >
                             {triggerLoading === 'generate_article-yoga' ? 'Generando...' : 'Generar Ahora'}
                         </button>
                     </div>
 
                     {/* Therapy Trigger */}
-                    <div className="p-6 rounded-2xl bg-bark/5 border border-bark/10 flex items-center justify-between">
+                    <div className="p-6 rounded-2xl bg-bark/5 border border-bark/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <span className="block font-bold text-bark mb-1">Artículo de Terapias</span>
                             <p className="text-xs text-bark/70 max-w-[200px]">Genera contenido sobre masajes y terapias alternativas.</p>
@@ -707,7 +707,7 @@ const AgentControl: React.FC = () => {
                         <button
                             onClick={() => handleTriggerTask('generate_article', 'therapy')}
                             disabled={triggerLoading === 'generate_article-therapy'}
-                            className="px-4 py-2 bg-bark text-white text-sm font-bold rounded-xl hover:bg-bark/80 transition-all shadow-sm disabled:opacity-50"
+                            className="w-full sm:w-auto px-4 py-2.5 bg-bark text-white text-sm font-bold rounded-xl hover:bg-bark/80 transition-all shadow-sm disabled:opacity-50"
                         >
                             {triggerLoading === 'generate_article-therapy' ? 'Generando...' : 'Generar Ahora'}
                         </button>
@@ -749,7 +749,7 @@ const AgentControl: React.FC = () => {
                                     {/* Day Picker */}
                                     <div className="space-y-2">
                                         <span className="block text-[10px] font-bold text-gray-400 uppercase ml-1">Días de ejecución</span>
-                                        <div className="flex gap-1.5 p-1.5 bg-gray-50 rounded-xl border border-gray-100">
+                                        <div className="flex flex-wrap gap-1.5 p-1.5 bg-gray-50 rounded-xl border border-gray-100">
                                             {['1', '2', '3', '4', '5', '6', '0'].map((d) => {
                                                 const dayLabel = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][parseInt(d)];
                                                 const isActive = task.schedule_days?.split(',').includes(d);
@@ -966,20 +966,20 @@ const AgentControl: React.FC = () => {
                             <>
                                 <h2 className="text-2xl font-headers text-red-600 mb-4">Reiniciar Memoria de IA</h2>
                                 <p className="text-gray-600 mb-6">Esta acción eliminará segmentos del conocimiento de la IA. ¿Qué parte quieres borrar?</p>
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
+                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-8">
                                     {[
                                         { id: 'all', label: 'TODO (Reset Total)', color: 'bg-red-600' },
-                                        { id: 'yoga_class', label: 'Clases de Yoga', color: 'bg-forest' },
+                                        { id: 'yoga_class', label: 'Clases Yoga', color: 'bg-forest' },
                                         { id: 'massage', label: 'Masajes', color: 'bg-matcha' },
                                         { id: 'therapy', label: 'Terapias', color: 'bg-matcha' },
-                                        { id: 'article', label: 'Blog/Artículos', color: 'bg-bark' },
-                                        { id: 'meditation', label: 'Meditaciones', color: 'bg-matcha' },
+                                        { id: 'article', label: 'Artículos', color: 'bg-bark' },
+                                        { id: 'meditation', label: 'Meditación', color: 'bg-matcha' },
                                         { id: 'activity', label: 'Actividades', color: 'bg-blue-600' },
                                     ].map(cat => (
                                         <button
                                             key={cat.id}
                                             onClick={() => { setResetScope(cat.id); setResetStep(2); }}
-                                            className={`p-4 rounded-xl text-white font-medium text-sm transition-transform hover:scale-105 ${cat.color}`}
+                                            className={`p-3 sm:p-4 rounded-xl text-white font-medium text-xs sm:text-sm transition-transform hover:scale-105 ${cat.color} flex items-center justify-center text-center`}
                                         >
                                             {cat.label}
                                         </button>

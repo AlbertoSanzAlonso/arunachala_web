@@ -325,20 +325,20 @@ export default function TreatmentsManager() {
                 </div>
             )}
 
-            <div className="sm:flex sm:items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="sm:flex-auto">
-                    <h1 className="text-2xl font-semibold leading-6 text-gray-900">
+                    <h1 className="text-xl sm:text-2xl font-bold leading-6 text-gray-900">
                         Gestión de Tratamientos
                     </h1>
-                    <p className="mt-2 text-sm text-gray-700">
+                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-500">
                         Administra los tipos de masajes y terapias disponibles.
                     </p>
                 </div>
-                <div className="mt-4 sm:ml-16 sm:mt-0 flex flex-col sm:flex-row gap-3 sm:flex-none">
+                <div className="flex flex-col sm:flex-row gap-3 sm:flex-none">
                     <button
                         type="button"
                         onClick={() => setShowModal(true)}
-                        className="inline-flex items-center gap-2 rounded-md bg-primary-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-primary-500"
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary-100 hover:bg-primary-500 transition-all active:scale-95"
                     >
                         <PlusIcon className="h-5 w-5" />
                         Crear Nuevo
@@ -347,15 +347,15 @@ export default function TreatmentsManager() {
             </div>
 
             {/* Tabs */}
-            <div className="mt-6 border-b border-gray-200">
-                <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+            <div className="mt-6 border-b border-gray-100 bg-white/50 -mx-4 px-4 sm:mx-0 sm:px-0 sticky top-16 lg:top-24 z-30 backdrop-blur-md">
+                <nav className="mobile-tabs-container hide-scrollbar -mb-px flex space-x-6 sm:space-x-8" aria-label="Tabs">
                     <button
                         onClick={() => setActiveTab('massages')}
                         className={`
-                            whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                            whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-all
                             ${activeTab === 'massages'
                                 ? 'border-primary-500 text-primary-600'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
+                                : 'border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-200'}
                         `}
                     >
                         Masajes
@@ -363,10 +363,10 @@ export default function TreatmentsManager() {
                     <button
                         onClick={() => setActiveTab('therapies')}
                         className={`
-                            whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                            whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-all
                             ${activeTab === 'therapies'
                                 ? 'border-primary-500 text-primary-600'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
+                                : 'border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-200'}
                         `}
                     >
                         Terapias
@@ -375,58 +375,63 @@ export default function TreatmentsManager() {
             </div>
 
             {isLoading ? (
-                <div className="text-center py-12">Cargando...</div>
+                <div className="flex flex-col items-center justify-center py-20 gap-4">
+                    <div className="w-10 h-10 border-4 border-primary-100 border-t-primary-600 rounded-full animate-spin"></div>
+                    <p className="text-sm font-medium text-gray-400">Cargando contenido...</p>
+                </div>
             ) : (
-                <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="mt-8 grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {items.map((item) => (
-                        <div key={item.id} className="relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow">
-                            <div className="h-32 w-full bg-gray-100 overflow-hidden flex items-center justify-center">
+                        <div key={item.id} className="relative flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-all group">
+                            <div className="h-40 sm:h-48 w-full bg-gray-50 overflow-hidden flex items-center justify-center relative">
                                 {item.image_url ? (
                                     <img
                                         src={item.image_url.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`}
                                         alt={item.name}
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                     />
                                 ) : (
                                     <img
                                         src={lotusImage}
                                         alt="Placeholder"
-                                        className="h-16 opacity-30"
+                                        className="h-20 opacity-20 group-hover:scale-110 transition-transform duration-500"
                                     />
                                 )}
-                            </div>
-                            <div className="flex-1 p-6">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
+                                <div className="absolute top-3 right-3">
+                                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm ${item.is_active ? 'bg-green-500 text-white' : 'bg-gray-400 text-white'}`}>
+                                        {item.is_active ? 'Activo' : 'Inactivo'}
+                                    </span>
                                 </div>
-                                <p className="mt-2 text-sm text-gray-500 line-clamp-3">
+                            </div>
+                            <div className="flex-1 p-5 sm:p-6">
+                                <h3 className="text-lg font-bold text-gray-900 leading-tight">{item.name}</h3>
+                                <p className="mt-2 text-sm text-gray-500 line-clamp-3 leading-relaxed">
                                     {item.excerpt}
                                 </p>
-                                {item.duration_min ? (
-                                    <p className="mt-2 text-xs font-medium text-gray-500">
-                                        Duración: {item.duration_min} min
-                                    </p>
-                                ) : (
-                                    <p className="mt-2 text-xs font-medium text-gray-400 italic">
-                                        Duración variable / No especificada
-                                    </p>
-                                )}
-                                {item.price && (
-                                    <p className="mt-1 text-sm font-bold text-primary-600 font-sans">
-                                        Precio: {item.price.includes('€') ? item.price : `${item.price}€`}
-                                    </p>
-                                )}
+                                <div className="mt-4 flex flex-wrap items-center gap-3">
+                                    {item.duration_min && (
+                                        <div className="flex items-center gap-1.5 px-2 py-1 bg-gray-50 rounded-lg">
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase">⏳ {item.duration_min}m</span>
+                                        </div>
+                                    )}
+                                    {item.price && (
+                                        <div className="flex items-center gap-1.5 px-2 py-1 bg-primary-50 rounded-lg">
+                                            <span className="text-[11px] font-bold text-primary-700">{item.price.includes('€') ? item.price : `${item.price}€`}</span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                            <div className="flex border-t border-gray-200 divide-x divide-gray-200">
+                            <div className="flex border-t border-gray-100 bg-gray-50/50">
                                 <button
                                     onClick={() => handleEdit(item)}
-                                    className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-2"
+                                    className="flex-1 px-4 py-3 text-sm font-bold text-gray-600 hover:bg-white hover:text-primary-600 transition-all flex items-center justify-center gap-2"
                                 >
                                     <PencilIcon className="h-4 w-4" /> Editar
                                 </button>
+                                <div className="w-px bg-gray-100"></div>
                                 <button
                                     onClick={() => handleDeleteClick(item.id)}
-                                    className="flex-1 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 flex items-center justify-center gap-2"
+                                    className="flex-1 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-all flex items-center justify-center gap-2"
                                 >
                                     <TrashIcon className="h-4 w-4" /> Eliminar
                                 </button>

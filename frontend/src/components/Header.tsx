@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAudio } from '../context/AudioContext';
 import { PlayIcon, PauseIcon, SpeakerWaveIcon, SpeakerXMarkIcon, ArrowsPointingOutIcon, ForwardIcon, BackwardIcon } from '@heroicons/react/24/solid';
+import { API_BASE_URL } from '../config';
 
 const LANGUAGES = [
     { code: 'es', label: 'ES' },
@@ -14,6 +15,7 @@ const LANGUAGES = [
 ];
 
 const Header: React.FC = () => {
+    const [logoUrl, setLogoUrl] = React.useState<string | null>(null);
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const [showVolume, setShowVolume] = React.useState(false);
     const navigate = useNavigate();
@@ -35,6 +37,21 @@ const Header: React.FC = () => {
         setIsMuted,
         setIsPlayerModalOpen
     } = useAudio();
+
+    React.useEffect(() => {
+        const fetchLogo = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/site-config/logo_url`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.value) setLogoUrl(`${API_BASE_URL}${data.value}`);
+                }
+            } catch (error) {
+                console.error("Error fetching logo:", error);
+            }
+        };
+        fetchLogo();
+    }, []);
 
     const handleNavigation = (path: string) => {
         handleLinkClick();
@@ -61,11 +78,14 @@ const Header: React.FC = () => {
         <>
             <header className="fixed top-0 left-0 right-0 z-50 p-4 md:py-3 md:px-8 flex justify-between items-center bg-[#5c6b3c] shadow-md transition-colors duration-300">
                 {/* Logo Section */}
-                <div className="cursor-pointer flex items-center gap-4" onClick={() => handleNavigation('/')}>
+                <div
+                    className="cursor-pointer flex items-center justify-center h-16 w-16 md:h-20 md:w-20 rounded-full border border-[#F5F5DC] bg-[#F5F5DC] p-0.5 md:p-1 transition-transform duration-300 hover:scale-105 shadow-sm"
+                    onClick={() => handleNavigation('/')}
+                >
                     <img
-                        src={logo}
+                        src={logoUrl || logo}
                         alt="Arunachala"
-                        className="h-16 w-16 md:h-20 md:w-20 rounded-full object-contain border border-[#F5F5DC] bg-[#F5F5DC] transition-transform duration-300 hover:scale-105"
+                        className="w-full h-full object-contain"
                     />
                 </div>
 

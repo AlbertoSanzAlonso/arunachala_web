@@ -138,5 +138,14 @@ arunachala_web/
 - **Local Deployment**:
     - **Docker Infrastructure**: Verified all containers (PostgreSQL, n8n, Qdrant, NocoDB, Portainer) running successfully on standard ports.
     - **Development Servers**: Both Frontend (React) and Backend (FastAPI) running stably with hot-reload enabled.
-
-
+## 📝 Recent Updates (2026-02-11 - Afternoon)
+- **Site Personalization & Image Handling**:
+    - **Advanced Image Cropping**: Integrated `react-easy-crop` in the `SiteCustomization` dashboard. All personalization uploads now trigger a modal for perfect adjustment.
+    - **WebP Optimization**: Implemented automatic WebP conversion for all customization images, ensuring high quality with minimal file size.
+    - **Dedicated Personalization Table**: Created a new `Personalization` database table to separate visual site settings from general configuration.
+    - **Dynamic Identity**: Updated `Header`, `Footer`, and `ChatBot` components to dynamically load the center's logo and bot avatar from the personalization settings.
+    - **UI Refinement**: Fine-tuned the Header logo styling for better "breathing room" within its circular container.
+- **Responsiveness & Bug Fixes**:
+    - **Agent Control Panel**: Fixed layout overflow issues on mobile, making action buttons and day selectors stack correctly.
+    - **Content Manager**: Resolved a TypeScript error in content filtering logic.
+    - **RAG Stability**: Improved error handling for treatment prices in automated sync tasks.

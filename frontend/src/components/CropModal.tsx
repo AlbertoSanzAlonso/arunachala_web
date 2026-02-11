@@ -35,7 +35,7 @@ export default function CropModal({ open, onClose, imageSrc, onSave }: CropModal
 
     return (
         <Transition.Root show={open} as={Fragment}>
-            <Dialog as="div" className="relative z-[100]" onClose={onClose}>
+            <Dialog as="div" className="relative z-[100]" onClose={() => { }} static>
                 <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"

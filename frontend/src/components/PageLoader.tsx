@@ -6,7 +6,7 @@ const PageLoader: React.FC = () => {
     const { t } = useTranslation();
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-bone/90 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[150] flex items-center justify-center bg-bone/90 backdrop-blur-sm">
             <div className="relative flex flex-col items-center">
                 <img
                     src={lotusSpinner}

@@ -173,24 +173,24 @@ export default function DashboardHome() {
     };
 
     return (
-        <div className="space-y-8">
-            <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-8">
+        <div className="space-y-6 sm:space-y-8">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold leading-7 text-gray-900 sm:truncate sm:tracking-tight mb-4 sm:mb-8">
                 Vista General
             </h2>
 
             {/* Notification Banner */}
             {notification && (
-                <div className="mb-6 rounded-md bg-green-50 p-4 border border-green-200 shadow-sm">
+                <div className="mb-4 sm:mb-6 rounded-xl bg-green-50 p-4 border border-green-200 shadow-sm transition-all">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                            <CheckCircleIcon className="h-5 w-5 text-green-600 mr-3" />
-                            <p className="text-sm font-medium text-green-800">
+                            <CheckCircleIcon className="h-5 w-5 text-green-600 mr-2 sm:mr-3" />
+                            <p className="text-xs sm:text-sm font-medium text-green-800">
                                 {notification.message}
                             </p>
                         </div>
                         <button
                             onClick={() => setNotification(null)}
-                            className="text-green-600 hover:text-green-800 transition-colors"
+                            className="text-green-600 hover:text-green-800 transition-colors p-1"
                         >
                             <XMarkIcon className="h-5 w-5" />
                         </button>
@@ -200,22 +200,22 @@ export default function DashboardHome() {
 
             {/* Finished Courses Notifications */}
             {finishedActivities.length > 0 && (
-                <div className="mb-8 space-y-3">
+                <div className="mb-6 sm:mb-8 space-y-3">
                     {finishedActivities.map(activity => (
-                        <div key={activity.id} className="rounded-xl bg-amber-50 p-4 border border-amber-200 shadow-sm flex items-center justify-between animate-in slide-in-from-top-2 duration-300">
-                            <div className="flex items-center">
-                                <div className="p-2 bg-amber-100 rounded-lg mr-4">
+                        <div key={activity.id} className="rounded-xl bg-amber-50 p-3 sm:p-4 border border-amber-200 shadow-sm flex items-center justify-between animate-in slide-in-from-top-2 duration-300">
+                            <div className="flex items-center min-w-0">
+                                <div className="p-2 bg-amber-100 rounded-lg mr-3 sm:mr-4 shrink-0">
                                     <CalendarIcon className="h-5 w-5 text-amber-600" />
                                 </div>
-                                <div>
-                                    <h4 className="text-sm font-bold text-amber-900">Curso finalizado: {activity.title}</h4>
-                                    <p className="text-xs text-amber-700">La fecha del curso ha concluido. Ya no se muestra al público.</p>
+                                <div className="min-w-0">
+                                    <h4 className="text-xs sm:text-sm font-bold text-amber-900 truncate">Curso finalizado: {activity.title}</h4>
+                                    <p className="text-[10px] sm:text-xs text-amber-700 truncate sm:whitespace-normal">La fecha del curso ha concluido.</p>
                                 </div>
                             </div>
                             <button
                                 onClick={() => acknowledgeFinish(activity.id)}
-                                className="p-2 hover:bg-amber-100 rounded-full text-amber-500 hover:text-amber-700 transition-colors"
-                                title="Cerrar aviso y eliminar curso"
+                                className="p-2 hover:bg-amber-100 rounded-full text-amber-500 hover:text-amber-700 transition-colors shrink-0"
+                                title="Cerrar aviso"
                             >
                                 <XMarkIcon className="h-5 w-5" />
                             </button>
@@ -227,12 +227,12 @@ export default function DashboardHome() {
             {/* Ongoing Courses Section */}
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-bold text-gray-900">Cursos en Marcha</h3>
-                    <span className="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-bold uppercase tracking-wider rounded-full">Estado actual</span>
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900">Cursos en Marcha</h3>
+                    <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-green-100 text-green-700 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded-full">Actual</span>
                 </div>
 
                 {isLoading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {[1, 2, 3].map(i => (
                             <div key={i} className="h-32 bg-gray-50 rounded-2xl animate-pulse" />
                         ))}
@@ -240,47 +240,47 @@ export default function DashboardHome() {
                 ) : ongoingCourses.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {ongoingCourses.map(course => (
-                            <div key={course.id} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-start gap-4 group hover:shadow-md transition-all">
-                                <div className="p-3 bg-green-50 rounded-xl group-hover:bg-green-100 transition-colors">
+                            <div key={course.id} className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm flex items-start gap-4 group hover:shadow-md transition-all">
+                                <div className="p-3 bg-green-50 rounded-xl group-hover:bg-green-100 transition-colors shrink-0">
                                     <CalendarIcon className="h-6 w-6 text-green-600" />
                                 </div>
                                 <div className="min-w-0">
-                                    <h4 className="font-bold text-gray-900 leading-tight truncate">{course.title}</h4>
-                                    <p className="text-xs text-gray-500 mt-1">Finaliza el {course.end_date ? new Date(course.end_date).toLocaleDateString('es-ES') : 'indefinida'}</p>
-                                    <div className="mt-3 flex items-center gap-1.5">
+                                    <h4 className="font-bold text-gray-900 text-sm sm:text-base leading-tight truncate">{course.title}</h4>
+                                    <p className="text-[10px] sm:text-xs text-gray-500 mt-1">Finaliza el {course.end_date ? new Date(course.end_date).toLocaleDateString('es-ES') : 'indefinida'}</p>
+                                    <div className="mt-2 flex items-center gap-1.5">
                                         <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                                        <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">En curso</span>
+                                        <span className="text-[9px] sm:text-[10px] font-bold text-green-600 uppercase tracking-widest">En curso</span>
                                     </div>
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div className="bg-gray-50 rounded-2xl p-8 text-center border border-dashed border-gray-200">
-                        <p className="text-gray-400 italic">No hay ningún curso en marcha en este momento.</p>
+                    <div className="bg-gray-50 rounded-2xl p-6 sm:p-8 text-center border border-dashed border-gray-200">
+                        <p className="text-sm text-gray-400 italic">No hay ningún curso en marcha en este momento.</p>
                     </div>
                 )}
             </div>
 
             {/* Stats Section */}
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-8">
+            <div className="grid grid-cols-1 gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-6 sm:mb-8">
                 {stats.map((item) => (
                     <div
                         key={item.name}
-                        className="relative overflow-hidden rounded-lg bg-white px-4 pt-5 pb-12 shadow sm:px-6 sm:pt-6 border border-gray-100"
+                        className="relative overflow-hidden rounded-2xl bg-white px-4 py-5 shadow-sm border border-gray-100 group hover:shadow-md transition-all"
                     >
                         <dt>
-                            <div className="absolute rounded-md bg-primary-500 p-3">
-                                <item.icon className="h-6 w-6 text-white" aria-hidden="true" />
+                            <div className="absolute rounded-xl bg-primary-500 p-3 group-hover:scale-110 transition-transform">
+                                <item.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" aria-hidden="true" />
                             </div>
-                            <p className="ml-16 truncate text-sm font-medium text-gray-500">{item.name}</p>
+                            <p className="ml-14 sm:ml-16 truncate text-xs sm:text-sm font-medium text-gray-500">{item.name}</p>
                         </dt>
-                        <dd className="ml-16 flex items-baseline pb-1 sm:pb-7">
-                            <p className="text-2xl font-semibold text-gray-900">{item.stat}</p>
+                        <dd className="ml-14 sm:ml-16 flex items-baseline">
+                            <p className="text-xl sm:text-2xl font-bold text-gray-900">{item.stat}</p>
                             <p
                                 className={classNames(
                                     item.changeType === 'increase' ? 'text-green-600' : 'text-red-600',
-                                    'ml-2 flex items-baseline text-sm font-semibold'
+                                    'ml-2 flex items-baseline text-xs sm:text-sm font-semibold'
                                 )}
                             >
                                 {item.changeType === 'increase' ? '↑' : '↓'} {item.change}
@@ -293,11 +293,11 @@ export default function DashboardHome() {
             {/* Historial del Sitio */}
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-bold text-gray-900">Historial del Sitio</h3>
-                    <span className="px-3 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold uppercase tracking-wider rounded-full">Registro de acciones</span>
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900">Historial del Sitio</h3>
+                    <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-gray-100 text-gray-600 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded-full">Registro</span>
                 </div>
 
-                <div className="bg-white shadow-sm rounded-2xl p-6 border border-gray-100">
+                <div className="bg-white shadow-sm rounded-2xl p-4 sm:p-6 border border-gray-100">
                     {isLoading ? (
                         <p className="text-gray-500 text-center py-4">Cargando actividad...</p>
                     ) : activities.length === 0 ? (

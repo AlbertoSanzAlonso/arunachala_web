@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { API_BASE_URL } from '../config';
 
 // Simple Icon Components for cleaner footer code
 const InstagramIcon = (props: React.ComponentProps<'svg'>) => (
@@ -24,13 +25,32 @@ const SpotifyIcon = (props: React.ComponentProps<'svg'>) => (
 
 const Footer: React.FC = () => {
     const { t } = useTranslation();
+    const [logoUrl, setLogoUrl] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+        const fetchLogo = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/site-config/logo_url`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.value) setLogoUrl(`${API_BASE_URL}${data.value}`);
+                }
+            } catch (error) {
+                console.error("Error fetching logo for footer:", error);
+            }
+        };
+        fetchLogo();
+    }, []);
 
     return (
         <footer className="bg-[#5c6b3c] text-[#F5F5DC] font-light transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-8 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
 
                 {/* Brand & Address */}
-                <div className="md:col-span-1 flex flex-col gap-6 text-center">
+                <div className="md:col-span-1 flex flex-col gap-6 text-center items-center">
+                    {logoUrl && (
+                        <img src={logoUrl} alt="Arunachala Logo" className="h-20 w-auto object-contain mb-2" />
+                    )}
                     <h3 className="text-2xl font-headers tracking-widest text-[#F5F5DC] font-bold">ARUNACHALA</h3>
                     <address className="not-italic">
                         <a

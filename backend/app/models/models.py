@@ -267,3 +267,19 @@ class Suggestion(Base):
 
 
 
+
+class Personalization(Base):
+    __tablename__ = "personalization"
+    id = Column(Integer, primary_key=True, index=True)
+    key = Column(String, unique=True, index=True, nullable=False) # e.g., 'logo_url'
+    value = Column(Text, nullable=True) # The URL or setting value
+    description = Column(String, nullable=True)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+class SiteConfig(Base):
+    __tablename__ = "site_config"
+    id = Column(Integer, primary_key=True, index=True)
+    key = Column(String, unique=True, index=True, nullable=False) # e.g., 'about_us_image'
+    value = Column(Text, nullable=True) # The URL or setting value
+    description = Column(String, nullable=True)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

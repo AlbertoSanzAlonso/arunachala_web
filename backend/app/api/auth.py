@@ -267,7 +267,7 @@ async def upload_profile_picture(
     return {"profile_picture": current_user.profile_picture}
 
 @router.post("/register")
-def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
+def register_user(user_in: UserCreate, current_user: User = Depends(get_current_admin_user), db: Session = Depends(get_db)):
     # Check if user already exists
     existing_user = db.query(User).filter(User.email == user_in.email).first()
     if existing_user:

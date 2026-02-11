@@ -9,10 +9,27 @@ import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
 import instructorImg from '../assets/images/susana_portrait.webp';
 import InstagramFeed from '../components/InstagramFeed';
+import { API_BASE_URL } from '../config';
 
 const AboutPage: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const [customHero, setCustomHero] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+        const fetchConfig = async () => {
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/site-config/about_hero_image`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.value) setCustomHero(data.value);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        };
+        fetchConfig();
+    }, []);
 
     return (
         <div className="font-body text-bark min-h-screen flex flex-col relative bg-bone">
@@ -49,7 +66,7 @@ const AboutPage: React.FC = () => {
                                 <div className="absolute inset-0 bg-matcha/20 rounded-full blur-3xl group-hover:bg-matcha/30 transition-all duration-500" />
                                 <div className="relative w-64 h-64 md:w-96 md:h-96 mx-auto rounded-full overflow-hidden border-8 border-white shadow-2xl">
                                     <img
-                                        src={instructorImg}
+                                        src={customHero ? `${API_BASE_URL}${customHero}` : instructorImg}
                                         alt="Susana Pérez Gil"
                                         className="w-full h-full object-cover object-center grayscale-[20%] hover:grayscale-0 transition-all duration-700"
                                     />

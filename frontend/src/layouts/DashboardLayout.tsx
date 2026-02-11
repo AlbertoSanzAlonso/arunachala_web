@@ -18,11 +18,13 @@ import {
     ArrowRightOnRectangleIcon,
     ChatBubbleLeftRightIcon,
     GlobeAltIcon,
-    SparklesIcon
+    SparklesIcon,
+    PaintBrushIcon
 } from '@heroicons/react/24/outline';
 
 const navigation = [
     { name: 'Vista General', href: '/dashboard', icon: HomeIcon },
+    { name: 'Personalizar', href: '/dashboard/customize', icon: PaintBrushIcon },
     { name: 'Galería', href: '/dashboard/gallery', icon: PhotoIcon },
     { name: 'Contenido', href: '/dashboard/content', icon: DocumentTextIcon },
     { name: 'Tratamientos', href: '/dashboard/treatments', icon: HeartIcon },
@@ -95,8 +97,8 @@ export default function DashboardLayout() {
     };
 
     return (
-        <>
-            <div>
+        <div className="min-h-screen bg-gray-50 flex flex-col">
+            <div className="dashboard-scale contents lg:block">
                 <Transition.Root show={sidebarOpen} as={Fragment}>
                     <Dialog as="div" className="relative z-50 lg:hidden" onClose={setSidebarOpen}>
                         <Transition.Child
@@ -141,8 +143,8 @@ export default function DashboardLayout() {
                                     {/* Sidebar component for mobile */}
                                     <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
                                         <div className="flex flex-col shrink-0 items-center mt-6 mb-1">
-                                            <img src={logoIcon} alt="Arunachala Icon" className="h-24 w-auto mb-1 rounded-full" />
-                                            <h1 className="text-xl font-bold text-primary-600 tracking-tight">Arunachala<span className="text-gray-400 font-light">Panel</span></h1>
+                                            <img src={logoIcon} alt="Arunachala Icon" className="h-16 w-auto mb-1 rounded-full" />
+                                            <h1 className="text-xl font-bold text-primary-600 tracking-tight font-headers">Arunachala<span className="text-gray-400 font-light text-base">Panel</span></h1>
                                         </div>
                                         <nav className="flex flex-1 flex-col">
                                             <ul className="flex flex-1 flex-col gap-y-7">
@@ -157,13 +159,13 @@ export default function DashboardLayout() {
                                                                         location.pathname === item.href
                                                                             ? 'bg-primary-50 text-primary-600'
                                                                             : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50',
-                                                                        'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                                                                        'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-all duration-200'
                                                                     )}
                                                                 >
                                                                     <item.icon
                                                                         className={classNames(
                                                                             location.pathname === item.href ? 'text-primary-600' : 'text-gray-400 group-hover:text-primary-600',
-                                                                            'h-6 w-6 shrink-0'
+                                                                            'h-6 w-6 shrink-0 transition-colors duration-200'
                                                                         )}
                                                                         aria-hidden="true"
                                                                     />
@@ -187,7 +189,7 @@ export default function DashboardLayout() {
                     <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
                         <div className="flex flex-col shrink-0 items-center mt-6 mb-1">
                             <img src={logoIcon} alt="Arunachala Icon" className="h-24 w-auto mb-1 rounded-full" />
-                            <h1 className="text-xl font-bold text-primary-600 tracking-tight">Arunachala<span className="text-gray-400 font-light">Panel</span></h1>
+                            <h1 className="text-xl font-bold text-primary-600 tracking-tight font-headers">Arunachala<span className="text-gray-400 font-light">Panel</span></h1>
                         </div>
                         <nav className="flex flex-1 flex-col">
                             <ul className="flex flex-1 flex-col gap-y-7">
@@ -222,118 +224,113 @@ export default function DashboardLayout() {
                     </div>
                 </div>
 
-                <div className="lg:pl-72">
-                    <div className="sticky top-0 z-40 flex h-24 shrink-0 px-0 items-center border-b border-gray-200 bg-[#becf81] shadow-sm justify-between relative">
-                        <div className="flex items-center h-full w-full relative">
+                <div className="lg:pl-72 flex flex-col flex-1">
+                    {/* Header: Improved responsive behavior */}
+                    <div className="sticky top-0 z-40 flex h-16 lg:h-24 shrink-0 items-center border-b border-gray-200 bg-[#becf81] shadow-sm">
+                        <div className="flex items-center w-full px-4 sm:px-6 lg:px-8">
                             <button
                                 type="button"
-                                className="-m-2.5 p-2.5 text-gray-700 lg:hidden absolute left-4 z-50 bg-white/50 rounded-full"
+                                className="p-2 text-gray-700 lg:hidden bg-white/50 rounded-full mr-2"
                                 onClick={() => setSidebarOpen(true)}
                             >
                                 <span className="sr-only">Open sidebar</span>
-                                <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+                                <Bars3Icon className="h-5 w-5" aria-hidden="true" />
                             </button>
 
-                            {/* Header Logo Banner - Full bleed with no margins, matching bg color */}
-                            <div className="w-full h-full flex items-center justify-center lg:justify-start bg-[#becf81] lg:pl-0">
+                            {/* Logo: Centered on mobile, left on desktop */}
+                            <div className="flex-1 flex justify-center lg:justify-start overflow-hidden h-full py-2">
                                 <img
                                     src={logoWide}
                                     alt="Arunachala"
-                                    className="h-full w-auto max-w-full object-contain"
+                                    className="h-full w-auto object-contain max-h-12 lg:max-h-20"
                                 />
                             </div>
-                        </div>
 
-                        <div className="flex items-center gap-4 absolute right-0 pr-4 sm:pr-6 lg:pr-8 h-full bg-gradient-to-l from-[#becf81] via-[#becf81]/90 to-transparent pl-8">
-                            <a
-                                href="/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/20 hover:bg-white/30 text-primary-900 text-sm font-semibold transition-colors border border-white/20 shadow-sm"
-                            >
-                                <GlobeAltIcon className="w-5 h-5" />
-                                <span className="hidden sm:inline">Ir a la Web</span>
-                            </a>
-                            <Menu as="div" className="relative ml-0">
-                                <div>
-                                    <Menu.Button className="flex items-center gap-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#becf81]">
+                            {/* User Menu & Links */}
+                            <div className="flex items-center gap-2 sm:gap-4 ml-auto">
+                                <a
+                                    href="/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/20 hover:bg-white/30 text-primary-900 text-xs font-semibold transition-colors border border-white/10 shadow-sm"
+                                    title="Ir a la Web"
+                                >
+                                    <GlobeAltIcon className="w-4 h-4" />
+                                    <span className="hidden md:inline">Ir a la Web</span>
+                                </a>
+                                <Menu as="div" className="relative">
+                                    <Menu.Button className="flex items-center gap-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors p-1 pr-2 md:px-3 md:py-1.5 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#becf81]">
                                         <span className="sr-only">Open user menu</span>
                                         {userProfile?.profile_picture ? (
                                             <img
-                                                className="h-8 w-8 rounded-full object-cover border-2 border-white shadow-sm"
+                                                className="h-7 w-7 md:h-8 md:w-8 rounded-full object-cover border border-white shadow-sm"
                                                 src={`${API_URL}${userProfile.profile_picture}`}
                                                 alt="Profile"
                                             />
                                         ) : (
-                                            <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-[#becf81] font-bold border-2 border-white shadow-sm">
+                                            <div className="h-7 w-7 md:h-8 md:w-8 rounded-full bg-white flex items-center justify-center text-[#becf81] font-bold border border-white shadow-sm font-headers text-sm">
                                                 {getUserInitial()}
                                             </div>
                                         )}
-                                        <span className="hidden sm:block text-sm font-medium text-gray-800">
-                                            {userProfile?.first_name && userProfile?.last_name
-                                                ? `${userProfile.first_name} ${userProfile.last_name}`
-                                                : userProfile?.first_name || userProfile?.email?.split('@')[0] || 'Usuario'}
+                                        <span className="hidden sm:block text-xs font-medium text-gray-800">
+                                            {userProfile?.first_name || 'Admin'}
                                         </span>
                                     </Menu.Button>
-                                </div>
-                                <Transition
-                                    as={Fragment}
-                                    enter="transition ease-out duration-200"
-                                    enterFrom="transform opacity-0 scale-95"
-                                    enterTo="transform opacity-100 scale-100"
-                                    leave="transition ease-in duration-150"
-                                    leaveFrom="transform opacity-100 scale-100"
-                                    leaveTo="transform opacity-0 scale-95"
-                                >
-                                    <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-
-                                        <div className="px-4 py-3 border-b border-gray-100">
-                                            <p className="text-sm text-gray-500">Sesión iniciada como</p>
-                                            <p className="text-sm font-medium text-gray-900 truncate">
-                                                {userProfile?.email || 'Cargando...'}
-                                            </p>
-                                        </div>
-
-
-                                        <Menu.Item>
-                                            {({ active }) => (
-                                                <Link
-                                                    to="/dashboard/profile"
-                                                    className={classNames(
-                                                        active ? 'bg-gray-100' : '',
-                                                        'block px-4 py-2 text-sm text-gray-700 flex items-center gap-2'
-                                                    )}
-                                                >
-                                                    <UserCircleIcon className="h-5 w-5 text-gray-400" />
-                                                    Mi Cuenta
-                                                </Link>
-                                            )}
-                                        </Menu.Item>
-                                        <Menu.Item>
-                                            {({ active }) => (
-                                                <button
-                                                    onClick={() => {
-                                                        // Handle logout logic here
-                                                        logout();
-                                                        window.location.href = '/login';
-                                                    }}
-                                                    className={classNames(
-                                                        active ? 'bg-gray-100' : '',
-                                                        'block w-full text-left px-4 py-2 text-sm text-red-600 flex items-center gap-2'
-                                                    )}
-                                                >
-                                                    <ArrowRightOnRectangleIcon className="h-5 w-5 text-red-400" />
-                                                    Cerrar Sesión
-                                                </button>
-                                            )}
-                                        </Menu.Item>
-                                    </Menu.Items>
-                                </Transition>
-                            </Menu>
+                                    <Transition
+                                        as={Fragment}
+                                        enter="transition ease-out duration-200"
+                                        enterFrom="transform opacity-0 scale-95"
+                                        enterTo="transform opacity-100 scale-100"
+                                        leave="transition ease-in duration-150"
+                                        leaveFrom="transform opacity-100 scale-100"
+                                        leaveTo="transform opacity-0 scale-95"
+                                    >
+                                        <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                            <div className="px-4 py-3 border-b border-gray-100">
+                                                <p className="text-[10px] uppercase tracking-wider text-gray-400 font-bold">Sesión como</p>
+                                                <p className="text-xs font-medium text-gray-900 truncate">
+                                                    {userProfile?.email || 'Admin'}
+                                                </p>
+                                            </div>
+                                            <Menu.Item>
+                                                {({ active }) => (
+                                                    <Link
+                                                        to="/dashboard/profile"
+                                                        className={classNames(
+                                                            active ? 'bg-gray-50' : '',
+                                                            'block px-4 py-2 text-sm text-gray-700 flex items-center gap-2'
+                                                        )}
+                                                    >
+                                                        <UserCircleIcon className="h-4 w-4 text-gray-400" />
+                                                        Mi Cuenta
+                                                    </Link>
+                                                )}
+                                            </Menu.Item>
+                                            <Menu.Item>
+                                                {({ active }) => (
+                                                    <button
+                                                        onClick={() => {
+                                                            logout();
+                                                            window.location.href = '/login';
+                                                        }}
+                                                        className={classNames(
+                                                            active ? 'bg-gray-50' : '',
+                                                            'block w-full text-left px-4 py-2 text-sm text-red-600 flex items-center gap-2'
+                                                        )}
+                                                    >
+                                                        <ArrowRightOnRectangleIcon className="h-4 w-4 text-red-400" />
+                                                        Cerrar Sesión
+                                                    </button>
+                                                )}
+                                            </Menu.Item>
+                                        </Menu.Items>
+                                    </Transition>
+                                </Menu>
+                            </div>
                         </div>
                     </div>
 
-                    <main className="py-10">
+                    <main className="py-6 lg:py-10 flex-1">
                         <div className="px-4 sm:px-6 lg:px-8">
                             <Outlet />
                         </div>
@@ -343,7 +340,7 @@ export default function DashboardLayout() {
 
             {/* Session Timeout Warning Modal */}
             <Transition.Root show={showSessionWarning} as={Fragment}>
-                <Dialog as="div" className="relative z-50" onClose={() => { }}>
+                <Dialog as="div" className="relative z-50 font-body" onClose={() => { }}>
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -373,7 +370,7 @@ export default function DashboardLayout() {
                                             <ArrowRightOnRectangleIcon className="h-6 w-6 text-yellow-600" aria-hidden="true" />
                                         </div>
                                         <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
-                                            <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
+                                            <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900 font-headers">
                                                 Tu sesión está a punto de expirar
                                             </Dialog.Title>
                                             <div className="mt-2 flex flex-col items-center">
@@ -381,7 +378,6 @@ export default function DashboardLayout() {
                                                     Hemos detectado inactividad. Tu sesión se cerrará en:
                                                 </p>
 
-                                                {/* Circular Progress Timer */}
                                                 <div className="relative h-24 w-24 flex items-center justify-center mb-4">
                                                     <svg className="transform -rotate-90 w-full h-full">
                                                         <circle
@@ -438,6 +434,6 @@ export default function DashboardLayout() {
                     </div>
                 </Dialog>
             </Transition.Root>
-        </>
+        </div>
     );
 }
