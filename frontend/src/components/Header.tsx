@@ -1,7 +1,7 @@
 import React from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import logo from '../assets/images/logo_transparent_v2.webp';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAudio } from '../context/AudioContext';
@@ -19,7 +19,6 @@ const Header: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const [showVolume, setShowVolume] = React.useState(false);
     const navigate = useNavigate();
-    const location = useLocation();
     const { t, i18n } = useTranslation();
     const {
         playingMeditation,
