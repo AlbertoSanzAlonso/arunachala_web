@@ -58,6 +58,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const playlistRef = useRef<Meditation[]>([]);
     const currentMeditationRef = useRef<Meditation | null>(null);
+    const playMeditationRef = useRef<any>(null);
 
     // Keep refs in sync with state for use in event listeners
     useEffect(() => {
@@ -90,7 +91,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     }, []);
 
-    const play = useCallback((meditation: Meditation, shouldOpenModal: boolean = false, newPlaylist?: Meditation[]) => {
+    const playMeditation = useCallback((meditation: Meditation, shouldOpenModal: boolean = false, newPlaylist?: Meditation[]) => {
         if (!meditation) return;
 
         if (newPlaylist) {
@@ -133,11 +134,10 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             newAudio.addEventListener('ended', () => {
                 const currentP = playlistRef.current;
                 if (currentP.length > 0) {
-                    // Manual trigger of next logic
                     const currentM = currentMeditationRef.current;
                     const currentIndex = currentP.findIndex(m => m.id === (currentM?.id || meditation.id));
                     if (currentIndex !== -1 && currentIndex < currentP.length - 1) {
-                        play(currentP[currentIndex + 1]);
+                        if (playMeditationRef.current) playMeditationRef.current(currentP[currentIndex + 1]);
                     } else {
                         stop();
                     }
@@ -159,17 +159,21 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     }, [volume, isMuted, pause, stop]);
 
+    useEffect(() => {
+        playMeditationRef.current = playMeditation;
+    }, [playMeditation]);
+
     const next = useCallback(() => {
         const currentM = currentMeditationRef.current;
         const currentP = playlistRef.current;
         if (!currentM || currentP.length === 0) return;
         const currentIndex = currentP.findIndex(m => m.id === currentM.id);
         if (currentIndex !== -1 && currentIndex < currentP.length - 1) {
-            play(currentP[currentIndex + 1]);
+            playMeditation(currentP[currentIndex + 1]);
         } else if (currentIndex === currentP.length - 1) {
-            play(currentP[0]);
+            playMeditation(currentP[0]);
         }
-    }, [play]);
+    }, [playMeditation]);
 
     const previous = useCallback(() => {
         const currentM = currentMeditationRef.current;
@@ -177,11 +181,11 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (!currentM || currentP.length === 0) return;
         const currentIndex = currentP.findIndex(m => m.id === currentM.id);
         if (currentIndex !== -1 && currentIndex > 0) {
-            play(currentP[currentIndex - 1]);
+            playMeditation(currentP[currentIndex - 1]);
         } else if (currentIndex === 0) {
-            play(currentP[currentP.length - 1]);
+            playMeditation(currentP[currentP.length - 1]);
         }
-    }, [play]);
+    }, [playMeditation]);
 
     const setVolume = useCallback((val: number) => {
         setVolumeState(val);
@@ -224,7 +228,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             playlist,
             isPlayerModalOpen,
             isMeditationInView,
-            play,
+            play: playMeditation,
             pause,
             stop,
             next,
