@@ -72,7 +72,7 @@ const HomePage: React.FC = () => {
     };
 
     return (
-        <div ref={containerRef} className="font-body text-bark relative h-screen overflow-y-auto snap-y snap-proximity scroll-smooth">
+        <div ref={containerRef} className="font-body text-bark relative h-screen overflow-y-auto snap-y snap-mandatory scroll-smooth">
             <Header />
 
             {/* Floating Back to Top Button */}
@@ -94,7 +94,7 @@ const HomePage: React.FC = () => {
             </AnimatePresence>
 
             {/* Hero Section with Video */}
-            <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center snap-center">
+            <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center snap-center snap-always">
                 <video
                     className="absolute top-0 left-0 w-full h-full object-cover opacity-85"
                     autoPlay
@@ -153,7 +153,7 @@ const HomePage: React.FC = () => {
             {/* Content Sections */}
             <main className="bg-bone relative z-10">
                 {/* Wellness Quiz Section - Snap Start to align with Hero Border */}
-                <section className="snap-center scroll-mt-24 pt-12">
+                <section className="snap-center snap-always scroll-mt-24 pt-12">
                     <Suspense fallback={<div className="h-64 flex items-center justify-center">{t('home.loading.experience')}</div>}>
                         <FadeInSection>
                             <WellnessQuiz />
@@ -162,7 +162,7 @@ const HomePage: React.FC = () => {
                 </section>
 
                 {/* Featured Activities Section */}
-                <section className="snap-center scroll-mt-24">
+                <section className="snap-center snap-always scroll-mt-24">
                     <Suspense fallback={<div className="h-32 flex items-center justify-center">{t('home.loading.activities', 'Cargando actividades...')}</div>}>
                         <FadeInSection delay={0.1}>
                             <FeaturedActivities />
@@ -171,7 +171,7 @@ const HomePage: React.FC = () => {
                 </section>
 
                 {/* Gallery Slider - Snap Center */}
-                <section className="w-full max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-12 snap-center">
+                <section className="w-full max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-12 snap-center snap-always">
                     <Suspense fallback={<div className="h-96 flex items-center justify-center">{t('home.loading.gallery')}</div>}>
                         <FadeInSection delay={0.2}>
                             <ImageSlider images={galleryImages} />
@@ -180,7 +180,7 @@ const HomePage: React.FC = () => {
                 </section>
 
                 {/* Reviews Section - Snap Start to ensure title visibility */}
-                <section className="w-full max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-12 snap-center scroll-mt-24">
+                <section className="w-full max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-12 snap-center snap-always scroll-mt-24">
                     <Suspense fallback={<div className="h-64 flex items-center justify-center">{t('home.loading.reviews')}</div>}>
                         <FadeInSection delay={0.3}>
                             <ReviewsSection />
@@ -191,7 +191,7 @@ const HomePage: React.FC = () => {
                 </section>
             </main>
 
-            <div className="snap-center">
+            <div className="snap-center snap-always">
                 <Footer />
             </div>
         </div>

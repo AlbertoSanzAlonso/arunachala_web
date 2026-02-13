@@ -105,7 +105,7 @@ const TherapiesPage: React.FC = () => {
     }, []);
 
     return (
-        <div ref={containerRef} className="font-body text-bark h-screen overflow-y-auto flex flex-col relative snap-y snap-proximity scroll-smooth">
+        <div ref={containerRef} className="font-body text-bark h-screen overflow-y-auto flex flex-col relative snap-y snap-mandatory scroll-smooth">
             <Helmet>
                 <title>{t('therapies.seo.title')}</title>
                 <meta name="description" content={t('therapies.seo.description')} />
@@ -231,7 +231,7 @@ const TherapiesPage: React.FC = () => {
             )}
 
             <main className="flex-grow bg-bone">
-                <div className="relative w-full min-h-[100vh] md:min-h-[90vh] flex items-center justify-center snap-center">
+                <div className="relative w-full min-h-[100vh] md:min-h-[90vh] flex items-center justify-center snap-center snap-always">
                     <div
                         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
                         style={{ backgroundImage: `url(${customHero ? `${API_BASE_URL}${customHero}` : therapyHero})` }}
@@ -286,7 +286,7 @@ const TherapiesPage: React.FC = () => {
                     </div>
                 </div>
 
-                <section ref={massagesRef} className="py-32 md:py-48 bg-white scroll-mt-24 snap-center relative">
+                <section ref={massagesRef} className="py-32 md:py-48 bg-white scroll-mt-24 snap-center snap-always relative">
                     <FadeInSection className="max-w-7xl mx-auto md:px-8">
                         <div className="text-center mb-16 px-8">
                             <h2 className="text-4xl md:text-6xl font-headers text-forest mb-4 uppercase">{t('therapies.sections.massages')}</h2>
@@ -381,7 +381,7 @@ const TherapiesPage: React.FC = () => {
                     </FadeInSection>
                 </section>
 
-                <section ref={therapiesRef} className="py-32 md:py-48 bg-bone scroll-mt-24 snap-center">
+                <section ref={therapiesRef} className="py-32 md:py-48 bg-bone scroll-mt-24 snap-center snap-always">
                     <FadeInSection className="max-w-7xl mx-auto md:px-8">
                         <div className="text-center mb-16 px-8">
                             <h2 className="text-4xl md:text-6xl font-headers text-forest mb-4 uppercase">{t('therapies.sections.therapies')}</h2>
@@ -476,7 +476,7 @@ const TherapiesPage: React.FC = () => {
                     </FadeInSection>
                 </section>
 
-                <section ref={appointmentRef} className="py-24 md:py-32 bg-forest text-bone snap-center relative overflow-hidden scroll-mt-24">
+                <section ref={appointmentRef} className="py-24 md:py-32 bg-forest text-bone snap-center snap-always relative overflow-hidden scroll-mt-24">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-matcha/10 rounded-full -mr-32 -mt-32 blur-3xl" />
                     <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full -ml-32 -mb-32 blur-2xl" />
                     <FadeInSection className="max-w-4xl mx-auto px-8 relative z-10">
@@ -512,7 +512,7 @@ const TherapiesPage: React.FC = () => {
                     </FadeInSection>
                 </section>
 
-                <section ref={blogRef} className="scroll-mt-24 snap-center">
+                <section ref={blogRef} className="scroll-mt-24 snap-center snap-always">
                     <BlogSection
                         category="therapy"
                         limit={6}
@@ -523,7 +523,7 @@ const TherapiesPage: React.FC = () => {
                     />
                 </section>
             </main>
-            <div className="snap-center" id="footer-snap">
+            <div className="snap-center snap-always" id="footer-snap">
                 <Footer />
             </div>
         </div>
