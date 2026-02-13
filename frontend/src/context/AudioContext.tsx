@@ -62,13 +62,16 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [playlist, setPlaylist] = useState<Meditation[]>([]);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    if (!audioRef.current && typeof window !== 'undefined') {
+        audioRef.current = new Audio();
+    }
 
     const playlistRef = useRef<Meditation[]>([]);
     const currentMeditationRef = useRef<Meditation | null>(null);
     const playMeditationRef = useRef<any>(null);
     const { i18n } = useTranslation();
 
-    // Keep refs in sync with state for use in event listeners
+    // Keep refs in sync
     useEffect(() => {
         playlistRef.current = playlist;
     }, [playlist]);
@@ -81,7 +84,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (audioRef.current) {
             audioRef.current.pause();
             audioRef.current.src = "";
-            audioRef.current = null;
+            audioRef.current.load();
         }
         setPlayingMeditation(null);
         setIsPlaying(false);
@@ -100,83 +103,105 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }, []);
 
     const playMeditation = useCallback((meditation: Meditation, shouldOpenModal: boolean = false, newPlaylist?: Meditation[]) => {
-        if (!meditation) return;
+        if (!meditation || !audioRef.current) return;
 
         if (newPlaylist) {
             setPlaylist(newPlaylist);
         }
 
-        if (currentMeditationRef.current?.id === meditation.id && audioRef.current) {
-            if (audioRef.current.paused) {
-                audioRef.current.play().catch(console.error);
+        const audio = audioRef.current;
+
+        if (currentMeditationRef.current?.id === meditation.id) {
+            if (audio.paused) {
+                audio.play().catch(err => console.warn("Playback error:", err));
                 setIsPlaying(true);
             } else {
                 pause();
             }
         } else {
-            if (audioRef.current) {
-                audioRef.current.pause();
-                audioRef.current.src = "";
-            }
+            audio.pause();
 
             const url = meditation.media_url || '';
             const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
-            const newAudio = new Audio(fullUrl);
-            newAudio.volume = volume;
-            newAudio.muted = isMuted;
 
-            newAudio.addEventListener('error', (e) => {
-                console.error("Audio playback error, falling back to mock audio:", e);
-                if (newAudio.src !== MOCK_AUDIO_URL) {
-                    newAudio.src = MOCK_AUDIO_URL;
-                    newAudio.load();
-                    newAudio.play().catch(err => console.error("Mock audio playback failed:", err));
-                }
-            });
+            audio.src = fullUrl;
+            audio.volume = volume;
+            audio.muted = isMuted;
+            audio.load();
 
-            newAudio.addEventListener('timeupdate', () => {
-                setCurrentTime(newAudio.currentTime);
-                if (newAudio.duration > 0) {
-                    setProgress((newAudio.currentTime / newAudio.duration) * 100);
-                }
-            });
-
-            newAudio.addEventListener('loadedmetadata', () => {
-                setDuration(newAudio.duration);
-            });
-
-            newAudio.addEventListener('play', () => setIsPlaying(true));
-            newAudio.addEventListener('pause', () => setIsPlaying(false));
-
-            newAudio.addEventListener('ended', () => {
-                const currentP = playlistRef.current;
-                if (currentP.length > 0) {
-                    const currentM = currentMeditationRef.current;
-                    const currentIndex = currentP.findIndex(m => m.id === (currentM?.id || meditation.id));
-                    if (currentIndex !== -1 && currentIndex < currentP.length - 1) {
-                        if (playMeditationRef.current) playMeditationRef.current(currentP[currentIndex + 1]);
-                    } else {
-                        stop();
-                    }
-                } else {
-                    stop();
-                }
-            });
-
-            newAudio.play().catch(err => {
+            audio.play().catch(err => {
                 console.warn("Playback error (catch):", err);
-                // Error event listener above will handle fallback
             });
 
-            audioRef.current = newAudio;
             setPlayingMeditation(meditation);
         }
 
         if (shouldOpenModal) {
             setIsPlayerModalOpen(true);
         }
-    }, [volume, isMuted, pause, stop]);
+    }, [volume, isMuted, pause]);
 
+    // Setup global listeners once
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        const handleTimeUpdate = () => {
+            setCurrentTime(audio.currentTime);
+            if (audio.duration > 0) {
+                setProgress((audio.currentTime / audio.duration) * 100);
+            }
+        };
+
+        const handleLoadedMetadata = () => {
+            setDuration(audio.duration);
+        };
+
+        const handlePlay = () => setIsPlaying(true);
+        const handlePause = () => setIsPlaying(false);
+
+        const handleEnded = () => {
+            const currentP = playlistRef.current;
+            const currentM = currentMeditationRef.current;
+            if (currentP.length > 0 && currentM) {
+                const currentIndex = currentP.findIndex(m => m.id === currentM.id);
+                if (currentIndex !== -1 && currentIndex < currentP.length - 1) {
+                    if (playMeditationRef.current) {
+                        playMeditationRef.current(currentP[currentIndex + 1]);
+                    }
+                } else {
+                    stop();
+                }
+            } else {
+                stop();
+            }
+        };
+
+        const handleError = (e: any) => {
+            console.error("Audio playback error, falling back to mock audio:", e);
+            if (audio.src !== MOCK_AUDIO_URL && audio.src !== "") {
+                audio.src = MOCK_AUDIO_URL;
+                audio.load();
+                audio.play().catch(err => console.error("Mock audio playback failed:", err));
+            }
+        };
+
+        audio.addEventListener('timeupdate', handleTimeUpdate);
+        audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.addEventListener('play', handlePlay);
+        audio.addEventListener('pause', handlePause);
+        audio.addEventListener('ended', handleEnded);
+        audio.addEventListener('error', handleError);
+
+        return () => {
+            audio.removeEventListener('timeupdate', handleTimeUpdate);
+            audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+            audio.removeEventListener('play', handlePlay);
+            audio.removeEventListener('pause', handlePause);
+            audio.removeEventListener('ended', handleEnded);
+            audio.removeEventListener('error', handleError);
+        };
+    }, [stop]);
 
     useEffect(() => {
         playMeditationRef.current = playMeditation;
