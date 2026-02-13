@@ -7,6 +7,7 @@ import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
 import { getImageUrl } from '../utils/imageUtils';
 import ArticleModal from './ArticleModal';
+import { MOCK_ARTICLES } from '../mocks/mockData';
 
 interface Article {
     id: number;
@@ -60,10 +61,26 @@ const BlogSection: React.FC<BlogSectionProps> = ({
             const response = await fetch(url);
             if (response.ok) {
                 const data = await response.json();
-                setArticles(data.slice(0, limit));
+                if (data && data.length > 0) {
+                    setArticles(data.slice(0, limit));
+                } else {
+                    const filteredMocks = category
+                        ? MOCK_ARTICLES.filter(a => a.category === category)
+                        : MOCK_ARTICLES;
+                    setArticles(filteredMocks.slice(0, limit));
+                }
+            } else {
+                const filteredMocks = category
+                    ? MOCK_ARTICLES.filter(a => a.category === category)
+                    : MOCK_ARTICLES;
+                setArticles(filteredMocks.slice(0, limit));
             }
         } catch (error) {
             console.error('Error fetching articles:', error);
+            const filteredMocks = category
+                ? MOCK_ARTICLES.filter(a => a.category === category)
+                : MOCK_ARTICLES;
+            setArticles(filteredMocks.slice(0, limit));
         } finally {
             setIsLoading(false);
         }
@@ -72,6 +89,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
     useEffect(() => {
         fetchArticles();
     }, [fetchArticles]);
+
 
     const handleArticleClick = async (article: Article) => {
         try {

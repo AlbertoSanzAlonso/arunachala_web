@@ -8,6 +8,7 @@ import BackButton from '../components/BackButton';
 import NewsletterForm from '../components/NewsletterForm';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
+import { MOCK_ACTIVITIES } from '../mocks/mockData';
 import lotusFlower from '../assets/images/lotus_flower.png';
 
 interface Activity {
@@ -465,6 +466,8 @@ const GlobalCustomSuggestion = ({ onSubmitted }: { onSubmitted: () => void }) =>
 };
 
 
+
+
 const ActivitiesPage: React.FC = () => {
 
     const { t, i18n } = useTranslation();
@@ -482,7 +485,13 @@ const ActivitiesPage: React.FC = () => {
 
             if (actRes.ok) {
                 const data = await actRes.json();
-                setActivities(data);
+                if (data && data.length > 0) {
+                    setActivities(data);
+                } else {
+                    setActivities(MOCK_ACTIVITIES);
+                }
+            } else {
+                setActivities(MOCK_ACTIVITIES);
             }
             if (sugRes.ok) {
                 const data = await sugRes.json();
@@ -490,6 +499,7 @@ const ActivitiesPage: React.FC = () => {
             }
         } catch (error) {
             console.error("Error fetching page data:", error);
+            setActivities(MOCK_ACTIVITIES);
         } finally {
             setIsLoading(false);
         }
@@ -498,6 +508,7 @@ const ActivitiesPage: React.FC = () => {
     useEffect(() => {
         fetchData();
     }, []);
+
 
     // Open modal automatically if activity ID is in URL
     useEffect(() => {

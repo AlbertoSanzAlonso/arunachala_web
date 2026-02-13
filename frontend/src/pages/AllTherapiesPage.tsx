@@ -11,6 +11,7 @@ import BackButton from '../components/BackButton';
 import lotusFlower from '../assets/images/lotus_flower.png';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
+import { MOCK_THERAPIES } from '../mocks/mockData';
 
 interface Treatment {
     id: number;
@@ -23,6 +24,8 @@ interface Treatment {
     image_url: string | null;
     translations?: any;
 }
+
+
 
 const AllTherapiesPage: React.FC = () => {
     const { t, i18n } = useTranslation();
@@ -37,10 +40,17 @@ const AllTherapiesPage: React.FC = () => {
             const response = await fetch(`${API_BASE_URL}/api/treatments/therapies`);
             if (response.ok) {
                 const data = await response.json();
-                setTherapies(data);
+                if (data && data.length > 0) {
+                    setTherapies(data);
+                } else {
+                    setTherapies(MOCK_THERAPIES);
+                }
+            } else {
+                setTherapies(MOCK_THERAPIES);
             }
         } catch (error) {
             console.error("Failed to load therapies:", error);
+            setTherapies(MOCK_THERAPIES);
         } finally {
             setLoading(false);
         }
@@ -49,6 +59,7 @@ const AllTherapiesPage: React.FC = () => {
     useEffect(() => {
         fetchTherapies();
     }, []);
+
 
     // Auto-open from URL parameter
     useEffect(() => {

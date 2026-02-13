@@ -5,6 +5,8 @@ import omSymbol from '../assets/images/om_symbol.png';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
 
+import { MOCK_SCHEDULES, MOCK_WEEKEND_ACTIVITIES } from '../mocks/mockData';
+
 const YogaSchedule: React.FC = () => {
     const { t, i18n } = useTranslation();
     const DAYS = React.useMemo(() => [
@@ -44,10 +46,17 @@ const YogaSchedule: React.FC = () => {
                 const response = await fetch(`${API_BASE_URL}/api/schedules`);
                 if (response.ok) {
                     const data = await response.json();
-                    setRawItems(data);
+                    if (data && data.length > 0) {
+                        setRawItems(data);
+                    } else {
+                        setRawItems(MOCK_SCHEDULES);
+                    }
+                } else {
+                    setRawItems(MOCK_SCHEDULES);
                 }
             } catch (error) {
                 console.error('Error fetching schedules:', error);
+                setRawItems(MOCK_SCHEDULES);
             } finally {
                 setIsLoading(false);
             }
@@ -58,17 +67,24 @@ const YogaSchedule: React.FC = () => {
                 const response = await fetch(`${API_BASE_URL}/api/activities?active_only=true`);
                 if (response.ok) {
                     const data = await response.json();
-                    // Filter: type is (taller, evento, retiro) AND start_date is Saturday (6) or Sunday (0)
-                    const weekend = data.filter((a: any) => {
-                        if (!a.start_date) return false;
-                        const d = new Date(a.start_date);
-                        const day = d.getDay();
-                        return (day === 0 || day === 6) && ['taller', 'evento', 'retiro'].includes(a.type);
-                    });
-                    setWeekendActivities(weekend);
+                    if (data && data.length > 0) {
+                        // Filter: type is (taller, evento, retiro) AND start_date is Saturday (6) or Sunday (0)
+                        const weekend = data.filter((a: any) => {
+                            if (!a.start_date) return false;
+                            const d = new Date(a.start_date);
+                            const day = d.getDay();
+                            return (day === 0 || day === 6) && ['taller', 'evento', 'retiro'].includes(a.type);
+                        });
+                        setWeekendActivities(weekend.length > 0 ? weekend : MOCK_WEEKEND_ACTIVITIES);
+                    } else {
+                        setWeekendActivities(MOCK_WEEKEND_ACTIVITIES);
+                    }
+                } else {
+                    setWeekendActivities(MOCK_WEEKEND_ACTIVITIES);
                 }
             } catch (e) {
                 console.error("Error fetching activities for schedule annex:", e);
+                setWeekendActivities(MOCK_WEEKEND_ACTIVITIES);
             }
         };
 
@@ -80,6 +96,7 @@ const YogaSchedule: React.FC = () => {
         }, 30000);
         return () => clearInterval(interval);
     }, []);
+
 
     const TimeBlock = ({
         label,

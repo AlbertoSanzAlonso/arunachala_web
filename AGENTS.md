@@ -173,3 +173,11 @@ arunachala_web/
     - **Background Execution**: Notifications are processed as asynchronous background tasks to ensure high API performance and prevent UI blocking.
     - **Automatic Triggers**: Integrated notification logic directly into `create_activity`, `update_activity`, `delete_activity`, and `acknowledge_activity_finish` endpoints.
     - **Newsletter & Subscription**: Added `NewsletterForm.tsx` and `UnsubscribePage.tsx` to handle user subscriptions and opt-outs securely.
+## 📝 Recent Updates (2026-02-13 - Morning)
+- **Frontend Mocking & Vercel Preview**:
+    - **Centralized Mock System**: Created `frontend/src/mocks/mockData.ts` containing high-quality sample data for Meditations, Articles, Therapies, and Yoga Schedules.
+    - **Offline Fallback Architecture**: Updated core pages (`MeditationsPage`, `AllTherapiesPage`, `YogaSchedule`) and components (`BlogSection`) to automatically switch to mock data if the backend API is unreachable or returns an empty list.
+    - **Audio Fail-Safe**: Enhanced `AudioContext` with a global error listener that falls back to a public mock audio stream if the media URL fails to load.
+    - **CI/CD Build Fixes**: Resolved ESLint warnings (unused variables, missing dependencies) in `BlogSection` and `UserProfile` that were causing Vercel builds to fail due to `CI=true` enforcement.
+    - **Visual Continuity**: Ensured mock items include real Unsplash images and full ES/CA/EN translations to maintain design quality during development cycles without a live backend.
+    - **Cleanup Reminder**: All fallback logic is designed as a "safety net" and should be reviewed/removed before the final production release if a persistent backend is guaranteed.
