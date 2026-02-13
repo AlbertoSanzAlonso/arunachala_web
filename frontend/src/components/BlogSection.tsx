@@ -209,7 +209,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                             <div
                                 ref={scrollRef}
                                 onScroll={handleScroll}
-                                className={`flex gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-8 pt-4 px-0 md:px-1 w-full ${isSlider ? '' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}
+                                className={`flex gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-8 pt-4 px-[10vw] md:px-1 w-full ${isSlider ? '' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}
                                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                             >
                                 {articles.map((article, index) => (
@@ -220,7 +220,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                         viewport={{ once: true }}
                                         transition={{ delay: index * 0.1 }}
                                         onClick={() => handleArticleClick(article)}
-                                        className={`flex-none w-[calc(100%-48px)] mx-6 md:mx-0 md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] snap-center bg-white rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 cursor-pointer group`}
+                                        className={`flex-none w-[80vw] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] snap-center bg-white rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 cursor-pointer group`}
                                     >
                                         <div className="h-56 bg-forest/10 overflow-hidden relative">
                                             {article.thumbnail_url && !article.thumbnail_url.includes('om_symbol.webp') && !article.thumbnail_url.includes('lotus_flower.webp') ? (
