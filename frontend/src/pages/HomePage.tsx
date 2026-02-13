@@ -94,7 +94,7 @@ const HomePage: React.FC = () => {
             </AnimatePresence>
 
             {/* Hero Section with Video */}
-            <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center snap-center snap-always">
+            <section className="relative min-h-[85vh] md:min-h-screen w-full overflow-hidden flex items-center justify-center snap-center snap-always">
                 <video
                     className="absolute top-0 left-0 w-full h-full object-cover opacity-85"
                     autoPlay

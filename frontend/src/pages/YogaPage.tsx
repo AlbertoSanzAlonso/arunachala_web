@@ -26,6 +26,35 @@ const YogaPage: React.FC = () => {
     const [galleryImages, setGalleryImages] = useState<string[]>([]);
     const [showBackToTop, setShowBackToTop] = useState(false);
     const [customHero, setCustomHero] = useState<string | null>(null);
+    const [hasWeekendActivities, setHasWeekendActivities] = useState(false);
+
+    useEffect(() => {
+        const fetchWeekend = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/activities?active_only=true`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.length > 0) {
+                        const weekend = data.filter((a: any) => {
+                            if (!a.start_date) return false;
+                            const d = new Date(a.start_date);
+                            const day = d.getDay();
+                            return (day === 0 || day === 6) && ['taller', 'evento', 'retiro'].includes(a.type);
+                        });
+                        setHasWeekendActivities(weekend.length > 0);
+                    } else {
+                        // Check if fallback is active (based on YogaSchedule logic)
+                        setHasWeekendActivities(true);
+                    }
+                } else {
+                    setHasWeekendActivities(true); // Fallback to mocks
+                }
+            } catch (e) {
+                setHasWeekendActivities(true); // Fallback to mocks
+            }
+        };
+        fetchWeekend();
+    }, []);
 
     useEffect(() => {
         const fetchConfig = async () => {
@@ -112,7 +141,7 @@ const YogaPage: React.FC = () => {
             )}
 
             <main className="flex-grow bg-bone">
-                <div id="top" className="relative w-full min-h-[100vh] md:min-h-[90vh] flex items-center justify-center snap-center snap-always" role="banner">
+                <div id="top" className="relative w-full min-h-[85vh] md:min-h-[90vh] flex items-center justify-center snap-center snap-always" role="banner">
                     <div className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${customHero ? `${API_BASE_URL}${customHero}` : yogaHero})` }} aria-hidden="true">
                         <div className="absolute inset-0 bg-black/50" />
                     </div>
@@ -166,17 +195,25 @@ const YogaPage: React.FC = () => {
                     </div>
                 </div>
 
-                <section ref={scheduleRef} className="bg-white py-16 md:py-24 scroll-mt-24 snap-center snap-always relative">
+                <section ref={scheduleRef} className="bg-white py-12 md:py-24 scroll-mt-24 snap-center snap-always relative">
                     <FadeInSection className="max-w-7xl mx-auto px-4 md:px-8">
                         <Suspense fallback={<SectionLoader />}>
-                            <YogaSchedule />
+                            <YogaSchedule onlyWeekly />
                         </Suspense>
-
-
                     </FadeInSection>
                 </section>
 
-                <section ref={galleryRef} className="w-full max-w-7xl mx-auto px-4 md:px-6 py-32 md:py-48 scroll-mt-24 snap-center snap-always">
+                {hasWeekendActivities && (
+                    <section className="bg-white py-12 md:py-24 scroll-mt-24 snap-center snap-always relative border-t border-forest/5">
+                        <FadeInSection className="max-w-7xl mx-auto px-4 md:px-8">
+                            <Suspense fallback={<SectionLoader />}>
+                                <YogaSchedule onlyWeekend />
+                            </Suspense>
+                        </FadeInSection>
+                    </section>
+                )}
+
+                <section ref={galleryRef} className="w-full max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-48 scroll-mt-24 snap-center snap-always">
                     <FadeInSection>
                         <h2 className="text-3xl md:text-5xl font-headers text-forest mb-12 text-center uppercase tracking-tight">{t('yoga.sections.gallery')}</h2>
                         <Suspense fallback={<SectionLoader />}>

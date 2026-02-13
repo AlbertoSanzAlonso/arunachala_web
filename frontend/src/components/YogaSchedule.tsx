@@ -7,7 +7,13 @@ import { getTranslated } from '../utils/translate';
 
 import { MOCK_SCHEDULES, MOCK_WEEKEND_ACTIVITIES } from '../mocks/mockData';
 
-const YogaSchedule: React.FC = () => {
+interface YogaScheduleProps {
+    onlyWeekly?: boolean;
+    onlyWeekend?: boolean;
+    hideTitle?: boolean;
+}
+
+const YogaSchedule: React.FC<YogaScheduleProps> = ({ onlyWeekly, onlyWeekend, hideTitle }) => {
     const { t, i18n } = useTranslation();
     const DAYS = React.useMemo(() => [
         t('common.days.monday'),
@@ -88,14 +94,15 @@ const YogaSchedule: React.FC = () => {
             }
         };
 
-        fetchSchedules();
-        fetchWeekendActivities();
+        if (!onlyWeekend) fetchSchedules();
+        if (!onlyWeekly) fetchWeekendActivities();
+
         const interval = setInterval(() => {
-            fetchSchedules();
-            fetchWeekendActivities();
+            if (!onlyWeekend) fetchSchedules();
+            if (!onlyWeekly) fetchWeekendActivities();
         }, 30000);
         return () => clearInterval(interval);
-    }, []);
+    }, [onlyWeekly, onlyWeekend]);
 
 
     const TimeBlock = ({
@@ -200,86 +207,94 @@ const YogaSchedule: React.FC = () => {
 
     if (isLoading) {
         return (
-            <div className="w-full max-w-7xl mx-auto py-12 px-4 text-center">
-                <div className="animate-pulse text-forest font-headers text-2xl">{t('yoga.sections.schedule')}...</div>
+            <div className={`w-full max-w-7xl mx-auto py-12 px-4 text-center ${onlyWeekend ? 'mt-20' : ''}`}>
+                <div className="animate-pulse text-forest font-headers text-2xl">
+                    {onlyWeekend ? t('yoga.sections.annex_title') : t('yoga.sections.schedule')}...
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="w-full max-w-7xl mx-auto py-12 px-4">
-            <h3 className="text-3xl font-headers text-forest text-center mb-12 uppercase">{t('yoga.sections.schedule')}</h3>
+        <div className={`w-full max-w-7xl mx-auto px-4 ${onlyWeekend ? 'py-0' : (onlyWeekly ? 'py-0' : 'py-12')}`}>
+            {!onlyWeekend && !hideTitle && (
+                <h3 className="text-3xl font-headers text-forest text-center mb-12 uppercase">{t('yoga.sections.schedule')}</h3>
+            )}
 
-            <div className="hidden lg:block bg-bone/30 rounded-xl shadow-inner border border-forest/10">
-                <div className="flex border-b-2 border-forest/20 bg-forest/5 rounded-t-xl overflow-hidden">
-                    <div className="w-12 md:w-16 border-r border-transparent"></div>
-                    <div className="flex-1 grid grid-cols-5">
-                        {DAYS.map(day => (
-                            <div key={day} className="text-center py-4 border-r border-forest/5 last:border-r-0">
-                                <h4 className="text-xl font-headers text-bark uppercase">{day}</h4>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <TimeBlock
-                    label={t('common.times.morning')}
-                    rows={2}
-                    rangeStart={9}
-                    rangeEnd={13}
-                />
-
-                <TimeBlock
-                    label={t('common.times.afternoon')}
-                    rows={3}
-                    rangeStart={15.5}
-                    rangeEnd={21.5}
-                />
-            </div>
-
-            <div className="lg:hidden">
-                <div className="flex overflow-x-auto gap-2 mb-6 pb-2 scrollbar-hide">
-                    {DAYS.map(day => (
-                        <button
-                            key={day}
-                            onClick={() => setActiveDay(day)}
-                            className={`px-6 py-2 rounded-full whitespace-nowrap transition-colors uppercase text-sm tracking-wider ${activeDay === day
-                                ? 'bg-forest text-bone font-bold shadow-lg'
-                                : 'bg-bone text-bark border border-bark/10 hover:bg-forest/10'
-                                }`}
-                        >
-                            {day}
-                        </button>
-                    ))}
-                </div>
-
-                <div className="flex flex-col gap-4 animate-fade-in">
-                    {getItemsForDayMobile(activeDay).map((item: any, index: number) => {
-                        const yc = item.yoga_class || { name: item.class_name, description: '', translations: {} };
-                        const [h1, m1] = item.start_time.split(':').map(Number);
-                        const [h2, m2] = item.end_time.split(':').map(Number);
-                        const durationMin = (h2 * 60 + m2) - (h1 * 60 + m1);
-                        return (
-                            <div key={index} className={`p-6 rounded-xl border-l-4 shadow-sm ${yc.color || 'bg-gray-100'} flex flex-col gap-2`}>
-                                <div className="flex justify-between items-center">
-                                    <span className="font-bold text-2xl">{item.start_time}</span>
-                                    <div className="flex flex-col items-end gap-1">
-                                        <span className="text-xs font-mono opacity-70 border border-current px-2 py-1 rounded-full">{durationMin} min</span>
-                                        {yc.age_range && <span className="text-[10px] uppercase font-black tracking-widest bg-black/10 px-2 py-0.5 rounded">{yc.age_range}</span>}
+            {!onlyWeekend && (
+                <>
+                    <div className="hidden lg:block bg-bone/30 rounded-xl shadow-inner border border-forest/10">
+                        <div className="flex border-b-2 border-forest/20 bg-forest/5 rounded-t-xl overflow-hidden">
+                            <div className="w-12 md:w-16 border-r border-transparent"></div>
+                            <div className="flex-1 grid grid-cols-5">
+                                {DAYS.map(day => (
+                                    <div key={day} className="text-center py-4 border-r border-forest/5 last:border-r-0">
+                                        <h4 className="text-xl font-headers text-bark uppercase">{day}</h4>
                                     </div>
-                                </div>
-                                <h4 className="text-xl font-headers font-bold uppercase">{getTranslated(yc, 'name', i18n.language)}</h4>
-                                {item.note && <p className="text-sm italic opacity-80 -mt-1">{item.note}</p>}
-                                <p className="text-sm opacity-90 leading-relaxed mt-1">{getTranslated(yc, 'description', i18n.language)}</p>
+                                ))}
                             </div>
-                        );
-                    })}
-                </div>
-            </div>
+                        </div>
+
+                        <TimeBlock
+                            label={t('common.times.morning')}
+                            rows={2}
+                            rangeStart={9}
+                            rangeEnd={13}
+                        />
+
+                        <TimeBlock
+                            label={t('common.times.afternoon')}
+                            rows={3}
+                            rangeStart={15.5}
+                            rangeEnd={21.5}
+                        />
+                    </div>
+
+                    <div className="lg:hidden">
+                        <div className="flex overflow-x-auto gap-2 mb-6 pb-2 scrollbar-hide">
+                            {DAYS.map(day => (
+                                <button
+                                    key={day}
+                                    onClick={() => setActiveDay(day)}
+                                    className={`px-6 py-2 rounded-full whitespace-nowrap transition-colors uppercase text-sm tracking-wider ${activeDay === day
+                                        ? 'bg-forest text-bone font-bold shadow-lg'
+                                        : 'bg-bone text-bark border border-bark/10 hover:bg-forest/10'
+                                        }`}
+                                >
+                                    {day}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="flex flex-col gap-4 animate-fade-in">
+                            {getItemsForDayMobile(activeDay).map((item: any, index: number) => {
+                                const yc = item.yoga_class || { name: item.class_name, description: '', translations: {} };
+                                const [h1, m1] = item.start_time.split(':').map(Number);
+                                const [h2, m2] = item.end_time.split(':').map(Number);
+                                const durationMin = (h2 * 60 + m2) - (h1 * 60 + m1);
+                                return (
+                                    <div key={index} className={`p-6 rounded-xl border-l-4 shadow-sm ${yc.color || 'bg-gray-100'} flex flex-col gap-2`}>
+                                        <div className="flex justify-between items-center">
+                                            <span className="font-bold text-2xl">{item.start_time}</span>
+                                            <div className="flex flex-col items-end gap-1">
+                                                <span className="text-xs font-mono opacity-70 border border-current px-2 py-1 rounded-full">{durationMin} min</span>
+                                                {yc.age_range && <span className="text-[10px] uppercase font-black tracking-widest bg-black/10 px-2 py-0.5 rounded">{yc.age_range}</span>}
+                                            </div>
+                                        </div>
+                                        <h4 className="text-xl font-headers font-bold uppercase">{getTranslated(yc, 'name', i18n.language)}</h4>
+                                        {item.note && <p className="text-sm italic opacity-80 -mt-1">{item.note}</p>}
+                                        <p className="text-sm opacity-90 leading-relaxed mt-1">{getTranslated(yc, 'description', i18n.language)}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </>
+            )}
 
             {/* Annex Section */}
-            {weekendActivities.length > 0 && (
-                <div className="mt-20 animate-fade-in pt-12 border-t border-forest/10">
+            {!onlyWeekly && weekendActivities.length > 0 && (
+                <div className={`${onlyWeekend ? '' : 'mt-20 pt-12 border-t border-forest/10'} animate-fade-in`}>
                     <div className="flex flex-col items-center mb-10 text-center">
                         <div className="w-12 h-1.5 bg-matcha/40 mb-6 rounded-full"></div>
                         <h4 className="text-2xl md:text-3xl font-headers text-forest uppercase tracking-widest">{t('yoga.sections.annex_title')}</h4>
