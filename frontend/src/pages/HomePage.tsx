@@ -18,6 +18,7 @@ const ImageSlider = lazy(() => import('../components/ImageSlider'));
 const ReviewsSection = lazy(() => import('../components/ReviewsSection'));
 const WellnessQuiz = lazy(() => import('../components/WellnessQuiz'));
 const FeaturedActivities = lazy(() => import('../components/FeaturedActivities'));
+const NewsletterForm = lazy(() => import('../components/NewsletterForm'));
 
 const HomePage: React.FC = () => {
     const { t } = useTranslation();
@@ -188,6 +189,15 @@ const HomePage: React.FC = () => {
                     </Suspense>
 
 
+                </section>
+
+                {/* Newsletter Subscription Section */}
+                <section className="w-full max-w-4xl mx-auto px-4 md:px-8 mb-24 snap-center snap-always">
+                    <Suspense fallback={<div className="h-64 flex items-center justify-center">{t('common.loading')}</div>}>
+                        <FadeInSection delay={0.4}>
+                            <NewsletterForm />
+                        </FadeInSection>
+                    </Suspense>
                 </section>
             </main>
 
