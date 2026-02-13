@@ -126,6 +126,8 @@
         },
         "sections": {
             "schedule": "Horaris de Classes",
+            "annex_title": "Activitats de Cap de Setmana",
+            "annex_subtitle": "Annex a l'Horari de Classes",
             "gallery": "Galeria d'Imatges",
             "blog": "Últimes Publicacions",
             "blog_sub": "Inspiració per a la teva pràctica i vida diària"

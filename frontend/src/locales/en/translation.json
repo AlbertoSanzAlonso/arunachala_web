@@ -126,6 +126,8 @@
         },
         "sections": {
             "schedule": "Class Schedules",
+            "annex_title": "Weekend Activities",
+            "annex_subtitle": "Schedule Annex",
             "gallery": "Image Gallery",
             "blog": "Latest Posts",
             "blog_sub": "Inspiration for your practice and daily life"

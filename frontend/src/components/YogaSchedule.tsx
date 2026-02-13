@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import omSymbol from '../assets/images/om_symbol.png';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
@@ -15,6 +16,7 @@ const YogaSchedule: React.FC = () => {
     ], [t]);
 
     const [rawItems, setRawItems] = useState<any[]>([]);
+    const [weekendActivities, setWeekendActivities] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [activeDay, setActiveDay] = useState("");
 
@@ -51,10 +53,33 @@ const YogaSchedule: React.FC = () => {
             }
         };
 
+        const fetchWeekendActivities = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/activities?active_only=true`);
+                if (response.ok) {
+                    const data = await response.json();
+                    // Filter: type is (taller, evento, retiro) AND start_date is Saturday (6) or Sunday (0)
+                    const weekend = data.filter((a: any) => {
+                        if (!a.start_date) return false;
+                        const d = new Date(a.start_date);
+                        const day = d.getDay();
+                        return (day === 0 || day === 6) && ['taller', 'evento', 'retiro'].includes(a.type);
+                    });
+                    setWeekendActivities(weekend);
+                }
+            } catch (e) {
+                console.error("Error fetching activities for schedule annex:", e);
+            }
+        };
+
         fetchSchedules();
-        const interval = setInterval(fetchSchedules, 30000);
+        fetchWeekendActivities();
+        const interval = setInterval(() => {
+            fetchSchedules();
+            fetchWeekendActivities();
+        }, 30000);
         return () => clearInterval(interval);
-    }, []); // No need to refetch on language change now, as we translate on render
+    }, []);
 
     const TimeBlock = ({
         label,
@@ -234,6 +259,53 @@ const YogaSchedule: React.FC = () => {
                     })}
                 </div>
             </div>
+
+            {/* Annex Section */}
+            {weekendActivities.length > 0 && (
+                <div className="mt-20 animate-fade-in pt-12 border-t border-forest/10">
+                    <div className="flex flex-col items-center mb-10 text-center">
+                        <div className="w-12 h-1.5 bg-matcha/40 mb-6 rounded-full"></div>
+                        <h4 className="text-2xl md:text-3xl font-headers text-forest uppercase tracking-widest">{t('yoga.sections.annex_title')}</h4>
+                        <p className="text-bark/60 text-sm md:text-base italic mt-2 max-w-lg">{t('yoga.sections.annex_subtitle')}</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {weekendActivities.map((activity, idx) => (
+                            <Link
+                                key={idx}
+                                to={`/actividades?activity=${activity.id}`}
+                                className="group bg-white border border-forest/10 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 flex flex-col h-full"
+                            >
+                                <div className="p-6 md:p-8 flex flex-col h-full">
+                                    <div className="flex justify-between items-start mb-6">
+                                        <span className="px-3 py-1 bg-matcha/10 text-matcha text-[10px] font-bold uppercase tracking-widest rounded-full border border-matcha/20">
+                                            {t(`activities.types.${activity.type}`)}
+                                        </span>
+                                        <div className="flex items-center gap-2 text-forest font-bold text-sm bg-forest/5 px-3 py-1 rounded-lg">
+                                            <span>🗓️</span>
+                                            {new Date(activity.start_date).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' })}
+                                        </div>
+                                    </div>
+                                    <h5 className="text-xl md:text-2xl font-headers text-forest mb-3 group-hover:text-matcha transition-colors uppercase leading-tight">
+                                        {getTranslated(activity, 'title', i18n.language)}
+                                    </h5>
+                                    <p className="text-sm md:text-base text-bark/70 line-clamp-3 leading-relaxed mb-6 flex-grow">
+                                        {getTranslated(activity, 'description', i18n.language)}
+                                    </p>
+                                    <div className="mt-auto pt-4 border-t border-forest/5 flex items-center justify-between">
+                                        <span className="text-matcha font-black text-[10px] uppercase tracking-widest">
+                                            {t('common.read_more')}
+                                        </span>
+                                        <div className="w-8 h-8 rounded-full bg-forest/5 flex items-center justify-center group-hover:bg-matcha group-hover:text-white transition-all duration-300">
+                                            <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

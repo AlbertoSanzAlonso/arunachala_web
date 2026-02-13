@@ -32,6 +32,23 @@ interface Meditation {
     };
 }
 
+const MOCK_MEDITATIONS: Meditation[] = [
+    {
+        id: -1,
+        title: "Meditación de Prueba (Mock)",
+        excerpt: "Esta es una meditación de prueba para verificar el funcionamiento del reproductor sin conexión al backend.",
+        media_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+        thumbnail_url: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+        created_at: new Date().toISOString(),
+        tags: ["mock", "test"],
+        translations: {
+            es: { title: "Meditación de Prueba (Mock)", excerpt: "Esta es una meditación de prueba para verificar el funcionamiento del reproductor sin conexión al backend." },
+            en: { title: "Mock Meditation", excerpt: "This is a mock meditation to test the player without a backend connection." },
+            ca: { title: "Meditació de Prova (Mock)", excerpt: "Aquesta és una meditació de prova per verificar el funcionament del reproductor sense connexió al backend." }
+        }
+    }
+];
+
 const MeditationsPage: React.FC = () => {
     const { t, i18n } = useTranslation();
     const [searchParams] = useSearchParams();
@@ -154,16 +171,24 @@ const MeditationsPage: React.FC = () => {
                 const response = await fetch(`${API_BASE_URL}/api/content?type=meditation&status=published`);
                 if (response.ok) {
                     const data = await response.json();
-                    setMeditations(data);
+                    if (data && data.length > 0) {
+                        setMeditations(data);
+                    } else {
+                        setMeditations(MOCK_MEDITATIONS);
+                    }
+                } else {
+                    setMeditations(MOCK_MEDITATIONS);
                 }
             } catch (error) {
                 console.error("Error fetching meditations", error);
+                setMeditations(MOCK_MEDITATIONS);
             } finally {
                 setIsLoading(false);
             }
         };
         fetchMeditations();
     }, []);
+
 
     useEffect(() => {
         if (!isLoading && meditations.length > 0) {

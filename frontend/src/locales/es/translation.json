@@ -126,6 +126,8 @@
         },
         "sections": {
             "schedule": "Horarios de Clases",
+            "annex_title": "Actividades de Fin de Semana",
+            "annex_subtitle": "Anexo al Horario de Clases",
             "gallery": "Galería de Imágenes",
             "blog": "Últimas Publicaciones",
             "blog_sub": "Inspiración para tu práctica y vida diaria"

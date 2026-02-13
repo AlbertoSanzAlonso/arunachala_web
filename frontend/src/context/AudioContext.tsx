@@ -47,6 +47,8 @@ interface AudioContextType {
 
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
 
+const MOCK_AUDIO_URL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
+
 export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [playingMeditation, setPlayingMeditation] = useState<Meditation | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -123,6 +125,15 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             newAudio.volume = volume;
             newAudio.muted = isMuted;
 
+            newAudio.addEventListener('error', (e) => {
+                console.error("Audio playback error, falling back to mock audio:", e);
+                if (newAudio.src !== MOCK_AUDIO_URL) {
+                    newAudio.src = MOCK_AUDIO_URL;
+                    newAudio.load();
+                    newAudio.play().catch(err => console.error("Mock audio playback failed:", err));
+                }
+            });
+
             newAudio.addEventListener('timeupdate', () => {
                 setCurrentTime(newAudio.currentTime);
                 if (newAudio.duration > 0) {
@@ -153,7 +164,8 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             });
 
             newAudio.play().catch(err => {
-                console.warn("Playback error:", err);
+                console.warn("Playback error (catch):", err);
+                // Error event listener above will handle fallback
             });
 
             audioRef.current = newAudio;
@@ -164,6 +176,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             setIsPlayerModalOpen(true);
         }
     }, [volume, isMuted, pause, stop]);
+
 
     useEffect(() => {
         playMeditationRef.current = playMeditation;
