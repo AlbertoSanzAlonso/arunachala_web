@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { CalendarIcon, TagIcon, ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
@@ -51,7 +51,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
     const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const fetchArticles = async () => {
+    const fetchArticles = useCallback(async () => {
         try {
             let url = `${API_BASE_URL}/api/content?type=article&status=published`;
             if (category) {
@@ -67,11 +67,11 @@ const BlogSection: React.FC<BlogSectionProps> = ({
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [category, limit]);
 
     useEffect(() => {
         fetchArticles();
-    }, [category, limit]);
+    }, [fetchArticles]);
 
     const handleArticleClick = async (article: Article) => {
         try {

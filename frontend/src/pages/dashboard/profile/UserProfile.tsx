@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { CameraIcon, ArrowLeftIcon, EyeIcon, EyeSlashIcon, XCircleIcon, CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { CameraIcon, ArrowLeftIcon, EyeIcon, EyeSlashIcon, XCircleIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import Cropper from 'react-easy-crop';
 import { Point, Area } from 'react-easy-crop/types';
