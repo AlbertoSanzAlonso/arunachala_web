@@ -8,7 +8,7 @@ import BackButton from '../components/BackButton';
 import NewsletterForm from '../components/NewsletterForm';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
-import { MOCK_ACTIVITIES } from '../mocks/mockData';
+
 import lotusFlower from '../assets/images/lotus_flower.png';
 
 interface Activity {
@@ -485,13 +485,9 @@ const ActivitiesPage: React.FC = () => {
 
             if (actRes.ok) {
                 const data = await actRes.json();
-                if (data && data.length > 0) {
-                    setActivities(data);
-                } else {
-                    setActivities(MOCK_ACTIVITIES);
-                }
+                setActivities(data || []);
             } else {
-                setActivities(MOCK_ACTIVITIES);
+                setActivities([]);
             }
             if (sugRes.ok) {
                 const data = await sugRes.json();
@@ -499,7 +495,7 @@ const ActivitiesPage: React.FC = () => {
             }
         } catch (error) {
             console.error("Error fetching page data:", error);
-            setActivities(MOCK_ACTIVITIES);
+            setActivities([]);
         } finally {
             setIsLoading(false);
         }

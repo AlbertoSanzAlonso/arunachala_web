@@ -13,7 +13,6 @@ import { getTranslated } from '../utils/translate';
 import { useAudio } from '../context/AudioContext';
 import { PlayIcon, PauseIcon, StopIcon } from '@heroicons/react/24/solid';
 import VolumeControl from '../components/VolumeControl';
-import { MOCK_MEDITATIONS } from '../mocks/mockData';
 
 interface Meditation {
     id: number;
@@ -157,17 +156,13 @@ const MeditationsPage: React.FC = () => {
                 const response = await fetch(`${API_BASE_URL}/api/content?type=meditation&status=published`);
                 if (response.ok) {
                     const data = await response.json();
-                    if (data && data.length > 0) {
-                        setMeditations(data);
-                    } else {
-                        setMeditations(MOCK_MEDITATIONS);
-                    }
+                    setMeditations(data || []);
                 } else {
-                    setMeditations(MOCK_MEDITATIONS);
+                    setMeditations([]);
                 }
             } catch (error) {
                 console.error("Error fetching meditations", error);
-                setMeditations(MOCK_MEDITATIONS);
+                setMeditations([]);
             } finally {
                 setIsLoading(false);
             }

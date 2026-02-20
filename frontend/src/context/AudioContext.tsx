@@ -47,7 +47,6 @@ interface AudioContextType {
 
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
 
-const MOCK_AUDIO_URL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
 
 export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [playingMeditation, setPlayingMeditation] = useState<Meditation | null>(null);
@@ -178,12 +177,8 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         };
 
         const handleError = (e: any) => {
-            console.error("Audio playback error, falling back to mock audio:", e);
-            if (audio.src !== MOCK_AUDIO_URL && audio.src !== "") {
-                audio.src = MOCK_AUDIO_URL;
-                audio.load();
-                audio.play().catch(err => console.error("Mock audio playback failed:", err));
-            }
+            console.error("Audio playback error:", e);
+            stop();
         };
 
         audio.addEventListener('timeupdate', handleTimeUpdate);
