@@ -189,3 +189,11 @@ arunachala_web/
         - **Rich Metadata**: The sync payload now includes discount codes and percentages in the description context for better AI answers.
         - **Async Processing**: Implemented as non-blocking `async` background tasks in `promotions.py` to maintain API performance.
     - **News (Articles) Confirmation**: Verified and reinforced that all Blog Articles (`content` type) also trigger the RAG sync workflow upon publication, ensuring the chatbot is aware of the latest news.
+
+## 📝 Recent Updates (2026-02-20)
+- **Hybrid Cloud Deployment Architecture**:
+    - **Frontend**: Successfully deployed React SPA to Vercel with automatic CI/CD from GitHub. Configured environment variables (CORS, `REACT_APP_API_URL`) to communicate securely with the cloud backend.
+    - **Backend**: Deployed FastAPI Python server to Render.com (free tier). Configured host to `0.0.0.0` and dynamic port binding via `$PORT`.
+    - **Database & Storage**: Fully integrated Supabase as the central Postgres database and Storage provider (replacing local storage). Handled via `STORAGE_TYPE=supabase` in `image_utils.py`. Created `arunachala-images` public bucket.
+    - **Automation Engine**: Verified local hosting for n8n via Docker. Resolved local authorization constraints ("Sign in" loop) without data loss via Docker user-management reset command.
+    - **Dependency Stability**: Solved "Pip Dependency Hell" on Render's build steps by explicitly pinning core modern dependencies (`groq==1.0.0`, `qdrant-client==1.17.0`, `google-generativeai==0.8.6`) and strategically unpinning conflicting modules (`httpx`, `websockets`, `openai`) to allow Pip to resolve compatible sub-dependency trees successfully. Included `pydub` and `unidecode`.
