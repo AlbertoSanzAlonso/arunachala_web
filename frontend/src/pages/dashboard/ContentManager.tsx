@@ -41,6 +41,7 @@ const TABS = [
     { name: 'Artículos Yoga', value: 'yoga_article' },
     { name: 'Artículos Terapia', value: 'therapy_article' },
     { name: 'Meditaciones', value: 'meditation' },
+    { name: 'Noticias', value: 'announcement' },
 ];
 
 export default function ContentManager() {
@@ -131,6 +132,7 @@ export default function ContentManager() {
             if (currentTab === 'yoga_article') matchesTab = item.type === 'article' && item.category === 'yoga';
             else if (currentTab === 'therapy_article') matchesTab = item.type === 'article' && item.category === 'therapy';
             else if (currentTab === 'meditation') matchesTab = item.type === 'meditation';
+            else if (currentTab === 'announcement') matchesTab = item.type === 'announcement';
 
             // Search filter
             const searchLower = searchTerm.toLowerCase();
@@ -310,6 +312,7 @@ export default function ContentManager() {
             if (currentTab === 'yoga_article') { defaultType = 'article'; defaultCategory = 'yoga'; }
             if (currentTab === 'therapy_article') { defaultType = 'article'; defaultCategory = 'therapy'; }
             if (currentTab === 'meditation') { defaultType = 'meditation'; defaultCategory = undefined; }
+            if (currentTab === 'announcement') { defaultType = 'announcement'; defaultCategory = undefined; }
 
             setFormData({
                 title: '',
@@ -538,7 +541,7 @@ export default function ContentManager() {
 
     return (
         <>
-            {isSaving && <PageLoader />}
+            {(isSaving || uploading || isGeneratingImage) && <PageLoader />}
             <ToastNotification toasts={toast.toasts} onRemove={toast.removeToast} />
             <div className="px-4 sm:px-6 lg:px-8">
                 <div className="sm:flex sm:items-center justify-between gap-4">
@@ -577,7 +580,13 @@ export default function ContentManager() {
                                 {tab.name}
                                 {tab.value !== 'all' && (
                                     <span className={`ml-2 py-0.5 px-2.5 rounded-full text-xs font-bold ${currentTab === tab.value ? 'bg-forest/10 text-forest' : 'bg-gray-100 text-gray-400'}`}>
-                                        {contents.filter(c => tab.value === 'meditation' ? c.type === 'meditation' : (tab.value === 'yoga_article' ? c.category === 'yoga' : c.category === 'therapy')).length}
+                                        {contents.filter(c => {
+                                            if (tab.value === 'meditation') return c.type === 'meditation';
+                                            if (tab.value === 'announcement') return c.type === 'announcement';
+                                            if (tab.value === 'yoga_article') return c.category === 'yoga';
+                                            if (tab.value === 'therapy_article') return c.category === 'therapy';
+                                            return false;
+                                        }).length}
                                     </span>
                                 )}
                             </button>
@@ -846,7 +855,7 @@ export default function ContentManager() {
                                                             <div className="truncate" title={item.title}>{item.title}</div>
                                                         </td>
                                                         <td className="hidden md:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize">
-                                                            {item.type === 'meditation' ? 'Meditación' : 'Artículo'}
+                                                            {item.type === 'meditation' ? 'Meditación' : (item.type === 'announcement' ? 'Noticia' : 'Artículo')}
                                                         </td>
                                                         {currentTab !== 'meditation' && (
                                                             <td className="hidden lg:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize">{item.category || '-'}</td>
@@ -1060,6 +1069,7 @@ export default function ContentManager() {
                                                     >
                                                         <option value="article">Artículo</option>
                                                         <option value="meditation">Meditación</option>
+                                                        <option value="announcement">Noticia / Anuncio</option>
                                                     </select>
                                                 </div>
 

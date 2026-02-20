@@ -66,3 +66,4 @@ qdrant-client
 groq
 google-generativeai
 apscheduler
+supabase>=2.3.4

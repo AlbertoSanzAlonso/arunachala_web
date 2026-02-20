@@ -31,6 +31,22 @@ interface ArticleModalProps {
 
 const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose }) => {
     const { t, i18n } = useTranslation();
+    const contentRef = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+        if (isOpen && contentRef.current) {
+            // Immediate reset
+            contentRef.current.scrollTop = 0;
+
+            // Delayed reset to handle layout shifts/images
+            const timer = setTimeout(() => {
+                if (contentRef.current) {
+                    contentRef.current.scrollTop = 0;
+                }
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [isOpen, article]);
 
     if (!article) return null;
 
@@ -101,7 +117,8 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
                                 {/* Close Button */}
                                 <button
                                     onClick={onClose}
-                                    className="absolute top-4 right-4 z-10 p-2 bg-white/80 backdrop-blur-md rounded-full text-gray-500 hover:text-gray-800 hover:bg-white shadow-sm transition-all"
+                                    tabIndex={-1}
+                                    className="absolute top-4 right-4 z-10 p-2 bg-white/80 backdrop-blur-md rounded-full text-gray-500 hover:text-gray-800 hover:bg-white shadow-sm transition-all outline-none focus:outline-none"
                                 >
                                     <XMarkIcon className="w-6 h-6" />
                                 </button>
@@ -156,7 +173,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
                                 </div>
 
                                 {/* Content */}
-                                <div className="p-6 md:p-10 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                                <div ref={contentRef} className="p-6 md:p-10 max-h-[60vh] overflow-y-auto custom-scrollbar">
                                     {/* RESTORED TITLE UNDER IMAGE */}
                                     <h2 className="text-3xl md:text-4xl font-headers text-forest mb-6 leading-tight">
                                         {translatedTitle}

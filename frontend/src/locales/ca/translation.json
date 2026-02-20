@@ -92,7 +92,16 @@
         "about": "Sobre Nosaltres",
         "contact": "Contacte",
         "activities": "Activitats",
-        "meditations": "Meditacions"
+        "meditations": "Meditacions",
+        "promotions": "Promocions"
+    },
+    "promotions": {
+        "title": "Promocions Especials",
+        "subtitle": "Descobreix les nostres oportunitats úniques per aprofundir en el teu benestar.",
+        "label": "Ofertes Exclusives",
+        "code": "CODI:",
+        "about_section_title": "Les Nostres Promocions",
+        "contact_cta": "Tens dubtes sobre alguna promoció? Contacta'ns!"
     },
     "meditations": {
         "title": "Meditacions",
@@ -142,6 +151,7 @@
     "common": {
         "view_all": "Veure tots",
         "see_all": "Veure totes",
+        "view_all_news": "Veure totes les notícies",
         "thanks": "Gràcies!",
         "back": "Enrere",
         "back_home": "Tornar a l'inici",
@@ -407,6 +417,10 @@
         "seo": {
             "title": "Susana Pérez Gil | Sobre Nosaltres | Ioga Arunachala",
             "description": "Coneix la Susana Pérez Gil, fundadora d'Arunachala. Més de 25 anys d'experiència en Ioga, massatges i teràpies holístiques a Cornellà."
+        },
+        "news": {
+            "title": "Notícies",
+            "subtitle": "Segueix de prop el nostre camí"
         }
     },
     "contact_page": {

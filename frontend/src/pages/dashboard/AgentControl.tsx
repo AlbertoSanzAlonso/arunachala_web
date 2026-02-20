@@ -33,6 +33,7 @@ const AgentControl: React.FC = () => {
     // Automation Tasks State
     const [tasks, setTasks] = useState<any[]>([]);
     const [triggerLoading, setTriggerLoading] = useState<string | null>(null);
+    const lastNotifiedIdRef = React.useRef<number>(0);
 
     useEffect(() => {
         fetchConfig();
@@ -83,6 +84,33 @@ const AgentControl: React.FC = () => {
             if (response.ok) {
                 const data = await response.json();
                 setRagStatus(data);
+
+                // Check for new notifications
+                if (data.latest_success && data.latest_success.id > lastNotifiedIdRef.current) {
+                    // Only notify if within last 2 minutes (120000 ms)
+                    const syncTime = new Date(data.latest_success.vectorized_at).getTime();
+                    // If ref is 0, it's first load. Don't notify unless VERY recent (<10s)
+                    const tolerance = lastNotifiedIdRef.current === 0 ? 10000 : 120000;
+
+                    if (Date.now() - syncTime < tolerance) {
+                        const typeLabels: Record<string, string> = {
+                            'article': 'Artículo',
+                            'yoga_class': 'Clase Yoga',
+                            'promotion': 'Promoción',
+                            'meditation': 'Meditación',
+                            'activity': 'Actividad',
+                            'therapy': 'Terapia',
+                            'massage': 'Masaje',
+                            'announcement': 'Noticia'
+                        };
+                        const label = typeLabels[data.latest_success.entity_type] || 'Contenido';
+                        setMessage(`✅ Nuevo contenido aprendido: ${label} "${data.latest_success.title}"`);
+
+                        // Clear message after 5 seconds
+                        setTimeout(() => setMessage(null), 5000);
+                    }
+                    lastNotifiedIdRef.current = data.latest_success.id;
+                }
             }
         } catch (error) {
             console.error("Failed to fetch RAG status", error);
@@ -107,7 +135,9 @@ const AgentControl: React.FC = () => {
                     'therapy': 'las terapias',
                     'article': 'los artículos del blog',
                     'meditation': 'las meditaciones guiadas',
-                    'activity': 'las actividades'
+                    'activity': 'las actividades',
+                    'promotion': 'las promociones',
+                    'announcement': 'las noticias'
                 };
 
                 setMessage(`¡Hecho! Se está actualizando la memoria con ${friendlyType[type] || 'el contenido'}. El progreso aparecerá abajo.`);
@@ -229,7 +259,9 @@ const AgentControl: React.FC = () => {
                     'therapy': 'La IA ha olvidado todo lo relacionado con las terapias.',
                     'article': 'He borrado los artículos del blog de la memoria de la IA.',
                     'meditation': 'Se han eliminado las meditaciones del conocimiento de la IA.',
-                    'activity': 'Se han eliminado las actividades del conocimiento de la IA.'
+                    'activity': 'Se han eliminado las actividades del conocimiento de la IA.',
+                    'promotion': 'Se han eliminado las promociones del conocimiento de la IA.',
+                    'announcement': 'Se han eliminado las noticias del conocimiento de la IA.'
                 };
 
                 setMessage(successMessages[resetScope] || 'La memoria ha sido reiniciada correctamente.');
@@ -263,7 +295,9 @@ const AgentControl: React.FC = () => {
                             'therapy': 'therapy_types',
                             'article': 'articles',
                             'meditation': 'meditations',
-                            'activity': 'activities'
+                            'activity': 'activities',
+                            'promotion': 'promotions',
+                            'announcement': 'announcements'
                         };
                         const targetKey = tableMap[resetScope];
                         if (targetKey && newStatus[targetKey]) {
@@ -875,15 +909,18 @@ const AgentControl: React.FC = () => {
                 {ragStatus ? (
                     <div className="space-y-6">
                         {/* Summary Grid */}
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                        {/* Summary Grid */}
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             {[
-                                { id: 'yoga', label: 'Yoga', data: ragStatus.yoga_classes, color: 'matcha' },
-                                { id: 'massage', label: 'Masajes', data: ragStatus.massage_types, color: 'matcha' },
-                                { id: 'therapy', label: 'Terapias', data: ragStatus.therapy_types, color: 'matcha' },
-                                { id: 'article', label: 'Blog', data: ragStatus.articles, color: 'matcha' },
-                                { id: 'meditation', label: 'Meditaciones', data: ragStatus.meditations, color: 'matcha' },
-                                { id: 'activity', label: 'Actividades', data: ragStatus.activities, color: 'matcha' },
-                            ].map((item) => item.data && (
+                                ragStatus.yoga_classes && { id: 'yoga', label: 'Yoga', data: ragStatus.yoga_classes, color: 'matcha' },
+                                ragStatus.massage_types && { id: 'massage', label: 'Masajes', data: ragStatus.massage_types, color: 'matcha' },
+                                ragStatus.therapy_types && { id: 'therapy', label: 'Terapias', data: ragStatus.therapy_types, color: 'matcha' },
+                                ragStatus.articles && { id: 'article', label: 'Blog', data: ragStatus.articles, color: 'matcha' },
+                                ragStatus.meditations && { id: 'meditation', label: 'Meditaciones', data: ragStatus.meditations, color: 'matcha' },
+                                ragStatus.activities && { id: 'activity', label: 'Actividades', data: ragStatus.activities, color: 'matcha' },
+                                ragStatus.promotions && { id: 'promotion', label: 'Promo', data: ragStatus.promotions, color: 'matcha' },
+                                ragStatus.announcements && { id: 'announcement', label: 'Noticias', data: ragStatus.announcements, color: 'matcha' },
+                            ].filter(Boolean).map((item: any) => (
                                 <div key={item.id} className="p-4 rounded-xl bg-gray-50 border border-gray-100">
                                     <span className="block text-xs font-bold text-gray-400 uppercase mb-1">{item.label}</span>
                                     <div className="flex items-end justify-between">
@@ -1004,6 +1041,8 @@ const AgentControl: React.FC = () => {
                                         { id: 'article', label: 'Artículos', color: 'bg-bark' },
                                         { id: 'meditation', label: 'Meditación', color: 'bg-matcha' },
                                         { id: 'activity', label: 'Actividades', color: 'bg-blue-600' },
+                                        { id: 'promotion', label: 'Promociones', color: 'bg-matcha' },
+                                        { id: 'announcement', label: 'Noticias', color: 'bg-matcha' },
                                     ].map(cat => (
                                         <button
                                             key={cat.id}

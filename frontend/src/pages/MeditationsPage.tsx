@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
@@ -176,9 +176,23 @@ const MeditationsPage: React.FC = () => {
     }, []);
 
 
+    const lastHandledSlug = useRef<string | null>(null);
+
     useEffect(() => {
         if (!isLoading && meditations.length > 0) {
             const playParam = (searchParams.get('play') || routeSlug)?.toLowerCase().trim();
+
+            if (!playParam) {
+                lastHandledSlug.current = null;
+                return;
+            }
+
+            // If we already handled this specific slug, don't re-enforce it
+            // This allows the user to navigate (next/prev) without being pulled back to the URL slug
+            if (playParam === lastHandledSlug.current) {
+                return;
+            }
+
             if (playParam) {
                 let index = filteredMeditations.findIndex(m =>
                     m.slug?.toLowerCase().trim() === playParam ||
@@ -204,8 +218,10 @@ const MeditationsPage: React.FC = () => {
 
                 if (playingMeditation?.id !== meditationToPlay.id) {
                     handlePlay(meditationToPlay, true);
+                    lastHandledSlug.current = playParam;
                 } else {
                     setModalOpen(true);
+                    lastHandledSlug.current = playParam;
                 }
             }
         }

@@ -1,7 +1,7 @@
 import React, { Suspense, lazy, useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import videoBgWebm from '../assets/videos/hero_optimized.webm';
+import videoBgWebm from '../assets/videos/VIDEOWEB.webm';
 import yogaImg from '../assets/images/gallery/yoga_sample.webp';
 import therapyImg from '../assets/images/gallery/therapy_sample.webp';
 import gardenImg from '../assets/images/gallery/garden_sample.webp';

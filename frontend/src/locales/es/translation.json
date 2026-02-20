@@ -92,7 +92,16 @@
         "about": "Sobre Nosotros",
         "contact": "Contacto",
         "activities": "Actividades",
-        "meditations": "Meditaciones"
+        "meditations": "Meditaciones",
+        "promotions": "Promociones"
+    },
+    "promotions": {
+        "title": "Promociones Especiales",
+        "subtitle": "Descubre nuestras oportunidades únicas para profundizar en tu bienestar.",
+        "label": "Ofertas Exclusivas",
+        "code": "CÓDIGO:",
+        "about_section_title": "Nuestras Promociones",
+        "contact_cta": "¿Tienes dudas sobre alguna promoción? ¡Contáctanos!"
     },
     "meditations": {
         "title": "Meditaciones",
@@ -142,6 +151,7 @@
     "common": {
         "view_all": "Ver todos",
         "see_all": "Ver todas",
+        "view_all_news": "Ver todas las noticias",
         "thanks": "¡Gracias!",
         "back": "Atrás",
         "back_home": "Volver al inicio",
@@ -412,6 +422,10 @@
             "title": "Conecta con nosotros",
             "subtitle": "Síguenos en Instagram para ver nuestro día a día",
             "follow": "Seguir a @yogayterapiasarunachala"
+        },
+        "news": {
+            "title": "Noticias",
+            "subtitle": "Sigue de cerca nuestro camino"
         }
     },
     "contact_page": {

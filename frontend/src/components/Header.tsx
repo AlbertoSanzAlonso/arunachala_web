@@ -18,6 +18,7 @@ const LANGUAGES = [
 
 const Header: React.FC = () => {
     const [logoUrl, setLogoUrl] = React.useState<string | null>(null);
+    const [hasPromotions, setHasPromotions] = React.useState(false);
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const [showVolume, setShowVolume] = React.useState(false);
     const navigate = useNavigate();
@@ -55,7 +56,21 @@ const Header: React.FC = () => {
                 console.error("Error fetching logo:", error);
             }
         };
+
+        const fetchPromotions = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/promotions/`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setHasPromotions(data.length > 0);
+                }
+            } catch (error) {
+                console.error("Error fetching promotions:", error);
+            }
+        };
+
         fetchLogo();
+        fetchPromotions();
     }, []);
 
     const handleNavigation = (path: string) => {
@@ -281,14 +296,25 @@ const Header: React.FC = () => {
             <div
                 className={`fixed top-0 right-0 h-full w-full md:w-96 z-40 bg-[#5c6b3c]/95 backdrop-blur-md shadow-2xl transform transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col items-center justify-center`}
             >
-                <nav className="flex flex-col gap-10 text-center">
-                    <button onClick={() => handleNavigation('/nuestro-espacio')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.space', 'Nuestro Espacio')}</button>
+                <nav className={`flex flex-col gap-8 text-center ${hasPromotions ? 'mt-24' : ''}`}>
+                    <button onClick={() => handleNavigation('/quienes-somos')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.about')}</button>
                     <button onClick={() => handleNavigation('/blog')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">Blog</button>
                     <button onClick={() => handleNavigation('/meditaciones')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.meditations')}</button>
                     <button onClick={() => handleNavigation('/actividades')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.activities')}</button>
-                    <button onClick={() => handleNavigation('/quienes-somos')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.about')}</button>
+                    <button onClick={() => handleNavigation('/nuestro-espacio')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.space', 'Nuestro Espacio')}</button>
                     <button onClick={() => handleNavigation('/contacto')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.contact')}</button>
 
+                    {/* Added Promociones apartada y en color marrón - Only if active promotions exist */}
+                    {hasPromotions && (
+                        <div className="mt-0 pt-5 border-t border-[#F5F5DC]/10 flex flex-col items-center">
+                            <button
+                                onClick={() => handleNavigation('/promociones')}
+                                className="text-white bg-bark/40 hover:bg-bark px-8 py-3 rounded-full font-headers text-4xl hover:text-bone transition-all hover:scale-105 transform duration-300 uppercase border border-white/20"
+                            >
+                                {t('menu.promotions', 'Promociones')}
+                            </button>
+                        </div>
+                    )}
                 </nav>
             </div>
         </>

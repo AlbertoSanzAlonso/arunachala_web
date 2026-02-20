@@ -19,7 +19,8 @@ import {
     ChatBubbleLeftRightIcon,
     GlobeAltIcon,
     SparklesIcon,
-    PaintBrushIcon
+    PaintBrushIcon,
+    TicketIcon
 } from '@heroicons/react/24/outline';
 
 const navigation = [
@@ -32,6 +33,7 @@ const navigation = [
     { name: 'Actividades', href: '/dashboard/activities', icon: SparklesIcon },
     { name: 'Usuarios', href: '/dashboard/users', icon: UsersIcon },
     { name: 'Control de Agente', href: '/dashboard/agent', icon: ChatBubbleLeftRightIcon },
+    { name: 'Promociones', href: '/dashboard/promotions', icon: TicketIcon },
     { name: 'SEO & Google', href: '/dashboard/seo', icon: ChartBarIcon },
 ];
 

@@ -109,6 +109,7 @@ export default function TreatmentsManager() {
 
     const handleCropSave = async () => {
         if (imageSrc && croppedAreaPixels) {
+            setIsSaving(true);
             try {
                 const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
                 if (croppedImageBlob) {
@@ -120,6 +121,8 @@ export default function TreatmentsManager() {
             } catch (e) {
                 console.error(e);
                 alert("Error al recortar la imagen");
+            } finally {
+                setIsSaving(false);
             }
         }
     };

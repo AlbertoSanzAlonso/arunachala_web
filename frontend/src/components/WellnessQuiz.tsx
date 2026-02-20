@@ -183,7 +183,11 @@ const WellnessQuiz: React.FC = () => {
                 h1: 'Sobre lo que nos has compartido',
                 h2: 'Nuestra propuesta para ti',
                 h3: 'Un recurso para profundizar',
-                h4: 'Un pequeño apoyo para ahora'
+                h4: 'Un pequeño apoyo para ahora',
+                h1_desc: '(Análisis breve)',
+                h2_desc: '(Menciona UNA actividad real: clase, masaje, terapia o actividad)',
+                h3_desc: '(Menciona UN contenido real: artículo o meditación)',
+                h4_desc: '(Consejo práctico inmediato)'
             },
             en: {
                 intro: 'Analyze my answers path in the "A Moment to Listen to Yourself" quiz:',
@@ -191,7 +195,11 @@ const WellnessQuiz: React.FC = () => {
                 h1: 'About what you shared',
                 h2: 'Our proposal for you',
                 h3: 'A resource to deepen',
-                h4: 'A little support for now'
+                h4: 'A little support for now',
+                h1_desc: '(Brief analysis)',
+                h2_desc: '(Mention ONE real activity: class, massage, therapy or activity)',
+                h3_desc: '(Mention ONE real content: article or meditation)',
+                h4_desc: '(Immediate practical advice)'
             },
             ca: {
                 intro: 'Analitza el meu camí de respostes en el qüestionari "Un moment per Escoltar-te":',
@@ -199,7 +207,11 @@ const WellnessQuiz: React.FC = () => {
                 h1: 'Sobre el que ens has compartit',
                 h2: 'La nostra proposta per a tu',
                 h3: 'Un recurs per aprofundir',
-                h4: 'Un petit suport per ara'
+                h4: 'Un petit suport per ara',
+                h1_desc: '(Anàlisi breu)',
+                h2_desc: '(Esmenta UNA activitat real: classe, massatge, teràpia o activitat)',
+                h3_desc: '(Esmenta UN contingut real: article o meditació)',
+                h4_desc: '(Consell pràctic immediat)'
             }
         };
 
@@ -211,10 +223,10 @@ ${L.intro}
 ${conversationPath}
 
 ${L.instr}
-**${L.h1}** (Análisis breve)
-**${L.h2}** (Menciona UNA actividad real: clase, masaje, terapia o actividad)
-**${L.h3}** (Menciona UN contenido real: artículo o meditación)
-**${L.h4}** (Consejo práctico inmediato)
+**${L.h1}** ${L.h1_desc}
+**${L.h2}** ${L.h2_desc}
+**${L.h3}** ${L.h3_desc}
+**${L.h4}** ${L.h4_desc}
         `;
 
         try {

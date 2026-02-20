@@ -8,6 +8,7 @@ import { AudioProvider } from './context/AudioContext';
 import MeditationsPage from './pages/MeditationsPage';
 import ChatBot from './components/ChatBot';
 import MeditationPlayerModal from './components/MeditationPlayerModal';
+import ScrollToTop from './components/ScrollToTop';
 
 
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -21,6 +22,7 @@ const AllMassagesPage = lazy(() => import('./pages/AllMassagesPage'));
 const AllTherapiesPage = lazy(() => import('./pages/AllTherapiesPage'));
 const ActivitiesPage = lazy(() => import('./pages/ActivitiesPage'));
 const OurSpacePage = lazy(() => import('./pages/OurSpacePage'));
+const PromotionsPage = lazy(() => import('./pages/PromotionsPage'));
 
 // Dashboard Pages
 const LoginPage = lazy(() => import('./pages/LoginPage'));
@@ -38,6 +40,7 @@ const TreatmentsManager = lazy(() => import('./pages/dashboard/TreatmentsManager
 const UserManager = lazy(() => import('./pages/dashboard/UserManager'));
 const AgentControl = lazy(() => import('./pages/dashboard/AgentControl'));
 const ActivityManager = lazy(() => import('./pages/dashboard/ActivityManager'));
+const PromotionManager = lazy(() => import('./pages/dashboard/PromotionManager'));
 const SiteCustomization = lazy(() => import('./pages/dashboard/SiteCustomization'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
@@ -85,6 +88,7 @@ const AppContent = () => {
                 <Route path="/politica-de-privacidad" element={<PrivacyPolicyPage />} />
                 <Route path="/unsubscribe" element={<UnsubscribePage />} />
                 <Route path="/meditaciones" element={<MeditationsPage />} />
+                <Route path="/promociones" element={<PromotionsPage />} />
                 <Route path="/meditaciones/:slug" element={<MeditationsPage />} />
 
                 {/* Auth Route */}
@@ -107,6 +111,7 @@ const AppContent = () => {
                         <Route path="users" element={<UserManager />} />
                         <Route path="agent" element={<AgentControl />} />
                         <Route path="activities" element={<ActivityManager />} />
+                        <Route path="promotions" element={<PromotionManager />} />
                         <Route path="customize" element={<SiteCustomization />} />
                     </Route>
                 </Route>
@@ -120,6 +125,7 @@ function App() {
         <AuthProvider>
             <AudioProvider>
                 <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+                    <ScrollToTop />
                     <AppContent />
                 </BrowserRouter>
             </AudioProvider>

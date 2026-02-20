@@ -258,7 +258,7 @@ async def generate_image(
 
 @router.get("", response_model=List[ContentResponse])
 def get_contents(
-    type: Optional[str] = None,
+    content_type: Optional[str] = Query(None, alias="type"),
     category: Optional[str] = None,
     status: Optional[str] = None,
     author_id: Optional[int] = Query(None, description="Filter by author ID (e.g. 4 for AI Agent)"),
@@ -266,8 +266,8 @@ def get_contents(
 ):
     query = db.query(Content).options(joinedload(Content.author))
     
-    if type:
-        query = query.filter(Content.type == type)
+    if content_type:
+        query = query.filter(Content.type == content_type)
     if category:
         query = query.filter(Content.category == category)
     if status:
@@ -428,7 +428,8 @@ async def create_content(
     db.refresh(db_content)
     
     cleanup_orphan_tags(db)
-
+    
+    from app.models.models import DashboardActivity
     # Log to dashboard activity
     type_label = {
         'article': 'Artículo',
@@ -548,6 +549,9 @@ async def update_content(
             elif cat == 'therapy':
                 content_dict['thumbnail_url'] = '/static/gallery/articles/lotus_flower.webp'
 
+    # Capture original status before update
+    original_status = db_content.status
+
     for key, value in content_dict.items():
         setattr(db_content, key, value)
     
@@ -563,10 +567,13 @@ async def update_content(
 
     cleanup_orphan_tags(db)
     
-    # Notify n8n for RAG update if published
+    # Notify n8n for RAG sync
     if db_content.status == "published":
-        print(f"Triggering RAG sync for updated content #{db_content.id}")
+        print(f"Triggering RAG sync for updated content #{db_content.id} (update)")
         await notify_n8n_content_change(db_content.id, db_content.type, "update", db=db)
+    elif original_status == "published" and db_content.status != "published":
+        print(f"Triggering RAG sync for unpublished content #{db_content.id} (delete)")
+        await notify_n8n_content_change(db_content.id, db_content.type, "delete", db=db)
     
     # Re-translate if main fields changed
     # We remove the check for 'not content_data.translations' because the frontend sends back old translations

@@ -30,7 +30,7 @@ async def notify_n8n_content_change(
     try:
         from app.models.models import (
             RAGSyncLog, Content, YogaClassDefinition, 
-            MassageType, TherapyType, Activity
+            MassageType, TherapyType, Activity, Promotion
         )
         
         # Mapping for fetching entity if not provided
@@ -41,7 +41,8 @@ async def notify_n8n_content_change(
             'yoga_class': YogaClassDefinition,
             'massage': MassageType,
             'therapy': TherapyType,
-            'activity': Activity
+            'activity': Activity,
+            'promotion': Promotion
         }
         
         # If entity not provided, fetch it
@@ -67,6 +68,17 @@ async def notify_n8n_content_change(
                 flat_payload['content'] = str(db_entity.body).strip()
             elif hasattr(db_entity, 'description') and db_entity.description:
                 flat_payload['content'] = str(db_entity.description).strip()
+                
+                # Special handling for Promotion to include discount info
+                if content_type == 'promotion':
+                    prom_extras = []
+                    if getattr(db_entity, 'discount_code', None):
+                        prom_extras.append(f"Código: {db_entity.discount_code}")
+                    if getattr(db_entity, 'discount_percentage', None):
+                        prom_extras.append(f"Descuento: {db_entity.discount_percentage}%")
+                    
+                    if prom_extras:
+                        flat_payload['content'] += "\n\n" + " - ".join(prom_extras)
             else:
                 flat_payload['content'] = ""
                 
@@ -99,6 +111,11 @@ async def notify_n8n_content_change(
                     flat_payload['tags'] = ", ".join(str(tag) for tag in t if tag)
                 else:
                     flat_payload['tags'] = str(t)
+
+            # CRITICAl: Prepend Title to Content for better RAG Context
+            # This ensures the AI always knows the title of the article/class
+            if flat_payload.get('title') and flat_payload.get('content'):
+                flat_payload['content'] = f"# {flat_payload['title']}\n\n{flat_payload['content']}"
 
         # Create Log
         log_entry = RAGSyncLog(

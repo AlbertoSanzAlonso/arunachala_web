@@ -6,6 +6,7 @@ Endpoints for managing RAG vector database synchronization
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy import desc
 from pydantic import BaseModel
 from typing import Optional, Dict
 from datetime import datetime
@@ -13,7 +14,7 @@ from datetime import datetime
 from app.core.database import get_db
 from app.models.models import (
     RAGSyncLog, YogaClassDefinition, MassageType, 
-    TherapyType, Content, Activity, User
+    TherapyType, Content, Activity, User, Promotion
 )
 from app.api.auth import get_current_user
 from app.core.webhooks import notify_n8n_content_change
@@ -40,8 +41,11 @@ class SyncStatusResponse(BaseModel):
     articles: Dict
     meditations: Dict
     activities: Dict
+    promotions: Dict
+    announcements: Dict
     total_needs_reindex: int
     processing_count: int
+    latest_success: Optional[Dict] = None
 
 
 class SyncTriggerRequest(BaseModel):
@@ -98,6 +102,8 @@ async def rag_sync_callback(
         'article': Content,  # Alias for content/article type
         'meditation': Content,
         'activity': Activity,
+        'promotion': Promotion,
+        'announcement': Content,
     }
     
     Model = entity_model_map.get(request.entity_type)
@@ -173,6 +179,8 @@ async def get_sync_status(db: Session = Depends(get_db)):
     article_stats = get_stats(Content, 'article')
     meditation_stats = get_stats(Content, 'meditation')
     activity_stats = get_stats(Activity)
+    promotion_stats = get_stats(Promotion)
+    announcement_stats = get_stats(Content, 'announcement')
     
     # Count active sync operations (pending or processing logs in the last 5 mins)
     from datetime import timedelta
@@ -187,8 +195,58 @@ async def get_sync_status(db: Session = Depends(get_db)):
         therapy_stats['needs_reindex'] +
         article_stats['needs_reindex'] +
         meditation_stats['needs_reindex'] +
-        activity_stats['needs_reindex']
+        activity_stats['needs_reindex'] +
+        promotion_stats['needs_reindex'] +
+        announcement_stats['needs_reindex']
     )
+
+    # Fetch latest successful sync log for UI notifications
+    latest_success_data = None
+    try:
+        latest_log = db.query(RAGSyncLog).filter(
+            RAGSyncLog.status == 'success',
+            RAGSyncLog.vectorized_at != None
+        ).order_by(desc(RAGSyncLog.vectorized_at)).first()
+
+        if latest_log:
+            title = f"{latest_log.entity_type} #{latest_log.entity_id}"
+            
+            # Try to fetch actual title
+            model_map = {
+                'yoga_class': YogaClassDefinition,
+                'massage': MassageType,
+                'therapy': TherapyType,
+                'article': Content,  # map 'article' type to Content
+                'content': Content,
+                'meditation': Content,
+                'activity': Activity,
+                'promotion': Promotion,
+                'announcement': Content,
+            }
+            # Handle potential mismatch in types (e.g. log 'article', model Content)
+            req_type = latest_log.entity_type
+            if req_type == 'article' or req_type == 'meditation' or req_type == 'announcement':
+                Model = Content
+            else:
+                Model = model_map.get(req_type)
+
+            if Model:
+                entity = db.query(Model).filter(Model.id == latest_log.entity_id).first()
+                if entity:
+                    if hasattr(entity, 'title') and entity.title:
+                        title = entity.title
+                    elif hasattr(entity, 'name') and entity.name:
+                        title = entity.name
+
+            latest_success_data = {
+                "id": latest_log.id,
+                "entity_type": latest_log.entity_type,
+                "entity_id": latest_log.entity_id,
+                "title": title,
+                "vectorized_at": latest_log.vectorized_at
+            }
+    except Exception as e:
+        print(f"Error fetching latest sync log: {e}")
 
     return {
         "yoga_classes": yoga_stats,
@@ -197,8 +255,11 @@ async def get_sync_status(db: Session = Depends(get_db)):
         "articles": article_stats,
         "meditations": meditation_stats,
         "activities": activity_stats,
+        "promotions": promotion_stats,
+        "announcements": announcement_stats,
         "total_needs_reindex": total_needs_reindex,
-        "processing_count": active_syncs
+        "processing_count": active_syncs,
+        "latest_success": latest_success_data
     }
 
 
@@ -260,6 +321,8 @@ async def trigger_rag_sync(
         'article': (Content, 'article', 'article'),
         'meditation': (Content, 'meditation', 'meditation'),
         'activity': (Activity, 'activity', None),
+        'promotion': (Promotion, 'promotion', None),
+        'announcement': (Content, 'announcement', 'announcement'),
     }
     
     types_to_sync = []
@@ -329,6 +392,8 @@ async def trigger_single_item_sync(
         'article': (Content, 'article'),
         'meditation': (Content, 'meditation'),
         'activity': (Activity, 'activity'),
+        'promotion': (Promotion, 'promotion'),
+        'announcement': (Content, 'announcement'),
     }
     
     if request.type not in model_map:
@@ -386,6 +451,8 @@ async def chat_memory_reset(
         'article': (Content, 'article', 'article'),
         'meditation': (Content, 'meditation', 'meditation'),
         'activity': (Activity, 'activity', None),
+        'promotion': (Promotion, 'promotion', None),
+        'announcement': (Content, 'announcement', 'announcement'),
     }
 
     scopes_to_reset = []

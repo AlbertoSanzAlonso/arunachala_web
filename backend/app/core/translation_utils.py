@@ -126,7 +126,8 @@ async def auto_translate_background(db_factory, model_class, record_id, fields_t
                 "TherapyType": "therapy",
                 "Activity": "activity",
                 "Content": "content",
-                "Tag": "tag"
+                "Tag": "tag",
+                "Promotion": "promotion"
             }
             item_type = item_type_map.get(model_class.__name__, "unknown")
             print(f"Triggering RAG update for {item_type} {record_id}")

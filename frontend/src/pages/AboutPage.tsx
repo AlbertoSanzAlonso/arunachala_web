@@ -9,6 +9,7 @@ import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
 import instructorImg from '../assets/images/susana_portrait.webp';
 import InstagramFeed from '../components/InstagramFeed';
+import NewsSection from '../components/NewsSection';
 import { API_BASE_URL } from '../config';
 
 const AboutPage: React.FC = () => {
@@ -190,9 +191,14 @@ const AboutPage: React.FC = () => {
                             </div>
                         </div>
                     </section>
+                </div>
 
+                {/* News Section - Edge to Edge */}
+                <NewsSection />
+
+                <div className="max-w-7xl mx-auto px-6 relative w-full">
                     {/* Instagram Section */}
-                    <section className="mb-24 px-4 w-full">
+                    <section className="mb-24 w-full">
                         <div className="text-center mb-12">
                             <h3 className="text-3xl font-headers text-forest mb-4">
                                 {t('about.instagram.title')}

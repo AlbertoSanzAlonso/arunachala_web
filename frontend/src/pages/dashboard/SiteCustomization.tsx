@@ -194,6 +194,7 @@ export default function SiteCustomization() {
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {uploadingKey && <PageLoader />}
             <div className="sm:flex sm:items-center mb-8">
                 <div className="sm:flex-auto">
                     <h1 className="text-2xl font-semibold leading-6 text-gray-900 font-headers">Personalizar Sitio Web</h1>

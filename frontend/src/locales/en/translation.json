@@ -92,7 +92,16 @@
         "about": "About Us",
         "contact": "Contact",
         "activities": "Activities",
-        "meditations": "Meditations"
+        "meditations": "Meditations",
+        "promotions": "Promotions"
+    },
+    "promotions": {
+        "title": "Special Promotions",
+        "subtitle": "Discover our unique opportunities to deepen your well-being.",
+        "label": "Exclusive Offers",
+        "code": "CODE:",
+        "about_section_title": "Our Promotions",
+        "contact_cta": "Do you have questions about any promotion? Contact us!"
     },
     "meditations": {
         "title": "Meditations",
@@ -142,6 +151,7 @@
     "common": {
         "view_all": "View all",
         "see_all": "See all",
+        "view_all_news": "View all news",
         "thanks": "Thanks!",
         "back": "Back",
         "back_home": "Back to home",
@@ -407,6 +417,10 @@
         "seo": {
             "title": "Susana Pérez Gil | About Us | Arunachala Yoga",
             "description": "Meet Susana Pérez Gil, founder of Arunachala. Over 25 years of experience in Yoga, massage, and holistic therapies in Cornellà."
+        },
+        "news": {
+            "title": "News",
+            "subtitle": "Follow our path closely"
         }
     },
     "contact_page": {

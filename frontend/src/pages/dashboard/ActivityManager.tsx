@@ -392,6 +392,7 @@ export default function ActivityManager() {
 
     const handleCropSave = async () => {
         if (imageSrc && croppedAreaPixels) {
+            setIsSaving(true);
             try {
                 const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
                 if (croppedImageBlob) {
@@ -403,6 +404,8 @@ export default function ActivityManager() {
             } catch (e) {
                 console.error(e);
                 addToast('error', "Error al recortar la imagen");
+            } finally {
+                setIsSaving(false);
             }
         }
     };
@@ -602,6 +605,18 @@ export default function ActivityManager() {
                                             onCropChange={setCrop}
                                             onCropComplete={onCropComplete}
                                             onZoomChange={setZoom}
+                                        />
+                                    </div>
+                                    <div className="mt-4 w-full max-w-md px-8">
+                                        <label className="text-white text-xs mb-2 block">Zoom</label>
+                                        <input
+                                            type="range"
+                                            value={zoom}
+                                            min={1}
+                                            max={3}
+                                            step={0.1}
+                                            onChange={(e) => setZoom(Number(e.target.value))}
+                                            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary-500"
                                         />
                                     </div>
                                     <div className="mt-6 flex gap-4">

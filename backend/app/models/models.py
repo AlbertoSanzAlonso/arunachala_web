@@ -293,3 +293,24 @@ class Subscription(Base):
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+class Promotion(Base):
+    __tablename__ = "promotions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, nullable=False)
+    slug = Column(String, unique=True, index=True)
+    description = Column(Text, nullable=True)
+    discount_code = Column(String, nullable=True)
+    discount_percentage = Column(Integer, nullable=True)
+    image_url = Column(String, nullable=True)
+    start_date = Column(DateTime(timezone=True), nullable=True)
+    end_date = Column(DateTime(timezone=True), nullable=True)
+    is_active = Column(Boolean, default=True)
+    translations = Column(JSON, nullable=True)
+    # RAG sync fields
+    vector_id = Column(String, nullable=True)
+    vectorized_at = Column(DateTime(timezone=True), nullable=True)
+    needs_reindex = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())

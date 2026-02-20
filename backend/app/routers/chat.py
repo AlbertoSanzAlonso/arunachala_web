@@ -15,7 +15,7 @@ import json, re
 from sqlalchemy.orm import Session
 from app.models.models import (
     AgentConfig, User, Content, YogaClassDefinition, 
-    MassageType, TherapyType, Activity
+    MassageType, TherapyType, Activity, Promotion
 )
 from app.core.database import get_db
 from app.api.auth import get_current_user
@@ -129,7 +129,9 @@ def get_inventory_summary(db: Session):
             "therapy": count_active(TherapyType),
             "articles": count_active(Content, 'article'),
             "meditations": meditations_count,
-            "activities": count_active(Activity)
+            "activities": count_active(Activity),
+            "promotions": count_active(Promotion),
+            "announcements": count_active(Content, 'announcement')
         }
         print(f"📊 INVENTORY COUNTS: {summary}")
         
@@ -172,6 +174,16 @@ def get_inventory_summary(db: Session):
                      url = f"/blog/{slug}"
                 elif entity_type == 'meditation':
                      url = f"/meditaciones/{slug}"
+                elif entity_type == 'announcement':
+                     url = "/#noticias" 
+                elif Model == Promotion:
+                     url = "/#servicios" # Or specific promotion URL if you have one, currently promotions are often displayed on home or specific sections. 
+                     # Let's check where promotions are displayed. Usually just info.
+                     # If there is no specific page, maybe /contact or just the title description.
+                     # Let's use a generic anchor or just assume main page for now or leave empty if just informational.
+                     # Checking the user request, they want to know about promotions.
+                     # Let's route to home for now as they are likely displayed there or in a modal.
+                     url = "/" 
                 
                 info = f"'{title}' (URL: {url})"
                 
@@ -180,6 +192,31 @@ def get_inventory_summary(db: Session):
                     times = [f"{s.day_of_week} {s.start_time}" for s in item.schedules if s.is_active]
                     if times:
                         info += f" [Horario: {', '.join(times)}]"
+
+                # Add details for Promotions and Announcements to help the bot explain them
+                desc = ""
+                if Model == Promotion:
+                     d_text = getattr(item, 'description', '')
+                     d_code = getattr(item, 'discount_code', '')
+                     d_pct = getattr(item, 'discount_percentage', '')
+                     extras = []
+                     if d_pct: extras.append(f"{d_pct}% dto")
+                     if d_code: extras.append(f"Código: {d_code}")
+                     if d_text: extras.append(d_text[:60] + "..." if len(d_text) > 60 else d_text)
+                     if extras: desc = f"Info: {', '.join(extras)}"
+
+                elif entity_type == 'announcement':
+                     # For announcements, the relevant text is usually in 'body' or 'description'
+                     body = getattr(item, 'body', '') or getattr(item, 'description', '') or ''
+                     # Strip HTML if possible/simple, or just take raw text
+                     import re
+                     clean_body = re.sub('<[^<]+?>', '', body) # Basic strip tags
+                     if clean_body: 
+                        trunc = clean_body[:80] + "..." if len(clean_body) > 80 else clean_body
+                        desc = f"Detalle: {trunc}"
+
+                if desc:
+                    info += f" [{desc}]"
                 
                 details.append(info)
             return " (ITEMS DISPONIBLES: " + ", ".join(details) + ")" if details else ""
@@ -191,6 +228,8 @@ def get_inventory_summary(db: Session):
         if summary['articles']: parts.append(f"{summary['articles']} artículos en el blog{get_samples_with_metadata(Content, 'article', limit=8)}")
         if summary['meditations']: parts.append(f"{summary['meditations']} meditaciones guiadas{get_samples_with_metadata(Content, 'meditation', limit=10)}")
         if summary['activities']: parts.append(f"{summary['activities']} actividades{get_samples_with_metadata(Activity)}")
+        if summary['promotions']: parts.append(f"{summary['promotions']} promociones activas{get_samples_with_metadata(Promotion)}")
+        if summary['announcements']: parts.append(f"{summary['announcements']} noticias{get_samples_with_metadata(Content, 'announcement')}")
         
         result = "INVENTARIO DETALLADO: " + "; ".join(parts) + "."
         print(f"🔍 FULL INVENTORY TEXT: {result}")

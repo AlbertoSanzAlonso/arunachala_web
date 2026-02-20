@@ -181,3 +181,11 @@ arunachala_web/
     - **CI/CD Build Fixes**: Resolved ESLint warnings (unused variables, missing dependencies) in `BlogSection` and `UserProfile` that were causing Vercel builds to fail due to `CI=true` enforcement.
     - **Visual Continuity**: Ensured mock items include real Unsplash images and full ES/CA/EN translations to maintain design quality during development cycles without a live backend.
     - **Cleanup Reminder**: All fallback logic is designed as a "safety net" and should be reviewed/removed before the final production release if a persistent backend is guaranteed.
+
+## 📝 Recent Updates (2026-02-13 - Afternoon)
+- **RAG & Content Synchronization**:
+    - **Promotions Integration**: Added full Retrieve-Augmented Generation (RAG) support for Promotions. 
+        - **Auto-Sync**: Creating, updating, or deleting a promotion now instantly triggers a webhook to `n8n`, keeping the AI knowledge base up-to-date.
+        - **Rich Metadata**: The sync payload now includes discount codes and percentages in the description context for better AI answers.
+        - **Async Processing**: Implemented as non-blocking `async` background tasks in `promotions.py` to maintain API performance.
+    - **News (Articles) Confirmation**: Verified and reinforced that all Blog Articles (`content` type) also trigger the RAG sync workflow upon publication, ensuring the chatbot is aware of the latest news.

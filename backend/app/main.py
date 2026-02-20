@@ -9,7 +9,7 @@ from app.core.database import engine, Base
 from app.models import models
 import os
 
-from app.api import reviews, auth, gallery, schedules, yoga_classes, treatments, content, activities, upload, dashboard, rag, legacy, tags, automation, suggestions, site_config, subscriptions
+from app.api import reviews, auth, gallery, schedules, yoga_classes, treatments, content, activities, upload, dashboard, rag, legacy, tags, automation, suggestions, site_config, subscriptions, promotions, announcements
 from app.routers import chat
 from fastapi.staticfiles import StaticFiles
 
@@ -119,6 +119,10 @@ app.include_router(automation.router) # Automation tasks
 app.include_router(suggestions.router) # User suggestions
 app.include_router(site_config.router)
 app.include_router(subscriptions.router)
+app.include_router(promotions.router, prefix="/api/promotions")
+app.include_router(promotions.router, prefix="/api/promotion") # Alias singular for n8n
+app.include_router(announcements.router, prefix="/api/announcements")
+app.include_router(announcements.router, prefix="/api/announcement") # Alias singular for n8n
 
 app.include_router(tags.router, prefix="/api/tags", tags=["tags"])
 # Mount Static Files (for uploaded images)
