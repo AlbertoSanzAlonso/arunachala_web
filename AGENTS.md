@@ -193,9 +193,15 @@ arunachala_web/
 ## 📝 Recent Updates (2026-02-21)
 - **Production Infrastructure Migration (Coolify & Supabase)**:
     - **Self-Hosted CI/CD**: Installed and configured **Coolify** on Hetzner VPS (`37.27.4.118`) to manage automated deployments of Backend, n8n, and Qdrant.
-    - **Supabase Storage Integration**:
-        - **Audio Processing**: Implemented `ffmpeg` installation in `Dockerfile` and updated `upload.py` to optimize audio (mono, normalize, 96k mp3) and upload directly to Supabase Storage.
-        - **Service Role Key**: Configured backend to use Supabase Service Role Key for privileged storage access.
-    - **Database Migration**: Successfully pointed backend to Supabase PostgreSQL using connection pooling (Port 5432) for production stability.
-    - **Cleanup**: Removed all legacy configurations for Render, NeonDB, NocoDB, and Cloudinary.
+    - **Database & Storage Migration**: 
+        - Successfully migrated all data (Users, Classes, Therapies, Articles, etc.) from the local Docker Postgres on Hetzner to **Supabase PostgreSQL**.
+        - Configured backend to use Supabase Service Role Key for privileged storage access.
+        - Updated `DATABASE_URL` to use the direct Supabase connection for production stability.
+    - **Supabase Media Storage**:
+        - **Audio & Image Optimization**: Updated `upload.py` to handle both audio and images. 
+            - Audio: Optimized with `ffmpeg` (mono, normalize, 96k mp3) and uploaded to Supabase Storage.
+            - Images: Converted to **WebP**, resized (max 1920px), and uploaded to Supabase Storage.
+        - **URL Sanitization**: Fixed an issue where Supabase public URLs included a trailing `?`, ensuring clean direct links for the frontend.
+    - **Legacy Cleanup**: Completely removed old manual Docker containers and Caddy proxy on Hetzner to prevent port conflicts.
+    - **System Dependencies**: Added `ffmpeg` to the Docker image for on-the-fly audio processing.
 
