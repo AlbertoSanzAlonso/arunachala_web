@@ -12,6 +12,7 @@ import Footer from '../components/Footer';
 import FadeInSection from '../components/FadeInSection';
 import { API_BASE_URL } from '../config';
 import { useTranslation } from 'react-i18next';
+import { getImageUrl } from '../utils/imageUtils';
 
 // Lazy load heavy components
 const ImageSlider = lazy(() => import('../components/ImageSlider'));
@@ -43,7 +44,7 @@ const HomePage: React.FC = () => {
                 if (response.ok) {
                     const data = await response.json();
                     if (data.length > 0) {
-                        const urls = data.map((img: any) => `${API_BASE_URL}${img.url}`);
+                        const urls = data.map((img: any) => getImageUrl(img.url));
                         setGalleryImages(urls);
                     }
                 }

@@ -7,7 +7,8 @@ import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
 import illustrativeMap from '../assets/images/mapa_ilustrativo.webp';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+import { API_BASE_URL } from '../config';
+import { getImageUrl } from '../utils/imageUtils';
 
 interface GalleryImage {
     id: number;
@@ -131,7 +132,7 @@ const OurSpacePage: React.FC = () => {
                                 </div>
                             ) : mainImage ? (
                                 <img
-                                    src={`${API_BASE_URL}${mainImage.url}`}
+                                    src={getImageUrl(mainImage.url)}
                                     alt={mainImage.alt_text}
                                     className="w-full h-full object-cover"
                                 />
@@ -155,7 +156,7 @@ const OurSpacePage: React.FC = () => {
                                 <AnimatePresence mode='wait'>
                                     <motion.img
                                         key={currentIndex}
-                                        src={`${API_BASE_URL}${sliderImages[currentIndex].url}`}
+                                        src={getImageUrl(sliderImages[currentIndex].url)}
                                         alt={sliderImages[currentIndex].alt_text}
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
