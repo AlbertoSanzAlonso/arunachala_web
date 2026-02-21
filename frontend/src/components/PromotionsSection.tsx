@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { API_BASE_URL } from '../config';
 import { useTranslation } from 'react-i18next';
 import { TicketIcon } from '@heroicons/react/24/outline';
+import { getImageUrl } from '../utils/imageUtils';
 
 interface Promotion {
     id: number;
@@ -91,7 +92,7 @@ const PromotionsSection: React.FC = () => {
                                 {promo.image_url && (
                                     <div className="w-full md:w-48 h-48 rounded-2xl overflow-hidden flex-shrink-0 shadow-lg border border-white/10">
                                         <img
-                                            src={promo.image_url.startsWith('http') ? promo.image_url : `${API_BASE_URL}${promo.image_url}`}
+                                            src={getImageUrl(promo.image_url)}
                                             alt={title}
                                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                         />

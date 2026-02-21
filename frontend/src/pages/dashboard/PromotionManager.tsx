@@ -4,6 +4,7 @@ import Cropper from 'react-easy-crop';
 import { Point, Area } from 'react-easy-crop/types';
 import getCroppedImg from '../../utils/cropImage';
 import { API_BASE_URL } from '../../config';
+import { getImageUrl } from '../../utils/imageUtils';
 import PageLoader from '../../components/PageLoader';
 
 interface Promotion {
@@ -182,7 +183,7 @@ export default function PromotionManager() {
         setStartDate(item.start_date ? new Date(item.start_date).toISOString().slice(0, 16) : '');
         setEndDate(item.end_date ? new Date(item.end_date).toISOString().slice(0, 16) : '');
         setIsActive(item.is_active);
-        setPreviewUrl(item.image_url ? (item.image_url.startsWith('http') ? item.image_url : `${API_BASE_URL}${item.image_url}`) : null);
+        setPreviewUrl(getImageUrl(item.image_url));
         setShowModal(true);
     };
 
@@ -280,7 +281,7 @@ export default function PromotionManager() {
                         <div key={item.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
                             <div className="h-40 bg-gray-50 relative">
                                 {item.image_url ? (
-                                    <img src={item.image_url.startsWith('http') ? item.image_url : `${API_BASE_URL}${item.image_url}`} alt={item.title} className="w-full h-full object-cover" />
+                                    <img src={getImageUrl(item.image_url)} alt={item.title} className="w-full h-full object-cover" />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-gray-300"><TicketIcon className="h-12 w-12" /></div>
                                 )}
