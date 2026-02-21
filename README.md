@@ -4,10 +4,10 @@ Plataforma web para el estudio de yoga Arunachala con sistema de reservas, conte
 
 ## 🏗️ Arquitectura
 
-- **Backend**: FastAPI + PostgreSQL + SQLAlchemy
-- **Frontend**: React + TypeScript + Tailwind CSS  
-- **Automatización**: n8n + IA (OpenAI API)
-- **Chat**: WhatsApp Business AI (Meta Business API)
+- **Backend**: FastAPI (Hetzner VPS) + Supabase (PostgreSQL)
+- **Frontend**: React + TypeScript (Vercel)
+- **Automatización**: n8n + AI (Hetzner VPS)
+- **Base de Datos Vectorial**: Qdrant (Hetzner VPS)
 
 ## 📁 Estructura del Proyecto
 
@@ -26,9 +26,9 @@ arunachala_web/
 │   │   ├── hooks/          # Hooks personalizados
 │   │   └── services/       # Servicios API
 │   └── package.json
-├── n8n-workflows/         # Automatizaciones
-├── infraestructura/       # Docker + DB
-└── docs/                  # Documentación
+├── n8n-workflows/         # Flujos de automatización
+├── infraestructura/       # Configuración VPS (Docker, n8n, Qdrant)
+└── docs/                  # Documentación técnica y de usuario
 ```
 
 ## 🚀 Inicio Rápido

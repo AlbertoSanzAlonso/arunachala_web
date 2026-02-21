@@ -10,6 +10,7 @@ import aiofiles
 import re
 from unidecode import unidecode
 from typing import Optional
+import io
 
 def slugify(text: str) -> str:
     """Helper to convert text to SEO friendly slug"""
@@ -39,6 +40,7 @@ async def upload_audio(
     temp_filename = f"{file_id}_temp"
     final_filename = f"{file_id}.mp3"
     
+    # We always need a temp file for pydub to process
     temp_path = os.path.join(UPLOAD_DIR, temp_filename)
     final_path = os.path.join(UPLOAD_DIR, final_filename)
 
@@ -52,32 +54,74 @@ async def upload_audio(
         audio = AudioSegment.from_file(temp_path)
         
         # Optimize for web streaming:
-        # 1. Convert to mono (meditation/voice doesn't need stereo)
         if audio.channels > 1:
             audio = audio.set_channels(1)
         
-        # 2. Normalize volume to prevent clipping and ensure consistent playback
         audio = audio.normalize()
         
-        # 3. Export as MP3 with optimized settings
-        # 96k bitrate is perfect for voice/meditation (smaller file, still high quality)
-        # Using VBR (variable bitrate) for better quality/size ratio
-        audio.export(
-            final_path, 
-            format="mp3", 
-            bitrate="96k",
-            parameters=["-q:a", "2"]  # VBR quality level (0-9, 2 is high quality)
-        )
+        # Path for local or supabase
+        STORAGE_TYPE = os.getenv("STORAGE_TYPE", "local")
         
-        # Clean up temp file
-        os.remove(temp_path)
-        
-        # Return URL
-        return {"url": f"/static/audio/{final_filename}"}
+        if STORAGE_TYPE == "supabase":
+            from app.core.image_utils import supabase_client
+            if not supabase_client:
+                raise HTTPException(status_code=500, detail="Supabase client not initialized. Check SUPABASE_URL and SUPABASE_KEY.")
+            
+            try:
+                # Export to a buffer first for Supabase
+                audio_buffer = io.BytesIO()
+                audio.export(
+                    audio_buffer, 
+                    format="mp3", 
+                    bitrate="96k",
+                    parameters=["-q:a", "2"]
+                )
+                audio_buffer.seek(0)
+                
+                bucket_name = "arunachala-images" 
+                file_path = f"audio/{final_filename}"
+                
+                # Upload to Supabase
+                supabase_client.storage.from_(bucket_name).upload(
+                    file=audio_buffer.getvalue(),
+                    path=file_path,
+                    file_options={"content-type": "audio/mpeg"}
+                )
+                
+                # Get public url
+                public_url = supabase_client.storage.from_(bucket_name).get_public_url(file_path)
+                
+                # Clean up temp
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
+                    
+                return {"url": public_url}
+            except Exception as supabase_err:
+                print(f"🔥 Supabase Upload Error: {supabase_err}")
+                raise HTTPException(status_code=500, detail=f"Error uploading to Supabase: {str(supabase_err)}")
+        else:
+            # LOCAL STORAGE
+            audio.export(
+                final_path, 
+                format="mp3", 
+                bitrate="96k",
+                parameters=["-q:a", "2"]
+            )
+            
+            # Clean up temp file
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+            
+            return {"url": f"/static/audio/{final_filename}"}
 
+    except HTTPException as he:
+        raise he
     except Exception as e:
         if os.path.exists(temp_path):
             os.remove(temp_path)
+        print(f"🔥 Error processing audio: {e}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error processing audio: {str(e)}")
 
 

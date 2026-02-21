@@ -1,0 +1,965 @@
+{
+  "name": "Blog Arunachala Yoga",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 4000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        288,
+        384
+      ],
+      "id": "45636d2c-f25d-4a95-995e-48838303e358",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "OVOKIrTVVKnOvIHi",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3120,
+        -80
+      ],
+      "id": "76b5d3e7-8450-4dc6-a5a9-dcbb7daf3bb2",
+      "name": "5 seg wait",
+      "webhookId": "cb7bd28e-f7db-4c3a-8139-d7c26a9d2055"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "prompt": "=Ilustración profesional hiperrealista 8K para artículo de blog de clínica dental sobre:\n\nArtículo: {{ $('JSON Parse').item.json.title }}\n\nDescripción: {{ $('JSON Parse').item.json.imagePrompt }}\n\nESTILO: {{ $('JSON Parse').item.json.imagePromptStyle }}\n\nSPECS TÉCNICAS:\n\nTamaño: 1024x1024\nCalidad: estándar\nComposición: Minimalista, un solo punto focal\nClaridad: La imagen debe ser comprensible en 2-3 segundos\n\nDIRECTRICES POR ESTILO:\n[Fotografico-lifestyle]\nEscenas naturales con pacientes sonriendo, luz natural suave, tonos cálidos dorados, profundidad de campo media, ambiente relajado. Mostrar solo sonrisas/dientes o partes no identificables de personas, NUNCA rostros completos.\n\n[Clinico-minimalista]\nFondos blancos/neutros, iluminación uniforme de estudio, enfoque ultra nítido, paleta blanco + azul claro + gris, composición simétrica, instrumental esterilizado.\n\n[Retratos profesionales]\nFondo neutro, iluminación softbox favorecedora, encuadre hombros arriba, uniformes blancos/azul claro, postura profesional cercana. NO rostros identificables completos.\n\n[Ilustracion educativa]\nEstilo infográfico vectorial, iconografía clara (dientes, cepillos), paleta azul claro + verde menta + blanco + coral suave, composición tipo diagrama, formas geométricas simples.\n\n[Luz natural calida]\nInteriores clínica con luz día, tonos dorados/beige, profundidad de campo baja, bokeh cálido, ambiente acogedor y confortable.\n\n[Detalles-macro]\nMacro extremo (1:1), enfoque ultra nítido, profundidad muy baja, sujetos: instrumental/implantes/brackets, iluminación técnica, paleta metálica/blanca, brillos controlados.\n\nPALETA GENERAL:\n\nBase: Blanco, azul claro dental (#E8F4F8), gris claro (#F5F5F5)\nAcentos: Beige/dorado tenue (lifestyle), verde menta (#B8E6D5), azul cielo (#D4E9F7)\nEvitar: Colores saturados u oscuros\n\nRESTRICCIONES:\n\nNO incluir texto, marcas, logos, nombres comerciales.\n\nPERMITIDO:\n\nSonrisas o personas mostrando dientes limpios\nManos enguantadas (látex blanco/azul)\nInstrumental dental genérico, implantes o brackets abstractos\nCepillos genéricos, hilo dental sin marca\nSuperficies limpias y claras\nPlantas suaves o luz natural según estilo\n\nLIMITACIONES DE ELEMENTOS:\n\nIncluir máximo 2-3 elementos principales para no saturar la imagen\nPriorizar claridad y minimalismo\nNo es necesario mostrar todos los elementos permitidos, escoger los más representativos\n\nCOMPOSICIÓN:\n\nRegla de tercios, punto focal en intersecciones\nBalance visual equilibrado\nContraste: elemento principal destaca sobre fondo\nEspacio seguro alrededor del punto focal, evitar saturación\n\nOBJETIVO:\nImagen profesional que transmita confianza, profesionalismo y calidez de clínica dental moderna. Minimalista, clara, comprensible en 3 segundos, funcional como encabezado de blog, sin texto/marcas/rostros identificables.",
+        "model": "dall-e-3",
+        "responseFormat": "imageUrl",
+        "options": {
+          "quality": "standard",
+          "size": "1024x1024"
+        },
+        "requestOptions": {}
+      },
+      "name": "DALLE_Fallback",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [
+        3232,
+        256
+      ],
+      "id": "d6ba2e0e-3663-4129-abd4-16c6d645c7a6",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "openAiApi": {
+          "id": "OVOKIrTVVKnOvIHi",
+          "name": "OpenAi account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.kie.ai/api/v1/jobs/recordInfo?taskId={{ $json.data.taskId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "contentType": "=json",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "nano-banana-pro"
+            },
+            {
+              "name": "input.aspect_ratio",
+              "value": "1:1"
+            },
+            {
+              "name": "input.resolution",
+              "value": "1K"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3344,
+        -80
+      ],
+      "id": "aaa8d3c4-436f-4115-8d13-45d312f085da",
+      "name": "GET_BananaPro_URL",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "wvTAlnIWwXV6z3Ep",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\nJSON.stringify({\n  \"model\": \"nano-banana-pro\",\n  \"input\": {\n    \"prompt\": $json.enhancedImagePrompt,\n    \"aspect_ratio\": \"16:9\",\n    \"resolution\": \"1K\",\n    \"output_format\": \"jpg\"\n  }\n})\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2848,
+        192
+      ],
+      "id": "c8e96f80-129d-4d46-a488-e7df3e297ce5",
+      "name": "IMG_BananaPro_Request",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "wvTAlnIWwXV6z3Ep",
+          "name": "Bearer Auth account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8e802977-3b99-4596-b4e5-e0836d6b84c9",
+                    "leftValue": "={{ $json.data.state }}",
+                    "rightValue": "waiting",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "waiting"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.data.state }}",
+                    "rightValue": "=success",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "66c3d679-9836-4e20-9894-918fe7ddd183"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "success"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c0ebcb84-c88b-4c16-8d89-e914bc941a83",
+                    "leftValue": "={{ $json.data.state }}",
+                    "rightValue": "fail",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "fail"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        3568,
+        -96
+      ],
+      "id": "525f36f6-f83c-40bd-a5f9-a5f65c5fae62",
+      "name": "IMG_Check_Status"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Primer item del input del nodo anterior\nconst imageResponse = $input.first().json;\n\n// Parserar 'data.resultJson' de string objeto\nconst resultJson = JSON.parse(imageResponse.data.resultJson);\n\n// Obtener la primera URL de la lista\nconst imageUrl = resultJson.resultUrls[0];\n\n// Retornar un array de items con formato JSON \n// Solo URL de la imagen bajo la propiedad 'image_url'\nreturn [{\n  json: {\n    image_url: imageUrl\n  }\n}];"
+      },
+      "name": "URL_Extract_Banana",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        3840,
+        -80
+      ],
+      "id": "77f91562-fb6b-41d2-bf15-1803c790d3d9"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Obtener el primer item del input\nconst imageData = $input.first().json;\n\n// Retornar un objeto JSON con la URL de la imagen o null si no existe\nreturn [{\n  json: {\n    image_url: imageData.url || null\n  }\n}];"
+      },
+      "name": "URL_Extract_DALLE",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        3568,
+        240
+      ],
+      "id": "63d7d058-dc7e-4269-97f7-773d32df7c9d"
+    },
+    {
+      "parameters": {
+        "functionCode": "const imageUrl = $input.first().json.image_url;\nconst previousData = $('Multilingual_article').item.json;\n\nreturn [{\n  json: {\n    ...previousData,\n    featuredImage: imageUrl  // ← Corregido: ahora es featuredImage\n  }\n}];"
+      },
+      "name": "Attach_Image_URL",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        4080,
+        112
+      ],
+      "id": "288bc68e-af0d-4575-b9dd-f066d8ae6469"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Acceso a la memoria global del workflow para no repetir temas\nconst data = $getWorkflowStaticData('global');\n\n// Listas de keywords y estilo desde el nodo anterior\nconst keywords = $input.first().json.keywords;\nconst visualStyles = $input.first().json.visualStyles;\n\n// Inicializar array de palabras usadas si no existe\nif (!data.usedKeywords) {\n  data.usedKeywords = [];\n}\n\n// -----------------------------------------------------------\n// ROTACIÓN INTELIGENTE DE KEYWORDS\n// -----------------------------------------------------------\n\n// Filtramos las keywords que NO han sido usadas todavía\nlet available = keywords.filter(k => !data.usedKeywords.includes(k));\n\n// Si ya hemos usado TODAS, reiniciamos la lista y el historial\nif (available.length === 0) {\n  data.usedKeywords = [];\n  available = [...keywords];\n}\n\n// Elegir una keyword aleatoria de las disponibles\nconst selected = available[Math.floor(Math.random() * available.length)];\n\n// Guardar la elegida como usada para la próxima vez\ndata.usedKeywords.push(selected);\n\n// -----------------------------------------------------------\n// LIMPIEZA PARA PROMPT DE IMAGEN\n// -----------------------------------------------------------\n// Aquí puedes añadir palabras que quieras quitar del prompt de imagen para que no confundan a la IA.\n// Por ejemplo, quitar nombres de ciudades si la IA tiende a dibujar mapas o edificios específicos.\nconst wordsToRemove = /cornellà|barcelona/gi; \n\n// Generamos la keyword limpia para la imagen\nconst imageKeyword = selected.replace(wordsToRemove, '').trim();\n\n// -----------------------------------------------------------\n// SELECCIÓN DE ESTILO VISUAL\n// -----------------------------------------------------------\nconst randomStyle = visualStyles[Math.floor(Math.random() * visualStyles.length)];\n\nreturn [\n  { \n    json: { \n      keyword: selected,\n      imageKeyword: imageKeyword,\n      selectedStyleName: randomStyle.name,\n      selectedStyleDescription: randomStyle.description,\n      selectedStyleMood: randomStyle.mood,\n      usedKeywords: data.usedKeywords\n    } \n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        192
+      ],
+      "id": "16f9e3dd-eef8-489b-a10f-ac4ad872eb54",
+      "name": "Metadata_selector"
+    },
+    {
+      "parameters": {
+        "functionCode": "/* \n  Nodo: ImagePromptGEN\n  Función: Prepara el prompt definitivo en ESPAÑOL unificando estilo y contenido.\n*/\n\nfor (const item of $input.all()) {\n  \n  // Obtenemos los textos en español del paso anterior\n  const basePrompt = item.json.spanish?.imagePrompt || \"Escena de yoga y meditación\";\n  const style = item.json.spanish?.imagePromptStyle || \"Luz suave y natural\";\n\n  // Construimos el prompt unificado\n  const finalPrompt = `Fotografía profesional de alta gama para web de centro de yoga.\n\nDESCRIPCIÓN DE LA ESCENA:\n${basePrompt}\n\nESTILO Y ATMÓSFERA:\n${style}\n\nCONFIGURACIÓN TÉCNICA OBLIGATORIA:\n- Calidad: 8K, fotorrealista, texturas muy detalladas, enfoque nítido.\n- Iluminación: \"Golden hour\" (hora dorada), luz natural cálida y suave.\n- Lente: Gran angular, profundidad de campo cinematográfica.\n- Ambiente: Sereno, inspirador, pacífico, espiritual.\n- PROMPT NEGATIVO (Lo que NO debe aparecer): Texto, marcas de agua, letras, cuerpos deformes, dibujos animados, oscuridad, alto contraste artificial.`;\n\n  // Guardamos el resultado\n  item.json.enhancedImagePrompt = finalPrompt;\n  \n  // Opcional: Definir el ratio aquí para usarlo dinámicamente si el nodo de imagen lo permite\n  item.json.image_aspect_ratio = \"16:9\"; \n}\n\nreturn $input.all();"
+      },
+      "name": "ImagePromptGEN",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        2608,
+        192
+      ],
+      "id": "0434149e-63a6-4164-9098-9036149c2547"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"CLINIC_NAME\": \"Arunachala Yoga & Ayurveda\",\n  \"DEFAULT_CITY\": \"Cornellà de Llobregat\",\n  \"API_ENDPOINT\": \"http://backend:8000/api/content\",   \n  \"EMAIL\": \"info@arunachalayoga.com\",\n  \"keywords\": [\n  \n    \"Deidades y Simbolismo de Asanas\",\n    \"Mitología de las posturas de yoga\",\n    \"Historias de dioses hindúes en asana\",\n    \"Simbología del panteón hindú en yoga\",\n    \"Arquetipos divinos en la práctica de yoga\",\n    \"Relación entre deidades védicas y cuerpo humano\",\n    \"Cosmología hindú y los ciclos del tiempo (Yugas)\",\n    \"Energía Shakti y Shiva en la mitología\",\n    \"Mitos sobre la creación del universo y yoga\",\n    \"Simbolismo de los elementos naturales en el hinduismo\",\n    \"Simbología del loto y crecimiento espiritual\",\n    \"Simbolismo de los animales en la mitología védica\",\n    \"Mitología hindú para la gestión del ego\",\n    \"Diosas tántricas y empoderamiento femenino\",\n    \"yoga para principiantes y fundamentos\",\n    \"estilos de yoga hatha vinyasa\",\n    \"yoga en barcelona y cornellà\",\n    \"beneficios del yoga para la salud\",\n    \"yoga terapéutico y dolencias físicas\",\n    \"yoga para el bienestar emocional y estrés\",\n    \"técnicas de respiración pranayama\",\n    \"yoga nidra y relajación profunda\",\n    \"fundamentos de ayurveda y doshas\",\n    \"nutrición y alimentación ayurvédica\",\n    \"rutinas de autocuidado y dinacharya\",\n    \"remedios naturales y especias ayurvédicas\",\n    \"meditación y mindfulness para principiantes\",\n    \"técnicas de meditación y beneficios\",\n    \"filosofía del yoga y textos clásicos\",\n    \"historia y orígenes del yoga\",\n    \"mitología hindú y simbolismo en yoga\",\n    \"historias de dioses y deidades hindúes\",\n    \"simbolismo de asanas y mitos\",\n    \"épica hindú bhagavad gita y ramayana\",\n    \"chakras y sistema energético\",\n    \"mantras y sánscrito en la práctica\",\n    \"alineamiento y ajustes en yoga\",\n    \"secuencias de yoga y práctica personal\",\n    \"estilo de vida yogui y holístico\",\n    \"yoga y espiritualidad\",\n    \"anatomía aplicada al yoga\",\n    \"herramientas para la práctica de yoga\",\n    \"yoga y meditación en casa\",\n    \"conceptos de ética yóguica yamas y niyamas\",\n    \"saludo al sol surya namaskar\",\n    \"bandhas y mudras en la práctica\",\n    \"yoga para diferentes etapas de la vida\"\n  \n  ],\n  \"visualStyles\": [\n    {\n      \"name\": \"Amanecer Yogui\",\n      \"description\": \"Luz dorada de primera hora del día, ambiente de práctica matinal. Tonos cálidos (naranja suave, melocotón, dorado pálido). Elementos: esterilla desplegada, luz natural entrando por ventana, una taza de té humeante. Sensación de nuevo comienzo.\",\n      \"mood\": \"Renovador y Esperanzador\"\n    },\n    {\n      \"name\": \"Naturaleza Integrada\",\n      \"description\": \"Práctica al aire libre en entornos naturales catalanes. Tonos verdes bosque, azules mediterráneos, marrones tierra. Elementos: yoga en playa, montaña o parque, contacto con elementos naturales, descalzo sobre hierba o arena.\",\n      \"mood\": \"Conectado y Vivificante\"\n    },\n    {\n      \"name\": \"Santuario Interior\",\n      \"description\": \"Espacio de práctica personal íntimo y cuidado. Paleta: blancos cálidos, beiges, terracota suave, toques de verde salvia. Elementos: altar personal, plantas de interior, manta doblada, cojín de meditación, luz de vela, incienso.\",\n      \"mood\": \"Sagrado y Acogedor\"\n    },\n    {\n      \"name\": \"Geometría Corporal\",\n      \"description\": \"Enfoque en la precisión y belleza de las asanas. Fondo minimalista neutro, iluminación lateral que resalta la forma del cuerpo. Tonos: grises suaves, blancos, un toque de color en la ropa. Énfasis en líneas, simetría y alineación.\",\n      \"mood\": \"Disciplinado y Elegante\"\n    },\n    {\n      \"name\": \"Texturas Ayurvédicas\",\n      \"description\": \"Primeros planos de elementos ayurvédicos: especias (cúrcuma, cardamomo), aceites en botellas de vidrio, hierbas frescas, cuencos de cerámica artesanal, telas naturales (algodón, lino). Paleta tierra: ocres, mostaza, terracota, verde oliva.\",\n      \"mood\": \"Sanador y Artesanal\"\n    },\n    {\n      \"name\": \"Comunidad y Conexión\",\n      \"description\": \"Grupos pequeños en círculo, manos unidas, compartiendo. Luz natural difusa, expresiones serenas y sonrientes. Diversidad de edades y cuerpos. Paleta cálida y acogedora.\",\n      \"mood\": \"Inclusivo y Comunitario\"\n    },\n    {\n      \"name\": \"Silencio Meditativo\",\n      \"description\": \"Persona en meditación sentada, vista desde atrás o de lado. Espacio vacío alrededor, minimalismo extremo. Tonos monocromáticos suaves: grises, beiges, blancos hueso. Enfoque suave, casi onírico.\",\n      \"mood\": \"Contemplativo y Silencioso\"\n    },\n    {\n      \"name\": \"Elementos Simbólicos\",\n      \"description\": \"Acercamiento artístico a símbolos del yoga: mandala dibujado en arena, Om pintado a mano, yantra geométrico, mala beads, campanas tibetanas. Estilo ilustrativo con toques fotográficos. Colores: dorados, índigos profundos, carmesí.\",\n      \"mood\": \"Místico y Cultural\"\n    },\n    {\n      \"name\": \"Fluidez y Movimiento\",\n      \"description\": \"Secuencias en movimiento capturadas con ligero motion blur artístico. Transiciones entre posturas (vinyasa). Tonos dinámicos pero armoniosos. Sensación de danza y fluir.\",\n      \"mood\": \"Dinámico y Fluido\"\n    },\n    {\n      \"name\": \"Descanso Restaurativo\",\n      \"description\": \"Posturas pasivas con muchos props: bolsters, mantas, bloques, eye pillow. Luz tenue y cálida. Tonos suaves lavanda, gris paloma, rosa empolvado. Máxima comodidad visual.\",\n      \"mood\": \"Reparador y Nutritivo\"\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        192
+      ],
+      "id": "e102366d-d5a2-4664-a9e3-7e326b72ff21",
+      "name": "Config"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "chatgpt-4o-latest"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 4000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        992,
+        448
+      ],
+      "id": "fa0ac192-4c93-44ca-9f98-897f4748eb76",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "OVOKIrTVVKnOvIHi",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Eres un maestro de Yoga experto y multilingüe (ES/CA/EN), con años de experiencia guiando a alumnos en Arunachala Yoga, un centro de referencia en Cornellà de Llobregat.\n\n\nTAREA:\n\nGenera un artículo de blog largo, profundo y SEO-friendly sobre: {{ $json.keyword }}, siguiendo las siguientes reglas: \n\nPASOS OBLIGATORIOS (USO DE HERRAMIENTAS):\n\n1. Primero, usa la herramienta `check_yoga_articles` (Postgres) para consultar qué se ha publicado ya. NO repitas temas ni títulos de esa lista.\n2. Segundo, usa la herramienta `arunachala_knowledge` (RAG/Qdrant) para leer sobre la filosofía, ubicación y tono de Arunachala.\n3. Escribe el artículo integrando esa información para que suene único y propio del centro.\n\nOBJETIVO CLAVE:\nGenerar un artículo PROFUNDO, INSPIRADOR y ÚTIL que posicione en Google y transmita la esencia espiritual y profesional de Arunachala Yoga.\n\n========================\nREGLAS CRÍTICAS DE LONGITUD (OBLIGATORIAS)\n========================\n- El artículo completo DEBE tener minimo 1200 palabras reales.\n- Cada sección H2 (##) DEBE tener mínimo 250 palabras de contenido valioso.\n- La profundidad y la calidez del mensaje son más importantes que la brevedad.\n\n========================\nREQUISITOS DEL ARTÍCULO\n========================\n\n1. Título SEO (50-60 caracteres):\n   - Atractivo y con un toque espiritual pero claro.\n   - Usa \"Cornellà\" solo si encaja natural, si no, prioriza el tema.\n\n2. Slug:\n   - minúsculas, separado por guiones, máximo 5 palabras.\n\n3. Excerpt:\n   - 150-160 caracteres, invitando a la lectura y al bienestar.\n\n4. Contenido (1200+ palabras):\n   - Markdown.\n   - Párrafos cortos y respirables (máximo 3 líneas).\n   - Uso de listas para enumerar beneficios o pasos.\n   - Lenguaje cercano (\"tú\", \"nosotros\").\n\n5. Estructura:\n   - Introducción inspiradora que conecte con una necesidad o emoción.\n   - 4-5 secciones H2 solidas.\n   - Un H2 dedicado a \"Cómo aplicarlo en tu día a día\".\n   - Sección breve \"En Arunachala\" invitando suavemente a probar.\n   - Conclusión cálida.\n\n6. Keywords obligatorias (integradas natural):\n   - \"Yoga en Cornellà\" (al menos una vez).\n   - \"bienestar integral\".\n   - \"Arunachala Yoga\".\n\n7. Tono:\n   - Calmado, sabio, acogedor y profesional.\n   - Evita misticismo confuso; explica conceptos sánscritos de forma sencilla.\n   - Empático con los dolores o estrés del alumno.\n\n\n\n==========\nCATEGORÍA:\n==========\nyoga \n\n========================\nETIQUETAS (elige 3-5):\n========================\nHatha Yoga | Salud | Relajación | Mindfulness | Respiración | Posturas | Consejos\n\n========================\nESTILO VISUAL DE LA IMAGEN\n========================\n- Nombre: {{ $json.selectedStyleName }}\n- Descripción: {{ $json.selectedStyleDescription }}\n- Ambiente: {{ $json.selectedStyleMood }}\n\n========================\nFORMATO DE RESPUESTA (OBLIGATORIO)\n========================\n\nResponde en JSON válido estrictamente.\n\nFORMATO JSON DE RESPUESTA (ESTRICTO):\n\n\n{\n  \"title_es\": \"Título del Post\",\n  \"content_es\": \"# Título H1\\n\\nIntroducción...\\n\\n## Sección 1\\n\\nContenido...\\n\\n## En Arunachala\\n\\nTexto invitación...\\n\\n## Conclusión\\n\\nDespedida.\",\n  \"excerpt_es\": \"Resumen breve...\",\n  \"slug\": \"slug-en-espanol-optimizado\",\n  \"metaTitle\": \"Title para Google\",\n  \"metaDescription\": \"Desc para Google\",\n  \"categories\": [\"Categoría seleccionada\"],\n  \"tags\": [\"Tag1\", \"Tag2\", \"Tag3\"],\n  \"seo_title\": \"SEO Title ESPAÑOL\",\n  \"seo_description\": \"SEO Desc ESPAÑOL\",\n  \"imagePrompt\": \"Prompt DETALLADO para generar una imagen fotorrealista basada en el 'ESTILO VISUAL' descrito arriba. DEBE describir la escena, la luz, los colores y el ambiente para DALL-E 3.\",\n  \"imagePromptStyle\": \"Resumen del estilo visual usado\"\n}\n\n\n\n========================\nRESTRICCIONES CRÍTICAS\n========================\n✓ No incluyas ningún texto fuera del JSON.\n✓ No inventes testimonios falsos.\n✓ El contenido debe sentirse auténtico y escrito por una persona real que ama lo que hace.\n\nOBJETIVO FINAL:\nInspirar al lector a cuidar de sí mismo y ver a Arunachala como su refugio de paz.\n\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        400,
+        192
+      ],
+      "id": "191ed121-34e7-4b80-ae3c-407a886b5807",
+      "name": "Articulo_ES"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert English translator (EN) specialized in Yoga.\nTranslate the blog post and tags from Spanish to English.\n\nINPUT:\nTitle: {{ $('JSON_PARSE_ES').item.json.title_es }}\nContent: {{ $('JSON_PARSE_ES').item.json.content_es }}\nExcerpt: {{ $('JSON_PARSE_ES').item.json.excerpt_es }}\nTags: {{ $('JSON_PARSE_ES').item.json.tags }}\n\nCRITICAL RULES:\n1. FULL FIDELITY: Do not summarize. Translate every paragraph. Keep Markdown format.\n2. TAGS: Translate the list of tags to English.\n\nOUTPUT FORMAT (JSON):\n{\n  \"title_en\": \"Translated Title\",\n  \"content_en\": \"Full translated content...\",\n  \"excerpt_en\": \"Translated summary...\",\n  \"tags_en\": [\"Tag1\", \"Tag2\"]\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1648,
+        192
+      ],
+      "id": "fddee1ab-f6fa-4f40-bbb8-c9de2ac3ebb0",
+      "name": "Articulo_EN"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "chatgpt-4o-latest"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 4000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1648,
+        384
+      ],
+      "id": "fb2ed0a3-b5c1-48a7-957f-08458895fbe1",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "OVOKIrTVVKnOvIHi",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\n\nfor (const item of items) {\n  let rawText = item.json.output; \n  \n  if (!rawText) {\n      // Devolvemos info de depuración envuelta correctamente\n      results.push({ \n        json: { \n          debug_error: \"Propiedad 'output' no encontrada\", \n          available_keys: Object.keys(item.json) \n        } \n      });\n      continue;\n  }\n\n  if (typeof rawText === 'string') {\n    let jsonString = rawText.replace(/```json\\s*/g, \"\").replace(/```\\s*$/g, \"\");\n    try {\n      const parsed = JSON.parse(jsonString);\n      // ÉXITO: Devolvemos el objeto parseado envuelto en 'json'\n      results.push({ json: parsed });\n    } catch (e) {\n      results.push({ \n        json: { \n          debug_error: \"Error parsing JSON string\", \n          raw_content: rawText \n        } \n      });\n    }\n  } else if (typeof rawText === 'object') {\n     results.push({ json: rawText });\n  } else {\n     results.push({ \n       json: { \n         debug_error: \"Formato desconocido\", \n         raw_content: rawText \n       } \n     });\n  }\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2032,
+        192
+      ],
+      "id": "79b30850-579f-4f08-9fd5-f60c98908609",
+      "name": "JSON_PARSE_EN"
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\n\nfor (const item of items) {\n  let rawText = item.json.output; \n  \n  if (!rawText) {\n      // Devolvemos info de depuración envuelta correctamente\n      results.push({ \n        json: { \n          debug_error: \"Propiedad 'output' no encontrada\", \n          available_keys: Object.keys(item.json) \n        } \n      });\n      continue;\n  }\n\n  if (typeof rawText === 'string') {\n    let jsonString = rawText.replace(/```json\\s*/g, \"\").replace(/```\\s*$/g, \"\");\n    try {\n      const parsed = JSON.parse(jsonString);\n      // ÉXITO: Devolvemos el objeto parseado envuelto en 'json'\n      results.push({ json: parsed });\n    } catch (e) {\n      results.push({ \n        json: { \n          debug_error: \"Error parsing JSON string\", \n          raw_content: rawText \n        } \n      });\n    }\n  } else if (typeof rawText === 'object') {\n     results.push({ json: rawText });\n  } else {\n     results.push({ \n       json: { \n         debug_error: \"Formato desconocido\", \n         raw_content: rawText \n       } \n     });\n  }\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1376,
+        192
+      ],
+      "id": "65614b3e-e345-4828-b62f-8a51c79c2934",
+      "name": "JSON_PARSE_CAT"
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\n\nfor (const item of items) {\n  let rawText = item.json.output; \n  \n  if (!rawText) {\n      // Devolvemos info de depuración envuelta correctamente\n      results.push({ \n        json: { \n          debug_error: \"Propiedad 'output' no encontrada\", \n          available_keys: Object.keys(item.json) \n        } \n      });\n      continue;\n  }\n\n  if (typeof rawText === 'string') {\n    let jsonString = rawText.replace(/```json\\s*/g, \"\").replace(/```\\s*$/g, \"\");\n    try {\n      const parsed = JSON.parse(jsonString);\n      // ÉXITO: Devolvemos el objeto parseado envuelto en 'json'\n      results.push({ json: parsed });\n    } catch (e) {\n      results.push({ \n        json: { \n          debug_error: \"Error parsing JSON string\", \n          raw_content: rawText \n        } \n      });\n    }\n  } else if (typeof rawText === 'object') {\n     results.push({ json: rawText });\n  } else {\n     results.push({ \n       json: { \n         debug_error: \"Formato desconocido\", \n         raw_content: rawText \n       } \n     });\n  }\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        768,
+        192
+      ],
+      "id": "73f0e90a-26fe-4d05-ba2f-377bab174243",
+      "name": "JSON_PARSE_ES"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Eres un traductor experto nativo en Catalán (CA).\nTu tarea es traducir el artículo de blog y las etiquetas que recibes del castellano al catalán.\n\nINPUT:\nTítulo: {{ $json.title_es }}\nContenido: {{ $json.content_es }}\nExtracto: {{ $json.excerpt_es }}\nEtiquetas: {{ $json.tags }}\n\nREGLAS CRÍTICAS:\n1. FIDELIDAD TOTAL: No resumas. Traduce cada párrafo. Mantén el formato Markdown.\n2. ETIQUETAS: Traduce también la lista de etiquetas al catalán.\n\nFORMATO DE SALIDA (JSON):\n{\n  \"title_ca\": \"Títol traduït\",\n  \"content_ca\": \"Contingut complet traduït...\",\n  \"excerpt_ca\": \"Resum traduït...\",\n  \"tags_ca\": [\"Etiqueta1\", \"Etiqueta2\"]\n}\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1024,
+        192
+      ],
+      "id": "ca341c74-285f-4aeb-9cf5-b9368c0d7760",
+      "name": "Articulo_CAT"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Obtenemos el artículo original en español\nconst spanishArticle = $('JSON_PARSE_ES').first().json;\n\n// Obtenemos las traducciones\nconst englishArticle = $('JSON_PARSE_EN').first().json;\nconst catalanArticle = $('JSON_PARSE_CAT').first().json;\n\nreturn [{\n  json: {\n    spanish: spanishArticle,\n    english: englishArticle,\n    catalan: catalanArticle,\n    createdAt: new Date().toISOString()\n  }\n}];"
+      },
+      "name": "Multilingual_article",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        2336,
+        192
+      ],
+      "id": "f3c63e94-587c-412d-801b-14795f738d00"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json; // Cogemos el primer elemento\n\nreturn {\n  json: {\n    // 1. Datos base (extraídos del bloque en español por defecto)\n    \"title\": input.spanish.title_es,\n    \"slug\": input.spanish.slug,\n    \"excerpt\": input.spanish.excerpt_es,\n    \"content\": input.spanish.content_es, // Contenido principal\n    \n    // 2. Metadatos\n    \"category\": input.spanish.categories[0] || \"yoga\", // Cogemos la primera categoría\n    \"tags\": input.spanish.tags,\n    \"featured_image\": input.featuredImage, // ¡Importante! Aquí unificamos el nombre\n    \"status\": \"published\",\n    \"created_at\": new Date().toISOString(),\n\n    // 3. Traducciones (Esto es clave para tu backend multilingüe)\n    \"translations\": {\n      \"es\": {\n        \"title\": input.spanish.title_es,\n        \"content\": input.spanish.content_es,\n        \"excerpt\": input.spanish.excerpt_es,\n        \"seo_title\": input.spanish.seo_title,\n        \"seo_description\": input.spanish.seo_description\n      },\n      \"en\": {\n        \"title\": input.english.title_en,\n        \"content\": input.english.content_en,\n        \"excerpt\": input.english.excerpt_en,\n        \"tags\": input.english.tags_en\n      },\n      \"ca\": {\n        \"title\": input.catalan.title_ca,\n        \"content\": input.catalan.content_ca,\n        \"excerpt\": input.catalan.excerpt_ca,\n        \"tags\": input.catalan.tags_ca\n      }\n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4432,
+        112
+      ],
+      "id": "f855d14a-c2e1-44ae-b1d3-9448a09daf1d",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://backend:8000/api/rag/sync-item",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"article\",\n  \"id\": {{ $json.id }} \n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        5072,
+        112
+      ],
+      "id": "0b3dc096-ac8e-4f56-becd-1296ed5634c2",
+      "name": "Syng_rag"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://backend:8000/api/content",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  JSON.stringify({\n    \"author_id\": 4,\n    \"title\": $json.title,\n    \"body\": $json.translations.es.content, \n    \"slug\": $json.slug,\n    \"excerpt\": $json.excerpt,\n    \"type\": \"article\",\n    \"category\": $json.category,\n    \"status\": \"published\",\n    \"translations\": $json.translations,\n    \"tags\": $json.tags,\n    \"seo_title\": $json.seo_title,\n    \"seo_description\": $json.seo_description,\n    \"thumbnail_url\": $json.featured_image\n  })\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4768,
+        112
+      ],
+      "id": "5542d7c6-3785-4905-b742-fe5ff81bdfce",
+      "name": "DB_Insert"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Consulta esta lista para ver los títulos y slugs de los artículos de YOGA ya publicados...",
+        "operation": "executeQuery",
+        "query": "SELECT \n    id, \n    title, \n    slug\nFROM contents \nWHERE type = 'article' \nAND tags::text ILIKE '%yoga%'\nORDER BY created_at DESC \nLIMIT 50;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        512,
+        416
+      ],
+      "id": "f138264e-b363-4421-92da-7a91a1e819db",
+      "name": "get_yoga_articles",
+      "credentials": {
+        "postgres": {
+          "id": "GS7k5FJzs5Oggpyc",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        544
+      ],
+      "id": "a284400f-3be7-40d2-aa1b-8d03db2799ca",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "OVOKIrTVVKnOvIHi",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Utiliza esta herramienta SIEMPRE antes de escribir para consultar información sobre la identidad de Arunachala, su filosofía, ubicación exacta en Cornellà, tipos de servicios (yoga, masajes) y el tono adecuado para los artículos. Asegúrate de incluir datos específicos del centro en el contenido generado.",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "arunachala_knowledge_base",
+          "mode": "list",
+          "cachedResultName": "arunachala_knowledge_base"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        624,
+        400
+      ],
+      "id": "73110eb5-7d6b-49b4-89a2-e5e27f970384",
+      "name": "ArunachalaKnowledge",
+      "credentials": {
+        "qdrantApi": {
+          "id": "Fts6SwtbhRLOjrJs",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "arunachala-blog-yoga",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -304,
+        192
+      ],
+      "id": "7a62254f-1d62-4483-ad8b-6e44b0a3f655",
+      "name": "Webhook",
+      "webhookId": "34f79311-4bab-45bf-8b72-cf36f2f7a018"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Articulo_ES",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5 seg wait": {
+      "main": [
+        [
+          {
+            "node": "GET_BananaPro_URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DALLE_Fallback": {
+      "main": [
+        [
+          {
+            "node": "URL_Extract_DALLE",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "GET_BananaPro_URL": {
+      "main": [
+        [
+          {
+            "node": "IMG_Check_Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IMG_BananaPro_Request": {
+      "main": [
+        [
+          {
+            "node": "5 seg wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "DALLE_Fallback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IMG_Check_Status": {
+      "main": [
+        [
+          {
+            "node": "5 seg wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "URL_Extract_Banana",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "DALLE_Fallback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "URL_Extract_Banana": {
+      "main": [
+        [
+          {
+            "node": "Attach_Image_URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "URL_Extract_DALLE": {
+      "main": [
+        [
+          {
+            "node": "Attach_Image_URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach_Image_URL": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Metadata_selector": {
+      "main": [
+        [
+          {
+            "node": "Articulo_ES",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ImagePromptGEN": {
+      "main": [
+        [
+          {
+            "node": "IMG_BananaPro_Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Metadata_selector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Articulo_CAT",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Articulo_ES": {
+      "main": [
+        [
+          {
+            "node": "JSON_PARSE_ES",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Articulo_EN",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Articulo_EN": {
+      "main": [
+        [
+          {
+            "node": "JSON_PARSE_EN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON_PARSE_CAT": {
+      "main": [
+        [
+          {
+            "node": "Articulo_EN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON_PARSE_ES": {
+      "main": [
+        [
+          {
+            "node": "Articulo_CAT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Articulo_CAT": {
+      "main": [
+        [
+          {
+            "node": "JSON_PARSE_CAT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON_PARSE_EN": {
+      "main": [
+        [
+          {
+            "node": "Multilingual_article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Multilingual_article": {
+      "main": [
+        [
+          {
+            "node": "ImagePromptGEN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "DB_Insert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB_Insert": {
+      "main": [
+        [
+          {
+            "node": "Syng_rag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_yoga_articles": {
+      "ai_tool": [
+        [
+          {
+            "node": "Articulo_ES",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "ArunachalaKnowledge",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ArunachalaKnowledge": {
+      "ai_tool": [
+        [
+          {
+            "node": "Articulo_ES",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "458a2952-c649-4913-964a-d866c31ce798",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "909f25bc74e30f0870d11f58a9b248ebedbd4270e3fd9bd4a5ad1be9e6ea17d3"
+  },
+  "id": "rwkeISG1tJcAUXeBwxCDn",
+  "tags": [
+    {
+      "updatedAt": "2026-02-02T18:15:37.819Z",
+      "createdAt": "2026-02-02T18:15:37.819Z",
+      "id": "R1btFE1a1QJgAc85",
+      "name": "Arunachala"
+    },
+    {
+      "updatedAt": "2026-02-06T12:40:39.151Z",
+      "createdAt": "2026-02-06T12:40:39.151Z",
+      "id": "WV8o55miYgvRKbd4",
+      "name": "yoga"
+    },
+    {
+      "updatedAt": "2026-02-02T18:15:43.305Z",
+      "createdAt": "2026-02-02T18:15:43.305Z",
+      "id": "bM2eTjHiIANoFVHP",
+      "name": "RAG"
+    },
+    {
+      "updatedAt": "2026-02-02T18:15:41.752Z",
+      "createdAt": "2026-02-02T18:15:41.752Z",
+      "id": "rI2qk58Yp11URIl9",
+      "name": "Chatbot"
+    }
+  ]
+}

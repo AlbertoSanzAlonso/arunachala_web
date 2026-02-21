@@ -1,17 +1,14 @@
 # 🚀 Inicio Rápido - Arunachala Web
 
-## Iniciar el Entorno de Desarrollo
-
-Para iniciar todo el entorno de desarrollo (Docker + Backend + Frontend), simplemente ejecuta:
+ Para iniciar el entorno de desarrollo local (Docker para servicios auxiliares + Backend + Frontend), simplemente ejecuta:
 
 ```bash
 ./start_dev.sh
 ```
 
 Este script:
-- ✅ Verifica que Docker esté corriendo
-- ✅ Inicia los servicios Docker (PostgreSQL, NocoDB, n8n)
-- ✅ Espera a que la base de datos esté lista
+- ✅ Verifica que Docker esté corriendo (para n8n y Qdrant locales)
+- ✅ Inicia los servicios auxiliares (n8n, Qdrant)
 - ✅ Verifica que los puertos 8000 y 3000 estén libres
 - ✅ Abre terminales automáticas para Backend y Frontend
 
@@ -22,7 +19,7 @@ Una vez iniciado, podrás acceder a:
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:8000
 - **API Docs (Swagger)**: http://localhost:8000/docs
-- **NocoDB**: http://localhost:8080 (si está configurado)
+- **Base de Datos**: Gestionada en Supabase Dashboard
 
 ### Detener los Servicios
 

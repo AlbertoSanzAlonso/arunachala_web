@@ -17,7 +17,7 @@ Please refer to the specific skill file for detailed instructions.
 | **fastapi-developer** | Backend architecture (Clean Arch), API naming, Pydantic models. | [.agent/skills/fastapi-developer/SKILL.md](.agent/skills/fastapi-developer/SKILL.md) |
 | **react-developer** | Frontend architecture, Page standards (SEO/Perf), Hooks. | [.agent/skills/react-developer/SKILL.md](.agent/skills/react-developer/SKILL.md) |
 | **ui-design-system** | Tailwind CSS styling, design patterns, animations. | [.agent/skills/ui-design-system/SKILL.md](.agent/skills/ui-design-system/SKILL.md) |
-| **deployment-manager** | Hybrid deployment (Vercel/Render) and Cloudinary setup. | [.agent/skills/deployment-manager/SKILL.md](.agent/skills/deployment-manager/SKILL.md) |
+| **deployment-manager** | Hybrid deployment (Vercel/Hetzner) and Supabase setup. | [.agent/skills/deployment-manager/SKILL.md](.agent/skills/deployment-manager/SKILL.md) |
 
 ### 🎯 Domain & Feature Skills
 
@@ -40,7 +40,7 @@ Please refer to the specific skill file for detailed instructions.
 arunachala_web/
 ├── backend/          # FastAPI + SQLAlchemy + Pydantic
 ├── frontend/         # React + TypeScript + Tailwind
-├── infraestructura/  # Docker + PostgreSQL (Configured at root/infraestructura)
+├── infraestructura/  # Docker + VPS Config (Hetzner) for n8n & Qdrant
 ├── n8n-workflows/    # AI automation
 └── docs/             # Documentation
 ```
@@ -190,10 +190,11 @@ arunachala_web/
         - **Async Processing**: Implemented as non-blocking `async` background tasks in `promotions.py` to maintain API performance.
     - **News (Articles) Confirmation**: Verified and reinforced that all Blog Articles (`content` type) also trigger the RAG sync workflow upon publication, ensuring the chatbot is aware of the latest news.
 
-## 📝 Recent Updates (2026-02-20)
-- **Hybrid Cloud Deployment Architecture**:
-    - **Frontend**: Successfully deployed React SPA to Vercel with automatic CI/CD from GitHub. Configured environment variables (CORS, `REACT_APP_API_URL`) to communicate securely with the cloud backend.
-    - **Backend**: Deployed FastAPI Python server to Render.com (free tier). Configured host to `0.0.0.0` and dynamic port binding via `$PORT`.
-    - **Database & Storage**: Fully integrated Supabase as the central Postgres database and Storage provider (replacing local storage). Handled via `STORAGE_TYPE=supabase` in `image_utils.py`. Created `arunachala-images` public bucket.
-    - **Automation Engine**: Verified local hosting for n8n via Docker. Resolved local authorization constraints ("Sign in" loop) without data loss via Docker user-management reset command.
-    - **Dependency Stability**: Solved "Pip Dependency Hell" on Render's build steps by explicitly pinning core modern dependencies (`groq==1.0.0`, `qdrant-client==1.17.0`, `google-generativeai==0.8.6`) and strategically unpinning conflicting modules (`httpx`, `websockets`, `openai`) to allow Pip to resolve compatible sub-dependency trees successfully. Included `pydub` and `unidecode`.
+## 📝 Recent Updates (2026-02-21)
+- **Production Infrastructure Migration**:
+    - **Frontend**: Successfully deployed React SPA to **Vercel** with automatic CI/CD.
+    - **Backend**: Migrated FastAPI server from Render to **Hetzner VPS** for improved performance and cost-efficiency.
+    - **Database & Storage**: Fully integrated **Supabase** as the central PostgreSQL database and Object Storage provider (replacing NeonDB and Cloudinary).
+    - **Automation Engine**: n8n and Qdrant are now hosted on the Hetzner VPS using Docker/Coolify, ensuring 24/7 availability for AI features and RAG sync.
+    - **Cleanup**: Removed all legacy configurations for Render, NeonDB, NocoDB, and Cloudinary to maintain a clean codebase.
+

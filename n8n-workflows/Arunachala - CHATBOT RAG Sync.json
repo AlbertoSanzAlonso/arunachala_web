@@ -1,0 +1,409 @@
+{
+  "name": "Arunachala - CHATBOT RAG Sync",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "arunachala-rag-update",
+        "options": {}
+      },
+      "id": "ae355490-6dfb-4762-a9a8-48d89aad2e0b",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        3728,
+        3040
+      ],
+      "webhookId": "b571ae3c-0c5b-4ee1-b65c-10623918855a"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "789d83c9-1b9d-4591-ac0e-3fe81a2f67f9",
+              "name": "body.id",
+              "value": "={{ $json.body.id }}",
+              "type": "number"
+            },
+            {
+              "id": "ea7858be-94ff-42cc-b3d0-5aff65e1457c",
+              "name": "body.type",
+              "value": "={{ $json.body.type }}",
+              "type": "string"
+            },
+            {
+              "id": "36c09d6c-d088-4cc3-be02-509de2b1acdc",
+              "name": "body.action",
+              "value": "={{ $json.body.action }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4000,
+        3040
+      ],
+      "id": "a64e2ab6-c04a-4c36-b607-33c51d547b1d",
+      "name": "GET_DETAILS"
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.API_BASE_URL }}/api/{{ \n  $json.body.type === 'yoga_class' ? 'yoga-classes' : \n  $json.body.type === 'activity' ? 'activities' : \n  $json.body.type === 'massage' ? 'treatments/massages' : \n  $json.body.type === 'therapy' ? 'treatments/therapies' : \n  $json.body.type \n}}/{{ $json.body.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4496,
+        2944
+      ],
+      "id": "499d624c-3eb0-4ab5-9d55-0a79ba773c8c",
+      "name": "CREATE_UPDATE"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/embeddings",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\": \"application/json\"\n}\n",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ \n  \"model\": \"text-embedding-3-small\", \n  \"input\": $json.full_text \n}) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4976,
+        2944
+      ],
+      "id": "68c743c8-9146-4e9c-8337-9a0b84fb48af",
+      "name": "EMBEDDING",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "0mRb1yVotV6FZZMF",
+          "name": "Bearer Auth account 2"
+        },
+        "openAiApi": {
+          "id": "OVOKIrTVVKnOvIHi",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Nodo GET_ITEM_DETAILS mejorado - Maneja: articles, yoga_class, massage, therapy, activity\n// Este nodo estructura los datos de diferentes tipos de entidades para RAG\n\nconst webhookData = $node[\"Webhook Trigger\"].json;\nconst itemType = (webhookData.body && webhookData.body.type) || 'article';\n\n// Iteramos sobre todos los ítems de entrada\nreturn $input.all().map(item => {\n  const data = item.json;\n  let fullText = \"\";\n  let name = \"\";\n  let excerpt = \"\";\n  let description = \"\";\n  \n  // Determinamos el tipo de entidad del webhook\n  const type = data.type || itemType;\n\n  if (type === 'yoga_class') {\n    // ========== YOGA CLASS ==========\n    name = data.name || 'Sin nombre';\n    description = data.description || 'Sin descripción disponible.';\n    excerpt = data.age_range || '';\n    \n    fullText = `Clase de Yoga: ${name}\\n`;\n    fullText += `Descripción: ${description}\\n`;\n    if (data.age_range) fullText += `Nivel/Edad: ${data.age_range}\\n`;\n\n    if (data.schedules && Array.isArray(data.schedules) && data.schedules.length > 0) {\n      const activeSchedules = data.schedules\n        .filter(s => s.is_active)\n        .map(s => `- ${s.day_of_week}: ${s.start_time} a ${s.end_time}`)\n        .join('\\n');\n      \n      if (activeSchedules) {\n        fullText += `\\nHorarios disponibles:\\n${activeSchedules}`;\n      }\n    }\n    \n  } else if (type === 'massage' || type === 'therapy') {\n    // ========== MASSAGE / THERAPY ==========\n    const categoria = type === 'massage' ? 'Masaje' : 'Terapia';\n    name = data.name || 'Sin nombre';\n    description = data.description || 'Sin descripción';\n    excerpt = data.excerpt || '';\n    \n    fullText = `${name} es un tratamiento de ${categoria}.\\n`;\n    fullText += `${data.excerpt || data.description || ''}\\n\\n`;\n    fullText += `Duración: ${data.duration_min || '60'} minutos.\\n`;\n    if (data.benefits) fullText += `Beneficios: ${data.benefits}.`;\n    \n  } else if (type === 'activity') {\n    // ========== ACTIVITY (NUEVO) ==========\n    // Activities tienen: id, title, description, slug, type (curso/taller/evento/retiro), content\n    name = data.title || data.name || 'Sin nombre';\n    description = data.description || data.content || 'Sin descripción';\n    excerpt = data.activity_data?.options ? data.activity_data.options.join(', ') : '';\n    \n    fullText = `Actividad: ${name}\\n`;\n    fullText += `Tipo: ${data.type || 'No especificado'}\\n`;\n    fullText += `${description}\\n`;\n    \n    if (data.location) fullText += `Ubicación: ${data.location}\\n`;\n    if (data.price) fullText += `Precio: ${data.price}\\n`;\n    if (data.start_date) fullText += `Fecha: ${data.start_date}\\n`;\n    \n    // Si tiene opciones (schedule options), las incluimos\n    if (data.activity_data?.options && Array.isArray(data.activity_data.options)) {\n      fullText += `Opciones disponibles:\\n${data.activity_data.options.map(opt => `- ${opt}`).join('\\n')}\\n`;\n    }\n    \n  } else {\n    // ========== ARTICLE / CONTENT (GENÉRICO) ==========\n    name = data.title || data.name || 'Sin título';\n    description = data.body || data.content || 'Sin contenido';\n    excerpt = data.excerpt || '';\n    \n    fullText = `Título: ${name}\\n`;\n    fullText += `Contenido: ${description}`;\n  }\n\n  // Limpieza de saltos de línea dobles\n  fullText = fullText.trim().replace(/\\n\\s*\\n/g, '\\n');\n\n  // Generamos un ID de cadena único basado en tipo e ID\n  const uniqueIdString = `${type}_${data.id}`;\n\n  const createUUID = (str) => {\n    const crypto = require('crypto');\n    return crypto.createHash('md5').update(str).digest(\"hex\");\n  };\n\n  const qdrantId = createUUID(uniqueIdString);\n  \n  // Extraemos slug si existe (importante para Activities y Articles)\n  // CRÍTICO: Asegurar que NUNCA sean undefined\n  let slug = data.slug || '';\n  \n  // Si slug sigue vacío, generarlo desde name\n  if (!slug || slug === '' || slug === 'undefined') {\n    const slugFromName = String(name || '')\n      .toLowerCase()\n      .trim()\n      .replace(/\\s+/g, '-')\n      .replace(/[^\\w-]/g, '')\n      .replace(/-+/g, '-')\n      .replace(/^-|-$/g, '');\n    slug = slugFromName || `${type}-${data.id}`;\n  }\n  \n  // Conversión final de name a string asegurado\n  const finalTitle = String(name || `${type}-${data.id}`).trim();\n  const finalSlug = String(slug || `${type}-${data.id}`).trim();\n  \n  return {\n    json: {\n      id: data.id,\n      type: type,\n      qdrant_id: qdrantId,\n      title: finalTitle,           // ✅ NUNCA undefined - sempre string\n      slug: finalSlug,             // ✅ NUNCA undefined - sempre string\n      full_text: fullText,\n      metadata: {\n        name: finalTitle,\n        title: finalTitle,         // Duplicado para compatibilidad\n        slug: finalSlug,           // Duplicado para compatibilidad\n        excerpt: (excerpt && String(excerpt).trim()) || '',\n        description: (description && String(description).trim()) || '',\n        benefits: (data.benefits && String(data.benefits).trim()) || '',\n        duration_min: data.duration_min || 0,\n        category: type,\n        updated_at: data.updated_at || new Date().toISOString()\n      }\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4736,
+        2944
+      ],
+      "id": "2c409f58-328d-4323-8b2f-399c7273a2d5",
+      "name": "GET_ITEM_DETAILS"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=http://qdrant:6333/collections/arunachala_knowledge_base/points",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\n  \"points\": [\n    {\n      \"id\": {{ JSON.stringify($node[\"GET_ITEM_DETAILS\"].json.qdrant_id) }},\n      \"vector\": {{ JSON.stringify($json.data[0].embedding) }},\n      \"payload\": {\n        \"content\": {{ JSON.stringify($node[\"GET_ITEM_DETAILS\"].json.full_text) }},\n        \"title\": {{ JSON.stringify($node[\"GET_ITEM_DETAILS\"].json.title) }},\n        \"slug\": {{ JSON.stringify($node[\"GET_ITEM_DETAILS\"].json.slug) }},\n        \"type\": \"{{ $node[\"GET_ITEM_DETAILS\"].json.type }}\",\n        \"source\": \"dashboard\",\n        \"metadata\": {{ JSON.stringify($node[\"GET_ITEM_DETAILS\"].json.metadata) }},\n        \"updated_at\": \"{{ new Date().toISOString() }}\"\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        5200,
+        2944
+      ],
+      "id": "275d6fc0-00b2-474e-881f-886daff3f77f",
+      "name": "QRANT_UPDATE"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://backend:8000/api/rag/sync-callback",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"log_id\": {{ $('Webhook Trigger').item.json.body.log_id }},\n  \"entity_type\": \"{{ $('Webhook Trigger').item.json.body.type }}\",\n  \"entity_id\": {{ $('Webhook Trigger').item.json.body.id }},\n  \"status\": \"success\",\n  \"vector_id\": {{ JSON.stringify($node[\"GET_ITEM_DETAILS\"].json.qdrant_id) }},\n  \"metadata\": {\n    \"source\": \"n8n-callback\",\n    \"updated_at\": \"{{ new Date().toISOString() }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        5408,
+        2944
+      ],
+      "id": "717d4ef2-f5ed-48b5-bda0-626f456b2d04",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.action }}",
+                    "rightValue": "={{ 'create' }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "4fdc930c-9f40-4d8a-9a7f-7868f7771161"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Created"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ca1cafb3-b89e-4dfe-875d-2e1410960bc6",
+                    "leftValue": "={{ $json.body.action }}",
+                    "rightValue": "={{ 'update' }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Updated"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "48aa2f87-f2b3-4d42-af64-2a9ae013403a",
+                    "leftValue": "={{ $json.body.action }}",
+                    "rightValue": "={{ 'delete' }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Deleted"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        4272,
+        3024
+      ],
+      "id": "3fb55cc4-4652-4d06-a452-129abbeef8ae",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://qdrant:6333/collections/arunachala_knowledge_base/points/delete",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"points\": [\n    \"{{ $json.qdrant_id }}\"\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4704,
+        3136
+      ],
+      "id": "98262a95-728c-436b-aeef-9b93df5e5405",
+      "name": "DELETE"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\n// Obtenemos el primer item del nodo de salida del Webhook\nconst webhookNodeOutput = $(\"Webhook Trigger\").first();\nconst webhookBody = webhookNodeOutput.json.body;\nconst uniqueIdString = `${webhookBody.type}_${webhookBody.id}`;\nconst qdrantId = crypto.createHash('md5').update(uniqueIdString).digest(\"hex\");\nreturn {\n    qdrant_id: qdrantId\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4496,
+        3136
+      ],
+      "id": "7dfba835-52db-4457-8fbf-3aedd7ae487f",
+      "name": "PREPARE_DELETE"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "GET_DETAILS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET_DETAILS": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CREATE_UPDATE": {
+      "main": [
+        [
+          {
+            "node": "GET_ITEM_DETAILS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EMBEDDING": {
+      "main": [
+        [
+          {
+            "node": "QRANT_UPDATE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET_ITEM_DETAILS": {
+      "main": [
+        [
+          {
+            "node": "EMBEDDING",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "QRANT_UPDATE": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "CREATE_UPDATE",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "CREATE_UPDATE",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "PREPARE_DELETE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PREPARE_DELETE": {
+      "main": [
+        [
+          {
+            "node": "DELETE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "3ded5a4e-bb64-4318-a2b5-8dc1740c241d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "909f25bc74e30f0870d11f58a9b248ebedbd4270e3fd9bd4a5ad1be9e6ea17d3"
+  },
+  "id": "r52R_0m1zVuyAQqc6frEL",
+  "tags": [
+    {
+      "updatedAt": "2026-02-02T18:15:37.819Z",
+      "createdAt": "2026-02-02T18:15:37.819Z",
+      "id": "R1btFE1a1QJgAc85",
+      "name": "Arunachala"
+    },
+    {
+      "updatedAt": "2026-02-02T18:15:43.305Z",
+      "createdAt": "2026-02-02T18:15:43.305Z",
+      "id": "bM2eTjHiIANoFVHP",
+      "name": "RAG"
+    },
+    {
+      "updatedAt": "2026-02-02T18:15:41.752Z",
+      "createdAt": "2026-02-02T18:15:41.752Z",
+      "id": "rI2qk58Yp11URIl9",
+      "name": "Chatbot"
+    }
+  ]
+}
