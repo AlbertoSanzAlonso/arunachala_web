@@ -12,13 +12,13 @@ def create_admin(email, password):
         existing = db.query(User).filter(User.email == email).first()
         if existing:
             print(f"User {email} already exists. Updating password and role to admin...")
-            existing.hashed_password = pwd_context.hash(password)
+            existing.password_hash = pwd_context.hash(password)
             existing.role = "admin"
         else:
             print(f"Creating new admin user: {email}")
             user = User(
                 email=email,
-                hashed_password=pwd_context.hash(password),
+                password_hash=pwd_context.hash(password),
                 role="admin",
                 first_name="Admin",
                 last_name="Arunachala"
