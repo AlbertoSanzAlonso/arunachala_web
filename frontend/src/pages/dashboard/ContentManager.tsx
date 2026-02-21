@@ -1129,7 +1129,7 @@ export default function ContentManager() {
                                                             <div className="flex items-center space-x-2">
                                                                 <input
                                                                     type="file"
-                                                                    accept="audio/*"
+                                                                    accept=".mp3,.m4a,.wav,.aac,.ogg,.flac,.opus,audio/mpeg,audio/mp4,audio/wav,audio/aac,audio/ogg"
                                                                     onChange={handleFileUpload}
                                                                     disabled={uploading}
                                                                     className="block w-full text-sm text-gray-500

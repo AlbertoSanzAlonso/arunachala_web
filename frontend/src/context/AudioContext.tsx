@@ -149,6 +149,16 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             setCurrentTime(audio.currentTime);
             if (audio.duration > 0) {
                 setProgress((audio.currentTime / audio.duration) * 100);
+                // Update lock screen progress bar
+                if ('mediaSession' in navigator && navigator.mediaSession.setPositionState) {
+                    try {
+                        navigator.mediaSession.setPositionState({
+                            duration: audio.duration,
+                            playbackRate: audio.playbackRate,
+                            position: audio.currentTime,
+                        });
+                    } catch (_) { }
+                }
             }
         };
 
@@ -236,17 +246,21 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 ? getImageUrl(playingMeditation.thumbnail_url)
                 : getImageUrl(lotusFlower);
 
+            // Detect image type from URL
+            const isWebp = artworkUrl.includes('.webp');
+            const imgType = isWebp ? 'image/webp' : artworkUrl.includes('.png') ? 'image/png' : 'image/jpeg';
+
             navigator.mediaSession.metadata = new window.MediaMetadata({
                 title: title,
                 artist: 'Arunachala Yoga',
-                album: 'Meditaciones',
+                album: 'Meditaciones Guiadas',
                 artwork: [
-                    { src: artworkUrl, sizes: '96x96', type: 'image/png' },
-                    { src: artworkUrl, sizes: '128x128', type: 'image/png' },
-                    { src: artworkUrl, sizes: '192x192', type: 'image/png' },
-                    { src: artworkUrl, sizes: '256x256', type: 'image/png' },
-                    { src: artworkUrl, sizes: '384x384', type: 'image/png' },
-                    { src: artworkUrl, sizes: '512x512', type: 'image/png' },
+                    { src: artworkUrl, sizes: '96x96', type: imgType },
+                    { src: artworkUrl, sizes: '128x128', type: imgType },
+                    { src: artworkUrl, sizes: '192x192', type: imgType },
+                    { src: artworkUrl, sizes: '256x256', type: imgType },
+                    { src: artworkUrl, sizes: '384x384', type: imgType },
+                    { src: artworkUrl, sizes: '512x512', type: imgType },
                 ]
             });
 
@@ -266,11 +280,21 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 next();
             });
 
-            // Optional: seekto
+            // seekto for lock screen progress bar
             try {
                 navigator.mediaSession.setActionHandler('seekto', (details) => {
                     if (details.seekTime !== undefined && audioRef.current) {
                         audioRef.current.currentTime = details.seekTime;
+                    }
+                });
+                navigator.mediaSession.setActionHandler('seekbackward', (details) => {
+                    if (audioRef.current) {
+                        audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - (details.seekOffset ?? 10));
+                    }
+                });
+                navigator.mediaSession.setActionHandler('seekforward', (details) => {
+                    if (audioRef.current) {
+                        audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + (details.seekOffset ?? 10));
                     }
                 });
             } catch (error) {
