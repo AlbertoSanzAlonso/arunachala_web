@@ -55,6 +55,9 @@ def save_upload_file(upload_file: UploadFile, subdirectory: str = "uploads") -> 
             
             # Get public url
             public_url = supabase_client.storage.from_(bucket_name).get_public_url(file_path)
+            # Remove trailing '?' if present (some clients add it automatically)
+            if public_url.endswith('?'):
+                public_url = public_url[:-1]
             return public_url
             
         else:

@@ -90,7 +90,9 @@ async def upload_audio(
                 
                 # Get public url
                 public_url = supabase_client.storage.from_(bucket_name).get_public_url(file_path)
-                
+                if public_url.endswith('?'):
+                    public_url = public_url[:-1]
+                    
                 # Clean up temp
                 if os.path.exists(temp_path):
                     os.remove(temp_path)
@@ -205,6 +207,9 @@ async def upload_image(
                 
                 # Get public url
                 public_url = supabase_client.storage.from_(bucket_name).get_public_url(file_path)
+                if public_url.endswith('?'):
+                    public_url = public_url[:-1]
+                    
                 return {"url": public_url}
                 
             except Exception as supabase_err:
