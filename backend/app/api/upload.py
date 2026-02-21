@@ -182,10 +182,38 @@ async def upload_image(
             new_height = int(image.height * ratio)
             image = image.resize((1920, new_height), Image.Resampling.LANCZOS)
 
-        # Save as WebP
-        image.save(final_path, "WEBP", quality=80, optimize=True)
-
-        return {"url": f"/{target_dir}/{final_filename}"}
+        if STORAGE_TYPE == "supabase":
+            from app.core.image_utils import supabase_client
+            if not supabase_client:
+                raise HTTPException(status_code=500, detail="Supabase client not initialized")
+            
+            try:
+                # Save to buffer
+                img_buffer = io.BytesIO()
+                image.save(img_buffer, "WEBP", quality=80, optimize=True)
+                img_buffer.seek(0)
+                
+                bucket_name = "arunachala-images"
+                file_path = f"{folder}/{final_filename}"
+                
+                # Upload to Supabase
+                supabase_client.storage.from_(bucket_name).upload(
+                    file=img_buffer.getvalue(),
+                    path=file_path,
+                    file_options={"content-type": "image/webp"}
+                )
+                
+                # Get public url
+                public_url = supabase_client.storage.from_(bucket_name).get_public_url(file_path)
+                return {"url": public_url}
+                
+            except Exception as supabase_err:
+                print(f"🔥 Supabase Image Upload Error: {supabase_err}")
+                raise HTTPException(status_code=500, detail=f"Error uploading image to Supabase: {str(supabase_err)}")
+        else:
+            # Local storage
+            image.save(final_path, "WEBP", quality=80, optimize=True)
+            return {"url": f"/{target_dir}/{final_filename}"}
 
     except Exception as e:
         print(f"Error uploading image: {e}")
