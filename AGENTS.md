@@ -205,3 +205,30 @@ arunachala_web/
     - **Legacy Cleanup**: Completely removed old manual Docker containers and Caddy proxy on Hetzner to prevent port conflicts.
     - **System Dependencies**: Added `ffmpeg` to the Docker image for on-the-fly audio processing.
 
+## 📝 Recent Updates (2026-02-21 - Afternoon)
+- **Image URL Standardization (`getImageUrl` rollout)**:
+    - **Root Cause**: Images were broken because manual `${API_BASE_URL}${url}` concatenation was being applied to already-absolute Supabase URLs, producing malformed URLs like `api.yogayterapiasarunachala.eshttps//supabase.co/...`.
+    - **Fix**: Completed the rollout of `getImageUrl` (`src/utils/imageUtils.ts`) across ALL remaining components: `YogaPage`, `AboutPage`, `UserProfile`, `UserManager`, `ContentManager`, `GalleryManager`.
+    - **`getImageUrl` contract**: If URL starts with `http`, return as-is. Otherwise prepend `API_BASE_URL`. Handles both Supabase absolute URLs and local `/static/...` paths transparently.
+
+- **Supabase Storage Fix**:
+    - **Root Cause**: `SUPABASE_KEY` in Coolify was the **Publishable key** (`sb_publishable_...`) — read-only. Image uploads require the **Service Role JWT** (`eyJ...`).
+    - **Fix**: Updated `backend/.env` and `infraestructura/.env`. Must also update `SUPABASE_KEY` in Coolify and redeploy the backend.
+
+- **Chatbot Diagnosis & Fix**:
+    - **Root Cause**: Coolify was missing `GROQ_API_KEY` / `OPENAI_API_KEY`. Backend returned JSON instead of SSE stream (no AI provider available).
+    - **Frontend fix**: `ChatBot.tsx` now detects `content-type: application/json` responses and displays the message directly instead of crashing into the Puter.js fallback (which gives 401).
+    - **Required action**: Add `GROQ_API_KEY` in Coolify. Change `chatbot_model` to "groq" in Dashboard → Agent Config.
+
+- **Media Session API Improvements** (`AudioContext.tsx`):
+    - Fixed artwork MIME type: was hardcoded `image/png`, now detects `.webp`/`.png`/`.jpg` from URL dynamically.
+    - Added `setPositionState()` in `timeupdate` handler → lock screen progress bar updates in real time.
+    - Added `seekbackward` / `seekforward` handlers (±10s) for headphone button support.
+
+- **Mobile Audio File Input** (`ContentManager.tsx`):
+    - Changed `accept="audio/*"` → explicit MIME types + extensions to force Android to open the Files app instead of Gallery or Recorder.
+
+- **Vercel CI Build Fix**:
+    - Orphaned `import { API_BASE_URL }` in `GalleryManager.tsx` was causing ESLint `no-unused-vars` error that broke all Vercel deployments (`CI=true` treats warnings as errors).
+    - Fix: Removed the unused import.
+
