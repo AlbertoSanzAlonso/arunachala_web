@@ -5,6 +5,7 @@ import puter from '@heyputer/puter.js';
 import omSymbol from '../assets/images/om_symbol.png';
 import { API_BASE_URL } from '../config';
 import { useTranslation } from 'react-i18next';
+import { getImageUrl } from '../utils/imageUtils';
 
 interface Message {
     id: number;
@@ -64,7 +65,7 @@ const ChatBot: React.FC = () => {
                 const response = await fetch(`${API_BASE_URL}/api/site-config/chatbot_avatar_url`);
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.value) setBotAvatar(`${API_BASE_URL}${data.value}`);
+                    if (data.value) setBotAvatar(getImageUrl(data.value));
                 }
             } catch (error) {
                 console.error("Error fetching bot avatar:", error);

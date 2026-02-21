@@ -9,6 +9,7 @@ import { useAudio } from '../context/AudioContext';
 import { PlayIcon, PauseIcon, SpeakerWaveIcon, SpeakerXMarkIcon, ArrowsPointingOutIcon, ForwardIcon, BackwardIcon } from '@heroicons/react/24/solid';
 import { API_BASE_URL } from '../config';
 import { isChristmasSeason } from '../utils/dateUtils';
+import { getImageUrl } from '../utils/imageUtils';
 
 const LANGUAGES = [
     { code: 'es', label: 'ES' },
@@ -50,7 +51,7 @@ const Header: React.FC = () => {
                 const response = await fetch(`${API_BASE_URL}/api/site-config/logo_url`);
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.value) setLogoUrl(`${API_BASE_URL}${data.value}`);
+                    if (data.value) setLogoUrl(getImageUrl(data.value));
                 }
             } catch (error) {
                 console.error("Error fetching logo:", error);

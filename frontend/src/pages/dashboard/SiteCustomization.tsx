@@ -5,6 +5,7 @@ import Cropper from 'react-easy-crop';
 import { Point, Area } from 'react-easy-crop/types';
 import getCroppedImg from '../../utils/cropImage';
 import { API_BASE_URL } from '../../config';
+import { getImageUrl } from '../../utils/imageUtils';
 import PageLoader from '../../components/PageLoader';
 import ConfirmModal from '../../components/ConfirmModal';
 
@@ -219,7 +220,7 @@ export default function SiteCustomization() {
                             {configs[item.key] ? (
                                 <>
                                     <img
-                                        src={`${API_BASE_URL}${configs[item.key]}`}
+                                        src={getImageUrl(configs[item.key])}
                                         alt={item.label}
                                         className="w-full h-full object-cover"
                                     />

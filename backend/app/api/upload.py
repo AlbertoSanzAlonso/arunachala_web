@@ -24,6 +24,9 @@ router = APIRouter(prefix="/api/upload", tags=["upload"])
 UPLOAD_DIR = "static/audio"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+# Storage Configuration
+STORAGE_TYPE = os.getenv("STORAGE_TYPE", "local")
+
 @router.post("/audio")
 async def upload_audio(
     file: UploadFile = File(...),
@@ -60,7 +63,6 @@ async def upload_audio(
         audio = audio.normalize()
         
         # Path for local or supabase
-        STORAGE_TYPE = os.getenv("STORAGE_TYPE", "local")
         
         if STORAGE_TYPE == "supabase":
             from app.core.image_utils import supabase_client

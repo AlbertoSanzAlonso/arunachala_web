@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useAudio } from '../context/AudioContext';
 import { API_BASE_URL } from '../config';
 import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
+import { getImageUrl } from '../utils/imageUtils';
 
 import VolumeControl from './VolumeControl';
 
@@ -105,7 +106,7 @@ const MeditationPlayerModal: React.FC = () => {
                                             <div className="w-48 h-48 rounded-2xl shadow-xl mb-8 overflow-hidden bg-matcha/20">
                                                 {playingMeditation.thumbnail_url ? (
                                                     <img
-                                                        src={playingMeditation.thumbnail_url.startsWith('http') ? playingMeditation.thumbnail_url : `${API_BASE_URL}${playingMeditation.thumbnail_url}`}
+                                                        src={getImageUrl(playingMeditation.thumbnail_url)}
                                                         alt={displayTitle}
                                                         className="w-full h-full object-cover"
                                                         onError={(e) => {
