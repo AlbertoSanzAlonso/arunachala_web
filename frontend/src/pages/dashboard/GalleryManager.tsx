@@ -8,7 +8,6 @@ import ConfirmModal from '../../components/ConfirmModal';
 import CropModal from '../../components/CropModal';
 import { useGallery } from '../../hooks/useGallery';
 import type { GalleryCategory, GalleryImage } from '../../services/galleryService';
-import { API_BASE_URL } from '../../config';
 import { getImageUrl } from '../../utils/imageUtils';
 
 const CATEGORIES: { value: GalleryCategory; label: string }[] = [
