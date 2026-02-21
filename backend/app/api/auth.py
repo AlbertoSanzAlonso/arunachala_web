@@ -81,9 +81,11 @@ class LoginRequest(BaseModel):
 
 @router.post("/login")
 def login(credentials: LoginRequest, db: Session = Depends(get_db)):
+    print(f"DEBUG: Login attempt for email: '{credentials.email}'")
     user = db.query(User).filter(User.email == credentials.email).first()
     
     if not user:
+        print(f"DEBUG: User not found in DB for email: '{credentials.email}'")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="El correo electrónico es incorrecto",
