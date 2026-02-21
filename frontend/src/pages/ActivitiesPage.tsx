@@ -8,6 +8,7 @@ import BackButton from '../components/BackButton';
 import NewsletterForm from '../components/NewsletterForm';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
+import { getImageUrl } from '../utils/imageUtils';
 
 import lotusFlower from '../assets/images/lotus_flower.png';
 
@@ -166,7 +167,7 @@ const DynamicPoll = ({ activity, userSuggestions, onVote }: { activity: Activity
             {activity.image_url && (
                 <div className="h-64 md:h-80 -mt-5 -mx-5 md:-mt-10 md:-mx-12 mb-10 overflow-hidden relative">
                     <img
-                        src={activity.image_url.startsWith('http') ? activity.image_url : `${API_BASE_URL}${activity.image_url}`}
+                        src={getImageUrl(activity.image_url)}
                         alt={getTranslated(activity, 'title', i18n.language)}
                         className="w-full h-full object-cover"
                     />
@@ -547,7 +548,7 @@ const ActivitiesPage: React.FC = () => {
             <div className="h-56 bg-gray-100 overflow-hidden relative">
                 {activity.image_url ? (
                     <img
-                        src={activity.image_url.startsWith('http') ? activity.image_url : `${API_BASE_URL}${activity.image_url}`}
+                        src={getImageUrl(activity.image_url)}
                         alt={getTranslated(activity, 'title', i18n.language)}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
@@ -663,7 +664,7 @@ const ActivitiesPage: React.FC = () => {
                         <div className="h-64 md:h-96 relative">
                             {activity.image_url ? (
                                 <img
-                                    src={activity.image_url.startsWith('http') ? activity.image_url : `${API_BASE_URL}${activity.image_url}`}
+                                    src={getImageUrl(activity.image_url)}
                                     alt={getTranslated(activity, 'title', i18n.language)}
                                     className="w-full h-full object-cover"
                                 />

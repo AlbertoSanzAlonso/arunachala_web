@@ -14,6 +14,7 @@ import { useToast } from '../../hooks/useToast';
 import ToastNotification from '../../components/ToastNotification';
 import RichTextEditor from '../../components/RichTextEditor';
 import PageLoader from '../../components/PageLoader';
+import { getImageUrl } from '../../utils/imageUtils';
 
 interface Content {
     id: number;
@@ -1161,10 +1162,10 @@ export default function ContentManager() {
                                                             <div className="mt-2 mb-2 relative group">
                                                                 <img
                                                                     src={formData.thumbnail_url
-                                                                        ? (formData.thumbnail_url.startsWith('http') ? formData.thumbnail_url : `${API_BASE_URL}${formData.thumbnail_url}`)
+                                                                        ? getImageUrl(formData.thumbnail_url)
                                                                         : (formData.type === 'meditation'
-                                                                            ? `${API_BASE_URL}/static/gallery/articles/meditation_default.webp`
-                                                                            : (formData.category === 'yoga' ? `${API_BASE_URL}/static/gallery/articles/om_symbol.webp` : `${API_BASE_URL}/static/gallery/articles/lotus_flower.webp`)
+                                                                            ? getImageUrl('/static/gallery/articles/meditation_default.webp')
+                                                                            : (formData.category === 'yoga' ? getImageUrl('/static/gallery/articles/om_symbol.webp') : getImageUrl('/static/gallery/articles/lotus_flower.webp'))
                                                                         )
                                                                     }
                                                                     alt="Destacada"

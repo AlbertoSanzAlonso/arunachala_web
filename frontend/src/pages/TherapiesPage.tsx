@@ -12,6 +12,7 @@ import therapyHero from '../assets/images/massage_hero.webp';
 import lotusFlower from '../assets/images/lotus_flower.png';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
+import { getImageUrl } from '../utils/imageUtils';
 import BlogSection from '../components/BlogSection';
 
 interface Treatment {
@@ -139,7 +140,7 @@ const TherapiesPage: React.FC = () => {
                             <div className="w-full md:w-2/5 h-64 md:h-auto bg-gray-100 flex-shrink-0 relative overflow-hidden">
                                 {selectedTreatment.image_url ? (
                                     <img
-                                        src={selectedTreatment.image_url.startsWith('http') ? selectedTreatment.image_url : `${API_BASE_URL}${selectedTreatment.image_url}`}
+                                        src={getImageUrl(selectedTreatment.image_url)}
                                         alt={getTranslated(selectedTreatment, 'name', i18n.language)}
                                         className="w-full h-full object-cover"
                                         onError={(e) => {
@@ -234,7 +235,7 @@ const TherapiesPage: React.FC = () => {
                 <div className="relative w-full min-h-[85vh] md:min-h-[90vh] flex items-center justify-center snap-center snap-always">
                     <div
                         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-                        style={{ backgroundImage: `url(${customHero ? `${API_BASE_URL}${customHero}` : therapyHero})` }}
+                        style={{ backgroundImage: `url(${customHero ? getImageUrl(customHero) : therapyHero})` }}
                     >
                         <div className="absolute inset-0 bg-black/50" />
                     </div>
@@ -331,7 +332,7 @@ const TherapiesPage: React.FC = () => {
                                             <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden flex items-center justify-center bg-forest/5">
                                                 {msg.image_url ? (
                                                     <img
-                                                        src={msg.image_url.startsWith('http') ? msg.image_url : `${API_BASE_URL}${msg.image_url}`}
+                                                        src={getImageUrl(msg.image_url)}
                                                         alt={getTranslated(msg, 'name', i18n.language)}
                                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                                         onError={(e) => {
@@ -426,7 +427,7 @@ const TherapiesPage: React.FC = () => {
                                             <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden flex items-center justify-center bg-forest/5">
                                                 {thr.image_url ? (
                                                     <img
-                                                        src={thr.image_url.startsWith('http') ? thr.image_url : `${API_BASE_URL}${thr.image_url}`}
+                                                        src={getImageUrl(thr.image_url)}
                                                         alt={getTranslated(thr, 'name', i18n.language)}
                                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                                         onError={(e) => {

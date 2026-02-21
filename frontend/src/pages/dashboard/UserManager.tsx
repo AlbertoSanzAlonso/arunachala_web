@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { PencilIcon, TrashIcon, UserPlusIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { API_BASE_URL } from '../../config';
+import { getImageUrl } from '../../utils/imageUtils';
 import { useAuth } from '../../context/AuthContext';
 import PageLoader from '../../components/PageLoader';
 
@@ -240,7 +241,7 @@ export default function UserManager() {
                                     {user.profile_picture ? (
                                         <img
                                             className="h-12 w-12 rounded-full object-cover ring-2 ring-gray-50"
-                                            src={`${API_BASE_URL}${user.profile_picture}`}
+                                            src={getImageUrl(user.profile_picture)}
                                             alt=""
                                         />
                                     ) : (
@@ -317,7 +318,7 @@ export default function UserManager() {
                                                             {user.profile_picture ? (
                                                                 <img
                                                                     className="h-10 w-10 rounded-full object-cover ring-2 ring-gray-50"
-                                                                    src={`${API_BASE_URL}${user.profile_picture}`}
+                                                                    src={getImageUrl(user.profile_picture)}
                                                                     alt=""
                                                                 />
                                                             ) : (

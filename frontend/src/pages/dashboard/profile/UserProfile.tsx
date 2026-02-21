@@ -6,6 +6,7 @@ import { Point, Area } from 'react-easy-crop/types';
 import getCroppedImg from '../../../utils/cropImage';
 import PageLoader from '../../../components/PageLoader';
 import { API_BASE_URL } from '../../../config';
+import { getImageUrl } from '../../../utils/imageUtils';
 
 export default function UserProfile() {
     const navigate = useNavigate();
@@ -279,7 +280,7 @@ export default function UserProfile() {
                                     {formData.profile_picture ? (
                                         <img
                                             className="h-full w-full object-cover"
-                                            src={`${API_BASE_URL}${formData.profile_picture}?v=${profileVersion}`}
+                                            src={`${getImageUrl(formData.profile_picture)}?v=${profileVersion}`}
                                             alt="Profile"
                                         />
                                     ) : (

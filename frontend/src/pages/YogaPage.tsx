@@ -142,7 +142,7 @@ const YogaPage: React.FC = () => {
 
             <main className="flex-grow bg-bone">
                 <div id="top" className="relative w-full min-h-[85vh] md:min-h-[90vh] flex items-center justify-center snap-center snap-always" role="banner">
-                    <div className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${customHero ? `${API_BASE_URL}${customHero}` : yogaHero})` }} aria-hidden="true">
+                    <div className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${customHero ? getImageUrl(customHero) : yogaHero})` }} aria-hidden="true">
                         <div className="absolute inset-0 bg-black/50" />
                     </div>
 

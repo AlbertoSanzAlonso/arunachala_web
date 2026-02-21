@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
 import { useTranslation } from 'react-i18next';
 import { TicketIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { getImageUrl } from '../utils/imageUtils';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
@@ -114,7 +115,7 @@ const PromotionsPage: React.FC = () => {
                                         {promo.image_url && (
                                             <div className="w-full md:w-56 h-56 rounded-[2rem] overflow-hidden flex-shrink-0 shadow-2xl relative border-4 border-white">
                                                 <img
-                                                    src={promo.image_url.startsWith('http') ? promo.image_url : `${API_BASE_URL}${promo.image_url}`}
+                                                    src={getImageUrl(promo.image_url)}
                                                     alt={title}
                                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                                                 />

@@ -11,6 +11,7 @@ import BackButton from '../components/BackButton';
 import lotusFlower from '../assets/images/lotus_flower.png';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
+import { getImageUrl } from '../utils/imageUtils';
 
 interface Treatment {
     id: number;
@@ -117,7 +118,7 @@ const AllMassagesPage: React.FC = () => {
                             <div className="w-full md:w-2/5 h-64 md:h-auto bg-gray-100 flex-shrink-0">
                                 {selectedTreatment.image_url ? (
                                     <img
-                                        src={selectedTreatment.image_url.startsWith('http') ? selectedTreatment.image_url : `${API_BASE_URL}${selectedTreatment.image_url}`}
+                                        src={getImageUrl(selectedTreatment.image_url)}
                                         alt={getTranslated(selectedTreatment, 'name', i18n.language)}
                                         className="w-full h-full object-cover"
                                         onError={(e) => {
@@ -226,7 +227,7 @@ const AllMassagesPage: React.FC = () => {
                                         <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden flex items-center justify-center bg-forest/5">
                                             {massage.image_url ? (
                                                 <img
-                                                    src={massage.image_url.startsWith('http') ? massage.image_url : `${API_BASE_URL}${massage.image_url}`}
+                                                    src={getImageUrl(massage.image_url)}
                                                     alt={getTranslated(massage, 'name', i18n.language)}
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                                     onError={(e) => {

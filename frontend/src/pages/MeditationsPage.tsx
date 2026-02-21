@@ -13,6 +13,7 @@ import { getTranslated } from '../utils/translate';
 import { useAudio } from '../context/AudioContext';
 import { PlayIcon, PauseIcon, StopIcon } from '@heroicons/react/24/solid';
 import VolumeControl from '../components/VolumeControl';
+import { getImageUrl } from '../utils/imageUtils';
 
 interface Meditation {
     id: number;
@@ -284,7 +285,7 @@ const MeditationsPage: React.FC = () => {
                                                 <div className="relative h-48 bg-matcha/20 flex items-center justify-center overflow-hidden">
                                                     {meditation.thumbnail_url ? (
                                                         <img
-                                                            src={meditation.thumbnail_url.startsWith('http') ? meditation.thumbnail_url : `${API_BASE_URL}${meditation.thumbnail_url}`}
+                                                            src={getImageUrl(meditation.thumbnail_url)}
                                                             alt={displayTitle}
                                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                                             onError={(e) => {
@@ -302,13 +303,13 @@ const MeditationsPage: React.FC = () => {
                                                                     return;
                                                                 }
                                                                 target.setAttribute('data-fallback', 'true');
-                                                                target.src = `${API_BASE_URL}/static/gallery/articles/meditation_default.webp`;
+                                                                target.src = getImageUrl('/static/gallery/articles/meditation_default.webp');
                                                                 target.className = "w-full h-full object-cover opacity-60";
                                                             }}
                                                         />
                                                     ) : (
                                                         <img
-                                                            src={`${API_BASE_URL}/static/gallery/articles/meditation_default.webp`}
+                                                            src={getImageUrl('/static/gallery/articles/meditation_default.webp')}
                                                             alt="Meditation"
                                                             className="w-full h-full object-cover opacity-60"
                                                         />

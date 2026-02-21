@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { API_BASE_URL } from '../config';
+import { getImageUrl } from '../utils/imageUtils';
 
 // Simple Icon Components for cleaner footer code
 const InstagramIcon = (props: React.ComponentProps<'svg'>) => (
@@ -33,7 +34,7 @@ const Footer: React.FC = () => {
                 const response = await fetch(`${API_BASE_URL}/api/site-config/logo_url`);
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.value) setLogoUrl(`${API_BASE_URL}${data.value}`);
+                    if (data.value) setLogoUrl(getImageUrl(data.value));
                 }
             } catch (error) {
                 console.error("Error fetching logo for footer:", error);
