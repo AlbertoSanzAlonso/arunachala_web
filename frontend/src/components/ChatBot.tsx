@@ -147,6 +147,17 @@ const ChatBot: React.FC = () => {
 
             if (!response.ok) throw new Error('Backend failed');
 
+            // If backend returns JSON instead of SSE (e.g. no AI keys configured)
+            const contentType = response.headers.get('content-type') || '';
+            if (!contentType.includes('text/event-stream')) {
+                const data = await response.json();
+                const text = data.response || data.detail || 'Lo siento, el servicio no está disponible en este momento. 🙏';
+                setMessages(prev => prev.map(m =>
+                    m.id === botMsgId ? { ...m, text, isStreaming: false } : m
+                ));
+                return;
+            }
+
             const reader = response.body?.getReader();
             if (!reader) throw new Error('No reader');
 
@@ -186,6 +197,8 @@ const ChatBot: React.FC = () => {
                     }
                 }
             }
+
+            if (!accumulatedText) throw new Error('Empty response from backend');
 
             setMessages(prev => prev.map(m =>
                 m.id === botMsgId ? { ...m, isStreaming: false } : m
