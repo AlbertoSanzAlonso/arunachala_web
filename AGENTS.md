@@ -17,7 +17,7 @@ Please refer to the specific skill file for detailed instructions.
 | **fastapi-developer** | Backend architecture (Clean Arch), API naming, Pydantic models. | [.agent/skills/fastapi-developer/SKILL.md](.agent/skills/fastapi-developer/SKILL.md) |
 | **react-developer** | Frontend architecture, Page standards (SEO/Perf), Hooks. | [.agent/skills/react-developer/SKILL.md](.agent/skills/react-developer/SKILL.md) |
 | **ui-design-system** | Tailwind CSS styling, design patterns, animations. | [.agent/skills/ui-design-system/SKILL.md](.agent/skills/ui-design-system/SKILL.md) |
-| **deployment-manager** | Hybrid deployment (Vercel/Hetzner) and Supabase setup. | [.agent/skills/deployment-manager/SKILL.md](.agent/skills/deployment-manager/SKILL.md) |
+| **deployment-manager** | Hybrid deployment (Vercel/Hetzner) via Coolify + Supabase. | [.agent/skills/deployment-manager/SKILL.md](.agent/skills/deployment-manager/SKILL.md) |
 
 ### 🎯 Domain & Feature Skills
 
@@ -191,10 +191,11 @@ arunachala_web/
     - **News (Articles) Confirmation**: Verified and reinforced that all Blog Articles (`content` type) also trigger the RAG sync workflow upon publication, ensuring the chatbot is aware of the latest news.
 
 ## 📝 Recent Updates (2026-02-21)
-- **Production Infrastructure Migration**:
-    - **Frontend**: Successfully deployed React SPA to **Vercel** with automatic CI/CD.
-    - **Backend**: Migrated FastAPI server from Render to **Hetzner VPS** for improved performance and cost-efficiency.
-    - **Database & Storage**: Fully integrated **Supabase** as the central PostgreSQL database and Object Storage provider (replacing NeonDB and Cloudinary).
-    - **Automation Engine**: n8n and Qdrant are now hosted on the Hetzner VPS using Docker/Coolify, ensuring 24/7 availability for AI features and RAG sync.
-    - **Cleanup**: Removed all legacy configurations for Render, NeonDB, NocoDB, and Cloudinary to maintain a clean codebase.
+- **Production Infrastructure Migration (Coolify & Supabase)**:
+    - **Self-Hosted CI/CD**: Installed and configured **Coolify** on Hetzner VPS (`37.27.4.118`) to manage automated deployments of Backend, n8n, and Qdrant.
+    - **Supabase Storage Integration**:
+        - **Audio Processing**: Implemented `ffmpeg` installation in `Dockerfile` and updated `upload.py` to optimize audio (mono, normalize, 96k mp3) and upload directly to Supabase Storage.
+        - **Service Role Key**: Configured backend to use Supabase Service Role Key for privileged storage access.
+    - **Database Migration**: Successfully pointed backend to Supabase PostgreSQL using connection pooling (Port 5432) for production stability.
+    - **Cleanup**: Removed all legacy configurations for Render, NeonDB, NocoDB, and Cloudinary.
 

@@ -53,12 +53,26 @@ The backend utilizes a smart storage abstraction (`backend/app/core/image_utils.
 - **Production**: Files are automatically uploaded to Supabase Storage and served via public URLs.
 
 ## 🛠️ Infrastructure Management (Hetzner)
-The VPS is managed using **Coolify** or manual Docker Compose:
-- **FastAPI**: Runs on the main server port.
-- **n8n**: Automation engine reachable internally or via subpath.
-- **Qdrant**: Vector database for AI search.
+The VPS is managed using **Coolify** (`http://37.27.4.118:8000`):
+- **FastAPI (Backend)**:
+    - **Base Directory**: `/backend`
+    - **Build Pack**: `Dockerfile` (installs `ffmpeg`)
+    - **Exposed Port**: `8000`
+    - **Branch**: `master`
+- **n8n**: Hosted via Docker on the same VPS.
+- **Qdrant**: Hosted via Docker for RAG.
+
+### 🌍 Production Environment Variables (Coolify)
+| Key | Value / Source |
+|---|---|
+| `DATABASE_URL` | `postgresql://postgres:[ID]:[PASS]@db.[ID].supabase.co:5432/postgres` |
+| `STORAGE_TYPE` | `supabase` |
+| `SUPABASE_URL` | `https://[ID].supabase.co` |
+| `SUPABASE_KEY` | **Service Role Key** (from Supabase Settings -> API) |
+| `SECRET_KEY` | `09d25e09...` (Production Backend Key) |
+| `ALLOWED_ORIGINS` | `https://www.yogayterapiasarunachala.es,https://arunachala-yoga.vercel.app` |
 
 ## 🚀 Deployment Workflow
-1.  **Code Change**: Push to `main` branch on GitHub.
+1.  **Code Change**: Push to **`master`** branch on GitHub.
 2.  **Frontend**: Vercel automatically builds and deploys.
-3.  **Backend**: Coolify (Hetzner) detects the push, rebuilds the Docker image, and restarts the service.
+3.  **Backend**: Coolify on Hetzner detects the push, rebuilds the Docker image (including `ffmpeg`), and restarts the service.
