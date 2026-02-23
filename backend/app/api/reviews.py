@@ -15,6 +15,7 @@ class Review(BaseModel):
     rating: int
     time: Optional[str] = ""
     profile_photo_url: Optional[str] = None
+    author_url: Optional[str] = None
 
 class ReviewsResponse(BaseModel):
     rating: float
@@ -69,7 +70,8 @@ async def get_reviews():
                     "text": review.get("text", ""),
                     "rating": review.get("rating", 5),
                     "time": review.get("relative_time_description", ""),
-                    "profile_photo_url": review.get("profile_photo_url")
+                    "profile_photo_url": review.get("profile_photo_url"),
+                    "author_url": review.get("author_url")
                 }
                 formatted_reviews.append(formatted_item)
             
