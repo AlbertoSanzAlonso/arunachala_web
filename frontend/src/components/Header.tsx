@@ -75,8 +75,13 @@ const Header: React.FC = () => {
     }, []);
 
     const handleNavigation = (path: string) => {
-        handleLinkClick();
-        navigate(path);
+        setIsMenuOpen(false);
+        if (window.location.pathname === path) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigate(path);
+        }
     };
 
     const handleLinkClick = () => {
