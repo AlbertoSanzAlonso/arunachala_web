@@ -80,7 +80,7 @@ class EmailService:
         if not recipients:
             return True
 
-        logo_url = f"{self.frontend_url}/logo_transparent_v2.webp"
+        logo_url = f"{self.frontend_url}/logo_transparent.png"
         
         # Static translations for the email template
         translations = {
@@ -226,7 +226,7 @@ class EmailService:
         """
         Sends a warm welcome email to new subscribers.
         """
-        logo_url = f"{self.frontend_url}/logo_transparent_v2.webp"
+        logo_url = f"{self.frontend_url}/logo_transparent.png"
         name = first_name or ("amig@ de Arunachala" if language != "en" else "friend of Arunachala")
         
         translations = {

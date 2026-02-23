@@ -25,5 +25,5 @@ export const getImageUrl = (url: string | null | undefined): string => {
         }
     }
 
-    return `${API_BASE_URL}${url}`;
+    return `${API_BASE_URL.replace(/\/$/, '')}/${url.replace(/^\//, '')}`;
 };

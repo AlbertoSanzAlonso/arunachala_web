@@ -22,6 +22,7 @@ import {
     PaintBrushIcon,
     TicketIcon
 } from '@heroicons/react/24/outline';
+import { getImageUrl } from '../utils/imageUtils';
 
 const navigation = [
     { name: 'Vista General', href: '/dashboard', icon: HomeIcon },
@@ -266,7 +267,7 @@ export default function DashboardLayout() {
                                         {userProfile?.profile_picture ? (
                                             <img
                                                 className="h-7 w-7 md:h-8 md:w-8 rounded-full object-cover border border-white shadow-sm"
-                                                src={`${API_URL}${userProfile.profile_picture}`}
+                                                src={getImageUrl(userProfile.profile_picture)}
                                                 alt="Profile"
                                             />
                                         ) : (
