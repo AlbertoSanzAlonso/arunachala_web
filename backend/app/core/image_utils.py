@@ -100,6 +100,8 @@ def delete_file(file_url: str) -> bool:
                 parts = file_url.split(f"/{bucket_name}/")
                 if len(parts) > 1:
                     file_path = parts[1]
+                    # Strip query parameters if any
+                    file_path = file_path.split("?")[0]
                     supabase_client.storage.from_(bucket_name).remove([file_path])
                     print(f"Deleted from Supabase: {file_path}")
                     return True

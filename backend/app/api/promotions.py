@@ -8,6 +8,7 @@ from app.models.models import Promotion, DashboardActivity
 from app.api.auth import get_current_user
 from app.core.translation_utils import auto_translate_background
 from app.core.webhooks import notify_n8n_content_change
+from app.core.image_utils import delete_file
 
 router = APIRouter(tags=["promotions"])
 
@@ -187,6 +188,9 @@ async def delete_promotion(
         entity_id=None
     )
     db.add(activity)
+    
+    if db_promotion.image_url:
+        delete_file(db_promotion.image_url)
     
     db.delete(db_promotion)
     db.commit()

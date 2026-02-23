@@ -68,15 +68,9 @@ def upload_config_image(
     # Update or create config
     config = db.query(Personalization).filter(Personalization.key == key).first()
     
-    # Optional: Delete old image if it was local and exists
-    if config and config.value and config.value.startswith("/static/site_customization"):
-        import os
-        old_path = config.value.lstrip("/")
-        if os.path.exists(old_path):
-            try:
-                os.remove(old_path)
-            except:
-                pass
+    # Optional: Delete old image
+    if config and config.value:
+        delete_file(config.value)
 
     if not config:
         config = Personalization(key=key, value=image_url, description=f"Image for {key}")
@@ -101,14 +95,8 @@ def delete_config(
         raise HTTPException(status_code=404, detail="Configuration not found")
     
     # Delete image file if it exists
-    if config.value and config.value.startswith("/static/site_customization"):
-        import os
-        file_path = config.value.lstrip("/")
-        if os.path.exists(file_path):
-            try:
-                os.remove(file_path)
-            except:
-                pass
+    if config.value:
+        delete_file(config.value)
     
     db.delete(config)
     db.commit()

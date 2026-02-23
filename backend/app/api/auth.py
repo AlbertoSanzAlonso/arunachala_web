@@ -247,19 +247,17 @@ async def upload_profile_picture(
     if file.content_type not in allowed_types:
         raise HTTPException(status_code=400, detail="Solo se permiten imágenes (JPEG, PNG, WEBP)")
     
-    from app.core.image_utils import save_upload_file
+    from app.core.image_utils import save_upload_file, delete_file
     
-    # Save file (will handle local or Cloudinary based on settings)
+    # Save file
     image_url = save_upload_file(file, subdirectory="profile_pictures")
     
-    # Delete old profile picture if it was a local file
-    if current_user.profile_picture and current_user.profile_picture.startswith("/static/"):
-        old_file_path = current_user.profile_picture.lstrip("/")
-        if os.path.exists(old_file_path):
-            try:
-                os.remove(old_file_path)
-            except Exception as e:
-                print(f"Error deleting old local profile picture: {e}")
+    # Delete old profile picture if exists
+    if current_user.profile_picture:
+        try:
+            delete_file(current_user.profile_picture)
+        except Exception as e:
+            print(f"Error deleting old profile picture: {e}")
     
     # Update user profile picture path
     current_user.profile_picture = image_url
@@ -363,6 +361,9 @@ def update_user(
     db.refresh(user)
     return user
 
+from app.core.image_utils import save_upload_file, delete_file
+from app.core.database import get_db
+
 @router.delete("/users/{user_id}")
 def delete_user(
     user_id: int,
@@ -383,9 +384,7 @@ def delete_user(
     
     # Delete profile picture if exists
     if user.profile_picture:
-        file_path = user.profile_picture.lstrip("/")
-        if os.path.exists(file_path):
-            os.remove(file_path)
+        delete_file(user.profile_picture)
     
     db.delete(user)
     db.commit()

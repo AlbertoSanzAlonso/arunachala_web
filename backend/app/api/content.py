@@ -9,6 +9,7 @@ from app.api.auth import get_current_user
 from app.core.webhooks import notify_n8n_content_change
 from app.core.translation_utils import auto_translate_background
 from app.core.database import get_db, SessionLocal
+from app.core.image_utils import delete_file
 from fastapi import BackgroundTasks
 import re
 import os
@@ -624,6 +625,12 @@ async def delete_content(
         entity_id=content_id
     )
     db.add(activity_log)
+    
+    # Clean up associated files (images and audio)
+    if db_content.thumbnail_url:
+        delete_file(db_content.thumbnail_url)
+    if db_content.media_url:
+        delete_file(db_content.media_url)
     
     db.delete(db_content)
     db.commit()

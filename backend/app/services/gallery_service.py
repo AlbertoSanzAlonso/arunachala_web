@@ -2,31 +2,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from fastapi import UploadFile, HTTPException
 from app.models.models import Gallery
-from app.core.image_utils import save_upload_file
+from app.core.image_utils import save_upload_file, delete_file
 import os
 from typing import List
 
 class GalleryService:
     def __init__(self, db: Session):
         self.db = db
-
-    def _delete_physical_file(self, url: str) -> bool:
-        """Helper to delete file from static folder"""
-        try:
-            if url.startswith("/static/"):
-                # Calculate backend root directory: 
-                # file is in /app/services/gallery_service.py
-                # 3 levels up: /app/services -> /app -> /backend
-                base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-                relative_path = url.replace("/static/", "")
-                file_path = os.path.join(base_dir, "static", relative_path)
-                
-                if os.path.exists(file_path):
-                    os.remove(file_path)
-                    return True
-        except Exception as e:
-            print(f"❌ Error deleting file {url}: {e}")
-        return False
 
     def get_images(self, category: str = None) -> List[Gallery]:
         query = self.db.query(Gallery)
@@ -85,7 +67,7 @@ class GalleryService:
         if not image:
             raise HTTPException(status_code=404, detail="Image not found")
         
-        self._delete_physical_file(image.url)
+        delete_file(image.url)
         self.db.delete(image)
         self.db.commit()
 
@@ -93,7 +75,7 @@ class GalleryService:
         images = self.db.query(Gallery).filter(Gallery.id.in_(image_ids)).all()
         count = len(images)
         for image in images:
-            self._delete_physical_file(image.url)
+            delete_file(image.url)
             self.db.delete(image)
         self.db.commit()
         return count
@@ -104,7 +86,7 @@ class GalleryService:
             raise HTTPException(status_code=404, detail="Image not found")
         
         # Delete old file
-        self._delete_physical_file(image.url)
+        delete_file(image.url)
         
         # Save new file
         subdirectory = f"gallery/{image.category}"
