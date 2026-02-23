@@ -178,15 +178,11 @@ def get_inventory_summary(db: Session):
                 elif entity_type == 'announcement':
                      url = "/#noticias" 
                 elif Model == Promotion:
-                     url = "/#servicios" # Or specific promotion URL if you have one, currently promotions are often displayed on home or specific sections. 
-                     # Let's check where promotions are displayed. Usually just info.
-                     # If there is no specific page, maybe /contact or just the title description.
-                     # Let's use a generic anchor or just assume main page for now or leave empty if just informational.
-                     # Checking the user request, they want to know about promotions.
-                     # Let's route to home for now as they are likely displayed there or in a modal.
                      url = "/" 
+                elif Model == Activity:
+                     url = f"/actividades?activity={item.id}"
                 
-                info = f"'{title}' (URL: {url})"
+                info = f"'{title}' (URL: {url})" if url else f"'{title}'"
                 
                 # Add schedule info if available (for Yoga classes)
                 if hasattr(item, 'schedules') and item.schedules:
@@ -540,6 +536,7 @@ REGLAS DE URLS:
  - Terapia Holística: /terapias/terapias-holisticas?item=SLUG
  - Blog/Artículos: /blog/SLUG
  - Meditación: /meditaciones/SLUG
+ - Actividades/Eventos: /actividades?activity=ID
 
 PROHIBIDO USAR URLs COMPLETAS: Usa solo rutas relativas (ej: /blog/mi-slug). NUNCA escribas "http://...".
 
