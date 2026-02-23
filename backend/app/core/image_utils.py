@@ -74,7 +74,7 @@ def save_upload_file(upload_file: UploadFile, subdirectory: str = "uploads") -> 
             return f"/static/{subdirectory}/{filename}"
 
     except Exception as e:
-        print(f"Error saving image: {e}")
+        print(f"Error saving image from file: {e}")
         # Cleanup if partial file exists
         if STORAGE_TYPE != "supabase":
             if 'file_location' in locals() and os.path.exists(file_location):
@@ -83,6 +83,65 @@ def save_upload_file(upload_file: UploadFile, subdirectory: str = "uploads") -> 
                 except:
                     pass
         raise HTTPException(status_code=500, detail=f"Could not save image: {str(e)}")
+
+def save_image_from_bytes(content: bytes, subdirectory: str = "gallery/articles", filename: str = None) -> str:
+    """
+    Saves an image from raw bytes to local storage or Supabase based on configuration.
+    Returns the URL/path to the saved file.
+    """
+    try:
+        # Generate unique filename if not provided
+        if not filename:
+            filename = f"gen_{uuid.uuid4().hex}.webp"
+        elif not filename.endswith(".webp"):
+            # Ensure it ends in .webp if we are converting
+            filename = os.path.splitext(filename)[0] + ".webp"
+        
+        # Open image using Pillow to optimize/convert
+        image = Image.open(io.BytesIO(content))
+        
+        # Convert to RGBA/RGB as needed
+        if image.mode in ("RGBA", "P"):
+            image = image.convert("RGBA")
+        else:
+            image = image.convert("RGB")
+
+        if STORAGE_TYPE == "supabase" and supabase_client:
+            # Save to memory buffer as WebP
+            buffer = io.BytesIO()
+            image.save(buffer, format="WEBP", quality=80, optimize=True)
+            buffer.seek(0)
+            
+            # Use 'arunachala-images' bucket
+            bucket_name = "arunachala-images"
+            file_path = f"{subdirectory}/{filename}"
+            
+            # Upload to Supabase Storage
+            supabase_client.storage.from_(bucket_name).upload(
+                file=buffer.getvalue(),
+                path=file_path,
+                file_options={"content-type": "image/webp"}
+            )
+            
+            # Get public url
+            public_url = supabase_client.storage.from_(bucket_name).get_public_url(file_path)
+            if public_url.endswith('?'):
+                public_url = public_url[:-1]
+            return public_url
+            
+        else:
+            # LOCAL STORAGE
+            destination_dir = os.path.join(STATIC_DIR, subdirectory)
+            os.makedirs(destination_dir, exist_ok=True)
+            
+            file_location = os.path.join(destination_dir, filename)
+            image.save(file_location, "WEBP", quality=80, optimize=True)
+            
+            return f"/static/{subdirectory}/{filename}"
+
+    except Exception as e:
+        print(f"Error saving image from bytes: {e}")
+        raise HTTPException(status_code=500, detail=f"Could not save image from bytes: {str(e)}")
 
 import logging
 logger = logging.getLogger("uvicorn.error")

@@ -9,7 +9,7 @@ from app.api.auth import get_current_user
 from app.core.webhooks import notify_n8n_content_change
 from app.core.translation_utils import auto_translate_background
 from app.core.database import get_db, SessionLocal
-from app.core.image_utils import delete_file
+from app.core.image_utils import delete_file, save_image_from_bytes
 from fastapi import BackgroundTasks
 import re
 import os
@@ -242,14 +242,12 @@ async def generate_image(
                 
                 raise HTTPException(status_code=502, detail=f"Error del proveedor de IA: {response.status_code}")
             
-            # Save image locally
-            with open(file_path, "wb") as f:
-                f.write(response.content)
+            # Save image using unified logic (local or supabase)
+            url = save_image_from_bytes(response.content, subdirectory=target_subpath, filename=filename)
+            print(f"Image saved to: {url}")
                 
-            print(f"Image saved to: {file_path}")
-                
-        # Return relative URL
-        return {"url": f"/static/{target_subpath}/{filename}"}
+        # Return URL
+        return {"url": url}
         
     except HTTPException as he:
         raise he
@@ -319,31 +317,12 @@ async def download_remote_image(url: str, slug: str) -> Optional[str]:
                 "Accept": "image/webp,image/apng,image/*,*/*;q=0.8"
             }
             response = await client.get(url, headers=headers, timeout=30.0)
-            
             if response.status_code == 200:
-                # Convert to WebP using Pillow
-                try:
-                    image_data = BytesIO(response.content)
-                    with Image.open(image_data) as img:
-                        # Convert to RGB if necessary (e.g. from RGBA png)
-                        if img.mode in ("RGBA", "P"): 
-                            img = img.convert("RGB")
-                        
-                        # Save optimized WebP
-                        img.save(file_path, "WEBP", quality=80, optimize=True)
-                        
-                    return f"/static/gallery/articles/{filename}"
-                except Exception as img_err:
-                    print(f"Image conversion failed: {img_err}, saving original bytes")
-                    # Fallback: save original content if conversion fails, but rename extension match content if possible
-                    # Revert to original extension logic if Pillow fails
-                    with open(file_path, "wb") as f:
-                        f.write(response.content)
-                    return f"/static/gallery/articles/{filename}"
+                # Save image using unified logic (local or supabase)
+                local_path = save_image_from_bytes(response.content, subdirectory="gallery/articles", filename=filename)
+                return local_path
             else:
                 print(f"Failed to download image: Status {response.status_code}")
-                return None
-                
                 return None
                 
     except Exception as e:

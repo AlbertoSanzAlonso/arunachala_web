@@ -22,8 +22,8 @@ This project supports Spanish (ES), Catalan (CA), and English (EN).
       "en": { "title": "...", "description": "..." }
     }
     ```
--   **Auto-Translation**: When content is created in Spanish, background tasks may auto-generate translations using AI if configured. This applies to both main content (Classes, Articles, Meditations) and associated **Tags**.
--   **Tag Translations**: Tags are automatically translated to `en` and `ca` via background tasks to ensure they are available in the frontend Search components across all languages.
+-   **Auto-Translation Reliability**: AI translation tasks (`translation_utils.py`) are strictly configured to use global Pydantic settings. Avoid using local `load_dotenv()` in individual scripts; ensure `OPENAI_API_KEY` is present in the main environment (Coolify).
+-   **Manual Corrections**: Content with missing translations can be re-saved in the Dashboard to force a re-trigger of the automated background translation.
 
 ## 📝 Rules for New Content
 1.  Always provide keys in `translation.json` for UI static text.

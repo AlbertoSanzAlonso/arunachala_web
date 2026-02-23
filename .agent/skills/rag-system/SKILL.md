@@ -27,8 +27,15 @@ The system keeps knowledge up-to-date automatically using webhooks and n8n.
     -   Generates embeddings (OpenAI).
     -   Upserts/Updates data in **Qdrant**.
 
+## ⚡ Performance & Caching (Redis)
+To reduce database load and latency, the RAG system employs a dual-layer strategy:
+
+- **Inventory Caching**: The `get_inventory_summary` function (which scans all available content for the AI) is cached in Redis for 5 minutes (`inventory:*` pattern).
+- **Auto-Invalidation**: The backend automatically clears the Redis cache whenever content is updated or published, ensuring the AI always has fresh data without performance penalty.
+- **Fail-safe**: If Redis is down, the system gracefully falls back to direct DB queries.
+
 ## 🛠️ Admin Control
 The dashboard includes an "Agent Control" page to adjust:
--   Tone
--   Response length
--   Focus area
+-   **Model Selection**: Independently choose between **OpenAI (Quality)** and **Groq (Speed/Free)** for the main Chat and the Wellness Quiz.
+-   **Tone & Personality**: Adjust the bot's behavior.
+-   **Response length** and focus areas.

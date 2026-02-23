@@ -34,6 +34,7 @@ Please refer to the specific skill file for detailed instructions.
 |---|---|---|
 | **git-commands** | Daily Git usage, feature workflow, conflict resolution. | [.agent/skills/git-commands/SKILL.md](.agent/skills/git-commands/SKILL.md) |
 | **github-workflow** | PR process, main/develop branch strategy. | [.agent/skills/github-workflow/SKILL.md](.agent/skills/github-workflow/SKILL.md) |
+| **branch-protection** | Git policies, required checks, and security gates. | [.agent/skills/branch-protection/SKILL.md](.agent/skills/branch-protection/SKILL.md) |
 
 ## 🏗️ Project Structure
 ```
@@ -254,3 +255,12 @@ arunachala_web/
 - **Storage Path Cleanup & URL Standardization**:
     - **Storage Map**: Documented the definitive structure of the `arunachala-images` bucket to identify disused folders (e.g., base-level `articles/`, `yoga/`, etc., are legacy; new code uses `gallery/articulos/`, `gallery/yoga/`, etc.).
     - **URL Integrity**: Any content created during the temporary translation failure (IDs 173, 174, etc.) can be fixed by simply re-saving them in the Dashboard, which will now correctly trigger the automated translation.
+
+## 📝 Recent Updates (2026-02-23 - Late Evening)
+- **Dashboard UI Optimization**:
+    - **Cleanup**: Removed analytics cards and redundant "SEO & Google" nav item to declutter the workspace.
+    - **"View on Website" Buttons**: Implemented direct preview buttons (`EyeIcon`) across all content managers (Content, Treatments, Schedule, Activities, Promotions).
+    - **Vercel Build Stability**: Cleared all unused imports and variables (`ChartBarIcon`, `stats`, etc.) to prevent build failures caused by `CI=true` strictness.
+- **System Architecture Refinement**:
+    - **Knowledge Factorization**: Migrated specialized procedural knowledge into the `.agent/skills/` directory for better modularity and agent reasoning.
+    - **Async Progress**: Continued moving database sessions to async/await patterns for improved concurrency.

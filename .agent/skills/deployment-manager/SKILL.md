@@ -25,22 +25,31 @@ The project uses a distributed cloud architecture optimized for performance, sca
 When deploying, configure these variables in the respective dashboards:
 
 **Backend (Hetzner VPS / Coolify):**
-```bash
-# Database (Supabase Transaction Pooler)
-DATABASE_URL=postgresql://postgres.[PROJ_ID]:[PASS]@aws-0-[REGION].pooler.supabase.com:6543/postgres
+# Database (Supabase Direct & Pooler)
+DATABASE_URL=postgresql://postgres:[PASS]@db.[PROJ_ID].supabase.co:5432/postgres
+
+# Redis Cache (Authenticated)
+REDIS_URL=redis://default:[PASS]@[REDIS_IP]:6379/0
 
 # Security
 SECRET_KEY=your-production-secret-key
 ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=60
-ALLOWED_ORIGINS=["https://arunachala-yoga.vercel.app"]
+ALLOWED_ORIGINS=https://www.yogayterapiasarunachala.es,https://arunachala-yoga.vercel.app,https://arunachala-web.vercel.app
 
 # Storage
 STORAGE_TYPE=supabase
 SUPABASE_URL=https://[PROJ_ID].supabase.co
-SUPABASE_KEY=your-service-role-key
+SUPABASE_KEY=your-service-role-key (MUST be Service Role, not Anon)
 SUPABASE_BUCKET=arunachala-images
 ```
+
+### 🎯 URL Standardization
+The project uses a unified URL strategy via `getImageUrl` (`frontend/src/utils/imageUtils.ts`):
+- All images must use this utility.
+- It detects if a URL is absolute (starts with `http`) or relative.
+- If absolute (Supabase), it returns it as-is.
+- If relative (`/static/...`), it prepends `API_BASE_URL`.
+- **CRITICAL**: Never manually concatenate `${API_BASE_URL}${url}` for images, as Supabase URLs will break.
 
 **Frontend (Vercel):**
 ```bash
