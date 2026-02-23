@@ -83,9 +83,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
             } else if (typeof translationValue === 'string') {
                 return translationValue;
             }
-            if (currentLang !== 'es') {
-                return null;
-            }
+            // Fallback for tags without translation in the current language (e.g. newly created)
             return tag.name;
         }).filter(Boolean);
 
