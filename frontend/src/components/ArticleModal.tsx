@@ -83,6 +83,16 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
         // This allows us to use our own H2 component title for ALL articles (Manual & AI)
         cleaned = cleaned.replace(/^#\s+.+(\n|$)/, '').trim();
 
+        // Fix image URLs inline (Markdown: ![alt](/static/...) -> ![alt](https://.../static/...))
+        cleaned = cleaned.replace(/(!\[.*?\]\()([^)]+)(\))/g, (match, p1, p2, p3) => {
+            return `${p1}${getImageUrl(p2)}${p3}`;
+        });
+
+        // Fix HTML images (<img src="/static/..." /> -> <img src="https://.../static/..." />)
+        cleaned = cleaned.replace(/(<img[^>]+src=["'])([^"']+)(["'][^>]*>)/gi, (match, p1, p2, p3) => {
+            return `${p1}${getImageUrl(p2)}${p3}`;
+        });
+
         return cleaned;
     };
 
