@@ -148,14 +148,15 @@ async def update_promotion(
     db.add(activity)
     db.commit()
 
-    # Re-translate if main fields changed
-    if (promotion_update.title or promotion_update.description):
+    # Re-translate if main fields changed and no explicit translation provided
+    if (promotion_update.title or promotion_update.description) and promotion_update.translations is None:
         fields = {
             "title": promotion_update.title or db_promotion.title,
             "description": promotion_update.description or db_promotion.description,
             "discount_code": promotion_update.discount_code or db_promotion.discount_code
         }
         fields = {k: v for k, v in fields.items() if v}
+        
         background_tasks.add_task(
             auto_translate_background, 
             SessionLocal, 
