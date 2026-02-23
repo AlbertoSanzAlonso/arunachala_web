@@ -13,6 +13,7 @@ import FadeInSection from '../components/FadeInSection';
 import { API_BASE_URL } from '../config';
 import { useTranslation } from 'react-i18next';
 import { getImageUrl } from '../utils/imageUtils';
+import PageSEO from '../components/PageSEO';
 
 // Lazy load heavy components
 const ImageSlider = lazy(() => import('../components/ImageSlider'));
@@ -73,8 +74,49 @@ const HomePage: React.FC = () => {
         containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    const localBusinessSchema = {
+        "@context": "https://schema.org",
+        "@type": "YogaStudio",
+        "name": "Arunachala Yoga y Terapias",
+        "image": "https://www.yogayterapiasarunachala.es/logo_wide.webp",
+        "@id": "https://www.yogayterapiasarunachala.es",
+        "url": "https://www.yogayterapiasarunachala.es",
+        "telephone": "+34678481971",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Pasaje de Mateu Oliva 3",
+            "addressLocality": "Cornellà de Llobregat",
+            "postalCode": "08940",
+            "addressRegion": "Barcelona",
+            "addressCountry": "ES"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 41.3533,
+            "longitude": 2.0728
+        },
+        "openingHoursSpecification": [
+            {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                "opens": "09:00",
+                "closes": "21:00"
+            }
+        ],
+        "sameAs": [
+            "https://www.instagram.com/yogayterapiasarunachala/",
+            "https://www.youtube.com/@yogayterapiasarunachala2252"
+        ],
+        "description": "Centro de Yoga y Terapias en Cornellà de Llobregat. Clases de Hatha Yoga, Vinyasa y Terapias Holísticas."
+    };
+
     return (
         <div ref={containerRef} className="font-body text-bark relative h-screen overflow-y-auto snap-y snap-mandatory scroll-smooth">
+            <PageSEO
+                title="Arunachala Yoga y Terapias | Centro de Bienestar en Cornellà"
+                description="Clases de Yoga (Hatha, Vinyasa), Meditación y Terapias Holísticas en Cornellà de Llobregat. Encuentra tu equilibrio en un espacio acogedor y profesional."
+                structuredData={localBusinessSchema}
+            />
             <Header />
 
             {/* Floating Back to Top Button */}

@@ -13,6 +13,7 @@ import lotusFlower from '../assets/images/lotus_flower.png';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
 import { getImageUrl } from '../utils/imageUtils';
+import PageSEO from '../components/PageSEO';
 import BlogSection from '../components/BlogSection';
 
 interface Treatment {
@@ -107,10 +108,11 @@ const TherapiesPage: React.FC = () => {
 
     return (
         <div ref={containerRef} className="font-body text-bark h-screen overflow-y-auto flex flex-col relative snap-y snap-mandatory scroll-smooth">
-            <Helmet>
-                <title>{t('therapies.seo.title')}</title>
-                <meta name="description" content={t('therapies.seo.description')} />
-            </Helmet>
+            <PageSEO
+                title={t('therapies.seo.title')}
+                description={t('therapies.seo.description')}
+                canonical="https://www.yogayterapiasarunachala.es/terapias-y-masajes"
+            />
 
             <Header />
 

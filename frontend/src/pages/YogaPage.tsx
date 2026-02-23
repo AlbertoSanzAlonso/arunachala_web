@@ -11,6 +11,7 @@ import yogaHero from '../assets/images/yoga_hero.webp';
 import { API_BASE_URL } from '../config';
 import BlogSection from '../components/BlogSection';
 import { getImageUrl } from '../utils/imageUtils';
+import PageSEO from '../components/PageSEO';
 
 // Lazy load heavy components for performance
 const YogaSchedule = lazy(() => import('../components/YogaSchedule'));
@@ -118,10 +119,11 @@ const YogaPage: React.FC = () => {
 
     return (
         <div ref={containerRef} className="font-body text-bark h-screen overflow-y-auto flex flex-col relative snap-y snap-mandatory scroll-smooth">
-            <Helmet>
-                <title>{t('yoga.seo.title')}</title>
-                <meta name="description" content={t('yoga.seo.description')} />
-            </Helmet>
+            <PageSEO
+                title={t('yoga.seo.title')}
+                description={t('yoga.seo.description')}
+                canonical="https://www.yogayterapiasarunachala.es/clases-de-yoga"
+            />
 
             <Header />
 

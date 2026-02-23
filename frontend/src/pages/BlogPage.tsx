@@ -13,6 +13,7 @@ import { getImageUrl } from '../utils/imageUtils';
 import ArticleModal from '../components/ArticleModal';
 import BlogSearch, { FilterState } from '../components/BlogSearch';
 import { Article } from '../types/blog';
+import PageSEO from '../components/PageSEO';
 
 // Article interface moved to types/blog.ts
 
@@ -175,10 +176,11 @@ const BlogPage: React.FC = () => {
 
     return (
         <div className="font-body text-bark min-h-screen flex flex-col relative bg-bone">
-            <Helmet>
-                <title>{t('blog.seo.title', 'Blog | Arunachala Yoga')}</title>
-                <meta name="description" content={t('blog.seo.description', 'Artículos sobre yoga, meditación y bienestar')} />
-            </Helmet>
+            <PageSEO
+                title={t('blog.seo.title', 'Blog | Arunachala Yoga')}
+                description={t('blog.seo.description', 'Artículos sobre yoga, meditación y bienestar')}
+                canonical="https://www.yogayterapiasarunachala.es/blog"
+            />
 
             <Header />
 
