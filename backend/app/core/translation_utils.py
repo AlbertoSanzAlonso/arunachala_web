@@ -1,14 +1,17 @@
-import os
 import json
 from openai import OpenAI
 from typing import Dict, List, Any
+from app.core.config import settings
 
-from dotenv import load_dotenv
-load_dotenv()
-
-# Initialize OpenAI client
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
+# Initialize OpenAI client using centralized settings
+def get_openai_client():
+    if not settings.OPENAI_API_KEY:
+        return None
+    try:
+        return OpenAI(api_key=settings.OPENAI_API_KEY)
+    except Exception as e:
+        print(f"Error initializing OpenAI client: {e}")
+        return None
 
 async def translate_content(text_dict: Dict[str, str], target_languages: List[str] = ["ca", "en"]) -> Dict[str, Any]:
     """
@@ -19,8 +22,9 @@ async def translate_content(text_dict: Dict[str, str], target_languages: List[st
         'en': {'name': 'Yoga Class', 'description': 'Total relaxation'}
     }
     """
+    client = get_openai_client()
     if not client:
-        print("Warning: OpenAI client not initialized for translation")
+        print("Warning: OpenAI client not initialized for translation. Ensure OPENAI_API_KEY is set.")
         return {}
 
     try:

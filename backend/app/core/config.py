@@ -12,6 +12,11 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
+    # AI API Keys
+    OPENAI_API_KEY: Optional[str] = None
+    GROQ_API_KEY: Optional[str] = None
+    GEMINI_API_KEY: Optional[str] = None
+    
     # CORS - can be a list or comma-separated string
     ALLOWED_ORIGINS: Union[list[str], str] = "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000"
     
