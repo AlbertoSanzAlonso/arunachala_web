@@ -76,11 +76,25 @@ const Header: React.FC = () => {
 
     const handleNavigation = (path: string) => {
         setIsMenuOpen(false);
+        const homeContainer = document.getElementById('home-scroll-container');
+
         if (window.location.pathname === path) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (homeContainer) {
+                homeContainer.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         } else {
             navigate(path);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Delay slightly to let the new DOM render before scrolling its specific container
+            setTimeout(() => {
+                const newHomeContainer = document.getElementById('home-scroll-container');
+                if (newHomeContainer) {
+                    newHomeContainer.scrollTo(0, 0);
+                } else {
+                    window.scrollTo(0, 0);
+                }
+            }, 0);
         }
     };
 
@@ -96,9 +110,11 @@ const Header: React.FC = () => {
     const shouldShowMiniPlayer = !!playingMeditation && !isMeditationInView;
 
 
+    const isHome = window.location.pathname === '/';
+
     return (
         <>
-            <header className="fixed top-0 left-0 right-0 z-50 p-5 md:py-6 md:px-10 flex justify-between items-center bg-[#5c6b3c] shadow-md transition-colors duration-300">
+            <header className={`${isHome ? 'sticky w-full' : 'fixed left-0 right-0'} top-0 z-50 p-5 md:py-6 md:px-10 flex justify-between items-center bg-[#5c6b3c] shadow-md transition-colors duration-300`}>
                 {/* Logo Section */}
                 <div
                     className={`cursor-pointer flex items-center justify-center h-20 w-20 md:h-24 md:w-24 rounded-full border border-[#F5F5DC] transition-transform duration-300 hover:scale-110 shadow-sm ${isChristmas

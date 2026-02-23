@@ -111,7 +111,7 @@ const HomePage: React.FC = () => {
     };
 
     return (
-        <div ref={containerRef} className="font-body text-bark relative h-screen overflow-y-auto snap-y snap-mandatory scroll-smooth">
+        <div id="home-scroll-container" ref={containerRef} className="font-body text-bark relative h-screen overflow-y-auto snap-y snap-mandatory scroll-smooth">
             <PageSEO
                 title="Arunachala Yoga y Terapias | Centro de Bienestar en Cornellà"
                 description="Clases de Yoga (Hatha, Vinyasa), Meditación y Terapias Holísticas en Cornellà de Llobregat. Encuentra tu equilibrio en un espacio acogedor y profesional."
