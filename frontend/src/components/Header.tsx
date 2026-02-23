@@ -84,10 +84,6 @@ const Header: React.FC = () => {
         }
     };
 
-    const handleLinkClick = () => {
-        setIsMenuOpen(false);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
 
     const changeLanguage = (lng: string) => {
         i18n.changeLanguage(lng);
