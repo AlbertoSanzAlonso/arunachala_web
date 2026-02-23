@@ -34,6 +34,7 @@ const navigation = [
     { name: 'Usuarios', href: '/dashboard/users', icon: UsersIcon },
     { name: 'Control de Agente', href: '/dashboard/agent', icon: ChatBubbleLeftRightIcon },
     { name: 'Promociones', href: '/dashboard/promotions', icon: TicketIcon },
+    { name: 'SEO & Analytics', href: '/dashboard/seo', icon: GlobeAltIcon },
 ];
 
 function classNames(...classes: string[]) {
