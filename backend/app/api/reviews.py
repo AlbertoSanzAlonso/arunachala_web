@@ -11,9 +11,9 @@ router = APIRouter()
 class Review(BaseModel):
     id: str
     author: str
-    text: str
+    text: Optional[str] = ""
     rating: int
-    time: str
+    time: Optional[str] = ""
     profile_photo_url: Optional[str] = None
 
 class ReviewsResponse(BaseModel):
@@ -63,14 +63,17 @@ async def get_reviews():
             
             formatted_reviews = []
             for review in google_reviews:
-                formatted_reviews.append({
-                    "id": str(review.get("time")), # Use timestamp as ID (converted to string)
-                    "author": review.get("author_name"),
-                    "text": review.get("text"),
-                    "rating": review.get("rating"),
-                    "time": review.get("relative_time_description"),
+                formatted_item = {
+                    "id": str(review.get("time", "")),
+                    "author": review.get("author_name", "Anónimo"),
+                    "text": review.get("text", ""),
+                    "rating": review.get("rating", 5),
+                    "time": review.get("relative_time_description", ""),
                     "profile_photo_url": review.get("profile_photo_url")
-                })
+                }
+                formatted_reviews.append(formatted_item)
+            
+            print(f"DEBUG: Returning {len(formatted_reviews)} reviews. First ID type: {type(formatted_reviews[0]['id'])}")
             
             return {
                 "rating": result.get("rating", 0),
