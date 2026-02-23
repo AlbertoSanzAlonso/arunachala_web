@@ -77,8 +77,11 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
         const currentLang = i18n.language.split('-')[0];
 
         const translatedNames = allTags.map(tag => {
-            if (tag.translations && tag.translations[currentLang] && tag.translations[currentLang].name) {
-                return tag.translations[currentLang].name;
+            let translationValue = tag.translations && tag.translations[currentLang];
+            if (typeof translationValue === 'object' && translationValue !== null && translationValue.name) {
+                return translationValue.name;
+            } else if (typeof translationValue === 'string') {
+                return translationValue;
             }
             if (currentLang !== 'es') {
                 return null;
