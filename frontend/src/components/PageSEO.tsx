@@ -12,7 +12,7 @@ interface PageSEOProps {
 
 const PageSEO: React.FC<PageSEOProps> = ({
     title = 'Arunachala Yoga y Terapias',
-    description = 'Centro de Yoga y Terapias en Castelldefels. Clases de Hatha Yoga, Vinyasa, Meditación guiada y Terapias Holísticas para tu bienestar integral.',
+    description = 'Centro de Yoga y Terapias en Cornella del Llobregat. Clases de Yoga y Terapias Holísticas para el bienestar integral.',
     canonical = 'https://www.yogayterapiasarunachala.es',
     ogImage = 'https://www.yogayterapiasarunachala.es/logo_wide.webp',
     ogType = 'website',

@@ -10,61 +10,62 @@ interface Review {
     time: string;
 }
 
-const MOCK_REVIEWS: Review[] = [
-    {
-        id: 1,
-        author: "María García",
-        text: "Un lugar mágico para reconectar con uno mismo. Las clases de yoga son excepcionales.",
-        rating: 5,
-        time: "hace 2 semanas"
-    },
-    {
-        id: 2,
-        author: "Carlos Ruiz",
-        text: "Los terapeutas son muy profesionales. Salí totalmente renovado después del masaje.",
-        rating: 5,
-        time: "hace 1 mes"
-    },
-    {
-        id: 3,
-        author: "Elena Torres",
-        text: "El ambiente es paz pura. Me encanta venir a desconectar del ruido de la ciudad.",
-        rating: 5,
-        time: "hace 3 semanas"
-    }
-];
-
 const ReviewsSection: React.FC = () => {
-    const [reviews, setReviews] = useState<Review[]>(MOCK_REVIEWS);
-    const [rating, setRating] = useState(4.9);
-    const [totalReviews, setTotalReviews] = useState(124);
+    const [reviews, setReviews] = useState<Review[]>([]);
+    const [rating, setRating] = useState(0);
+    const [totalReviews, setTotalReviews] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
     // Use a Google Maps Search URL as the default fallback
     const [googleUrl, setGoogleUrl] = useState("https://www.google.com/maps/search/?api=1&query=Yoga+y+Terapias+Arunachala");
 
     useEffect(() => {
         const fetchReviews = async () => {
+            setIsLoading(true);
             try {
-                // Determine API URL based on environment or default to localhost
                 const response = await fetch(`${API_BASE_URL}/api/reviews`);
-
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.reviews && data.reviews.length > 0) {
+                    if (data.reviews) {
                         setReviews(data.reviews);
-                        setRating(data.rating || 4.9);
-                        setTotalReviews(data.total_reviews || 124);
+                        setRating(data.rating || 0);
+                        setTotalReviews(data.total_reviews || 0);
                         if (data.url) {
                             setGoogleUrl(data.url);
                         }
                     }
                 }
             } catch (error) {
-                console.log('Using mock reviews (Backend might be offline)');
+                console.error('Error fetching reviews:', error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
         fetchReviews();
     }, []);
+
+    // If no reviews and not loading, we can show a special state or nothing
+    if (!isLoading && reviews.length === 0 && rating === 0) {
+        return (
+            <section className="py-16 bg-bone">
+                <div className="max-w-7xl mx-auto px-4 text-center">
+                    <h2 className="text-4xl font-headers text-forest mb-6">Tu opinión nos importa</h2>
+                    <p className="text-bark/70 mb-8 max-w-2xl mx-auto">
+                        Aún no hemos conectado las reseñas de Google. Si has pasado por nuestro centro,
+                        nos encantaría conocer tu experiencia.
+                    </p>
+                    <a
+                        href={googleUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 bg-forest text-white px-8 py-3 rounded-full hover:bg-matcha transition-all shadow-lg font-bold"
+                    >
+                        Dejar una reseña en Google
+                    </a>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section className="py-16 bg-bone">

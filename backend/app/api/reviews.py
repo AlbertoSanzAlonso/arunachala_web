@@ -22,33 +22,8 @@ class ReviewsResponse(BaseModel):
     url: Optional[str] = None
     reviews: List[Review]
 
-# Mock data for fallback
-MOCK_REVIEWS = [
-    {
-        "id": "1",
-        "author": "María García",
-        "text": "Un lugar mágico para reconectar con uno mismo. Las clases de yoga son excepcionales.",
-        "rating": 5,
-        "time": "hace 2 semanas",
-        "profile_photo_url": None
-    },
-    {
-        "id": "2",
-        "author": "Carlos Ruiz",
-        "text": "Los terapeutas son muy profesionales. Salí totalmente renovado después del masaje.",
-        "rating": 5,
-        "time": "hace 1 mes",
-        "profile_photo_url": None
-    },
-    {
-        "id": "3",
-        "author": "Elena Torres",
-        "text": "El ambiente es paz pura. Me encanta venir a desconectar del ruido de la ciudad.",
-        "rating": 5,
-        "time": "hace 3 semanas",
-        "profile_photo_url": None
-    }
-]
+# Mock data for fallback (Empty until API is configured)
+MOCK_REVIEWS = []
 
 @router.get("/reviews", response_model=ReviewsResponse)
 async def get_reviews():
