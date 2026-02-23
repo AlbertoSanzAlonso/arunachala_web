@@ -197,7 +197,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
                         {categories.map((cat) => (
                             <button
                                 key={cat.id}
-                                onClick={() => onFilterChange({ ...filters, category: cat.id })}
+                                onClick={() => onFilterChange({ ...filters, category: cat.id, tags: [] })}
                                 className={`flex-1 md:flex-none px-6 py-2.5 rounded-lg text-sm font-headers uppercase tracking-wider transition-all duration-300 ${filters.category === cat.id
                                     ? 'bg-white text-forest shadow-sm ring-1 ring-black/5'
                                     : 'text-bark/50 hover:text-bark/80 hover:bg-white/50'
