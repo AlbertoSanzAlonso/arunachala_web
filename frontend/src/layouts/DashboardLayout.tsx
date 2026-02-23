@@ -8,7 +8,7 @@ import {
     HomeIcon,
     DocumentTextIcon,
     CalendarIcon,
-    ChartBarIcon,
+
     Bars3Icon,
     XMarkIcon,
     PhotoIcon,

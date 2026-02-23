@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { ArrowTrendingUpIcon, UsersIcon, DocumentDuplicateIcon, CheckCircleIcon, XMarkIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon, XMarkIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from '../../config';
 
-const stats: any[] = [];
+
 
 interface ActivityItem {
     id: number;
@@ -22,9 +22,7 @@ interface ActivitySuggestion {
     user_comments?: { text: string; option: string; date: string; votes?: number }[];
 }
 
-function classNames(...classes: string[]) {
-    return classes.filter(Boolean).join(' ');
-}
+
 
 function formatTimeAgo(timestamp: string): string {
     const now = new Date();
