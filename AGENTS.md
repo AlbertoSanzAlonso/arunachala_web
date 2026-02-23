@@ -242,3 +242,7 @@ arunachala_web/
         - Caching has been aggressively applied to the RAG Chatbot's most expensive operations: `get_inventory_summary` (counting & aggregating all site activities per language) gets a 5-minute TTL, and active Agent configs get a 10-minute TTL.
         - This dramatically reduces the load on the Supabase Postgres instance on every user interaction.
         - **Smart Cache Invalidation**: Webhooks in `content.py` and `webhooks.py` perform real-time cache pattern invalidation (`inventory:*`) whenever new activities or content are saved, ensuring the AI never serves stale information despite the caching layer.
+
+- **Vercel CI Build Fix (ESLint)**:
+    - Fixed a build failure caused by an unused `handleLinkClick` function in `Header.tsx`. 
+    - Verified the fix by running a local build with `CI=true`.
