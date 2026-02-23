@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChatBubbleLeftRightIcon, XMarkIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 import puter from '@heyputer/puter.js';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import omSymbol from '../assets/images/om_symbol.png';
 import { API_BASE_URL } from '../config';
 import { useTranslation } from 'react-i18next';
@@ -316,12 +318,19 @@ const ChatBot: React.FC = () => {
                                     className={`flex w-full flex-col ${msg.isUser ? 'items-end' : 'items-start'}`}
                                 >
                                     <div
-                                        className={`max-w-[85%] p-4 rounded-2xl text-[14.5px] leading-relaxed shadow-sm transition-all ${msg.isUser
-                                            ? 'bg-gradient-to-br from-[#becf81] to-[#99aa66] text-white rounded-tr-none shadow-[#becf81]/20'
-                                            : 'bg-white text-gray-700 border border-gray-100 rounded-tl-none shadow-gray-200/50'
+                                        className={`max-w-[85%] p-4 rounded-2xl text-[14.5px] leading-relaxed shadow-sm transition-all prose prose-sm max-w-none ${msg.isUser
+                                            ? 'bg-gradient-to-br from-[#becf81] to-[#99aa66] text-white rounded-tr-none shadow-[#becf81]/20 prose-invert prose-p:text-white prose-headings:text-white'
+                                            : 'bg-white text-gray-700 border border-gray-100 rounded-tl-none shadow-gray-200/50 prose-a:text-[# becf81] hover:prose-a:text-[#a9bb6e]'
                                             }`}
                                     >
-                                        <div className="whitespace-pre-wrap">{msg.text}</div>
+                                        <ReactMarkdown
+                                            remarkPlugins={[remarkGfm]}
+                                            components={{
+                                                a: ({ node, ...props }) => <a {...props} target="_blank" rel="noopener noreferrer" className="underline font-medium" />
+                                            }}
+                                        >
+                                            {msg.text}
+                                        </ReactMarkdown>
                                         {msg.isStreaming && <span className="inline-block w-1.5 h-4 ml-1 bg-[#becf81] animate-pulse rounded-full align-middle"></span>}
                                     </div>
                                     <span className={`text-[10px] mt-1.5 text-gray-400 px-1 font-medium ${msg.isUser ? 'mr-1' : 'ml-1'}`}>

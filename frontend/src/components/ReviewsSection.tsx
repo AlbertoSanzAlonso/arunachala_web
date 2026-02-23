@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { StarIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API_BASE_URL } from '../config';
+import { useTranslation } from 'react-i18next';
 
 interface Review {
     id: string | number;
@@ -20,6 +21,7 @@ const ReviewsSection: React.FC = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isAutoPlaying, setIsAutoPlaying] = useState(true);
     const [googleUrl, setGoogleUrl] = useState("https://www.google.com/maps/search/?api=1&query=Yoga+y+Terapias+Arunachala");
+    const { t } = useTranslation();
 
     useEffect(() => {
         const fetchReviews = async () => {
@@ -68,10 +70,9 @@ const ReviewsSection: React.FC = () => {
         return (
             <section className="py-16 bg-bone">
                 <div className="max-w-7xl mx-auto px-4 text-center">
-                    <h2 className="text-4xl font-headers text-forest mb-6">Tu opinión nos importa</h2>
+                    <h2 className="text-4xl font-headers text-forest mb-6">{t('reviews.reviews_empty_title')}</h2>
                     <p className="text-bark/70 mb-8 max-w-2xl mx-auto">
-                        Aún no hemos conectado las reseñas de Google. Si has pasado por nuestro centro,
-                        nos encantaría conocer tu experiencia.
+                        {t('reviews.reviews_empty_desc')}
                     </p>
                     <a
                         href="https://g.page/r/CVw134UN-wSPEBM/review"
@@ -79,7 +80,7 @@ const ReviewsSection: React.FC = () => {
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 bg-forest text-white px-8 py-3 rounded-full hover:bg-matcha transition-all shadow-lg font-bold"
                     >
-                        Dejar una reseña en Google
+                        {t('reviews.reviews_leave')}
                     </a>
                 </div>
             </section>
@@ -90,7 +91,7 @@ const ReviewsSection: React.FC = () => {
         <section className="py-20 bg-bone overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
-                    <h2 className="text-4xl md:text-5xl font-headers text-forest mb-4">Lo que dicen de nosotros</h2>
+                    <h2 className="text-4xl md:text-5xl font-headers text-forest mb-4">{t('reviews.reviews_title')}</h2>
                     <div className="flex flex-col items-center justify-center gap-2">
                         <div className="flex items-center gap-3">
                             <span className="text-3xl font-bold text-bark">{rating}</span>
@@ -106,7 +107,7 @@ const ReviewsSection: React.FC = () => {
                             rel="noopener noreferrer"
                             className="text-bark/60 text-sm hover:text-forest transition-colors border-b border-dashed border-bark/20"
                         >
-                            ({totalReviews} reseñas en Google)
+                            ({totalReviews} {t('reviews.reviews_google_count')})
                         </a>
                     </div>
                 </div>
@@ -161,7 +162,7 @@ const ReviewsSection: React.FC = () => {
                                             <span className="font-bold text-forest text-lg group-hover:text-matcha transition-colors">
                                                 {reviews[currentIndex].author}
                                             </span>
-                                            <span className="text-xs text-bark/40 uppercase tracking-widest font-medium">Verified Customer</span>
+                                            <span className="text-xs text-bark/40 uppercase tracking-widest font-medium">{t('reviews.reviews_verified')}</span>
                                         </div>
                                         <span className="text-xs text-bark/40">{reviews[currentIndex].time}</span>
                                     </div>
@@ -190,7 +191,7 @@ const ReviewsSection: React.FC = () => {
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-3 bg-forest text-white px-10 py-4 rounded-full hover:bg-matcha transition-all shadow-xl font-bold text-lg hover:-translate-y-1"
                     >
-                        <span>Nos importa tu opinión, compártela</span>
+                        <span>{t('reviews.reviews_share')}</span>
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>

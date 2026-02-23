@@ -1,588 +1,597 @@
 {
-    "footer": {
-        "address": "Yoga y Terapias Arunachala\nPasaje de Mateu Oliva 3, ground floor\n(next to Plaza Pallars)\n08940 Cornellà de Llobregat\nBarcelona",
-        "labels": {
-            "home": "Home",
-            "yoga": "Yoga & Schedule",
-            "therapies": "Massage & Therapies",
-            "blog": "Blog",
-            "legal": "Legal Notice",
-            "privacy": "Privacy Policy",
-            "instagram": "Follow us on Instagram",
-            "youtube": "Subscribe to our YouTube channel",
-            "spotify": "Listen to us on Spotify"
-        },
-        "rights": "All rights reserved."
+  "footer": {
+    "address": "Yoga y Terapias Arunachala\nPasaje de Mateu Oliva 3, ground floor\n(next to Plaza Pallars)\n08940 Cornellà de Llobregat\nBarcelona",
+    "labels": {
+      "home": "Home",
+      "yoga": "Yoga & Schedule",
+      "therapies": "Massage & Therapies",
+      "blog": "Blog",
+      "legal": "Legal Notice",
+      "privacy": "Privacy Policy",
+      "instagram": "Follow us on Instagram",
+      "youtube": "Subscribe to our YouTube channel",
+      "spotify": "Listen to us on Spotify"
     },
-    "gallery": {
-        "yoga": {
-            "title": "Yoga Gallery",
-            "back": "Back to Yoga",
-            "subtitle": "Our spaces and moments dedicated to Yoga practice.\nFind the inspiration you need for your path.",
-            "empty": "We are preparing Yoga images for you."
-        },
-        "therapies": {
-            "title": "Therapies Gallery",
-            "back": "Back to Therapies",
-            "subtitle": "A glimpse into our healing and wellness space.",
-            "empty": "Coming soon center photos..."
-        }
+    "rights": "All rights reserved."
+  },
+  "gallery": {
+    "yoga": {
+      "title": "Yoga Gallery",
+      "back": "Back to Yoga",
+      "subtitle": "Our spaces and moments dedicated to Yoga practice.\nFind the inspiration you need for your path.",
+      "empty": "We are preparing Yoga images for you."
     },
     "therapies": {
-        "title": "MASSAGE & THERAPIES",
-        "subtitle": "A space for reconnecting with yourself through corporal and emotional care.",
-        "seo": {
-            "title": "Massage & Therapies in Cornellà | Arunachala",
-            "description": "Discover our therapies and massages in Cornellà de Llobregat. Reiki, Flower Therapy, Thai Massage and more for your well-being."
-        },
-        "buttons": {
-            "massages": "Massages",
-            "therapies": "Therapies",
-            "gallery": "Gallery",
-            "blog": "Blog"
-        },
-        "sections": {
-            "massages": "Our Massages",
-            "massages_sub": "Release tension and restore your body's vitality.",
-            "therapies": "Holistic Therapies",
-            "therapies_sub": "Support in your healing and self-knowledge process.",
-            "gallery": "Gallery",
-            "gallery_sub": "A glimpse into our healing space.",
-            "blog": "Wellness Blog",
-            "blog_sub": "Readings to nourish your soul and balance your life."
-        },
-        "modal": {
-            "description": "Description",
-            "benefits": "Benefits",
-            "price": "Price",
-            "close": "Close",
-            "no_description": "No description available."
-        },
-        "none": {
-            "massages": "No massages available at this time.",
-            "therapies": "No therapies available at this time.",
-            "gallery": "Coming soon center photos..."
-        },
-        "common": {
-            "read_more": "Read more"
-        },
-        "appointment": {
-            "title": "SCHEDULE & BOOKINGS",
-            "subtitle": "Personalized attention by appointment",
-            "description": "Our massage and holistic therapy sessions are scheduled individually. By working by appointment, we ensure to dedicate the time and space you deserve for your integral well-being.",
-            "cta": "Contact to book"
-        }
+      "title": "Therapies Gallery",
+      "back": "Back to Therapies",
+      "subtitle": "A glimpse into our healing and wellness space.",
+      "empty": "Coming soon center photos..."
+    }
+  },
+  "therapies": {
+    "title": "MASSAGE & THERAPIES",
+    "subtitle": "A space for reconnecting with yourself through corporal and emotional care.",
+    "seo": {
+      "title": "Massage & Therapies in Cornellà | Arunachala",
+      "description": "Discover our therapies and massages in Cornellà de Llobregat. Reiki, Flower Therapy, Thai Massage and more for your well-being."
     },
-    "welcome": "Welcome to Arunachala",
-    "hero": {
-        "yoga": {
-            "title": "YOGA",
-            "subtitle": "Move and breathe"
-        },
-        "therapies": {
-            "title": "MASSAGE & THERAPIES",
-            "subtitle": "Restore your wellness"
-        }
+    "buttons": {
+      "massages": "Massages",
+      "therapies": "Therapies",
+      "gallery": "Gallery",
+      "blog": "Blog"
     },
-    "menu": {
-        "home": "Home",
-        "yoga": "Yoga Classes",
-        "therapies": "Therapies & Massages",
-        "space": "Our Space",
-        "about": "About Us",
-        "contact": "Contact",
-        "activities": "Activities",
-        "meditations": "Meditations",
-        "promotions": "Promotions"
+    "sections": {
+      "massages": "Our Massages",
+      "massages_sub": "Release tension and restore your body's vitality.",
+      "therapies": "Holistic Therapies",
+      "therapies_sub": "Support in your healing and self-knowledge process.",
+      "gallery": "Gallery",
+      "gallery_sub": "A glimpse into our healing space.",
+      "blog": "Wellness Blog",
+      "blog_sub": "Readings to nourish your soul and balance your life."
     },
-    "promotions": {
-        "title": "Special Promotions",
-        "subtitle": "Discover our unique opportunities to deepen your well-being.",
-        "label": "Exclusive Offers",
-        "code": "CODE:",
-        "about_section_title": "Our Promotions",
-        "contact_cta": "Do you have questions about any promotion? Contact us!"
+    "modal": {
+      "description": "Description",
+      "benefits": "Benefits",
+      "price": "Price",
+      "close": "Close",
+      "no_description": "No description available."
     },
-    "meditations": {
-        "title": "Meditations",
-        "subtitle": "Find a moment of calm and connection with our guided meditations and mantras.",
-        "loading": "Loading meditations...",
-        "empty": "We will soon share new meditations with you.",
-        "open_player": "Open Player",
-        "guided_meditation": "Guided Meditation",
-        "stop": "Stop",
-        "error_playback": "Could not play audio. Please check your connection or the file format.",
-        "search_placeholder": "Search meditations...",
-        "error_search": "No meditations found with that search term.",
-        "prev": "Previous",
-        "next": "Next",
-        "page": "Page"
-    },
-    "yoga": {
-        "title": "YOGA",
-        "subtitle": "Find balance and peace through movement and breathing.",
-        "seo": {
-            "title": "Yoga Classes in Barcelona | Arunachala",
-            "description": "Discover our yoga classes in Cornellà de Llobregat. Hatha Yoga, Vinyasa and meditation for all levels."
-        },
-        "buttons": {
-            "schedule": "Schedule",
-            "schedule_sub": "Book your class",
-            "gallery": "Gallery",
-            "gallery_sub": "Our Space",
-            "blog": "Blog",
-            "blog_sub": "Articles and Reflections"
-        },
-        "sections": {
-            "schedule": "Class Schedules",
-            "annex_title": "Weekend Activities",
-            "annex_subtitle": "Schedule Annex",
-            "gallery": "Image Gallery",
-            "blog": "Latest Posts",
-            "blog_sub": "Inspiration for your practice and daily life"
-        },
-        "common": {
-            "back_to_top": "Back to top",
-            "view_all_gallery": "View Full Gallery",
-            "view_all_blog": "View all blog",
-            "read_article": "Read article"
-        }
+    "none": {
+      "massages": "No massages available at this time.",
+      "therapies": "No therapies available at this time.",
+      "gallery": "Coming soon center photos..."
     },
     "common": {
-        "view_all": "View all",
-        "see_all": "See all",
-        "view_all_news": "View all news",
-        "thanks": "Thanks!",
-        "back": "Back",
-        "back_home": "Back to home",
-        "loading": "Loading...",
-        "sending": "Sending...",
-        "close": "Close",
-        "read_more": "Read more",
-        "days": {
-            "monday": "Monday",
-            "tuesday": "Tuesday",
-            "wednesday": "Wednesday",
-            "thursday": "Thursday",
-            "friday": "Friday",
-            "saturday": "Saturday",
-            "sunday": "Sunday"
-        },
-        "times": {
-            "morning": "MORNING",
-            "afternoon": "AFTERNOON"
-        }
+      "read_more": "Read more"
     },
-    "home": {
-        "mantra_title": "Mantra of the Day",
-        "loading": {
-            "experience": "Loading Experience...",
-            "gallery": "Loading Gallery...",
-            "reviews": "Loading Reviews...",
-            "activities": "Loading Activities..."
-        },
-        "featured_activities": {
-            "title": "Upcoming Activities"
-        },
-        "mantras": [
-            {
-                "text": "Lokah Samastah Sukhino Bhavantu",
-                "translation": "May all beings everywhere be happy and free"
-            },
-            {
-                "text": "Om Namah Shivaya",
-                "translation": "I honor the divinity that dwells within me"
-            },
-            {
-                "text": "Sat Nam",
-                "translation": "Truth is my identity"
-            },
-            {
-                "text": "Om Mani Padme Hum",
-                "translation": "The jewel in the lotus of my heart"
-            },
-            {
-                "text": "Aham Brahmasmi",
-                "translation": "I am the wholeness of the universe"
-            }
-        ],
-        "quiz": {
-            "title": "A Moment to Listen to Yourself",
-            "subtitle": "Take a second to feel your breath before answering.\nDiscover what your body and mind need today.",
-            "cta_start": "Start",
-            "progress": "Step {{current}} of 4",
-            "restart": "Start over",
-            "other": "Others... (Tell us more)",
-            "custom_placeholder": "Type your answer here...",
-            "cancel": "Cancel",
-            "confirm": "Confirm",
-            "appointment": "Book Appointment",
-            "recommendation_title": "Your Personalized Recommendation",
-            "loading_ai": "Consulting with the specialist...",
-            "analyzing": "Analyzing your answers to offer you the best recommendation...",
-            "l1": {
-                "question": "How do you arrive here today?",
-                "options": {
-                    "A": "I feel my body is sending me warning signals (pain, stiffness).",
-                    "B": "My mind is very noisy or I feel emotionally tired.",
-                    "C": "I am looking for a space to deepen my self-care, without an urgent issue."
-                }
-            },
-            "l2": {
-                "A": {
-                    "question": "How does that message from your body manifest?",
-                    "options": {
-                        "A1": "It is something sharp or localized that limits my movements.",
-                        "A2": "It is a general feeling of heaviness, as if I were carrying a heavy backpack."
-                    }
-                },
-                "B": {
-                    "question": "What weighs most on your inside?",
-                    "options": {
-                        "B1": "The rush, the \"not getting to everything\" and the constant feeling of alertness.",
-                        "B2": "A feeling of stagnation, sadness or lack of clarity."
-                    }
-                },
-                "C": {
-                    "question": "What type of experience calls you most today?",
-                    "options": {
-                        "C1": "Conscious movement and vitality.",
-                        "C2": "Deep calm and relaxation."
-                    }
-                }
-            },
-            "l3": {
-                "A1": {
-                    "question": "Has this pain appeared from a specific effort or has it been with you for a long time?",
-                    "options": {
-                        "1": "It is something punctual.",
-                        "2": "It is something chronic."
-                    }
-                },
-                "A2": {
-                    "question": "Do you feel your body needs to release tension or needs to strengthen to support you better?",
-                    "options": {
-                        "1": "I need to release tension.",
-                        "2": "I need to gain strength."
-                    }
-                },
-                "B1": {
-                    "question": "Is it harder for you to disconnect during the day or fall asleep at night?",
-                    "options": {
-                        "1": "The day is the challenge.",
-                        "2": "The night is the challenge."
-                    }
-                },
-                "B2": {
-                    "question": "Do you prefer silence to look inside or do you need someone to guide you gently?",
-                    "options": {
-                        "1": "I prefer silence.",
-                        "2": "I prefer to be guided."
-                    }
-                },
-                "C1": {
-                    "question": "Do you prefer a dynamic practice or something gentler?",
-                    "options": {
-                        "1": "Dynamic.",
-                        "2": "Gentle."
-                    }
-                },
-                "C2": {
-                    "question": "Are you looking for physical or energetic work?",
-                    "options": {
-                        "1": "Physical (Massage).",
-                        "2": "Energetic (Reiki/Flowers)."
-                    }
-                }
-            },
-            "l4": {
-                "question": "Would you like to explain your discomfort or situation in more depth?",
-                "options": {
-                    "no": "No, show my recommendation now",
-                    "yes": "Yes, I would like to explain further"
-                }
-            }
-        }
-    },
-    "activities": {
-        "title": "Our Activities",
-        "subtitle": "Temporary courses, intensive workshops and special events designed for your growth.",
-        "seo": {
-            "title": "Activities and Courses | Arunachala",
-            "description": "Discover our active activities, temporary courses and special events at Arunachala."
-        },
-        "types": {
-            "taller": "Workshop",
-            "curso": "Course",
-            "evento": "Event",
-            "retiro": "Retreat",
-            "sugerencia": "Suggestion"
-        },
-        "sections": {
-            "courses": "Courses",
-            "events": "Workshops & Events",
-            "suggestions": "Suggestions"
-        },
-        "consult_price": "Consult price",
-        "no_courses": "There are no courses at this time.",
-        "no_events": "There are no workshops or events at this time.",
-        "no_polls": "No active polls at this time.",
-        "contact_to_signup": "Contact to sign up",
-        "add_to_calendar": "Add to calendar",
-        "labels": {
-            "date": "Start Date",
-            "end_date": "End Date",
-            "location": "Location",
-            "price": "Investment",
-            "info": "Booking",
-            "info_desc": "Limited spots by registration order."
-        },
-        "suggestions": {
-            "vote_now": "Register my vote",
-            "vote_recorded": "Your vote has been recorded successfully.",
-            "label_comments": "Additional comments",
-            "placeholder_comments": "Tell us more...",
-            "voto_unit": "vote",
-            "voto_plural": "votes",
-            "label_custom_tag": "Do you have any idea?",
-            "custom_title": "Send us your proposal",
-            "custom_subtitle": "If you are looking for something specific that is not on the list above, tell us here.",
-            "custom_label": "Your proposal",
-            "custom_details_label": "Details or comments",
-            "placeholder_custom": "E.g.: Macrobiotic cooking workshop...",
-            "submit_idea": "Send my idea",
-            "idea_received": "Idea received!",
-            "thanks_desc": "Thank you very much for your proposal, we will study it with care.",
-            "suggest_another": "Suggest another idea",
-            "vote_again": "Vote again",
-            "already_voted_title": "We have already received your participation",
-            "already_voted_desc": "Thank you very much for your interest, we will take your opinion into account for future activities.",
-            "other_option": "Other proposal...",
-            "placeholder_custom_poll": "Write your idea here..."
-        },
-        "subscription": {
-            "title": "Receive our news",
-            "subtitle": "Subscribe to receive an email every time we publish a new activity or workshop.",
-            "placeholder": "Your email address",
-            "name_placeholder": "Your name (optional)",
-            "button": "Subscribe",
-            "success_title": "Great!",
-            "success_msg": "You are now subscribed. We will notify you soon.",
-            "error_msg": "There was an error subscribing. Please try again.",
-            "unsubscribed_title": "Subscription Cancelled",
-            "unsubscribed_msg": "Your email has been successfully removed from our list. We are sorry to see you go.",
-            "unsubscribe_error": "We could not process your request. Please contact us directly."
-        }
-    },
-    "space": {
-        "title": "Our Space",
-        "subtitle": "A haven of peace in the city",
-        "description_1": "At Arunachala, we have created an environment specifically designed for calm and introspection. Our center is conceived not only as a place to practice yoga, but as a sanctuary to disconnect from outside noise and reconnect with yourself.",
-        "description_2": "We have a diaphanous main room, bathed in natural light and equipped with high quality organic materials. The atmosphere, impregnated with soft aromas and silence, invites deep and meditative practice from the first moment you cross the door.",
-        "no_images": "Images coming soon",
-        "location_title": "How to get there",
-        "transport": {
-            "tram_label": "Tram",
-            "tram_details": "Lines T1 – T2 (El Pedró)",
-            "bus_label": "Bus",
-            "bus_details": "Bus 57, 68, 94 or 95",
-            "metro_label": "Metro",
-            "metro_details": "Metro: Line 5 (Cornellà Centre)"
-        },
-        "illustrative_map_label": "Reference Map",
-        "open_gps": "Open in GPS"
-    },
-    "about": {
-        "title": "Who Am I?",
-        "subtitle": "Aruṇāchala Yoga and Therapies",
-        "mission": "A space of care, presence, and transformation.",
-        "intro": "My name is Susana Pérez Gil and for years I have accompanied people through Yoga and Manual Therapies, integrating body, mind, and the emotional-spiritual dimension.",
-        "path_title": "My path to Aruṇāchala",
-        "path_p1": "My journey began more than 25 years ago, driven by a profound inspiration from India, its culture, and its spirituality. I started practicing Yoga with a simple goal: to feel physically well and maintain a stable mind. However, I soon experienced what I recognize today as the first of many leaps in consciousness.",
-        "specialties_title": "Training and Specialties",
-        "specialties_intro": "To offer you complete care, I have specialized in various disciplines that combine the physical with the energetic:",
-        "cat_manual": "Manual Therapies",
-        "cat_manual_desc": "I trained in Chiromassage, Lymphatic Drainage, Reflexology, and Acupressure.",
-        "cat_subtle": "Subtle Techniques",
-        "cat_subtle_desc": "And later in more subtle techniques such as Metamorphic Technique and Reiki. All this allowed me to understand the body not only from the physical, but also from the energetic and emotional.",
-        "cat_yoga": "Yoga Teacher",
-        "cat_yoga_desc": "I completed the Yoga Teacher Training, later expanding my training in Yoga for different life stages and moments, and deepening in the Yoga tradition as a path of self-knowledge.",
-        "approach": "Yoga, present since the beginning, ended up becoming the central axis of my professional life, along with Massages and Therapies. During this process my love for Sanskrit and mantras was also born, a tool that continues to accompany my classes and sessions as a bridge between body, breath, and consciousness.",
-        "arunachala_title": "Thus Aruṇāchala Yoga and Therapies was born",
-        "arunachala_p1": "Over time, a clear dream arose: to create an own space to unite Yoga and Manual Therapies, a place where each person could feel accompanied with respect, listening, and presence.\n\nThat dream took shape after a very special trip to India, where I lived a deeply transformative experience: the ascent to the Holy Mountain Aruṇāchala, in Tiruvannamalai. There I understood that the center that was gestating already had a name, Aruṇāchala.\n\nA space that offers Yoga, Massages, and Therapies as a path of integral well-being, adaptation, and conscious care.",
-        "quote": "\"A place where every practice and every session is lived as an invitation to return to oneself.\"",
-        "cta_title": "How can I accompany you?",
-        "cta_p1": "At Aruṇāchala Yoga and Therapies, I offer you a space of care and presence where you can rediscover yourself. This is your place.",
-        "mantra": "Om Namaḥ Śivaya",
-        "seo": {
-            "title": "Susana Pérez Gil | Who Am I | Arunachala Yoga",
-            "description": "Meet Susana Pérez Gil, founder of Arunachala. Over 25 years of experience in Yoga, massage, and holistic therapies in Cornellà."
-        },
-        "news": {
-            "title": "News",
-            "subtitle": "Follow our path closely"
-        }
-    },
-    "contact_page": {
-        "title": "Contact",
-        "subtitle": "Have any questions? We are here to help you",
-        "whatsapp": {
-            "title": "Let's chat on WhatsApp",
-            "description": "Do you prefer a more direct approach? Message us on WhatsApp to answer your questions or book your appointment instantly.",
-            "button": "Open WhatsApp Chat",
-            "note": "We will be happy to answer you as soon as possible."
-        },
-        "info": {
-            "title": "Contact Information",
-            "address_label": "Address",
-            "address": "Yoga y Terapias Arunachala - Pasaje de Mateu Oliva, 3, 08940 Cornellà de Llobregat, Barcelona",
-            "phone_label": "Phone / WhatsApp",
-            "email_label": "Email",
-            "hours_label": "Hours",
-            "hours_desc": "Check our class and activity schedule.",
-            "quote": "A place where every practice and every session are an invitation to return to oneself."
-        },
-        "seo": {
-            "title": "Contact | Arunachala Yoga & Therapies Cornellà",
-            "description": "Contact Arunachala Yoga in Cornellà. Book your yoga class or therapy session. We are at Passatge de Mateu Oliva, 3."
-        }
-    },
-    "blog": {
-        "title": "Blog",
-        "subtitle": "Articles about yoga, meditation and wellness",
-        "section_title": "Latest Posts",
-        "all": "All",
-        "no_articles": "No articles available",
-        "back_to_blog": "Back to Blog",
-        "related_articles": "Related Articles",
-        "read_more": "Read more",
-        "view_all": "View All Articles",
-        "search": {
-            "placeholder": "Search articles...",
-            "no_results": "No articles found",
-            "advanced_search": "Advanced Search"
-        },
-        "filter": {
-            "category": "Category",
-            "date": "Date",
-            "tags": "Tags"
-        },
-        "categories": {
-            "all": "All",
-            "yoga": "Yoga",
-            "therapy": "Therapies",
-            "general": "General"
-        },
-        "seo": {
-            "title": "Blog | Arunachala Yoga & Therapies",
-            "description": "Discover articles about yoga, meditation, holistic therapies and wellness on our blog."
-        },
-        "cta": {
-            "title": "Did this article inspire you?",
-            "description_yoga": "Come practice with us at Arunachala. A space of calm in the heart of Cornellà.",
-            "description_therapy": "Come take care of yourself at Arunachala. Your healing sanctuary in Cornellà.",
-            "button": "Contact us"
-        }
-    },
-    "legal": {
-        "title": "Legal Notice",
-        "subtitle": "Legal information and terms of use of the website",
-        "last_updated": "Last updated",
-        "seo": {
-            "title": "Legal Notice | Arunachala Yoga & Therapies",
-            "description": "Legal notice and terms of use of the Arunachala Yoga & Therapies website in Cornellà de Llobregat."
-        },
-        "sections": {
-            "identification": {
-                "title": "Identification",
-                "company": "Owner",
-                "company_value": "Susana Pérez Gil - Arunachala Yoga & Therapies",
-                "cif": "Tax ID",
-                "cif_value": "[Tax identification number]",
-                "address": "Address",
-                "address_value": "Passatge de Mateu Oliva 3, ground floor, 08940 Cornellà de Llobregat, Barcelona",
-                "email": "Email",
-                "phone": "Phone"
-            },
-            "object": {
-                "title": "Purpose of the Website",
-                "content": "This website offers information about Arunachala's yoga classes, holistic therapies and massages. By using this website, you accept the terms of use established here."
-            },
-            "conditions": {
-                "title": "Terms of Use",
-                "content": "The user agrees to use the website appropriately and in accordance with the law, without disseminating inappropriate content or performing actions that may damage the operation of the website."
-            },
-            "property": {
-                "title": "Intellectual Property",
-                "content": "All contents of this website (texts, images, logos, design) are property of Arunachala. You may view them for personal use, but you may not reproduce, distribute or modify them without authorization."
-            },
-            "liability": {
-                "title": "Limitation of Liability",
-                "content": "Arunachala strives to keep the information up-to-date and correct, but is not responsible for possible errors or omissions in the contents, nor for temporary service interruptions."
-            },
-            "law": {
-                "title": "Applicable Law",
-                "content": "This legal notice is governed by Spanish legislation. Any dispute will be resolved in the courts of Barcelona."
-            }
-        }
-    },
-    "privacy": {
-        "title": "Privacy Policy",
-        "subtitle": "Information on how we treat your personal data",
-        "intro": "In compliance with Regulation (EU) 2016/679 of the European Parliament and of the Council of 27 April 2016 (GDPR) and Organic Law 3/2018, of 5 December, on the Protection of Personal Data and guarantee of digital rights (LOPDGDD), we inform you about how we treat your personal data.",
-        "last_updated": "Last updated",
-        "seo": {
-            "title": "Privacy Policy | Arunachala Yoga & Therapies",
-            "description": "Privacy policy and protection of personal data of Arunachala Yoga & Therapies in Cornellà de Llobregat."
-        },
-        "sections": {
-            "responsible": {
-                "title": "1. Data Controller",
-                "content": "Owner: Susana Pérez Gil - Arunachala Yoga & Therapies\nTax ID: [Tax identification number]\nAddress: Pasaje de Mateu Oliva 3, ground floor, 08940 Cornellà de Llobregat, Barcelona\nEmail: yogayterapiasarunachala@gmail.com\nPhone: +34 678 481 971"
-            },
-            "data": {
-                "title": "2. What data do we collect?",
-                "content": "We may collect the following personal data:\n\n- Contact details: name, surname, email, phone number\n- Booking data: information about booked classes or sessions\n- Health data: medical information relevant to therapies (only with your explicit consent)"
-            },
-            "purpose": {
-                "title": "3. What do we use your data for?",
-                "content": "We use your data for:\n\n- Class and booking management: organizing and confirming your attendance at yoga classes and therapy sessions\n- Communication: responding to your inquiries and sending you information about our services\n- Commercial information: sending you news, promotions or events (only if you give us your consent)\n- Therapeutic attention: adapting sessions to your health needs (only necessary data and with your consent)"
-            },
-            "legal_base": {
-                "title": "4. Legal basis for treatment",
-                "content": "We treat your data based on:\n\n- Execution of a contract: to manage your booking or registration in our services\n- Consent: to send commercial communications or treat health data\n- Legitimate interest: to improve our services"
-            },
-            "recipients": {
-                "title": "5. Who do we share your data with?",
-                "content": "We do not sell or transfer your data to third parties. It could only be shared with:\n\n- Service providers: email, booking management or payment platforms (under confidentiality agreements)\n- Authorities: when legally required"
-            },
-            "retention": {
-                "title": "6. How long do we keep your data?",
-                "content": "We keep your data while:\n\n- You maintain an active relationship with us (as a student or client)\n- Until you request its deletion\n- During the legally required time (tax data: 6 years)"
-            },
-            "rights": {
-                "title": "7. Your rights",
-                "content": "You have the right to:\n\n- Access your personal data\n- Rectify inaccurate or incomplete data\n- Delete your data when no longer necessary\n- Object to the processing of your data\n- Limit the processing in certain circumstances\n- Portability of your data to another controller\n- Withdraw consent at any time\n\nTo exercise your rights, send us an email to: yogayterapiasarunachala@gmail.com\n\nYou can also file a complaint with the Spanish Data Protection Agency (www.aepd.es)."
-            },
-            "security": {
-                "title": "8. Security of your data",
-                "content": "We have adopted appropriate security measures to protect your personal data against unauthorized access, loss or alteration."
-            },
-            "minors": {
-                "title": "9. Minors' data",
-                "content": "We do not intentionally collect data from children under 14 without the consent of their parents or guardians. If you are a parent and think your child has provided us with data, please contact us."
-            },
-            "updates": {
-                "title": "10. Changes in the privacy policy",
-                "content": "We may update this privacy policy. We recommend you review it periodically. The last update date appears at the beginning of this document."
-            }
-        }
-    },
-    "chatbot": {
-        "welcome": "Namaste! 🙏 Welcome to Arunachala. I am your virtual assistant. How can I help you today? You can ask me about schedules, yoga classes, or therapies.",
-        "placeholder": "Type your question...",
-        "tooltip": "How can I help you? ✨",
-        "status": "Namaste 🙏 Online",
-        "ai_notice": "✨ Artificial Intelligence trained for Arunachala ✨"
+    "appointment": {
+      "title": "SCHEDULE & BOOKINGS",
+      "subtitle": "Personalized attention by appointment",
+      "description": "Our massage and holistic therapy sessions are scheduled individually. By working by appointment, we ensure to dedicate the time and space you deserve for your integral well-being.",
+      "cta": "Contact to book"
     }
+  },
+  "welcome": "Welcome to Arunachala",
+  "hero": {
+    "yoga": {
+      "title": "YOGA",
+      "subtitle": "Move and breathe"
+    },
+    "therapies": {
+      "title": "MASSAGE & THERAPIES",
+      "subtitle": "Restore your wellness"
+    }
+  },
+  "menu": {
+    "home": "Home",
+    "yoga": "Yoga Classes",
+    "therapies": "Therapies & Massages",
+    "space": "Our Space",
+    "about": "About Us",
+    "contact": "Contact",
+    "activities": "Activities",
+    "meditations": "Meditations",
+    "promotions": "Promotions"
+  },
+  "promotions": {
+    "title": "Special Promotions",
+    "subtitle": "Discover our unique opportunities to deepen your well-being.",
+    "label": "Exclusive Offers",
+    "code": "CODE:",
+    "about_section_title": "Our Promotions",
+    "contact_cta": "Do you have questions about any promotion? Contact us!"
+  },
+  "meditations": {
+    "title": "Meditations",
+    "subtitle": "Find a moment of calm and connection with our guided meditations and mantras.",
+    "loading": "Loading meditations...",
+    "empty": "We will soon share new meditations with you.",
+    "open_player": "Open Player",
+    "guided_meditation": "Guided Meditation",
+    "stop": "Stop",
+    "error_playback": "Could not play audio. Please check your connection or the file format.",
+    "search_placeholder": "Search meditations...",
+    "error_search": "No meditations found with that search term.",
+    "prev": "Previous",
+    "next": "Next",
+    "page": "Page"
+  },
+  "yoga": {
+    "title": "YOGA",
+    "subtitle": "Find balance and peace through movement and breathing.",
+    "seo": {
+      "title": "Yoga Classes in Barcelona | Arunachala",
+      "description": "Discover our yoga classes in Cornellà de Llobregat. Hatha Yoga, Vinyasa and meditation for all levels."
+    },
+    "buttons": {
+      "schedule": "Schedule",
+      "schedule_sub": "Book your class",
+      "gallery": "Gallery",
+      "gallery_sub": "Our Space",
+      "blog": "Blog",
+      "blog_sub": "Articles and Reflections"
+    },
+    "sections": {
+      "schedule": "Class Schedules",
+      "annex_title": "Weekend Activities",
+      "annex_subtitle": "Schedule Annex",
+      "gallery": "Image Gallery",
+      "blog": "Latest Posts",
+      "blog_sub": "Inspiration for your practice and daily life"
+    },
+    "common": {
+      "back_to_top": "Back to top",
+      "view_all_gallery": "View Full Gallery",
+      "view_all_blog": "View all blog",
+      "read_article": "Read article"
+    }
+  },
+  "common": {
+    "view_all": "View all",
+    "see_all": "See all",
+    "view_all_news": "View all news",
+    "thanks": "Thanks!",
+    "back": "Back",
+    "back_home": "Back to home",
+    "loading": "Loading...",
+    "sending": "Sending...",
+    "close": "Close",
+    "read_more": "Read more",
+    "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    },
+    "times": {
+      "morning": "MORNING",
+      "afternoon": "AFTERNOON"
+    }
+  },
+  "home": {
+    "mantra_title": "Mantra of the Day",
+    "loading": {
+      "experience": "Loading Experience...",
+      "gallery": "Loading Gallery...",
+      "reviews": "Loading Reviews...",
+      "activities": "Loading Activities..."
+    },
+    "featured_activities": {
+      "title": "Upcoming Activities"
+    },
+    "mantras": [
+      {
+        "text": "Lokah Samastah Sukhino Bhavantu",
+        "translation": "May all beings everywhere be happy and free"
+      },
+      {
+        "text": "Om Namah Shivaya",
+        "translation": "I honor the divinity that dwells within me"
+      },
+      {
+        "text": "Sat Nam",
+        "translation": "Truth is my identity"
+      },
+      {
+        "text": "Om Mani Padme Hum",
+        "translation": "The jewel in the lotus of my heart"
+      },
+      {
+        "text": "Aham Brahmasmi",
+        "translation": "I am the wholeness of the universe"
+      }
+    ],
+    "quiz": {
+      "title": "A Moment to Listen to Yourself",
+      "subtitle": "Take a second to feel your breath before answering.\nDiscover what your body and mind need today.",
+      "cta_start": "Start",
+      "progress": "Step {{current}} of 4",
+      "restart": "Start over",
+      "other": "Others... (Tell us more)",
+      "custom_placeholder": "Type your answer here...",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "appointment": "Book Appointment",
+      "recommendation_title": "Your Personalized Recommendation",
+      "loading_ai": "Consulting with the specialist...",
+      "analyzing": "Analyzing your answers to offer you the best recommendation...",
+      "l1": {
+        "question": "How do you arrive here today?",
+        "options": {
+          "A": "I feel my body is sending me warning signals (pain, stiffness).",
+          "B": "My mind is very noisy or I feel emotionally tired.",
+          "C": "I am looking for a space to deepen my self-care, without an urgent issue."
+        }
+      },
+      "l2": {
+        "A": {
+          "question": "How does that message from your body manifest?",
+          "options": {
+            "A1": "It is something sharp or localized that limits my movements.",
+            "A2": "It is a general feeling of heaviness, as if I were carrying a heavy backpack."
+          }
+        },
+        "B": {
+          "question": "What weighs most on your inside?",
+          "options": {
+            "B1": "The rush, the \"not getting to everything\" and the constant feeling of alertness.",
+            "B2": "A feeling of stagnation, sadness or lack of clarity."
+          }
+        },
+        "C": {
+          "question": "What type of experience calls you most today?",
+          "options": {
+            "C1": "Conscious movement and vitality.",
+            "C2": "Deep calm and relaxation."
+          }
+        }
+      },
+      "l3": {
+        "A1": {
+          "question": "Has this pain appeared from a specific effort or has it been with you for a long time?",
+          "options": {
+            "1": "It is something punctual.",
+            "2": "It is something chronic."
+          }
+        },
+        "A2": {
+          "question": "Do you feel your body needs to release tension or needs to strengthen to support you better?",
+          "options": {
+            "1": "I need to release tension.",
+            "2": "I need to gain strength."
+          }
+        },
+        "B1": {
+          "question": "Is it harder for you to disconnect during the day or fall asleep at night?",
+          "options": {
+            "1": "The day is the challenge.",
+            "2": "The night is the challenge."
+          }
+        },
+        "B2": {
+          "question": "Do you prefer silence to look inside or do you need someone to guide you gently?",
+          "options": {
+            "1": "I prefer silence.",
+            "2": "I prefer to be guided."
+          }
+        },
+        "C1": {
+          "question": "Do you prefer a dynamic practice or something gentler?",
+          "options": {
+            "1": "Dynamic.",
+            "2": "Gentle."
+          }
+        },
+        "C2": {
+          "question": "Are you looking for physical or energetic work?",
+          "options": {
+            "1": "Physical (Massage).",
+            "2": "Energetic (Reiki/Flowers)."
+          }
+        }
+      },
+      "l4": {
+        "question": "Would you like to explain your discomfort or situation in more depth?",
+        "options": {
+          "no": "No, show my recommendation now",
+          "yes": "Yes, I would like to explain further"
+        }
+      }
+    }
+  },
+  "activities": {
+    "title": "Our Activities",
+    "subtitle": "Temporary courses, intensive workshops and special events designed for your growth.",
+    "seo": {
+      "title": "Activities and Courses | Arunachala",
+      "description": "Discover our active activities, temporary courses and special events at Arunachala."
+    },
+    "types": {
+      "taller": "Workshop",
+      "curso": "Course",
+      "evento": "Event",
+      "retiro": "Retreat",
+      "sugerencia": "Suggestion"
+    },
+    "sections": {
+      "courses": "Courses",
+      "events": "Workshops & Events",
+      "suggestions": "Suggestions"
+    },
+    "consult_price": "Consult price",
+    "no_courses": "There are no courses at this time.",
+    "no_events": "There are no workshops or events at this time.",
+    "no_polls": "No active polls at this time.",
+    "contact_to_signup": "Contact to sign up",
+    "add_to_calendar": "Add to calendar",
+    "labels": {
+      "date": "Start Date",
+      "end_date": "End Date",
+      "location": "Location",
+      "price": "Investment",
+      "info": "Booking",
+      "info_desc": "Limited spots by registration order."
+    },
+    "suggestions": {
+      "vote_now": "Register my vote",
+      "vote_recorded": "Your vote has been recorded successfully.",
+      "label_comments": "Additional comments",
+      "placeholder_comments": "Tell us more...",
+      "voto_unit": "vote",
+      "voto_plural": "votes",
+      "label_custom_tag": "Do you have any idea?",
+      "custom_title": "Send us your proposal",
+      "custom_subtitle": "If you are looking for something specific that is not on the list above, tell us here.",
+      "custom_label": "Your proposal",
+      "custom_details_label": "Details or comments",
+      "placeholder_custom": "E.g.: Macrobiotic cooking workshop...",
+      "submit_idea": "Send my idea",
+      "idea_received": "Idea received!",
+      "thanks_desc": "Thank you very much for your proposal, we will study it with care.",
+      "suggest_another": "Suggest another idea",
+      "vote_again": "Vote again",
+      "already_voted_title": "We have already received your participation",
+      "already_voted_desc": "Thank you very much for your interest, we will take your opinion into account for future activities.",
+      "other_option": "Other proposal...",
+      "placeholder_custom_poll": "Write your idea here..."
+    },
+    "subscription": {
+      "title": "Receive our news",
+      "subtitle": "Subscribe to receive an email every time we publish a new activity or workshop.",
+      "placeholder": "Your email address",
+      "name_placeholder": "Your name (optional)",
+      "button": "Subscribe",
+      "success_title": "Great!",
+      "success_msg": "You are now subscribed. We will notify you soon.",
+      "error_msg": "There was an error subscribing. Please try again.",
+      "unsubscribed_title": "Subscription Cancelled",
+      "unsubscribed_msg": "Your email has been successfully removed from our list. We are sorry to see you go.",
+      "unsubscribe_error": "We could not process your request. Please contact us directly."
+    }
+  },
+  "space": {
+    "title": "Our Space",
+    "subtitle": "A haven of peace in the city",
+    "description_1": "At Arunachala, we have created an environment specifically designed for calm and introspection. Our center is conceived not only as a place to practice yoga, but as a sanctuary to disconnect from outside noise and reconnect with yourself.",
+    "description_2": "We have a diaphanous main room, bathed in natural light and equipped with high quality organic materials. The atmosphere, impregnated with soft aromas and silence, invites deep and meditative practice from the first moment you cross the door.",
+    "no_images": "Images coming soon",
+    "location_title": "How to get there",
+    "transport": {
+      "tram_label": "Tram",
+      "tram_details": "Lines T1 – T2 (El Pedró)",
+      "bus_label": "Bus",
+      "bus_details": "Bus 57, 68, 94 or 95",
+      "metro_label": "Metro",
+      "metro_details": "Metro: Line 5 (Cornellà Centre)"
+    },
+    "illustrative_map_label": "Reference Map",
+    "open_gps": "Open in GPS"
+  },
+  "about": {
+    "title": "Who Am I?",
+    "subtitle": "Aruṇāchala Yoga and Therapies",
+    "mission": "A space of care, presence, and transformation.",
+    "intro": "My name is Susana Pérez Gil and for years I have accompanied people through Yoga and Manual Therapies, integrating body, mind, and the emotional-spiritual dimension.",
+    "path_title": "My path to Aruṇāchala",
+    "path_p1": "My journey began more than 25 years ago, driven by a profound inspiration from India, its culture, and its spirituality. I started practicing Yoga with a simple goal: to feel physically well and maintain a stable mind. However, I soon experienced what I recognize today as the first of many leaps in consciousness.",
+    "specialties_title": "Training and Specialties",
+    "specialties_intro": "To offer you complete care, I have specialized in various disciplines that combine the physical with the energetic:",
+    "cat_manual": "Manual Therapies",
+    "cat_manual_desc": "I trained in Chiromassage, Lymphatic Drainage, Reflexology, and Acupressure.",
+    "cat_subtle": "Subtle Techniques",
+    "cat_subtle_desc": "And later in more subtle techniques such as Metamorphic Technique and Reiki. All this allowed me to understand the body not only from the physical, but also from the energetic and emotional.",
+    "cat_yoga": "Yoga Teacher",
+    "cat_yoga_desc": "I completed the Yoga Teacher Training, later expanding my training in Yoga for different life stages and moments, and deepening in the Yoga tradition as a path of self-knowledge.",
+    "approach": "Yoga, present since the beginning, ended up becoming the central axis of my professional life, along with Massages and Therapies. During this process my love for Sanskrit and mantras was also born, a tool that continues to accompany my classes and sessions as a bridge between body, breath, and consciousness.",
+    "arunachala_title": "Thus Aruṇāchala Yoga and Therapies was born",
+    "arunachala_p1": "Over time, a clear dream arose: to create an own space to unite Yoga and Manual Therapies, a place where each person could feel accompanied with respect, listening, and presence.\n\nThat dream took shape after a very special trip to India, where I lived a deeply transformative experience: the ascent to the Holy Mountain Aruṇāchala, in Tiruvannamalai. There I understood that the center that was gestating already had a name, Aruṇāchala.\n\nA space that offers Yoga, Massages, and Therapies as a path of integral well-being, adaptation, and conscious care.",
+    "quote": "\"A place where every practice and every session is lived as an invitation to return to oneself.\"",
+    "cta_title": "How can I accompany you?",
+    "cta_p1": "At Aruṇāchala Yoga and Therapies, I offer you a space of care and presence where you can rediscover yourself. This is your place.",
+    "mantra": "Om Namaḥ Śivaya",
+    "seo": {
+      "title": "Susana Pérez Gil | Who Am I | Arunachala Yoga",
+      "description": "Meet Susana Pérez Gil, founder of Arunachala. Over 25 years of experience in Yoga, massage, and holistic therapies in Cornellà."
+    },
+    "news": {
+      "title": "News",
+      "subtitle": "Follow our path closely"
+    }
+  },
+  "contact_page": {
+    "title": "Contact",
+    "subtitle": "Have any questions? We are here to help you",
+    "whatsapp": {
+      "title": "Let's chat on WhatsApp",
+      "description": "Do you prefer a more direct approach? Message us on WhatsApp to answer your questions or book your appointment instantly.",
+      "button": "Open WhatsApp Chat",
+      "note": "We will be happy to answer you as soon as possible."
+    },
+    "info": {
+      "title": "Contact Information",
+      "address_label": "Address",
+      "address": "Yoga y Terapias Arunachala - Pasaje de Mateu Oliva, 3, 08940 Cornellà de Llobregat, Barcelona",
+      "phone_label": "Phone / WhatsApp",
+      "email_label": "Email",
+      "hours_label": "Hours",
+      "hours_desc": "Check our class and activity schedule.",
+      "quote": "A place where every practice and every session are an invitation to return to oneself."
+    },
+    "seo": {
+      "title": "Contact | Arunachala Yoga & Therapies Cornellà",
+      "description": "Contact Arunachala Yoga in Cornellà. Book your yoga class or therapy session. We are at Passatge de Mateu Oliva, 3."
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Articles about yoga, meditation and wellness",
+    "section_title": "Latest Posts",
+    "all": "All",
+    "no_articles": "No articles available",
+    "back_to_blog": "Back to Blog",
+    "related_articles": "Related Articles",
+    "read_more": "Read more",
+    "view_all": "View All Articles",
+    "search": {
+      "placeholder": "Search articles...",
+      "no_results": "No articles found",
+      "advanced_search": "Advanced Search"
+    },
+    "filter": {
+      "category": "Category",
+      "date": "Date",
+      "tags": "Tags"
+    },
+    "categories": {
+      "all": "All",
+      "yoga": "Yoga",
+      "therapy": "Therapies",
+      "general": "General"
+    },
+    "seo": {
+      "title": "Blog | Arunachala Yoga & Therapies",
+      "description": "Discover articles about yoga, meditation, holistic therapies and wellness on our blog."
+    },
+    "cta": {
+      "title": "Did this article inspire you?",
+      "description_yoga": "Come practice with us at Arunachala. A space of calm in the heart of Cornellà.",
+      "description_therapy": "Come take care of yourself at Arunachala. Your healing sanctuary in Cornellà.",
+      "button": "Contact us"
+    }
+  },
+  "legal": {
+    "title": "Legal Notice",
+    "subtitle": "Legal information and terms of use of the website",
+    "last_updated": "Last updated",
+    "seo": {
+      "title": "Legal Notice | Arunachala Yoga & Therapies",
+      "description": "Legal notice and terms of use of the Arunachala Yoga & Therapies website in Cornellà de Llobregat."
+    },
+    "sections": {
+      "identification": {
+        "title": "Identification",
+        "company": "Owner",
+        "company_value": "Susana Pérez Gil - Arunachala Yoga & Therapies",
+        "cif": "Tax ID",
+        "cif_value": "[Tax identification number]",
+        "address": "Address",
+        "address_value": "Passatge de Mateu Oliva 3, ground floor, 08940 Cornellà de Llobregat, Barcelona",
+        "email": "Email",
+        "phone": "Phone"
+      },
+      "object": {
+        "title": "Purpose of the Website",
+        "content": "This website offers information about Arunachala's yoga classes, holistic therapies and massages. By using this website, you accept the terms of use established here."
+      },
+      "conditions": {
+        "title": "Terms of Use",
+        "content": "The user agrees to use the website appropriately and in accordance with the law, without disseminating inappropriate content or performing actions that may damage the operation of the website."
+      },
+      "property": {
+        "title": "Intellectual Property",
+        "content": "All contents of this website (texts, images, logos, design) are property of Arunachala. You may view them for personal use, but you may not reproduce, distribute or modify them without authorization."
+      },
+      "liability": {
+        "title": "Limitation of Liability",
+        "content": "Arunachala strives to keep the information up-to-date and correct, but is not responsible for possible errors or omissions in the contents, nor for temporary service interruptions."
+      },
+      "law": {
+        "title": "Applicable Law",
+        "content": "This legal notice is governed by Spanish legislation. Any dispute will be resolved in the courts of Barcelona."
+      }
+    }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "subtitle": "Information on how we treat your personal data",
+    "intro": "In compliance with Regulation (EU) 2016/679 of the European Parliament and of the Council of 27 April 2016 (GDPR) and Organic Law 3/2018, of 5 December, on the Protection of Personal Data and guarantee of digital rights (LOPDGDD), we inform you about how we treat your personal data.",
+    "last_updated": "Last updated",
+    "seo": {
+      "title": "Privacy Policy | Arunachala Yoga & Therapies",
+      "description": "Privacy policy and protection of personal data of Arunachala Yoga & Therapies in Cornellà de Llobregat."
+    },
+    "sections": {
+      "responsible": {
+        "title": "1. Data Controller",
+        "content": "Owner: Susana Pérez Gil - Arunachala Yoga & Therapies\nTax ID: [Tax identification number]\nAddress: Pasaje de Mateu Oliva 3, ground floor, 08940 Cornellà de Llobregat, Barcelona\nEmail: yogayterapiasarunachala@gmail.com\nPhone: +34 678 481 971"
+      },
+      "data": {
+        "title": "2. What data do we collect?",
+        "content": "We may collect the following personal data:\n\n- Contact details: name, surname, email, phone number\n- Booking data: information about booked classes or sessions\n- Health data: medical information relevant to therapies (only with your explicit consent)"
+      },
+      "purpose": {
+        "title": "3. What do we use your data for?",
+        "content": "We use your data for:\n\n- Class and booking management: organizing and confirming your attendance at yoga classes and therapy sessions\n- Communication: responding to your inquiries and sending you information about our services\n- Commercial information: sending you news, promotions or events (only if you give us your consent)\n- Therapeutic attention: adapting sessions to your health needs (only necessary data and with your consent)"
+      },
+      "legal_base": {
+        "title": "4. Legal basis for treatment",
+        "content": "We treat your data based on:\n\n- Execution of a contract: to manage your booking or registration in our services\n- Consent: to send commercial communications or treat health data\n- Legitimate interest: to improve our services"
+      },
+      "recipients": {
+        "title": "5. Who do we share your data with?",
+        "content": "We do not sell or transfer your data to third parties. It could only be shared with:\n\n- Service providers: email, booking management or payment platforms (under confidentiality agreements)\n- Authorities: when legally required"
+      },
+      "retention": {
+        "title": "6. How long do we keep your data?",
+        "content": "We keep your data while:\n\n- You maintain an active relationship with us (as a student or client)\n- Until you request its deletion\n- During the legally required time (tax data: 6 years)"
+      },
+      "rights": {
+        "title": "7. Your rights",
+        "content": "You have the right to:\n\n- Access your personal data\n- Rectify inaccurate or incomplete data\n- Delete your data when no longer necessary\n- Object to the processing of your data\n- Limit the processing in certain circumstances\n- Portability of your data to another controller\n- Withdraw consent at any time\n\nTo exercise your rights, send us an email to: yogayterapiasarunachala@gmail.com\n\nYou can also file a complaint with the Spanish Data Protection Agency (www.aepd.es)."
+      },
+      "security": {
+        "title": "8. Security of your data",
+        "content": "We have adopted appropriate security measures to protect your personal data against unauthorized access, loss or alteration."
+      },
+      "minors": {
+        "title": "9. Minors' data",
+        "content": "We do not intentionally collect data from children under 14 without the consent of their parents or guardians. If you are a parent and think your child has provided us with data, please contact us."
+      },
+      "updates": {
+        "title": "10. Changes in the privacy policy",
+        "content": "We may update this privacy policy. We recommend you review it periodically. The last update date appears at the beginning of this document."
+      }
+    }
+  },
+  "chatbot": {
+    "welcome": "Namaste! 🙏 Welcome to Arunachala. I am your virtual assistant. How can I help you today? You can ask me about schedules, yoga classes, or therapies.",
+    "placeholder": "Type your question...",
+    "tooltip": "How can I help you? ✨",
+    "status": "Namaste 🙏 Online",
+    "ai_notice": "✨ Artificial Intelligence trained for Arunachala ✨"
+  },
+  "reviews": {
+    "reviews_empty_title": "Your opinion matters to us",
+    "reviews_empty_desc": "We haven't connected Google reviews yet. If you have visited our center, we would love to know your experience.",
+    "reviews_leave": "Leave a review on Google",
+    "reviews_title": "What they say about us",
+    "reviews_google_count": "reviews on Google",
+    "reviews_verified": "Verified Customer",
+    "reviews_share": "Your opinion matters, share it with us"
+  }
 }

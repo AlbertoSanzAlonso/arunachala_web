@@ -1,588 +1,597 @@
 {
-    "footer": {
-        "address": "Yoga y Terapias Arunachala\nPassatge de Mateu Oliva 3, baixos\n(junt a Plaça Pallars)\n08940 Cornellà de Llobregat\nBarcelona",
-        "labels": {
-            "home": "Inici",
-            "yoga": "Ioga i Horaris",
-            "therapies": "Massatge i teràpies",
-            "blog": "Blog",
-            "legal": "Avís Legal",
-            "privacy": "Política de Privadesa",
-            "instagram": "Seguiu-nos a Instagram",
-            "youtube": "Subscriviu-vos al nostre canal de YouTube",
-            "spotify": "Escolteu-nos a Spotify"
-        },
-        "rights": "Tots els drets reservats."
+  "footer": {
+    "address": "Yoga y Terapias Arunachala\nPassatge de Mateu Oliva 3, baixos\n(junt a Plaça Pallars)\n08940 Cornellà de Llobregat\nBarcelona",
+    "labels": {
+      "home": "Inici",
+      "yoga": "Ioga i Horaris",
+      "therapies": "Massatge i teràpies",
+      "blog": "Blog",
+      "legal": "Avís Legal",
+      "privacy": "Política de Privadesa",
+      "instagram": "Seguiu-nos a Instagram",
+      "youtube": "Subscriviu-vos al nostre canal de YouTube",
+      "spotify": "Escolteu-nos a Spotify"
     },
-    "gallery": {
-        "yoga": {
-            "title": "Galeria de Ioga",
-            "back": "Tornar a Ioga",
-            "subtitle": "Els nostres espais i moments dedicats a la pràctica del Ioga.\nTroba la inspiració que necessites per al teu camí.",
-            "empty": "Estem preparant les imatges de Ioga per a tu."
-        },
-        "therapies": {
-            "title": "Galeria de Teràpies",
-            "back": "Tornar a Teràpies",
-            "subtitle": "Un cop d'ull al nostre espai de sanació i benestar.",
-            "empty": "Properament fotos del centre..."
-        }
+    "rights": "Tots els drets reservats."
+  },
+  "gallery": {
+    "yoga": {
+      "title": "Galeria de Ioga",
+      "back": "Tornar a Ioga",
+      "subtitle": "Els nostres espais i moments dedicats a la pràctica del Ioga.\nTroba la inspiració que necessites per al teu camí.",
+      "empty": "Estem preparant les imatges de Ioga per a tu."
     },
     "therapies": {
-        "title": "MASSATGE I TERÀPIES",
-        "subtitle": "Un espai per al retrobament amb tu mateix a través de la cura corporal i emocional.",
-        "seo": {
-            "title": "Massatges i Teràpies a Cornellà | Arunachala",
-            "description": "Descobreix les nostres teràpies i massatges a Cornellà de Llobregat. Reiki, Teràpia Floral, Massatge Tailandès i més per al teu benestar."
-        },
-        "buttons": {
-            "massages": "Massatges",
-            "therapies": "Teràpies",
-            "gallery": "Galeria",
-            "blog": "Blog"
-        },
-        "sections": {
-            "massages": "Els Nostres Massatges",
-            "massages_sub": "Allibera tensions i recupera la vitalitat del teu cos.",
-            "therapies": "Teràpies Holístiques",
-            "therapies_sub": "Acompanyament en el teu procés de sanació i autoconeixement.",
-            "gallery": "Galeria",
-            "gallery_sub": "Un cop d'ull al nostre espai de sanació.",
-            "blog": "Blog de Benestar",
-            "blog_sub": "Lectures per nutrir la teva ànima i equilibrar la teva vida."
-        },
-        "modal": {
-            "description": "Descripció",
-            "benefits": "Beneficis",
-            "price": "Preu",
-            "close": "Tancar",
-            "no_description": "Sense descripció disponible."
-        },
-        "none": {
-            "massages": "No hi ha massatges disponibles en aquest moment.",
-            "therapies": "No hi ha teràpies disponibles en aquest moment.",
-            "gallery": "Properament fotos del centre..."
-        },
-        "common": {
-            "read_more": "Seguir llegint"
-        },
-        "appointment": {
-            "title": "HORARIS I RESERVES",
-            "subtitle": "Atenció personalitzada amb cita prèvia",
-            "description": "Les nostres sessions de massatge i teràpies holístiques es programen de forma individualitzada. En treballar amb cita prèvia, ens assegurem de dedicar-te el temps i l'espai que mereixes per al teu benestar integral.",
-            "cta": "Contactar per reservar"
-        }
+      "title": "Galeria de Teràpies",
+      "back": "Tornar a Teràpies",
+      "subtitle": "Un cop d'ull al nostre espai de sanació i benestar.",
+      "empty": "Properament fotos del centre..."
+    }
+  },
+  "therapies": {
+    "title": "MASSATGE I TERÀPIES",
+    "subtitle": "Un espai per al retrobament amb tu mateix a través de la cura corporal i emocional.",
+    "seo": {
+      "title": "Massatges i Teràpies a Cornellà | Arunachala",
+      "description": "Descobreix les nostres teràpies i massatges a Cornellà de Llobregat. Reiki, Teràpia Floral, Massatge Tailandès i més per al teu benestar."
     },
-    "welcome": "Benvingut a Arunachala",
-    "hero": {
-        "yoga": {
-            "title": "IOGA",
-            "subtitle": "Mou-te i respira"
-        },
-        "therapies": {
-            "title": "MASSATGE I TERÀPIES",
-            "subtitle": "Recupera el teu benestar"
-        }
+    "buttons": {
+      "massages": "Massatges",
+      "therapies": "Teràpies",
+      "gallery": "Galeria",
+      "blog": "Blog"
     },
-    "menu": {
-        "home": "Inici",
-        "yoga": "Classes de Ioga",
-        "therapies": "Teràpies i Massatges",
-        "space": "El Nostre Espai",
-        "about": "Sobre Nosaltres",
-        "contact": "Contacte",
-        "activities": "Activitats",
-        "meditations": "Meditacions",
-        "promotions": "Promocions"
+    "sections": {
+      "massages": "Els Nostres Massatges",
+      "massages_sub": "Allibera tensions i recupera la vitalitat del teu cos.",
+      "therapies": "Teràpies Holístiques",
+      "therapies_sub": "Acompanyament en el teu procés de sanació i autoconeixement.",
+      "gallery": "Galeria",
+      "gallery_sub": "Un cop d'ull al nostre espai de sanació.",
+      "blog": "Blog de Benestar",
+      "blog_sub": "Lectures per nutrir la teva ànima i equilibrar la teva vida."
     },
-    "promotions": {
-        "title": "Promocions Especials",
-        "subtitle": "Descobreix les nostres oportunitats úniques per aprofundir en el teu benestar.",
-        "label": "Ofertes Exclusives",
-        "code": "CODI:",
-        "about_section_title": "Les Nostres Promocions",
-        "contact_cta": "Tens dubtes sobre alguna promoció? Contacta'ns!"
+    "modal": {
+      "description": "Descripció",
+      "benefits": "Beneficis",
+      "price": "Preu",
+      "close": "Tancar",
+      "no_description": "Sense descripció disponible."
     },
-    "meditations": {
-        "title": "Meditacions",
-        "subtitle": "Troba un moment de calma i connexió amb les nostres meditacions guiades i mantres.",
-        "loading": "Carregant meditacions...",
-        "empty": "Properament compartirem noves meditacions amb tu.",
-        "open_player": "Obrir Reproductor",
-        "guided_meditation": "Meditació Guiada",
-        "stop": "Aturar",
-        "error_playback": "No s'ha pogut reproduir l'àudio. Verifica la teva connexió o el format de l'arxiu.",
-        "search_placeholder": "Cercar meditacions...",
-        "error_search": "No s'han trobat meditacions amb aquest terme de cerca.",
-        "prev": "Anterior",
-        "next": "Següent",
-        "page": "Pàgina"
-    },
-    "yoga": {
-        "title": "IOGA",
-        "subtitle": "Troba equilibri i pau a través del moviment i la respiració.",
-        "seo": {
-            "title": "Classes de Ioga a Barcelona | Arunachala",
-            "description": "Descobreix les nostres classes de ioga a Cornellà de Llobregat. Hatha Ioga, Vinyasa i meditació per a tots els nivells."
-        },
-        "buttons": {
-            "schedule": "Horaris",
-            "schedule_sub": "Reserva la teva classe",
-            "gallery": "Galeria",
-            "gallery_sub": "El Nostre Espai",
-            "blog": "Blog",
-            "blog_sub": "Articles i Reflexions"
-        },
-        "sections": {
-            "schedule": "Horaris de Classes",
-            "annex_title": "Activitats de Cap de Setmana",
-            "annex_subtitle": "Annex a l'Horari de Classes",
-            "gallery": "Galeria d'Imatges",
-            "blog": "Últimes Publicacions",
-            "blog_sub": "Inspiració per a la teva pràctica i vida diària"
-        },
-        "common": {
-            "back_to_top": "Tornar al principi",
-            "view_all_gallery": "Veure Galeria Completa",
-            "view_all_blog": "Veure tot el blog",
-            "read_article": "Llegir article"
-        }
+    "none": {
+      "massages": "No hi ha massatges disponibles en aquest moment.",
+      "therapies": "No hi ha teràpies disponibles en aquest moment.",
+      "gallery": "Properament fotos del centre..."
     },
     "common": {
-        "view_all": "Veure tots",
-        "see_all": "Veure totes",
-        "view_all_news": "Veure totes les notícies",
-        "thanks": "Gràcies!",
-        "back": "Enrere",
-        "back_home": "Tornar a l'inici",
-        "loading": "Carregant...",
-        "sending": "Enviant...",
-        "close": "Tancar",
-        "read_more": "Llegir més",
-        "days": {
-            "monday": "Dilluns",
-            "tuesday": "Dimarts",
-            "wednesday": "Dimecres",
-            "thursday": "Dijous",
-            "friday": "Divendres",
-            "saturday": "Dissabte",
-            "sunday": "Diumenge"
-        },
-        "times": {
-            "morning": "MATÍ",
-            "afternoon": "TARDA"
-        }
+      "read_more": "Seguir llegint"
     },
-    "home": {
-        "mantra_title": "Mantra del Dia",
-        "loading": {
-            "experience": "Carregant Experiència...",
-            "gallery": "Carregant Galeria...",
-            "reviews": "Carregant Ressenyes...",
-            "activities": "Carregant Activitats..."
-        },
-        "featured_activities": {
-            "title": "Properament Activitats"
-        },
-        "mantras": [
-            {
-                "text": "Lokah Samastah Sukhino Bhavantu",
-                "translation": "Que tots els éssers de tot arreu siguin feliços i lliures"
-            },
-            {
-                "text": "Om Namah Shivaya",
-                "translation": "Honoro la divinitat que habita en mi"
-            },
-            {
-                "text": "Sat Nam",
-                "translation": "La veritat és la meva identitat"
-            },
-            {
-                "text": "Om Mani Padme Hum",
-                "translation": "La joia al lotus del meu cor"
-            },
-            {
-                "text": "Aham Brahmasmi",
-                "translation": "Jo sóc la totalitat de l'univers"
-            }
-        ],
-        "quiz": {
-            "title": "Un moment per Escoltar-te",
-            "subtitle": "Pren-te un segon per sentir la teva respiració abans de respondre.\nDescobreix què necessita el teu cos i ment avui.",
-            "cta_start": "Començar",
-            "progress": "Pas {{current}} de 4",
-            "restart": "Tornar a començar",
-            "other": "Altres... (Explica'ns més)",
-            "custom_placeholder": "Escriu aquí la teva resposta...",
-            "cancel": "Cancel·lar",
-            "confirm": "Confirmar",
-            "appointment": "Reservar Cita",
-            "recommendation_title": "La Teva Recomanació Personalizada",
-            "loading_ai": "Consultant amb l'especialista...",
-            "analyzing": "Analitzant les teves respostes per oferir-te la millor recomanació...",
-            "l1": {
-                "question": "Com arribes avui aquí?",
-                "options": {
-                    "A": "Sento que el meu cos m'envia senyals d'alerta (dolor, rigidesa).",
-                    "B": "La meva ment està molt sorollosa o em sento emocionalment cansat/da.",
-                    "C": "Busco un espai per aprofundir en la meva autocura, sense una molèstia urgent."
-                }
-            },
-            "l2": {
-                "A": {
-                    "question": "Com es manifesta aquest missatge del teu cos?",
-                    "options": {
-                        "A1": "És una cosa punxant o localitzada que limita els meus moviments.",
-                        "A2": "És una sensació de pesadesa general, com si portés una motxilla molt pesada."
-                    }
-                },
-                "B": {
-                    "question": "Què és el que més pesa al teu interior?",
-                    "options": {
-                        "B1": "La pressa, el \"no arribar a tot\" i la sensació d'alerta constant.",
-                        "B2": "Una sensació d'estancament, tristesa o falta de claredat."
-                    }
-                },
-                "C": {
-                    "question": "Quin tipus d'experiència et crida més avui?",
-                    "options": {
-                        "C1": "Moviment conscient i vitalitat.",
-                        "C2": "Calma profunda i relaxació."
-                    }
-                }
-            },
-            "l3": {
-                "A1": {
-                    "question": "Aquest dolor ha aparegut per un esforç puntual o t'acompanya des de fa temps?",
-                    "options": {
-                        "1": "És una cosa puntual.",
-                        "2": "És una cosa crònica."
-                    }
-                },
-                "A2": {
-                    "question": "Sents que el teu cos necessita deixar anar tensió o que necessita enfortir-se per sostenir-te millor?",
-                    "options": {
-                        "1": "Necessito deixar anar tensió.",
-                        "2": "Necessito guanyar força."
-                    }
-                },
-                "B1": {
-                    "question": "Et costa més desconnectar durant el dia o agafar el son a la nit?",
-                    "options": {
-                        "1": "El dia és el repte.",
-                        "2": "La nit és el repte."
-                    }
-                },
-                "B2": {
-                    "question": "Prefereixes el silenci per mirar cap a dins o necessites que algú et guiï amb suavitat?",
-                    "options": {
-                        "1": "Prefereixo el silenci.",
-                        "2": "Prefereixo que em guiïn."
-                    }
-                },
-                "C1": {
-                    "question": "Prefereixes una pràctica dinàmica o alguna cosa més suau?",
-                    "options": {
-                        "1": "Dinàmica.",
-                        "2": "Suau."
-                    }
-                },
-                "C2": {
-                    "question": "Busques un treball físic o energètic?",
-                    "options": {
-                        "1": "Físic (Massatge).",
-                        "2": "Energètic (Reiki/Flors)."
-                    }
-                }
-            },
-            "l4": {
-                "question": "Vols explicar-nos més a fons la teva molèstia o situació actual?",
-                "options": {
-                    "no": "No, veure la meva recomanació ara",
-                    "yes": "Sí, m'agradaria explicar-ho millor"
-                }
-            }
-        }
-    },
-    "activities": {
-        "title": "Les Nostres Activitats",
-        "subtitle": "Cursos temporals, tallers intensius i esdeveniments especials dissenyats per al teu creixement.",
-        "seo": {
-            "title": "Activitats i Cursos | Arunachala",
-            "description": "Descobreix les nostres activitats actives, cursos temporals i esdeveniments especials a Arunachala."
-        },
-        "types": {
-            "taller": "Taller",
-            "curso": "Curs",
-            "evento": "Esdeveniment",
-            "retiro": "Retir",
-            "sugerencia": "Suggeriment"
-        },
-        "sections": {
-            "courses": "Cursos",
-            "events": "Tallers i Esdeveniments",
-            "suggestions": "Suggeriments"
-        },
-        "consult_price": "Consultar preu",
-        "no_courses": "No existeixen cursos en aquests moments.",
-        "no_events": "No existeixen tallers o esdeveniments en aquests moments.",
-        "no_polls": "No hi ha votacions actives en aquest moment.",
-        "contact_to_signup": "Contactar per apuntar-me",
-        "add_to_calendar": "Afegir al calendari",
-        "labels": {
-            "date": "Data d'inici",
-            "end_date": "Data de finalització",
-            "location": "Ubicació",
-            "price": "Inversió",
-            "info": "Reserva",
-            "info_desc": "Places limitades per ordre d'inscripció."
-        },
-        "suggestions": {
-            "vote_now": "Registrar el meu vot",
-            "vote_recorded": "El teu vot ha estat registrat correctament.",
-            "label_comments": "Comentaris addicionals",
-            "placeholder_comments": "Explica'ns una mica més...",
-            "voto_unit": "vot",
-            "voto_plural": "vots",
-            "label_custom_tag": "Tens alguna idea?",
-            "custom_title": "Envia'ns la teva proposta",
-            "custom_subtitle": "Si busques alguna cosa molt específica que no està a la llista anterior, explica'ns-ho aquí.",
-            "custom_label": "La teva proposta",
-            "custom_details_label": "Detalls o comentaris",
-            "placeholder_custom": "Ex: Taller de cuina macrobiòtica...",
-            "submit_idea": "Enviar la meva idea",
-            "idea_received": "Idea rebuda!",
-            "thanks_desc": "Moltes gràcies per la teva proposta, la estudiarem amb afecte.",
-            "suggest_another": "Suggerir una altra idea",
-            "vote_again": "Votar de nou",
-            "already_voted_title": "Ja hem rebut la teva participació",
-            "already_voted_desc": "Moltes gràcies pel teu interès, tindrem en compte la teva opinió per a futures activitats.",
-            "other_option": "Altra proposta...",
-            "placeholder_custom_poll": "Escriu la teva idea aquí..."
-        },
-        "subscription": {
-            "title": "Rep les nostres novetats",
-            "subtitle": "Subscriu-te per rebre un correu cada vegada que publiquem una nova activitat o taller.",
-            "placeholder": "El teu correu electrònic",
-            "name_placeholder": "El teu nom (opcional)",
-            "button": "Subscriure'm",
-            "success_title": "Genial!",
-            "success_msg": "Ja estàs subscrit. T'avisarem aviat.",
-            "error_msg": "Hi ha hagut un error en subscriure't. Intenta-ho de nou.",
-            "unsubscribed_title": "Subscripció Cancel·lada",
-            "unsubscribed_msg": "El teu correu ha estat eliminat de la nostra llista correctament. Lamentem veure't marxar.",
-            "unsubscribe_error": "No hem pogut processar la teva sol·licitud. Si us plau, contacta directament amb nosaltres."
-        }
-    },
-    "space": {
-        "title": "El Nostre Espai",
-        "subtitle": "Un refugi de pau a la ciutat",
-        "description_1": "A Arunachala, hem creat un entorn dissenyat específicament per a la calma i la introspecció. El nostre centre està concebut no només com un lloc per practicar ioga, sinó com un santuari on desconnectar del soroll exterior i reconnectar amb tu mateix.",
-        "description_2": "Disposem d'una sala principal diàfana, banyada per llum natural i equipada amb materials orgànics d'alta qualitat. L'ambient, impregnat d'aromes suaus i silenci, convida a la pràctica profunda i meditativa des del primer moment en què creues la porta.",
-        "no_images": "Imatges properament",
-        "location_title": "Com arribar",
-        "transport": {
-            "tram_label": "Tramvia",
-            "tram_details": "Línies T1 – T2 (El Pedró)",
-            "bus_label": "Autobús",
-            "bus_details": "Bus 57, 68, 94 o 95",
-            "metro_label": "Metro",
-            "metro_details": "Metro: Línia 5 (Cornellà Centre)"
-        },
-        "illustrative_map_label": "Mapa de referència",
-        "open_gps": "Obrir en GPS"
-    },
-    "about": {
-        "title": "Qui Soc?",
-        "subtitle": "Ioga i Teràpies Aruṇāchala",
-        "mission": "Un espai de cura, presència i transformació.",
-        "intro": "Em dic Susana Pérez Gil i des de fa anys acompanyo persones a través del Ioga i les Teràpies Manuals, integrant cos, ment i dimensió emocional-espiritual.",
-        "path_title": "El meu camí cap a Aruṇāchala",
-        "path_p1": "El meu camí va començar fa més de 25 anys, impulsat per una profunda inspiració per l'Índia, la seva cultura i la seva espiritualitat. Vaig començar a practicar Ioga amb un objectiu senzill: sentir-me bé físicament i mantenir una ment estable. No obstant això, aviat vaig experimentar el que avui reconec com el primer de molts salts de consciència.",
-        "specialties_title": "Formació i Especialitats",
-        "specialties_intro": "Per oferir-te una cura completa, m'he especialitzat en diverses disciplines que combinen allò físic amb allò energètic:",
-        "cat_manual": "Teràpies Manuals",
-        "cat_manual_desc": "Em vaig formar en Quiromassatge, Drenatge Limfàtic, Reflexologia i digitopressió.",
-        "cat_subtle": "Tècniques Subtils",
-        "cat_subtle_desc": "I més endavant en tècniques més subtils com la Tècnica Metamòrfica i el Reiki. Tot això em va permetre comprendre el cos no només des d'allò físic, sinó també des d'allò energètic i emocional.",
-        "cat_yoga": "Professora de Ioga",
-        "cat_yoga_desc": "Vaig realitzar la Formació de Professora de Ioga, ampliant posteriorment la meva formació en Ioga per a diferents etapes i moments vitals, i aprofundint en la tradició del Ioga com a camí d'autoconeixement.",
-        "approach": "El Ioga, present des de l'inici, va acabar convertint-se en eix central de la meva vida professional, al costat dels Massatges i les Teràpies. Durant aquest procés va néixer també el meu amor pel sànscrit i els mantres, una eina que segueix acompanyant les meves classes i sessions com a pont entre cos, respiració i consciència.",
-        "arunachala_title": "Així va néixer Ioga i Teràpies Aruṇāchala",
-        "arunachala_p1": "Amb el temps va sorgir un somni clar: crear un espai propi on unir Ioga i Teràpies Manuals, un lloc on cada persona pogués sentir-se acompanyada des del respecte, l'escolta i la presència.\n\nAquest somni va prendre forma després d'un viatge molt especial a l'Índia, on vaig viure una experiència profundament transformadora: l'ascens a la Muntanya Sagrada Aruṇāchala, a Tiruvannamalai. Allà vaig comprendre que el centre que s'estava gestant ja tenia nom, Aruṇāchala.\n\nUn espai que ofereix Ioga, Massatges i Teràpies com un camí de benestar integral, adaptació i cura conscient.",
-        "quote": "\"Un lloc on cada pràctica i cada sessió es viuen com una invitació a tornar a un/a mateix/a.\"",
-        "cta_title": "Com puc acompanyar-te?",
-        "cta_p1": "A Ioga i Teràpies Aruṇāchala, t'ofereixo un espai de cura i presència on retrobar-te. Aquest és el teu lloc.",
-        "mantra": "Om Namaḥ Śivaya",
-        "seo": {
-            "title": "Susana Pérez Gil | Qui Soc | Ioga Arunachala",
-            "description": "Coneix la Susana Pérez Gil, fundadora d'Arunachala. Més de 25 anys d'experiència en Ioga, massatges i teràpies holístiques a Cornellà."
-        },
-        "news": {
-            "title": "Notícies",
-            "subtitle": "Segueix de prop el nostre camí"
-        }
-    },
-    "contact_page": {
-        "title": "Contacte",
-        "subtitle": "Tens algun dubte? Som aquí per ajudar-te",
-        "whatsapp": {
-            "title": "Parlem per WhatsApp",
-            "description": "Prefereixes un tracte més directe? Escriu-nos per WhatsApp per resoldre dubtes o reservar la teva cita a l'instant.",
-            "button": "Obrir Xat de WhatsApp",
-            "note": "Et respondrem encantats al més aviat possible."
-        },
-        "info": {
-            "title": "Informació de Contacte",
-            "address_label": "Adreça",
-            "address": "Yoga y Terapias Arunachala - Passatge de Mateu Oliva, 3, 08940 Cornellà de Llobregat, Barcelona",
-            "phone_label": "Telèfon / WhatsApp",
-            "email_label": "Email",
-            "hours_label": "Horari",
-            "hours_desc": "Consulta el nostre horari de classes i activitats.",
-            "quote": "Un lloc on cada pràctica i cada sessió són una invitació a tornar a un mateix."
-        },
-        "seo": {
-            "title": "Contacte | Ioga i Teràpies Arunachala Cornellà",
-            "description": "Contacta amb Arunachala Ioga a Cornellà. Reserva la teva classe de ioga o sessió de teràpia. Som al Carrer del Bruc 44."
-        }
-    },
-    "blog": {
-        "title": "Blog",
-        "subtitle": "Articles sobre ioga, meditació i benestar",
-        "section_title": "Últimes Publicacions",
-        "all": "Tots",
-        "no_articles": "No hi ha articles disponibles",
-        "back_to_blog": "Tornar al Blog",
-        "related_articles": "Articles Relacionats",
-        "read_more": "Llegir més",
-        "view_all": "Veure Tots els Articles",
-        "search": {
-            "placeholder": "Cerca articles...",
-            "no_results": "No s'han trobat articles",
-            "advanced_search": "Cerca avançada"
-        },
-        "filter": {
-            "category": "Categoria",
-            "date": "Data",
-            "tags": "Etiquetes"
-        },
-        "categories": {
-            "all": "Tots",
-            "yoga": "Ioga",
-            "therapy": "Teràpies",
-            "general": "General"
-        },
-        "seo": {
-            "title": "Blog | Arunachala Ioga i Teràpies",
-            "description": "Descobreix articles sobre ioga, meditació, teràpies holístiques i benestar al nostre blog."
-        },
-        "cta": {
-            "title": "T'ha inspirat aquest article?",
-            "description_yoga": "Vine a practicar amb nosaltres a Arunachala. Un espai de calma al cor de Cornellà.",
-            "description_therapy": "Vine a cuidar-te a Arunachala. El teu refugi de sanació i calma a Cornellà.",
-            "button": "Contacta amb nosaltres"
-        }
-    },
-    "legal": {
-        "title": "Avís Legal",
-        "subtitle": "Informació legal i condicions d'ús del lloc web",
-        "last_updated": "Última actualització",
-        "seo": {
-            "title": "Avís Legal | Arunachala Ioga i Teràpies",
-            "description": "Avís legal i condicions d'ús del lloc web d'Arunachala Ioga i Teràpies a Cornellà de Llobregat."
-        },
-        "sections": {
-            "identification": {
-                "title": "Identificació",
-                "company": "Titular",
-                "company_value": "Susana Pérez Gil - Arunachala Ioga i Teràpies",
-                "cif": "NIF",
-                "cif_value": "[Número d'identificació fiscal]",
-                "address": "Adreça",
-                "address_value": "Passatge de Mateu Oliva 3, baixos, 08940 Cornellà de Llobregat, Barcelona",
-                "email": "Email",
-                "phone": "Telèfon"
-            },
-            "object": {
-                "title": "Objecte del Lloc Web",
-                "content": "Aquest lloc web ofereix informació sobre les classes de ioga, teràpies holístiques i massatges d'Arunachala. En utilitzar aquest web, acceptes les condicions d'ús aquí establertes."
-            },
-            "conditions": {
-                "title": "Condicions d'Ús",
-                "content": "L'usuari es compromet a utilitzar el lloc web de forma adequada i conforme a la llei, sense difondre continguts inapropiats ni realitzar accions que puguin danyar el funcionament del web."
-            },
-            "property": {
-                "title": "Propietat Intel·lectual",
-                "content": "Tots els continguts d'aquest lloc web (textos, imatges, logotips, disseny) són propietat d'Arunachala. Pots visualitzar-los per a ús personal, però no pots reproduir-los, distribuir-los o modificar-los sense autorització."
-            },
-            "liability": {
-                "title": "Limitació de Responsabilitat",
-                "content": "Arunachala s'esforça per mantenir la informació actualitzada i correcta, però no es responsabilitza de possibles errors o omissions en els continguts, ni d'interrupcions temporals en el servei."
-            },
-            "law": {
-                "title": "Legislació Aplicable",
-                "content": "Aquest avís legal es regeix per la legislació espanyola. Qualsevol disputa es resoldrà als tribunals de Barcelona."
-            }
-        }
-    },
-    "privacy": {
-        "title": "Política de Privadesa",
-        "subtitle": "Informació sobre com tractem les teves dades personals",
-        "intro": "En compliment del Reglament (UE) 2016/679 del Parlament Europeu i del Consell de 27 d'abril de 2016 (RGPD) i la Llei Orgànica 3/2018, de 5 de desembre, de Protecció de Dades Personals i garantia dels drets digitals (LOPDGDD), t'informem sobre com tractem les teves dades personals.",
-        "last_updated": "Última actualització",
-        "seo": {
-            "title": "Política de Privadesa | Arunachala Ioga i Teràpies",
-            "description": "Política de privadesa i protecció de dades personals d'Arunachala Ioga i Teràpies a Cornellà de Llobregat."
-        },
-        "sections": {
-            "responsible": {
-                "title": "1. Responsable del tractament",
-                "content": "Titular: Susana Pérez Gil - Arunachala Ioga i Teràpies\nNIF: [Número d'identificació fiscal]\nAdreça: Passatge de Mateu Oliva 3, baixos, 08940 Cornellà de Llobregat, Barcelona\nEmail: yogayterapiasarunachala@gmail.com\nTelèfon: +34 678 481 971"
-            },
-            "data": {
-                "title": "2. Quines dades recollim?",
-                "content": "Podem recollir les següents dades personals:\n\n- Dades de contacte: nom, cognoms, email, telèfon\n- Dades de reserva: informació sobre les classes o sessions reservades\n- Dades de salut: informació mèdica rellevant per a les teràpies (només amb el teu consentiment explícit)"
-            },
-            "purpose": {
-                "title": "3. Per a què fem servir les teves dades?",
-                "content": "Fem servir les teves dades per:\n\n- Gestió de classes i reserves: organitzar i confirmar la teva assistència a classes de ioga i sessions de teràpia\n- Comunicació: respondre a les teves consultes i enviar-te informació sobre els nostres serveis\n- Informació comercial: enviar-te novetats, promocions o esdeveniments (només si ens dónes el teu consentiment)\n- Atenció terapèutica: adaptar les sessions a les teves necessitats de salut (només dades necessàries i amb el teu consentiment)"
-            },
-            "legal_base": {
-                "title": "4. Base legal del tractament",
-                "content": "Tractem les teves dades basant-nos en:\n\n- Execució d'un contracte: per gestionar la teva reserva o inscripció en els nostres serveis\n- Consentiment: per enviar comunicacions comercials o tractar dades de salut\n- Interès legítim: per millorar els nostres serveis"
-            },
-            "recipients": {
-                "title": "5. Amb qui compartim les teves dades?",
-                "content": "No venem ni cedim les teves dades a tercers. Únicament podrien ser compartides amb:\n\n- Proveïdors de serveis: plataformes d'email, gestió de reserves o pagaments (sota acords de confidencialitat)\n- Autoritats: quan sigui legalment obligatori"
-            },
-            "retention": {
-                "title": "6. Quant de temps conservem les teves dades?",
-                "content": "Conservem les teves dades mentre:\n\n- Mantinguis una relació activa amb nosaltres (com a alumne/a o client)\n- Fins que sol·licitis la seva supressió\n- Durant el temps legalment exigit (dades fiscals: 6 anys)"
-            },
-            "rights": {
-                "title": "7. Els teus drets",
-                "content": "Tens dret a:\n\n- Accedir a les teves dades personals\n- Rectificar dades inexactes o incompletes\n- Suprimir les teves dades quan ja no siguin necessàries\n- Oposar-te al tractament de les teves dades\n- Limitar el tractament en determinades circumstàncies\n- Portabilitat de les teves dades a un altre responsable\n- Retirar el consentiment en qualsevol moment\n\nPer exercir els teus drets, envia'ns un email a: yogayterapiasarunachala@gmail.com\n\nTambé pots presentar una reclamació davant l'Agència Espanyola de Protecció de Dades (www.aepd.es)."
-            },
-            "security": {
-                "title": "8. Seguretat de les teves dades",
-                "content": "Hem adoptat mesures de seguretat apropiades per protegir les teves dades personals contra accés no autoritzat, pèrdua o alteració."
-            },
-            "minors": {
-                "title": "9. Dades de menors",
-                "content": "No recollim intencionadament dades de menors de 14 anys sense el consentiment dels seus pares o tutors. Si ets pare/mare i creus que el teu fill/a ens ha proporcionat dades, contacta amb nosaltres."
-            },
-            "updates": {
-                "title": "10. Canvis en la política de privadesa",
-                "content": "Podem actualitzar aquesta política de privadesa. Et recomanem revisar-la periòdicament. La data d'última actualització apareix a l'inici d'aquest document."
-            }
-        }
-    },
-    "chatbot": {
-        "welcome": "Namasté! 🙏 Benvingut a Arunachala. Soc el teu assistent virtual. En què et puc ajudar avui? Pots preguntar-me sobre horaris, classes de ioga o teràpies.",
-        "placeholder": "Escriu la teva pregunta...",
-        "tooltip": "Com puc ajudar-te? ✨",
-        "status": "Namasté 🙏 En línia",
-        "ai_notice": "✨ Intel·ligència Artificial entrenada per Arunachala ✨"
+    "appointment": {
+      "title": "HORARIS I RESERVES",
+      "subtitle": "Atenció personalitzada amb cita prèvia",
+      "description": "Les nostres sessions de massatge i teràpies holístiques es programen de forma individualitzada. En treballar amb cita prèvia, ens assegurem de dedicar-te el temps i l'espai que mereixes per al teu benestar integral.",
+      "cta": "Contactar per reservar"
     }
+  },
+  "welcome": "Benvingut a Arunachala",
+  "hero": {
+    "yoga": {
+      "title": "IOGA",
+      "subtitle": "Mou-te i respira"
+    },
+    "therapies": {
+      "title": "MASSATGE I TERÀPIES",
+      "subtitle": "Recupera el teu benestar"
+    }
+  },
+  "menu": {
+    "home": "Inici",
+    "yoga": "Classes de Ioga",
+    "therapies": "Teràpies i Massatges",
+    "space": "El Nostre Espai",
+    "about": "Sobre Nosaltres",
+    "contact": "Contacte",
+    "activities": "Activitats",
+    "meditations": "Meditacions",
+    "promotions": "Promocions"
+  },
+  "promotions": {
+    "title": "Promocions Especials",
+    "subtitle": "Descobreix les nostres oportunitats úniques per aprofundir en el teu benestar.",
+    "label": "Ofertes Exclusives",
+    "code": "CODI:",
+    "about_section_title": "Les Nostres Promocions",
+    "contact_cta": "Tens dubtes sobre alguna promoció? Contacta'ns!"
+  },
+  "meditations": {
+    "title": "Meditacions",
+    "subtitle": "Troba un moment de calma i connexió amb les nostres meditacions guiades i mantres.",
+    "loading": "Carregant meditacions...",
+    "empty": "Properament compartirem noves meditacions amb tu.",
+    "open_player": "Obrir Reproductor",
+    "guided_meditation": "Meditació Guiada",
+    "stop": "Aturar",
+    "error_playback": "No s'ha pogut reproduir l'àudio. Verifica la teva connexió o el format de l'arxiu.",
+    "search_placeholder": "Cercar meditacions...",
+    "error_search": "No s'han trobat meditacions amb aquest terme de cerca.",
+    "prev": "Anterior",
+    "next": "Següent",
+    "page": "Pàgina"
+  },
+  "yoga": {
+    "title": "IOGA",
+    "subtitle": "Troba equilibri i pau a través del moviment i la respiració.",
+    "seo": {
+      "title": "Classes de Ioga a Barcelona | Arunachala",
+      "description": "Descobreix les nostres classes de ioga a Cornellà de Llobregat. Hatha Ioga, Vinyasa i meditació per a tots els nivells."
+    },
+    "buttons": {
+      "schedule": "Horaris",
+      "schedule_sub": "Reserva la teva classe",
+      "gallery": "Galeria",
+      "gallery_sub": "El Nostre Espai",
+      "blog": "Blog",
+      "blog_sub": "Articles i Reflexions"
+    },
+    "sections": {
+      "schedule": "Horaris de Classes",
+      "annex_title": "Activitats de Cap de Setmana",
+      "annex_subtitle": "Annex a l'Horari de Classes",
+      "gallery": "Galeria d'Imatges",
+      "blog": "Últimes Publicacions",
+      "blog_sub": "Inspiració per a la teva pràctica i vida diària"
+    },
+    "common": {
+      "back_to_top": "Tornar al principi",
+      "view_all_gallery": "Veure Galeria Completa",
+      "view_all_blog": "Veure tot el blog",
+      "read_article": "Llegir article"
+    }
+  },
+  "common": {
+    "view_all": "Veure tots",
+    "see_all": "Veure totes",
+    "view_all_news": "Veure totes les notícies",
+    "thanks": "Gràcies!",
+    "back": "Enrere",
+    "back_home": "Tornar a l'inici",
+    "loading": "Carregant...",
+    "sending": "Enviant...",
+    "close": "Tancar",
+    "read_more": "Llegir més",
+    "days": {
+      "monday": "Dilluns",
+      "tuesday": "Dimarts",
+      "wednesday": "Dimecres",
+      "thursday": "Dijous",
+      "friday": "Divendres",
+      "saturday": "Dissabte",
+      "sunday": "Diumenge"
+    },
+    "times": {
+      "morning": "MATÍ",
+      "afternoon": "TARDA"
+    }
+  },
+  "home": {
+    "mantra_title": "Mantra del Dia",
+    "loading": {
+      "experience": "Carregant Experiència...",
+      "gallery": "Carregant Galeria...",
+      "reviews": "Carregant Ressenyes...",
+      "activities": "Carregant Activitats..."
+    },
+    "featured_activities": {
+      "title": "Properament Activitats"
+    },
+    "mantras": [
+      {
+        "text": "Lokah Samastah Sukhino Bhavantu",
+        "translation": "Que tots els éssers de tot arreu siguin feliços i lliures"
+      },
+      {
+        "text": "Om Namah Shivaya",
+        "translation": "Honoro la divinitat que habita en mi"
+      },
+      {
+        "text": "Sat Nam",
+        "translation": "La veritat és la meva identitat"
+      },
+      {
+        "text": "Om Mani Padme Hum",
+        "translation": "La joia al lotus del meu cor"
+      },
+      {
+        "text": "Aham Brahmasmi",
+        "translation": "Jo sóc la totalitat de l'univers"
+      }
+    ],
+    "quiz": {
+      "title": "Un moment per Escoltar-te",
+      "subtitle": "Pren-te un segon per sentir la teva respiració abans de respondre.\nDescobreix què necessita el teu cos i ment avui.",
+      "cta_start": "Començar",
+      "progress": "Pas {{current}} de 4",
+      "restart": "Tornar a començar",
+      "other": "Altres... (Explica'ns més)",
+      "custom_placeholder": "Escriu aquí la teva resposta...",
+      "cancel": "Cancel·lar",
+      "confirm": "Confirmar",
+      "appointment": "Reservar Cita",
+      "recommendation_title": "La Teva Recomanació Personalizada",
+      "loading_ai": "Consultant amb l'especialista...",
+      "analyzing": "Analitzant les teves respostes per oferir-te la millor recomanació...",
+      "l1": {
+        "question": "Com arribes avui aquí?",
+        "options": {
+          "A": "Sento que el meu cos m'envia senyals d'alerta (dolor, rigidesa).",
+          "B": "La meva ment està molt sorollosa o em sento emocionalment cansat/da.",
+          "C": "Busco un espai per aprofundir en la meva autocura, sense una molèstia urgent."
+        }
+      },
+      "l2": {
+        "A": {
+          "question": "Com es manifesta aquest missatge del teu cos?",
+          "options": {
+            "A1": "És una cosa punxant o localitzada que limita els meus moviments.",
+            "A2": "És una sensació de pesadesa general, com si portés una motxilla molt pesada."
+          }
+        },
+        "B": {
+          "question": "Què és el que més pesa al teu interior?",
+          "options": {
+            "B1": "La pressa, el \"no arribar a tot\" i la sensació d'alerta constant.",
+            "B2": "Una sensació d'estancament, tristesa o falta de claredat."
+          }
+        },
+        "C": {
+          "question": "Quin tipus d'experiència et crida més avui?",
+          "options": {
+            "C1": "Moviment conscient i vitalitat.",
+            "C2": "Calma profunda i relaxació."
+          }
+        }
+      },
+      "l3": {
+        "A1": {
+          "question": "Aquest dolor ha aparegut per un esforç puntual o t'acompanya des de fa temps?",
+          "options": {
+            "1": "És una cosa puntual.",
+            "2": "És una cosa crònica."
+          }
+        },
+        "A2": {
+          "question": "Sents que el teu cos necessita deixar anar tensió o que necessita enfortir-se per sostenir-te millor?",
+          "options": {
+            "1": "Necessito deixar anar tensió.",
+            "2": "Necessito guanyar força."
+          }
+        },
+        "B1": {
+          "question": "Et costa més desconnectar durant el dia o agafar el son a la nit?",
+          "options": {
+            "1": "El dia és el repte.",
+            "2": "La nit és el repte."
+          }
+        },
+        "B2": {
+          "question": "Prefereixes el silenci per mirar cap a dins o necessites que algú et guiï amb suavitat?",
+          "options": {
+            "1": "Prefereixo el silenci.",
+            "2": "Prefereixo que em guiïn."
+          }
+        },
+        "C1": {
+          "question": "Prefereixes una pràctica dinàmica o alguna cosa més suau?",
+          "options": {
+            "1": "Dinàmica.",
+            "2": "Suau."
+          }
+        },
+        "C2": {
+          "question": "Busques un treball físic o energètic?",
+          "options": {
+            "1": "Físic (Massatge).",
+            "2": "Energètic (Reiki/Flors)."
+          }
+        }
+      },
+      "l4": {
+        "question": "Vols explicar-nos més a fons la teva molèstia o situació actual?",
+        "options": {
+          "no": "No, veure la meva recomanació ara",
+          "yes": "Sí, m'agradaria explicar-ho millor"
+        }
+      }
+    }
+  },
+  "activities": {
+    "title": "Les Nostres Activitats",
+    "subtitle": "Cursos temporals, tallers intensius i esdeveniments especials dissenyats per al teu creixement.",
+    "seo": {
+      "title": "Activitats i Cursos | Arunachala",
+      "description": "Descobreix les nostres activitats actives, cursos temporals i esdeveniments especials a Arunachala."
+    },
+    "types": {
+      "taller": "Taller",
+      "curso": "Curs",
+      "evento": "Esdeveniment",
+      "retiro": "Retir",
+      "sugerencia": "Suggeriment"
+    },
+    "sections": {
+      "courses": "Cursos",
+      "events": "Tallers i Esdeveniments",
+      "suggestions": "Suggeriments"
+    },
+    "consult_price": "Consultar preu",
+    "no_courses": "No existeixen cursos en aquests moments.",
+    "no_events": "No existeixen tallers o esdeveniments en aquests moments.",
+    "no_polls": "No hi ha votacions actives en aquest moment.",
+    "contact_to_signup": "Contactar per apuntar-me",
+    "add_to_calendar": "Afegir al calendari",
+    "labels": {
+      "date": "Data d'inici",
+      "end_date": "Data de finalització",
+      "location": "Ubicació",
+      "price": "Inversió",
+      "info": "Reserva",
+      "info_desc": "Places limitades per ordre d'inscripció."
+    },
+    "suggestions": {
+      "vote_now": "Registrar el meu vot",
+      "vote_recorded": "El teu vot ha estat registrat correctament.",
+      "label_comments": "Comentaris addicionals",
+      "placeholder_comments": "Explica'ns una mica més...",
+      "voto_unit": "vot",
+      "voto_plural": "vots",
+      "label_custom_tag": "Tens alguna idea?",
+      "custom_title": "Envia'ns la teva proposta",
+      "custom_subtitle": "Si busques alguna cosa molt específica que no està a la llista anterior, explica'ns-ho aquí.",
+      "custom_label": "La teva proposta",
+      "custom_details_label": "Detalls o comentaris",
+      "placeholder_custom": "Ex: Taller de cuina macrobiòtica...",
+      "submit_idea": "Enviar la meva idea",
+      "idea_received": "Idea rebuda!",
+      "thanks_desc": "Moltes gràcies per la teva proposta, la estudiarem amb afecte.",
+      "suggest_another": "Suggerir una altra idea",
+      "vote_again": "Votar de nou",
+      "already_voted_title": "Ja hem rebut la teva participació",
+      "already_voted_desc": "Moltes gràcies pel teu interès, tindrem en compte la teva opinió per a futures activitats.",
+      "other_option": "Altra proposta...",
+      "placeholder_custom_poll": "Escriu la teva idea aquí..."
+    },
+    "subscription": {
+      "title": "Rep les nostres novetats",
+      "subtitle": "Subscriu-te per rebre un correu cada vegada que publiquem una nova activitat o taller.",
+      "placeholder": "El teu correu electrònic",
+      "name_placeholder": "El teu nom (opcional)",
+      "button": "Subscriure'm",
+      "success_title": "Genial!",
+      "success_msg": "Ja estàs subscrit. T'avisarem aviat.",
+      "error_msg": "Hi ha hagut un error en subscriure't. Intenta-ho de nou.",
+      "unsubscribed_title": "Subscripció Cancel·lada",
+      "unsubscribed_msg": "El teu correu ha estat eliminat de la nostra llista correctament. Lamentem veure't marxar.",
+      "unsubscribe_error": "No hem pogut processar la teva sol·licitud. Si us plau, contacta directament amb nosaltres."
+    }
+  },
+  "space": {
+    "title": "El Nostre Espai",
+    "subtitle": "Un refugi de pau a la ciutat",
+    "description_1": "A Arunachala, hem creat un entorn dissenyat específicament per a la calma i la introspecció. El nostre centre està concebut no només com un lloc per practicar ioga, sinó com un santuari on desconnectar del soroll exterior i reconnectar amb tu mateix.",
+    "description_2": "Disposem d'una sala principal diàfana, banyada per llum natural i equipada amb materials orgànics d'alta qualitat. L'ambient, impregnat d'aromes suaus i silenci, convida a la pràctica profunda i meditativa des del primer moment en què creues la porta.",
+    "no_images": "Imatges properament",
+    "location_title": "Com arribar",
+    "transport": {
+      "tram_label": "Tramvia",
+      "tram_details": "Línies T1 – T2 (El Pedró)",
+      "bus_label": "Autobús",
+      "bus_details": "Bus 57, 68, 94 o 95",
+      "metro_label": "Metro",
+      "metro_details": "Metro: Línia 5 (Cornellà Centre)"
+    },
+    "illustrative_map_label": "Mapa de referència",
+    "open_gps": "Obrir en GPS"
+  },
+  "about": {
+    "title": "Qui Soc?",
+    "subtitle": "Ioga i Teràpies Aruṇāchala",
+    "mission": "Un espai de cura, presència i transformació.",
+    "intro": "Em dic Susana Pérez Gil i des de fa anys acompanyo persones a través del Ioga i les Teràpies Manuals, integrant cos, ment i dimensió emocional-espiritual.",
+    "path_title": "El meu camí cap a Aruṇāchala",
+    "path_p1": "El meu camí va començar fa més de 25 anys, impulsat per una profunda inspiració per l'Índia, la seva cultura i la seva espiritualitat. Vaig començar a practicar Ioga amb un objectiu senzill: sentir-me bé físicament i mantenir una ment estable. No obstant això, aviat vaig experimentar el que avui reconec com el primer de molts salts de consciència.",
+    "specialties_title": "Formació i Especialitats",
+    "specialties_intro": "Per oferir-te una cura completa, m'he especialitzat en diverses disciplines que combinen allò físic amb allò energètic:",
+    "cat_manual": "Teràpies Manuals",
+    "cat_manual_desc": "Em vaig formar en Quiromassatge, Drenatge Limfàtic, Reflexologia i digitopressió.",
+    "cat_subtle": "Tècniques Subtils",
+    "cat_subtle_desc": "I més endavant en tècniques més subtils com la Tècnica Metamòrfica i el Reiki. Tot això em va permetre comprendre el cos no només des d'allò físic, sinó també des d'allò energètic i emocional.",
+    "cat_yoga": "Professora de Ioga",
+    "cat_yoga_desc": "Vaig realitzar la Formació de Professora de Ioga, ampliant posteriorment la meva formació en Ioga per a diferents etapes i moments vitals, i aprofundint en la tradició del Ioga com a camí d'autoconeixement.",
+    "approach": "El Ioga, present des de l'inici, va acabar convertint-se en eix central de la meva vida professional, al costat dels Massatges i les Teràpies. Durant aquest procés va néixer també el meu amor pel sànscrit i els mantres, una eina que segueix acompanyant les meves classes i sessions com a pont entre cos, respiració i consciència.",
+    "arunachala_title": "Així va néixer Ioga i Teràpies Aruṇāchala",
+    "arunachala_p1": "Amb el temps va sorgir un somni clar: crear un espai propi on unir Ioga i Teràpies Manuals, un lloc on cada persona pogués sentir-se acompanyada des del respecte, l'escolta i la presència.\n\nAquest somni va prendre forma després d'un viatge molt especial a l'Índia, on vaig viure una experiència profundament transformadora: l'ascens a la Muntanya Sagrada Aruṇāchala, a Tiruvannamalai. Allà vaig comprendre que el centre que s'estava gestant ja tenia nom, Aruṇāchala.\n\nUn espai que ofereix Ioga, Massatges i Teràpies com un camí de benestar integral, adaptació i cura conscient.",
+    "quote": "\"Un lloc on cada pràctica i cada sessió es viuen com una invitació a tornar a un/a mateix/a.\"",
+    "cta_title": "Com puc acompanyar-te?",
+    "cta_p1": "A Ioga i Teràpies Aruṇāchala, t'ofereixo un espai de cura i presència on retrobar-te. Aquest és el teu lloc.",
+    "mantra": "Om Namaḥ Śivaya",
+    "seo": {
+      "title": "Susana Pérez Gil | Qui Soc | Ioga Arunachala",
+      "description": "Coneix la Susana Pérez Gil, fundadora d'Arunachala. Més de 25 anys d'experiència en Ioga, massatges i teràpies holístiques a Cornellà."
+    },
+    "news": {
+      "title": "Notícies",
+      "subtitle": "Segueix de prop el nostre camí"
+    }
+  },
+  "contact_page": {
+    "title": "Contacte",
+    "subtitle": "Tens algun dubte? Som aquí per ajudar-te",
+    "whatsapp": {
+      "title": "Parlem per WhatsApp",
+      "description": "Prefereixes un tracte més directe? Escriu-nos per WhatsApp per resoldre dubtes o reservar la teva cita a l'instant.",
+      "button": "Obrir Xat de WhatsApp",
+      "note": "Et respondrem encantats al més aviat possible."
+    },
+    "info": {
+      "title": "Informació de Contacte",
+      "address_label": "Adreça",
+      "address": "Yoga y Terapias Arunachala - Passatge de Mateu Oliva, 3, 08940 Cornellà de Llobregat, Barcelona",
+      "phone_label": "Telèfon / WhatsApp",
+      "email_label": "Email",
+      "hours_label": "Horari",
+      "hours_desc": "Consulta el nostre horari de classes i activitats.",
+      "quote": "Un lloc on cada pràctica i cada sessió són una invitació a tornar a un mateix."
+    },
+    "seo": {
+      "title": "Contacte | Ioga i Teràpies Arunachala Cornellà",
+      "description": "Contacta amb Arunachala Ioga a Cornellà. Reserva la teva classe de ioga o sessió de teràpia. Som al Carrer del Bruc 44."
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Articles sobre ioga, meditació i benestar",
+    "section_title": "Últimes Publicacions",
+    "all": "Tots",
+    "no_articles": "No hi ha articles disponibles",
+    "back_to_blog": "Tornar al Blog",
+    "related_articles": "Articles Relacionats",
+    "read_more": "Llegir més",
+    "view_all": "Veure Tots els Articles",
+    "search": {
+      "placeholder": "Cerca articles...",
+      "no_results": "No s'han trobat articles",
+      "advanced_search": "Cerca avançada"
+    },
+    "filter": {
+      "category": "Categoria",
+      "date": "Data",
+      "tags": "Etiquetes"
+    },
+    "categories": {
+      "all": "Tots",
+      "yoga": "Ioga",
+      "therapy": "Teràpies",
+      "general": "General"
+    },
+    "seo": {
+      "title": "Blog | Arunachala Ioga i Teràpies",
+      "description": "Descobreix articles sobre ioga, meditació, teràpies holístiques i benestar al nostre blog."
+    },
+    "cta": {
+      "title": "T'ha inspirat aquest article?",
+      "description_yoga": "Vine a practicar amb nosaltres a Arunachala. Un espai de calma al cor de Cornellà.",
+      "description_therapy": "Vine a cuidar-te a Arunachala. El teu refugi de sanació i calma a Cornellà.",
+      "button": "Contacta amb nosaltres"
+    }
+  },
+  "legal": {
+    "title": "Avís Legal",
+    "subtitle": "Informació legal i condicions d'ús del lloc web",
+    "last_updated": "Última actualització",
+    "seo": {
+      "title": "Avís Legal | Arunachala Ioga i Teràpies",
+      "description": "Avís legal i condicions d'ús del lloc web d'Arunachala Ioga i Teràpies a Cornellà de Llobregat."
+    },
+    "sections": {
+      "identification": {
+        "title": "Identificació",
+        "company": "Titular",
+        "company_value": "Susana Pérez Gil - Arunachala Ioga i Teràpies",
+        "cif": "NIF",
+        "cif_value": "[Número d'identificació fiscal]",
+        "address": "Adreça",
+        "address_value": "Passatge de Mateu Oliva 3, baixos, 08940 Cornellà de Llobregat, Barcelona",
+        "email": "Email",
+        "phone": "Telèfon"
+      },
+      "object": {
+        "title": "Objecte del Lloc Web",
+        "content": "Aquest lloc web ofereix informació sobre les classes de ioga, teràpies holístiques i massatges d'Arunachala. En utilitzar aquest web, acceptes les condicions d'ús aquí establertes."
+      },
+      "conditions": {
+        "title": "Condicions d'Ús",
+        "content": "L'usuari es compromet a utilitzar el lloc web de forma adequada i conforme a la llei, sense difondre continguts inapropiats ni realitzar accions que puguin danyar el funcionament del web."
+      },
+      "property": {
+        "title": "Propietat Intel·lectual",
+        "content": "Tots els continguts d'aquest lloc web (textos, imatges, logotips, disseny) són propietat d'Arunachala. Pots visualitzar-los per a ús personal, però no pots reproduir-los, distribuir-los o modificar-los sense autorització."
+      },
+      "liability": {
+        "title": "Limitació de Responsabilitat",
+        "content": "Arunachala s'esforça per mantenir la informació actualitzada i correcta, però no es responsabilitza de possibles errors o omissions en els continguts, ni d'interrupcions temporals en el servei."
+      },
+      "law": {
+        "title": "Legislació Aplicable",
+        "content": "Aquest avís legal es regeix per la legislació espanyola. Qualsevol disputa es resoldrà als tribunals de Barcelona."
+      }
+    }
+  },
+  "privacy": {
+    "title": "Política de Privadesa",
+    "subtitle": "Informació sobre com tractem les teves dades personals",
+    "intro": "En compliment del Reglament (UE) 2016/679 del Parlament Europeu i del Consell de 27 d'abril de 2016 (RGPD) i la Llei Orgànica 3/2018, de 5 de desembre, de Protecció de Dades Personals i garantia dels drets digitals (LOPDGDD), t'informem sobre com tractem les teves dades personals.",
+    "last_updated": "Última actualització",
+    "seo": {
+      "title": "Política de Privadesa | Arunachala Ioga i Teràpies",
+      "description": "Política de privadesa i protecció de dades personals d'Arunachala Ioga i Teràpies a Cornellà de Llobregat."
+    },
+    "sections": {
+      "responsible": {
+        "title": "1. Responsable del tractament",
+        "content": "Titular: Susana Pérez Gil - Arunachala Ioga i Teràpies\nNIF: [Número d'identificació fiscal]\nAdreça: Passatge de Mateu Oliva 3, baixos, 08940 Cornellà de Llobregat, Barcelona\nEmail: yogayterapiasarunachala@gmail.com\nTelèfon: +34 678 481 971"
+      },
+      "data": {
+        "title": "2. Quines dades recollim?",
+        "content": "Podem recollir les següents dades personals:\n\n- Dades de contacte: nom, cognoms, email, telèfon\n- Dades de reserva: informació sobre les classes o sessions reservades\n- Dades de salut: informació mèdica rellevant per a les teràpies (només amb el teu consentiment explícit)"
+      },
+      "purpose": {
+        "title": "3. Per a què fem servir les teves dades?",
+        "content": "Fem servir les teves dades per:\n\n- Gestió de classes i reserves: organitzar i confirmar la teva assistència a classes de ioga i sessions de teràpia\n- Comunicació: respondre a les teves consultes i enviar-te informació sobre els nostres serveis\n- Informació comercial: enviar-te novetats, promocions o esdeveniments (només si ens dónes el teu consentiment)\n- Atenció terapèutica: adaptar les sessions a les teves necessitats de salut (només dades necessàries i amb el teu consentiment)"
+      },
+      "legal_base": {
+        "title": "4. Base legal del tractament",
+        "content": "Tractem les teves dades basant-nos en:\n\n- Execució d'un contracte: per gestionar la teva reserva o inscripció en els nostres serveis\n- Consentiment: per enviar comunicacions comercials o tractar dades de salut\n- Interès legítim: per millorar els nostres serveis"
+      },
+      "recipients": {
+        "title": "5. Amb qui compartim les teves dades?",
+        "content": "No venem ni cedim les teves dades a tercers. Únicament podrien ser compartides amb:\n\n- Proveïdors de serveis: plataformes d'email, gestió de reserves o pagaments (sota acords de confidencialitat)\n- Autoritats: quan sigui legalment obligatori"
+      },
+      "retention": {
+        "title": "6. Quant de temps conservem les teves dades?",
+        "content": "Conservem les teves dades mentre:\n\n- Mantinguis una relació activa amb nosaltres (com a alumne/a o client)\n- Fins que sol·licitis la seva supressió\n- Durant el temps legalment exigit (dades fiscals: 6 anys)"
+      },
+      "rights": {
+        "title": "7. Els teus drets",
+        "content": "Tens dret a:\n\n- Accedir a les teves dades personals\n- Rectificar dades inexactes o incompletes\n- Suprimir les teves dades quan ja no siguin necessàries\n- Oposar-te al tractament de les teves dades\n- Limitar el tractament en determinades circumstàncies\n- Portabilitat de les teves dades a un altre responsable\n- Retirar el consentiment en qualsevol moment\n\nPer exercir els teus drets, envia'ns un email a: yogayterapiasarunachala@gmail.com\n\nTambé pots presentar una reclamació davant l'Agència Espanyola de Protecció de Dades (www.aepd.es)."
+      },
+      "security": {
+        "title": "8. Seguretat de les teves dades",
+        "content": "Hem adoptat mesures de seguretat apropiades per protegir les teves dades personals contra accés no autoritzat, pèrdua o alteració."
+      },
+      "minors": {
+        "title": "9. Dades de menors",
+        "content": "No recollim intencionadament dades de menors de 14 anys sense el consentiment dels seus pares o tutors. Si ets pare/mare i creus que el teu fill/a ens ha proporcionat dades, contacta amb nosaltres."
+      },
+      "updates": {
+        "title": "10. Canvis en la política de privadesa",
+        "content": "Podem actualitzar aquesta política de privadesa. Et recomanem revisar-la periòdicament. La data d'última actualització apareix a l'inici d'aquest document."
+      }
+    }
+  },
+  "chatbot": {
+    "welcome": "Namasté! 🙏 Benvingut a Arunachala. Soc el teu assistent virtual. En què et puc ajudar avui? Pots preguntar-me sobre horaris, classes de ioga o teràpies.",
+    "placeholder": "Escriu la teva pregunta...",
+    "tooltip": "Com puc ajudar-te? ✨",
+    "status": "Namasté 🙏 En línia",
+    "ai_notice": "✨ Intel·ligència Artificial entrenada per Arunachala ✨"
+  },
+  "reviews": {
+    "reviews_empty_title": "La teva opinió ens importa",
+    "reviews_empty_desc": "Encara no hem connectat les ressenyes de Google. Si has passat pel nostre centre, ens encantaria conèixer la teva experiència.",
+    "reviews_leave": "Deixar una ressenya a Google",
+    "reviews_title": "El que diuen de nosaltres",
+    "reviews_google_count": "ressenyes a Google",
+    "reviews_verified": "Client verificat",
+    "reviews_share": "Ens importa la teva opinió, comparteix-la"
+  }
 }

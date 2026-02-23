@@ -79,8 +79,8 @@ const Header: React.FC = () => {
         if (window.location.pathname === path) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
             navigate(path);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
 
