@@ -140,6 +140,22 @@ class EmailService:
             }
         }
         
+        # Connect to SMTP once and keep connection open for all emails
+        smtp_client = None
+        if self.use_smtp:
+            try:
+                smtp_client = aiosmtplib.SMTP(
+                    hostname=self.mail_server,
+                    port=self.mail_port,
+                    start_tls=(self.mail_port == 587),
+                    use_tls=(self.mail_port == 465),
+                )
+                await smtp_client.connect()
+                await smtp_client.login(self.mail_username, self.mail_password)
+            except Exception as e:
+                print(f"❌ SMTP Connection Error: {str(e)}", flush=True)
+                return False
+
         for recipient in recipients:
             email = recipient.get("email")
             name = recipient.get("first_name") or ("amig@ de Arunachala" if recipient.get("language") != "en" else "friend of Arunachala")
@@ -207,18 +223,17 @@ class EmailService:
             message.set_content(f"{t['greeting'].format(name=name)}, {title}. {activity_url}")
             message.add_alternative(html_content, subtype="html")
 
+            if self.use_smtp and smtp_client:
+                try:
+                    await smtp_client.send_message(message)
+                except Exception as e:
+                    print(f"❌ SMTP Send Error for {email}: {str(e)}", flush=True)
+
+        if smtp_client:
             try:
-                await aiosmtplib.send(
-                    message,
-                    hostname=self.mail_server,
-                    port=self.mail_port,
-                    username=self.mail_username,
-                    password=self.mail_password,
-                    start_tls=(self.mail_port == 587),
-                    use_tls=(self.mail_port == 465),
-                )
-            except Exception as e:
-                print(f"❌ SMTP Error for {email}: {str(e)}", flush=True)
+                await smtp_client.quit()
+            except:
+                pass
 
         return True
 
