@@ -178,7 +178,7 @@ const AboutPage: React.FC = () => {
                                 <h3 className="text-4xl font-headers text-matcha">
                                     {t('about.arunachala_title')}
                                 </h3>
-                                <p className="text-lg md:text-xl leading-relaxed font-light text-bone/90">
+                                <p className="text-lg md:text-xl leading-relaxed font-light text-bone/90 whitespace-pre-wrap">
                                     {t('about.arunachala_p1')}
                                 </p>
                                 <div className="pt-8 text-2xl md:text-3xl font-headers border-t border-matcha/30 tracking-widest text-matcha">
