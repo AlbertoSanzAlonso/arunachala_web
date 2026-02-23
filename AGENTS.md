@@ -232,3 +232,13 @@ arunachala_web/
     - Orphaned `import { API_BASE_URL }` in `GalleryManager.tsx` was causing ESLint `no-unused-vars` error that broke all Vercel deployments (`CI=true` treats warnings as errors).
     - Fix: Removed the unused import.
 
+## 📝 Recent Updates (2026-02-23)
+- **Async Concurrency & Redis Caching**:
+    - **Database Layer Upgrade**: Initiated the migration to asynchronous database operations by integrating `asyncpg` and async SQLAlchemy sessions (starting with essential background tasks and health checks) to allow the FastAPI server to handle significantly more concurrent connections without blocking.
+    - **Redis Cache Integration**:
+        - Deployed a standalone authenticated **Redis 7** service in the production Hetzner/Coolify environment.
+        - Created a robust caching module (`app/core/redis_cache.py`) with configurable Time-To-Live (TTLs) and a graceful **fallback mode** (if Redis becomes unavailable, the app seamlessly defaults to direct database queries without crashing).
+    - **Chatbot Performance Optimization**:
+        - Caching has been aggressively applied to the RAG Chatbot's most expensive operations: `get_inventory_summary` (counting & aggregating all site activities per language) gets a 5-minute TTL, and active Agent configs get a 10-minute TTL.
+        - This dramatically reduces the load on the Supabase Postgres instance on every user interaction.
+        - **Smart Cache Invalidation**: Webhooks in `content.py` and `webhooks.py` perform real-time cache pattern invalidation (`inventory:*`) whenever new activities or content are saved, ensuring the AI never serves stale information despite the caching layer.
