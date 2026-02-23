@@ -326,7 +326,7 @@ const ChatBot: React.FC = () => {
                                         <ReactMarkdown
                                             remarkPlugins={[remarkGfm]}
                                             components={{
-                                                a: ({ node, ...props }) => <a {...props} target="_blank" rel="noopener noreferrer" className="underline font-medium" />
+                                                a: ({ node, children, ...props }) => <a {...props} target="_blank" rel="noopener noreferrer" className="underline font-medium">{children}</a>
                                             }}
                                         >
                                             {msg.text}
