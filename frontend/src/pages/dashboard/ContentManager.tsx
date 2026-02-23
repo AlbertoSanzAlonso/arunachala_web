@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import { PlusIcon, PencilSquareIcon, TrashIcon, CheckIcon, MagnifyingGlassIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, PencilSquareIcon, TrashIcon, CheckIcon, MagnifyingGlassIcon, ClockIcon, EyeIcon } from '@heroicons/react/24/outline';
 import ChevronUpIcon from '@heroicons/react/24/outline/ChevronUpIcon';
 import ChevronDownIcon from '@heroicons/react/24/outline/ChevronDownIcon';
 import SparklesIcon from '@heroicons/react/24/outline/SparklesIcon';
@@ -801,6 +801,14 @@ export default function ContentManager() {
                                         >
                                             <TrashIcon className="h-4 w-4" /> Borrar
                                         </button>
+                                        <a
+                                            href={item.type === 'meditation' ? `/meditaciones/${item.slug}` : `/blog/${item.slug}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-500 rounded-xl text-xs font-bold hover:bg-blue-100 transition-all"
+                                        >
+                                            <EyeIcon className="h-4 w-4" /> Ver
+                                        </a>
                                     </div>
                                 </div>
                             ))
@@ -884,6 +892,15 @@ export default function ContentManager() {
                                                                 <button onClick={() => handleDelete(item.id)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all" title="Borrar">
                                                                     <TrashIcon className="h-5 w-5" />
                                                                 </button>
+                                                                <a
+                                                                    href={item.type === 'meditation' ? `/meditaciones/${item.slug}` : `/blog/${item.slug}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-all"
+                                                                    title="Ver en la web"
+                                                                >
+                                                                    <EyeIcon className="h-5 w-5" />
+                                                                </a>
                                                             </div>
                                                         </td>
                                                     </tr>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, Fragment } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { PlusIcon, PencilIcon, TrashIcon, PhotoIcon, SparklesIcon, CalendarIcon, ChatBubbleLeftRightIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, PencilIcon, TrashIcon, PhotoIcon, SparklesIcon, CalendarIcon, ChatBubbleLeftRightIcon, XMarkIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { Dialog, Transition } from '@headlessui/react';
 import Cropper from 'react-easy-crop';
 import { Point, Area } from 'react-easy-crop/types';
@@ -720,6 +720,15 @@ export default function ActivityManager() {
                                 <button onClick={() => handleEdit(item)} className="flex-1 px-4 py-3 text-sm font-bold text-gray-600 hover:bg-white hover:text-primary-600 transition-all flex items-center justify-center gap-2 leading-none"><PencilIcon className="h-4 w-4" /> Editar</button>
                                 <div className="w-px bg-gray-100"></div>
                                 <button onClick={() => handleDeleteClick(item.id)} className="flex-1 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-all flex items-center justify-center gap-2 leading-none"><TrashIcon className="h-4 w-4" /> Borrar</button>
+                                <div className="w-px bg-gray-100"></div>
+                                <a
+                                    href={`/actividades?activity=${item.id}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 px-4 py-3 text-sm font-bold text-blue-500 hover:bg-blue-50 transition-all flex items-center justify-center gap-2 leading-none"
+                                >
+                                    <EyeIcon className="h-4 w-4" /> Ver
+                                </a>
                             </div>
                         </div>
                     ))}

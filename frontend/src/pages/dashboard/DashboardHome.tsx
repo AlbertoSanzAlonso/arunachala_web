@@ -3,11 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { ArrowTrendingUpIcon, UsersIcon, DocumentDuplicateIcon, CheckCircleIcon, XMarkIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from '../../config';
 
-const stats = [
-    { name: 'Visitas Totales', stat: '12,453', change: '12%', changeType: 'increase', icon: UsersIcon },
-    { name: 'Páginas Vistas', stat: '45,231', change: '5.4%', changeType: 'increase', icon: DocumentDuplicateIcon },
-    { name: 'Ratio de Rebote', stat: '24.57%', change: '3.2%', changeType: 'decrease', icon: ArrowTrendingUpIcon },
-];
+const stats: any[] = [];
 
 interface ActivityItem {
     id: number;
@@ -262,33 +258,7 @@ export default function DashboardHome() {
                 )}
             </div>
 
-            {/* Stats Section */}
-            <div className="grid grid-cols-1 gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-6 sm:mb-8">
-                {stats.map((item) => (
-                    <div
-                        key={item.name}
-                        className="relative overflow-hidden rounded-2xl bg-white px-4 py-5 shadow-sm border border-gray-100 group hover:shadow-md transition-all"
-                    >
-                        <dt>
-                            <div className="absolute rounded-xl bg-primary-500 p-3 group-hover:scale-110 transition-transform">
-                                <item.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" aria-hidden="true" />
-                            </div>
-                            <p className="ml-14 sm:ml-16 truncate text-xs sm:text-sm font-medium text-gray-500">{item.name}</p>
-                        </dt>
-                        <dd className="ml-14 sm:ml-16 flex items-baseline">
-                            <p className="text-xl sm:text-2xl font-bold text-gray-900">{item.stat}</p>
-                            <p
-                                className={classNames(
-                                    item.changeType === 'increase' ? 'text-green-600' : 'text-red-600',
-                                    'ml-2 flex items-baseline text-xs sm:text-sm font-semibold'
-                                )}
-                            >
-                                {item.changeType === 'increase' ? '↑' : '↓'} {item.change}
-                            </p>
-                        </dd>
-                    </div>
-                ))}
-            </div>
+            {/* Metrics removed by request */}
 
             {/* Historial del Sitio */}
             <div className="space-y-4">

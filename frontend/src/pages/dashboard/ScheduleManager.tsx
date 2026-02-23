@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PlusIcon, PencilIcon, TrashIcon, ClockIcon, CalendarIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, PencilIcon, TrashIcon, ClockIcon, CalendarIcon, ArrowLeftIcon, EyeIcon } from '@heroicons/react/24/outline';
 import VisualScheduleEditor from './VisualScheduleEditor';
 import { API_BASE_URL } from '../../config';
 import PageLoader from '../../components/PageLoader';
@@ -317,6 +317,15 @@ export default function ScheduleManager() {
                                                 >
                                                     <TrashIcon className="h-5 w-5" />
                                                 </button>
+                                                <a
+                                                    href="/clases-de-yoga"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-all"
+                                                    title="Ver en la web"
+                                                >
+                                                    <EyeIcon className="h-5 w-5" />
+                                                </a>
                                             </div>
                                         </div>
                                     </li>

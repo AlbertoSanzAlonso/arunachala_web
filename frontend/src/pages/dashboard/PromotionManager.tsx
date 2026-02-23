@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { PlusIcon, PencilIcon, TrashIcon, PhotoIcon, TicketIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, PencilIcon, TrashIcon, PhotoIcon, TicketIcon, EyeIcon } from '@heroicons/react/24/outline';
 import Cropper from 'react-easy-crop';
 import { Point, Area } from 'react-easy-crop/types';
 import getCroppedImg from '../../utils/cropImage';
@@ -302,6 +302,14 @@ export default function PromotionManager() {
                             <div className="flex border-t border-gray-100 bg-gray-50/50">
                                 <button onClick={() => handleEdit(item)} className="flex-1 py-3 text-sm font-bold text-gray-600 hover:bg-white flex items-center justify-center gap-2 transition-colors"><PencilIcon className="h-4 w-4" /> Editar</button>
                                 <button onClick={() => { setItemToDelete(item.id); setShowDeleteConfirm(true); }} className="flex-1 py-3 text-sm font-bold text-red-500 hover:bg-red-50 flex items-center justify-center gap-2 transition-colors"><TrashIcon className="h-4 w-4" /> Eliminar</button>
+                                <a
+                                    href="/promociones"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 py-3 text-sm font-bold text-blue-500 hover:bg-blue-50 flex items-center justify-center gap-2 transition-colors"
+                                >
+                                    <EyeIcon className="h-4 w-4" /> Ver
+                                </a>
                             </div>
                         </div>
                     ))}

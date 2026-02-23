@@ -246,3 +246,11 @@ arunachala_web/
 - **Vercel CI Build Fix (ESLint)**:
     - Fixed a build failure caused by an unused `handleLinkClick` function in `Header.tsx`. 
     - Verified the fix by running a local build with `CI=true`.
+## 📝 Recent Updates (2026-02-23 - Evening)
+- **Automatic Translation System Fix**:
+    - **Root Cause**: The background translation task (`auto_translate_background`) was failing in the app's context because `translation_utils.py` was trying to load `OPENAI_API_KEY` via a local `load_dotenv()` call that couldn't find the `.env` file when running as a package or under different working directories.
+    - **Fix**: Centralized AI API keys in `config.py` (Pydantic Settings). Updated `translation_utils.py` to use a lazy-initialized OpenAI client that pulls the key directly from the global studio settings.
+    - **Required Action**: Ensure `OPENAI_API_KEY` is present in Coolify environment variables.
+- **Storage Path Cleanup & URL Standardization**:
+    - **Storage Map**: Documented the definitive structure of the `arunachala-images` bucket to identify disused folders (e.g., base-level `articles/`, `yoga/`, etc., are legacy; new code uses `gallery/articulos/`, `gallery/yoga/`, etc.).
+    - **URL Integrity**: Any content created during the temporary translation failure (IDs 173, 174, etc.) can be fixed by simply re-saving them in the Dashboard, which will now correctly trigger the automated translation.

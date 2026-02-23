@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { PlusIcon, PencilIcon, TrashIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, PencilIcon, TrashIcon, PhotoIcon, EyeIcon } from '@heroicons/react/24/outline';
 import Cropper from 'react-easy-crop';
 import { Point, Area } from 'react-easy-crop/types';
 import getCroppedImg from '../../utils/cropImage';
@@ -442,6 +442,15 @@ export default function TreatmentsManager() {
                                 >
                                     <TrashIcon className="h-4 w-4" /> Eliminar
                                 </button>
+                                <div className="w-px bg-gray-100"></div>
+                                <a
+                                    href={activeTab === 'massages' ? '/terapias/masajes' : '/terapias/terapias-holisticas'}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 px-4 py-3 text-sm font-bold text-blue-500 hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
+                                >
+                                    <EyeIcon className="h-4 w-4" /> Ver
+                                </a>
                             </div>
                         </div>
                     ))}
