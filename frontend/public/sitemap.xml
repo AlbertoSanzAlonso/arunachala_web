@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- PÁGINAS PRINCIPALES -->
   <url>
     <loc>https://www.yogayterapiasarunachala.es/</loc>
     <lastmod>2026-02-23</lastmod>
@@ -10,13 +11,13 @@
     <loc>https://www.yogayterapiasarunachala.es/clases-de-yoga</loc>
     <lastmod>2026-02-23</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.yogayterapiasarunachala.es/terapias-y-masajes</loc>
     <lastmod>2026-02-23</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.yogayterapiasarunachala.es/actividades</loc>
@@ -28,7 +29,7 @@
     <loc>https://www.yogayterapiasarunachala.es/blog</loc>
     <lastmod>2026-02-23</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.yogayterapiasarunachala.es/quienes-somos</loc>
@@ -39,7 +40,27 @@
   <url>
     <loc>https://www.yogayterapiasarunachala.es/contacto</loc>
     <lastmod>2026-02-23</lastmod>
-    <changefreq>yearly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.4</priority>
+  </url>
+
+  <!-- ARTÍCULOS ESPECÍFICOS -->
+  <url>
+    <loc>https://www.yogayterapiasarunachala.es/blog/yoga-nidra-profunda-relajacion-para-el-bienestar</loc>
+    <lastmod>2026-02-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.yogayterapiasarunachala.es/blog/dinacharya-la-rutina-ayurvedica-que-transforma-tu-dia</loc>
+    <lastmod>2026-02-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.yogayterapiasarunachala.es/blog/masaje-para-dolores-de-cabeza-tensionales-alivio-y-bienestar-integral</loc>
+    <lastmod>2026-02-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>
