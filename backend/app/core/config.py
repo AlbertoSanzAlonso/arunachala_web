@@ -40,6 +40,12 @@ class Settings(BaseSettings):
     # Frontend
     FRONTEND_URL: str = "http://localhost:3000"
     
+    # Redis Cache
+    REDIS_URL: str = "redis://localhost:6379/0"
+    CACHE_TTL_INVENTORY: int = 300   # 5 min
+    CACHE_TTL_CONFIG: int = 600      # 10 min
+    CACHE_TTL_CONTENT: int = 120     # 2 min
+    
     # Email (SMTP)
     MAIL_SERVER: Optional[str] = None
     MAIL_PORT: int = 587

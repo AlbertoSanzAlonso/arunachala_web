@@ -77,9 +77,25 @@ scheduler = AsyncIOScheduler()
 
 @app.on_event("startup")
 async def startup_event():
+    # --- Redis Cache ---
+    from app.core.redis_cache import cache
+    await cache.connect()
+
+    # --- Automation Scheduler ---
     print("🚀 Automation Scheduler (APScheduler) Started")
     scheduler.add_job(check_automation_tasks, 'cron', minute='*')
     scheduler.start()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    # --- Redis Cache ---
+    from app.core.redis_cache import cache
+    await cache.disconnect()
+
+    # --- Scheduler ---
+    if scheduler.running:
+        scheduler.shutdown(wait=False)
+    print("🛑 Application shutdown complete")
 
 # Configure CORS
 if settings.ALLOWED_ORIGINS:
@@ -136,3 +152,12 @@ app.mount("/static", StaticFiles(directory=static_dir), name="static")
 @app.get("/")
 def read_root():
     return {"message": "Welcome to Arunachala API"}
+
+@app.get("/health")
+async def health_check():
+    """Health check — includes Redis status."""
+    from app.core.redis_cache import cache
+    return {
+        "status": "ok",
+        "redis": "connected" if cache.is_healthy else "unavailable (degraded mode)",
+    }

@@ -5,6 +5,7 @@ import os
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
 from openai import OpenAI
+from app.core.redis_cache import cache, key_inventory, key_agent_config, TTL_INVENTORY, TTL_CONFIG
 
 # Initialize Router
 router = APIRouter()
@@ -292,7 +293,12 @@ def clean_ai_response(text: str) -> str:
 # --- Endpoints ---
 
 @router.get("/config")
-def get_agent_config(db: Session = Depends(get_db)):
+async def get_agent_config(db: Session = Depends(get_db)):
+    # Try cache first
+    cached = await cache.get(key_agent_config())
+    if cached:
+        return cached
+
     config = db.query(AgentConfig).first()
     if not config:
         config = AgentConfig(
@@ -307,7 +313,20 @@ def get_agent_config(db: Session = Depends(get_db)):
         db.add(config)
         db.commit()
         db.refresh(config)
-    return config
+
+    config_dict = {
+        "id": config.id,
+        "tone": config.tone,
+        "response_length": config.response_length,
+        "emoji_style": config.emoji_style,
+        "focus_area": config.focus_area,
+        "system_instructions": config.system_instructions,
+        "quiz_model": config.quiz_model,
+        "chatbot_model": config.chatbot_model,
+        "is_active": config.is_active,
+    }
+    await cache.set(key_agent_config(), config_dict, ttl=TTL_CONFIG)
+    return config_dict
 
 class AgentConfigUpdate(BaseModel):
     tone: str
@@ -320,7 +339,7 @@ class AgentConfigUpdate(BaseModel):
     is_active: bool
 
 @router.post("/config")
-def update_agent_config(config_data: AgentConfigUpdate, db: Session = Depends(get_db)):
+async def update_agent_config(config_data: AgentConfigUpdate, db: Session = Depends(get_db)):
     config = db.query(AgentConfig).first()
     if not config:
         config = AgentConfig()
@@ -337,6 +356,10 @@ def update_agent_config(config_data: AgentConfigUpdate, db: Session = Depends(ge
     
     db.commit()
     db.refresh(config)
+
+    # Invalidate the agent config cache so next request fetches fresh data
+    await cache.delete(key_agent_config())
+
     return config
 
 from fastapi.responses import StreamingResponse
@@ -346,13 +369,17 @@ import asyncio
 @router.post("/chat")
 async def chat_endpoint(request: ChatRequest, db: Session = Depends(get_db)):
     """
-    Endpoint principal del Chatbot RAG con soporte para Streaming.
+    Endpoint principal del Chatbot RAG con soporte para Streaming y caché Redis.
     """
     if not openai_client and not groq_client and not gemini_model:
         return ChatResponse(response="Lo siento, no hay ningún proveedor de IA configurado.")
         
-    # Get configuration
-    config = db.query(AgentConfig).first()
+    # Get configuration — try cache first, fallback to DB
+    cached_config = await cache.get(key_agent_config())
+    if cached_config:
+        config = type('AgentConfig', (), cached_config)()
+    else:
+        config = db.query(AgentConfig).first()
     
     # Defaults
     tone = config.tone if config else "Asistente Amable"
@@ -396,8 +423,16 @@ async def chat_endpoint(request: ChatRequest, db: Session = Depends(get_db)):
     # 1. Get user query
     user_query = request.messages[-1].content
     
-    # 2. Retrieve Context (RAG) and Inventory
-    inventory_summary = get_inventory_summary(db)
+    # 2. Retrieve Context (RAG) and Inventory — use Redis cache for inventory
+    cache_key = key_inventory(request.language[:2])
+    inventory_summary = await cache.get(cache_key)
+    if inventory_summary is None:
+        inventory_summary = get_inventory_summary(db)
+        await cache.set(cache_key, inventory_summary, ttl=TTL_INVENTORY)
+        print(f"💾 Inventory MISS — built from DB and cached for {TTL_INVENTORY}s")
+    else:
+        print(f"⚡ Inventory HIT from Redis cache")
+
     print(f"🌍 DEBUG INVENTORY: {inventory_summary}")
     retrieved_docs = search_knowledge_base(user_query)
     context_text = format_context(retrieved_docs)

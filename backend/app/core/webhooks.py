@@ -5,6 +5,7 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from typing import Optional, Any
 from app.core.database import SessionLocal
+from app.core.redis_cache import cache
 
 N8N_WEBHOOK_URL = os.getenv("N8N_RAG_WEBHOOK_URL")
 
@@ -226,7 +227,12 @@ async def notify_n8n_content_change(
     if entity and hasattr(entity, 'vector_id'):
         vector_id = entity.vector_id
 
-    # Execute async
+    # Invalidate Redis inventory cache on any content change —
+    # the next chat request will rebuild the inventory from DB.
+    await cache.invalidate_pattern("inventory:*")
+    print(f"🗑️  Redis inventory cache cleared after {action} on {content_type} #{content_id}")
+
+    # Execute async webhook to n8n
     asyncio.create_task(_send(log_id, vector_id, flat_payload))
 
     # Direct delete from Qdrant if action is delete (remains same)
@@ -249,3 +255,4 @@ async def notify_n8n_content_change(
                 
         except Exception as q_e:
             print(f"⚠️  Direct Qdrant deletion failed: {q_e}")
+

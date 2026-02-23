@@ -66,6 +66,21 @@ services:
     networks:
       - yoga_network
 
+  # 5. CACHÉ (Redis)
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru --save ""
+    ports:
+      - "6379:6379"
+    networks:
+      - yoga_network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
 # Red privada para que hablen entre ellos
 networks:
   yoga_network:

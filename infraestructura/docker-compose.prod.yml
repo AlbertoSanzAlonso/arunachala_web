@@ -38,8 +38,11 @@ services:
       - ./.env
     environment:
       - DATABASE_URL=postgresql://arunachala:arunachala1234@postgres:5432/arunachala_db
+      - REDIS_URL=redis://redis:6379/0
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - arunachala_net
@@ -75,6 +78,19 @@ services:
       - qdrant_data:/qdrant/storage
     networks:
       - arunachala_net
+
+  # Caché en memoria — no se persiste a disco (solo caché)
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru --save ""
+    networks:
+      - arunachala_net
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
 
 volumes:
   caddy_data:
