@@ -28,11 +28,10 @@ interface SeoData {
 export default function SeoStats() {
     const [data, setData] = useState<SeoData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchStats = async () => {
-            const token = localStorage.getItem('token');
+            const token = sessionStorage.getItem('access_token');
             try {
                 const response = await fetch(`${API_BASE_URL}/api/seo/stats`, {
                     headers: {
@@ -43,7 +42,6 @@ export default function SeoStats() {
                 setData(result);
             } catch (err) {
                 console.error("Error fetching SEO stats:", err);
-                setError("No se pudieron cargar las estadísticas.");
             } finally {
                 setIsLoading(false);
             }
