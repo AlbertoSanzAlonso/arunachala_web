@@ -34,10 +34,10 @@ async def get_reviews():
     mock_url = "https://www.google.com/maps/search/?api=1&query=Arunachala+Yoga"
 
     if not api_key or not place_id:
-        print("Google API Key or Place ID not found. returning mock data.")
+        print("Google API Key or Place ID not found. returning empty state.")
         return {
-            "rating": 4.9,
-            "total_reviews": 124,
+            "rating": 0,
+            "total_reviews": 0,
             "url": mock_url,
             "reviews": MOCK_REVIEWS
         }
@@ -52,8 +52,8 @@ async def get_reviews():
             if data.get("status") != "OK":
                 print(f"Google API Error: {data.get('status')} - {data.get('error_message')}")
                 return {
-                    "rating": 4.9,
-                    "total_reviews": 124,
+                    "rating": 0,
+                    "total_reviews": 0,
                     "url": mock_url,
                     "reviews": MOCK_REVIEWS
                 }
@@ -64,7 +64,7 @@ async def get_reviews():
             formatted_reviews = []
             for review in google_reviews:
                 formatted_reviews.append({
-                    "id": review.get("time"), # Use timestamp as ID
+                    "id": str(review.get("time")), # Use timestamp as ID (converted to string)
                     "author": review.get("author_name"),
                     "text": review.get("text"),
                     "rating": review.get("rating"),
@@ -82,8 +82,8 @@ async def get_reviews():
     except Exception as e:
         print(f"Error fetching reviews: {e}")
         return {
-            "rating": 4.9,
-            "total_reviews": 124,
+            "rating": 0,
+            "total_reviews": 0,
             "url": mock_url,
             "reviews": MOCK_REVIEWS
         }
