@@ -232,7 +232,22 @@ def get_recent_activity(
                 'timestamp': user.updated_at
             })
     
-    # Sort all activities by timestamp and return top N
+@router.get("/stats")
+def get_site_stats(
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Get counts of various entities for the dashboard"""
+    return {
+        "articles": db.query(Content).filter(Content.type == 'article').count(),
+        "meditations": db.query(Content).filter(Content.type == 'meditation').count(),
+        "images": db.query(Gallery).count(),
+        "activities": db.query(Activity).count(),
+        "yoga_classes": db.query(YogaClassDefinition).count(),
+        "users": db.query(User).count()
+    }
+
+# Sort all activities by timestamp and return top N
     activities.sort(key=lambda x: x['timestamp'], reverse=True)
     
     return activities[:limit]

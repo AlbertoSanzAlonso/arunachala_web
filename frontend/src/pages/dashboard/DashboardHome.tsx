@@ -50,7 +50,26 @@ export default function DashboardHome() {
     const [selectedComment, setSelectedComment] = useState<{ text: string; option: string; date: string; votes?: number } | null>(null);
     const [showCommentModal, setShowCommentModal] = useState(false);
     const [finishedActivities, setFinishedActivities] = useState<any[]>([]);
+    const [stats, setStats] = useState<any>(null);
     const [ongoingCourses, setOngoingCourses] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const token = sessionStorage.getItem('access_token');
+                const response = await fetch(`${API_BASE_URL}/api/dashboard/stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setStats(data);
+                }
+            } catch (error) {
+                console.error('Error fetching stats:', error);
+            }
+        };
+        fetchStats();
+    }, []);
 
     useEffect(() => {
         // Check if there's a notification in the location state
@@ -256,7 +275,28 @@ export default function DashboardHome() {
                 )}
             </div>
 
-            {/* Metrics removed by request */}
+            {/* Metrics Section */}
+            <div className="space-y-4">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900">Estado del Contenido</h3>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
+                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Artículos</p>
+                        <p className="text-2xl sm:text-3xl font-bold text-forest mt-1">{stats?.articles ?? 0}</p>
+                    </div>
+                    <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
+                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Meditaciones</p>
+                        <p className="text-2xl sm:text-3xl font-bold text-forest mt-1">{stats?.meditations ?? 0}</p>
+                    </div>
+                    <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
+                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Imágenes</p>
+                        <p className="text-2xl sm:text-3xl font-bold text-forest mt-1">{stats?.images ?? 0}</p>
+                    </div>
+                    <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
+                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Clases</p>
+                        <p className="text-2xl sm:text-3xl font-bold text-forest mt-1">{stats?.yoga_classes ?? 0}</p>
+                    </div>
+                </div>
+            </div>
 
             {/* Historial del Sitio */}
             <div className="space-y-4">
