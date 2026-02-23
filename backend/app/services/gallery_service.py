@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from fastapi import UploadFile, HTTPException
-from app.models.models import Gallery
+from app.models.models import Gallery, DashboardActivity
 from app.core.image_utils import save_upload_file, delete_file
 import os
 from typing import List
@@ -54,6 +54,17 @@ class GalleryService:
         self.db.add(new_image)
         self.db.commit()
         self.db.refresh(new_image)
+
+        # Log Activity
+        activity = DashboardActivity(
+            type='gallery',
+            action='created',
+            title=f"Nueva imagen en {category}",
+            entity_id=new_image.id
+        )
+        self.db.add(activity)
+        self.db.commit()
+
         return new_image
 
     def reorder_images(self, items: List[dict]):
@@ -68,6 +79,16 @@ class GalleryService:
             raise HTTPException(status_code=404, detail="Image not found")
         
         delete_file(image.url)
+        
+        # Log Activity before deleting the DB record
+        activity = DashboardActivity(
+            type='gallery',
+            action='deleted',
+            title=f"Imagen eliminada de {image.category}",
+            entity_id=image_id
+        )
+        self.db.add(activity)
+        
         self.db.delete(image)
         self.db.commit()
 
@@ -77,6 +98,15 @@ class GalleryService:
         for image in images:
             delete_file(image.url)
             self.db.delete(image)
+        
+        # Log Activity
+        activity = DashboardActivity(
+            type='gallery',
+            action='deleted',
+            title=f"{count} imágenes eliminadas",
+            entity_id=None
+        )
+        self.db.add(activity)
         self.db.commit()
         return count
 

@@ -81,7 +81,7 @@ async def get_reviews():
                 "rating": result.get("rating", 0),
                 "total_reviews": result.get("user_ratings_total", 0),
                 "url": result.get("url", mock_url),
-                "reviews": formatted_reviews[:3] # Returning top 3 reviews
+                "reviews": formatted_reviews[:10] # Returning more reviews for the slider
             }
 
     except Exception as e:
