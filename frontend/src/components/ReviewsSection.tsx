@@ -133,19 +133,22 @@ const ReviewsSection: React.FC = () => {
                         </>
                     )}
 
-                    <div className="relative min-h-[350px] md:min-h-[300px] flex items-center justify-center px-4">
-                        <AnimatePresence mode="wait">
+                    <div className="relative min-h-[380px] md:min-h-[300px] flex items-center justify-center px-4 overflow-hidden">
+                        <AnimatePresence>
                             {reviews.length > 0 && (
                                 <motion.a
                                     key={reviews[currentIndex].id}
                                     href={reviews[currentIndex].author_url || googleUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    initial={{ opacity: 0, x: 50 }}
+                                    initial={{ opacity: 0, x: 100 }}
                                     animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -50 }}
-                                    transition={{ duration: 0.5, ease: "easeInOut" }}
-                                    className="absolute w-full bg-white/60 backdrop-blur-md p-8 md:p-10 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-white/20 group"
+                                    exit={{ opacity: 0, x: -100 }}
+                                    transition={{
+                                        duration: 0.6,
+                                        ease: [0.4, 0, 0.2, 1]
+                                    }}
+                                    className="absolute w-full bg-white/60 backdrop-blur-md p-8 md:p-10 rounded-3xl shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-white/20 group"
                                     onMouseEnter={() => setIsAutoPlaying(false)}
                                     onMouseLeave={() => setIsAutoPlaying(true)}
                                 >

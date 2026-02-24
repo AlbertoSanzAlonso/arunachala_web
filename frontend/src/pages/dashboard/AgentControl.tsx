@@ -878,16 +878,16 @@ const AgentControl: React.FC = () => {
 
             {/* KNOWLEDGE CENTER */}
             <div className="mt-12 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                         <div>
                             <h2 className="text-xl font-headers text-bark">Centro de Conocimiento</h2>
                             <p className="text-gray-500 text-sm">Gestiona la sincronización entre la base de datos y la memoria de la IA.</p>
                         </div>
                         {(ragStatus?.processing_count > 0 || syncLoading !== null || (Date.now() - lastSyncTime < 30000)) && (
-                            <div className="flex items-center gap-2 bg-matcha/10 px-3 py-1 rounded-full border border-matcha/20 animate-pulse">
+                            <div className="flex items-center gap-2 bg-matcha/10 px-3 py-1 rounded-full border border-matcha/20 animate-pulse w-fit">
                                 <div className="w-2 h-2 bg-matcha rounded-full animate-bounce" />
-                                <span className="text-[10px] font-bold text-forest uppercase tracking-wider">Actualizando...</span>
+                                <span className="text-[10px] font-bold text-forest uppercase tracking-wider whitespace-nowrap">Actualizando...</span>
                             </div>
                         )}
                     </div>
@@ -897,10 +897,15 @@ const AgentControl: React.FC = () => {
                             setRagStatus(null);
                             fetchRagStatus();
                         }}
-                        className="p-2 text-gray-400 hover:text-forest transition-colors"
+                        className="p-2 text-gray-400 hover:text-forest transition-colors self-start sm:self-center"
                         title="Actualizar estado"
                     >
-                        <svg className={`w-5 h-5 ${syncLoading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg
+                            className={`w-5 h-5 ${(ragStatus?.processing_count > 0 || syncLoading !== null || (Date.now() - lastSyncTime < 30000)) ? 'animate-spin' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                     </button>

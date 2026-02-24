@@ -255,11 +255,11 @@ const ChatBot: React.FC = () => {
                     whileHover={{ scale: 1.1, rotate: 5 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => setIsOpen(true)}
-                    className="fixed bottom-6 left-6 z-50 bg-[#becf81] text-white p-4 rounded-full shadow-2xl hover:shadow-[0_0_20px_rgba(190,207,129,0.6)] hover:bg-[#a9bb6e] transition-all duration-300 flex items-center justify-center group"
+                    className="fixed bottom-28 md:bottom-6 right-6 z-50 bg-[#becf81] text-white p-4 rounded-full shadow-2xl hover:shadow-[0_0_20px_rgba(190,207,129,0.6)] hover:bg-[#a9bb6e] transition-all duration-300 flex items-center justify-center group"
                     aria-label="Abrir chat de ayuda"
                 >
                     <ChatBubbleLeftRightIcon className="w-8 h-8" />
-                    <span className="absolute left-full ml-3 bg-white text-[#5c6b3c] text-xs font-bold py-2 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md border border-[#becf81]/20 pointer-events-none">
+                    <span className="absolute right-full mr-3 bg-white text-[#5c6b3c] text-xs font-bold py-2 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md border border-[#becf81]/20 pointer-events-none">
                         {t('chatbot.tooltip', "¿Cómo puedo ayudarte? ✨")}
                     </span>
                     <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
@@ -270,11 +270,11 @@ const ChatBot: React.FC = () => {
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: 100, scale: 0.9, x: -20 }}
+                        initial={{ opacity: 0, y: 100, scale: 0.9, x: 20 }}
                         animate={{ opacity: 1, y: 0, scale: 1, x: 0 }}
-                        exit={{ opacity: 0, y: 100, scale: 0.9, x: -20 }}
+                        exit={{ opacity: 0, y: 100, scale: 0.9, x: 20 }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="fixed bottom-6 left-6 z-50 w-[92vw] md:w-[400px] max-h-[650px] h-[75vh] flex flex-col bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-white/20 font-body"
+                        className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 w-[calc(100vw-32px)] md:w-[400px] max-h-[85vh] md:max-h-[650px] h-[55vh] md:h-[75vh] flex flex-col bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-white/20 font-body"
                     >
                         {/* Header */}
                         <div className="bg-gradient-to-r from-[#becf81] to-[#a9bb6e] p-5 flex items-center justify-between shrink-0 shadow-md">
