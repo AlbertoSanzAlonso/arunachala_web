@@ -39,3 +39,7 @@ The dashboard includes an "Agent Control" page to adjust:
 -   **Model Selection**: Independently choose between **OpenAI (Quality)** and **Groq (Speed/Free)** for the main Chat and the Wellness Quiz.
 -   **Tone & Personality**: Adjust the bot's behavior.
 -   **Response length** and focus areas.
+
+## 🔌 Frontend State Management (Modern Tech Stack)
+-   **Zustand**: Controls the global open/close visibility state of the floating ChatBot UI (`useUIStore`).
+-   **React Query (TanStack)**: Manages RAG status auto-polling and cache invalidation automatically in the AgentControl panel, heavily reducing local `useEffect` boilerplate.

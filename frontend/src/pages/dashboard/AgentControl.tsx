@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../../config';
 import { useNavigate } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Cog6ToothIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AgentControl: React.FC = () => {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const [tone, setTone] = useState("Asistente Amable");
     const [responseLength, setResponseLength] = useState("balanced");
     const [emojiStyle, setEmojiStyle] = useState("moderate");
@@ -25,97 +27,68 @@ const AgentControl: React.FC = () => {
     const [showAdvanced, setShowAdvanced] = useState(false);
 
     // RAG Status State
-    const [ragStatus, setRagStatus] = useState<any>(null);
     const [syncLoading, setSyncLoading] = useState<string | null>(null); // null, 'all', 'yoga', etc.
     const [lastSyncTime, setLastSyncTime] = useState<number>(0);
     const [suppressPolling, setSuppressPolling] = useState(false);
-
-    // Automation Tasks State
-    const [tasks, setTasks] = useState<any[]>([]);
-    const [triggerLoading, setTriggerLoading] = useState<string | null>(null);
     const lastNotifiedIdRef = React.useRef<number>(0);
+
+    const [triggerLoading, setTriggerLoading] = useState<string | null>(null);
+
+    const { data: ragStatus } = useQuery({
+        queryKey: ['ragStatus'],
+        queryFn: async () => {
+            const response = await fetch(`${API_BASE_URL}/api/rag/sync-status`);
+            if (!response.ok) throw new Error('Failed to fetch RAG status');
+            return response.json();
+        },
+        refetchInterval: (query) => {
+            if (suppressPolling) return false;
+            const data = query.state?.data;
+            const now = Date.now();
+            const recentlyTriggered = now - lastSyncTime < 30000;
+            const isProcessing = data && data.processing_count > 0;
+            const explicitlyLoading = syncLoading !== null;
+            return explicitlyLoading || isProcessing || recentlyTriggered ? 3000 : false;
+        }
+    });
+
+    const { data: tasks = [] } = useQuery({
+        queryKey: ['automationTasks'],
+        queryFn: async () => {
+            const response = await fetch(`${API_BASE_URL}/api/automation/tasks`);
+            if (!response.ok) throw new Error('Failed to fetch automation tasks');
+            return response.json();
+        }
+    });
 
     useEffect(() => {
         fetchConfig();
-        fetchRagStatus();
-        fetchTasks();
     }, []);
 
-    // AUTO-POLLING LOGIC for real-time updates
     useEffect(() => {
-        let interval: any = null;
-
-        if (suppressPolling) return;
-
-        const now = Date.now();
-        const recentlyTriggered = now - lastSyncTime < 30000; // 30 seconds buffer
-        const isProcessing = ragStatus && ragStatus.processing_count > 0;
-
-        // Poll if we are explicitly loading, processing, or recently triggered sync
-        const shouldPoll = syncLoading !== null || isProcessing || recentlyTriggered;
-
-        if (shouldPoll) {
-            interval = setInterval(() => {
-                fetchRagStatus();
-            }, 3000);
-        }
-
-        return () => {
-            if (interval) clearInterval(interval);
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [syncLoading, ragStatus?.processing_count, suppressPolling, lastSyncTime]);
-
-    // Extra refresh when sync finishes
-    useEffect(() => {
-        if (ragStatus && ragStatus.processing_count === 0 && syncLoading === null) {
-            const timeout = setTimeout(() => {
-                fetchRagStatus();
-            }, 2000);
-            return () => clearTimeout(timeout);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ragStatus?.processing_count, syncLoading]);
-
-    const fetchRagStatus = async () => {
-        try {
-            // Add timestamp to prevent browser caching
-            const response = await fetch(`${API_BASE_URL}/api/rag/sync-status?t=${Date.now()}`);
-            if (response.ok) {
-                const data = await response.json();
-                setRagStatus(data);
-
-                // Check for new notifications
-                if (data.latest_success && data.latest_success.id > lastNotifiedIdRef.current) {
-                    // Only notify if within last 2 minutes (120000 ms)
-                    const syncTime = new Date(data.latest_success.vectorized_at).getTime();
-                    // If ref is 0, it's first load. Don't notify unless VERY recent (<10s)
-                    const tolerance = lastNotifiedIdRef.current === 0 ? 10000 : 120000;
-
-                    if (Date.now() - syncTime < tolerance) {
-                        const typeLabels: Record<string, string> = {
-                            'article': 'Artículo',
-                            'yoga_class': 'Clase Yoga',
-                            'promotion': 'Promoción',
-                            'meditation': 'Meditación',
-                            'activity': 'Actividad',
-                            'therapy': 'Terapia',
-                            'massage': 'Masaje',
-                            'announcement': 'Noticia'
-                        };
-                        const label = typeLabels[data.latest_success.entity_type] || 'Contenido';
-                        setMessage(`✅ Nuevo contenido aprendido: ${label} "${data.latest_success.title}"`);
-
-                        // Clear message after 5 seconds
-                        setTimeout(() => setMessage(null), 5000);
-                    }
-                    lastNotifiedIdRef.current = data.latest_success.id;
-                }
+        if (!ragStatus) return;
+        const data = ragStatus;
+        if (data.latest_success && data.latest_success.id > lastNotifiedIdRef.current) {
+            const syncTime = new Date(data.latest_success.vectorized_at).getTime();
+            const tolerance = lastNotifiedIdRef.current === 0 ? 10000 : 120000;
+            if (Date.now() - syncTime < tolerance) {
+                const typeLabels: Record<string, string> = {
+                    'article': 'Artículo',
+                    'yoga_class': 'Clase Yoga',
+                    'promotion': 'Promoción',
+                    'meditation': 'Meditación',
+                    'activity': 'Actividad',
+                    'therapy': 'Terapia',
+                    'massage': 'Masaje',
+                    'announcement': 'Noticia'
+                };
+                const label = typeLabels[data.latest_success.entity_type] || 'Contenido';
+                setMessage(`✅ Nuevo contenido aprendido: ${label} "${data.latest_success.title}"`);
+                setTimeout(() => setMessage(null), 5000);
             }
-        } catch (error) {
-            console.error("Failed to fetch RAG status", error);
+            lastNotifiedIdRef.current = data.latest_success.id;
         }
-    };
+    }, [ragStatus]);
 
     const handleSync = async (type: string, force: boolean = false) => {
         setSyncLoading(type);
@@ -159,7 +132,7 @@ const AgentControl: React.FC = () => {
                 setMessage(`¡Hecho! Se está actualizando la memoria con ${friendlyType[type] || 'el contenido'}. El progreso aparecerá abajo.`);
                 setLastSyncTime(Date.now());
                 // Refresh immediately
-                fetchRagStatus();
+                queryClient.invalidateQueries({ queryKey: ['ragStatus'] });
             } else {
                 setMessage("Hubo un problema al intentar actualizar la memoria.");
             }
@@ -326,11 +299,11 @@ const AgentControl: React.FC = () => {
                                 .reduce((sum, k) => (sum as number) + (newStatus[k].needs_reindex !== undefined ? newStatus[k].needs_reindex : (newStatus[k].total || 0)), 0);
                         }
                     }
-                    setRagStatus(newStatus);
+                    queryClient.setQueryData(['ragStatus'], newStatus);
                 }
 
                 // Still fetch to be safe after a short delay
-                setTimeout(fetchRagStatus, 4000);
+                setTimeout(() => queryClient.invalidateQueries({ queryKey: ['ragStatus'] }), 4000);
             } else {
                 setMessage("No se pudo completar el reinicio de memoria.");
             }
@@ -341,18 +314,7 @@ const AgentControl: React.FC = () => {
         }
     };
 
-    const fetchTasks = async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/automation/tasks`);
-            if (response.ok) {
-                const data = await response.json();
-                setTasks(data);
-            }
-        } catch (error) {
-            console.error("Failed to fetch automation tasks", error);
-        } finally {
-        }
-    };
+    // Tasks fetched via React Query
 
     const handleTriggerTask = async (taskType: string, category?: string) => {
         const triggerKey = `${taskType}-${category || 'all'}`;
@@ -415,8 +377,7 @@ const AgentControl: React.FC = () => {
             }
 
             if (response.ok) {
-                const updatedTask = await response.json();
-                setTasks(tasks.map(t => t.id === task.id ? updatedTask : t));
+                queryClient.invalidateQueries({ queryKey: ['automationTasks'] });
                 setMessage(`Horario actualizado para: ${task.name}`);
             }
         } catch (error) {
@@ -910,8 +871,8 @@ const AgentControl: React.FC = () => {
                     <button
                         type="button"
                         onClick={() => {
-                            setRagStatus(null);
-                            fetchRagStatus();
+                            queryClient.setQueryData(['ragStatus'], null);
+                            queryClient.invalidateQueries({ queryKey: ['ragStatus'] });
                         }}
                         className="p-2 text-gray-400 hover:text-forest transition-colors self-start sm:self-center"
                         title="Actualizar estado"

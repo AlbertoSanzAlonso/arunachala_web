@@ -8,6 +8,7 @@ import omSymbol from '../assets/images/om_symbol.png';
 import { API_BASE_URL } from '../config';
 import { useTranslation } from 'react-i18next';
 import { getImageUrl } from '../utils/imageUtils';
+import { useUIStore } from '../store/uiStore';
 
 interface Message {
     id: number;
@@ -24,7 +25,7 @@ interface Message {
 
 const ChatBot: React.FC = () => {
     const { i18n, t } = useTranslation();
-    const [isOpen, setIsOpen] = useState(false);
+    const { isChatOpen: isOpen, openChat, closeChat } = useUIStore();
     const [isActive, setIsActive] = useState(true);
     const [botAvatar, setBotAvatar] = useState<string | null>(null);
 
@@ -254,7 +255,7 @@ const ChatBot: React.FC = () => {
                     animate={{ scale: 1, opacity: 1, rotate: 0 }}
                     whileHover={{ scale: 1.1, rotate: 5 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={() => setIsOpen(true)}
+                    onClick={openChat}
                     className="fixed bottom-28 md:bottom-6 left-6 z-[60] bg-[#becf81] text-white p-4 rounded-full shadow-2xl hover:shadow-[0_0_20px_rgba(190,207,129,0.6)] hover:bg-[#a9bb6e] transition-all duration-300 flex items-center justify-center group"
                     aria-label="Abrir chat de ayuda"
                 >
@@ -301,7 +302,7 @@ const ChatBot: React.FC = () => {
                                 </div>
                             </div>
                             <button
-                                onClick={() => setIsOpen(false)}
+                                onClick={closeChat}
                                 className="text-white/80 hover:text-white hover:bg-white/10 p-2 rounded-xl transition-colors"
                             >
                                 <XMarkIcon className="w-6 h-6" />

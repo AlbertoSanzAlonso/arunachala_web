@@ -128,6 +128,35 @@ async def rag_sync_callback(
         entity.vector_id = request.vector_id
         entity.vectorized_at = datetime.now()
         entity.needs_reindex = False
+        
+        # Add to Dashboard Activity for visual notification
+        try:
+            from app.models.models import DashboardActivity
+            
+            # Map entity types to human labels and URL paths
+            labels = {
+                'article': ('Artículo', '/blog'),
+                'meditation': ('Meditación', '/meditaciones'),
+                'yoga_class': ('Clase de Yoga', '/clases-de-yoga'),
+                'massage': ('Masaje', '/terapias/masajes'),
+                'therapy': ('Terapia', '/terapias/terapias-holisticas'),
+                'activity': ('Actividad', '/actividades')
+            }
+            
+            label, _ = labels.get(request.entity_type, ('Contenido', ''))
+            title = getattr(entity, 'title', None) or getattr(entity, 'name', 'Sin título')
+            
+            activity = DashboardActivity(
+                type='rag_sync',
+                action='success',
+                title=f"✨ {label} aprendido por la IA: {title}",
+                entity_id=request.entity_id
+            )
+            db.add(activity)
+            db.commit()
+        except Exception as e:
+            print(f"Error creating sync activity: {e}")
+            db.rollback()
     else:
         # If failed, keep needs_reindex = True for retry
         entity.needs_reindex = True
