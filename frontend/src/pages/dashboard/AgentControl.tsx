@@ -762,7 +762,7 @@ const AgentControl: React.FC = () => {
                     </div>
 
                     <div className="grid grid-cols-1 gap-4">
-                        {tasks.map((task) => (
+                        {tasks.map((task: any) => (
                             <div key={task.id} className="group relative flex flex-col md:flex-row md:items-center justify-between p-5 rounded-2xl bg-white border border-gray-100 hover:border-matcha/30 hover:shadow-md transition-all gap-6">
                                 {/* Left side: Info */}
                                 <div className="flex items-center gap-4">

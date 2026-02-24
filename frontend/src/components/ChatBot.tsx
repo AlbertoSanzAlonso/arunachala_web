@@ -256,7 +256,7 @@ const ChatBot: React.FC = () => {
                     whileHover={{ scale: 1.1, rotate: 5 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={openChat}
-                    className="fixed bottom-28 md:bottom-6 left-6 z-[60] bg-[#becf81] text-white p-4 rounded-full shadow-2xl hover:shadow-[0_0_20px_rgba(190,207,129,0.6)] hover:bg-[#a9bb6e] transition-all duration-300 flex items-center justify-center group"
+                    className="fixed bottom-8 md:bottom-6 left-6 z-[60] bg-[#becf81] text-white p-4 rounded-full shadow-2xl hover:shadow-[0_0_20px_rgba(190,207,129,0.6)] hover:bg-[#a9bb6e] transition-all duration-300 flex items-center justify-center group"
                     aria-label="Abrir chat de ayuda"
                 >
                     <ChatBubbleLeftRightIcon className="w-8 h-8" />
