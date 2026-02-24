@@ -12,13 +12,10 @@ from app.api.auth import get_current_user
 
 router = APIRouter(prefix="/api/automation", tags=["automation"])
 
-N8N_YOGA_WEBHOOK_URL = os.getenv("N8N_YOGA_BLOG_WEBHOOK_URL", "http://localhost:5678/webhook/arunachala-blog-yoga")
-N8N_THERAPY_WEBHOOK_URL = os.getenv("N8N_THERAPY_BLOG_WEBHOOK_URL", "http://localhost:5678/webhook/arunachala-blog-therapy")
-
 def get_webhook_url(category: str):
     if category == "therapy":
-        return N8N_THERAPY_WEBHOOK_URL
-    return N8N_YOGA_WEBHOOK_URL
+        return os.getenv("N8N_THERAPY_BLOG_WEBHOOK_URL", "http://localhost:5678/webhook/arunachala-blog-therapy")
+    return os.getenv("N8N_YOGA_BLOG_WEBHOOK_URL", "http://localhost:5678/webhook/arunachala-blog-yoga")
 
 class TaskBase(BaseModel):
     name: str
