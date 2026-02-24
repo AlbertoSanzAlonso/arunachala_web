@@ -120,11 +120,27 @@ const AgentControl: React.FC = () => {
     const handleSync = async (type: string, force: boolean = false) => {
         setSyncLoading(type);
         try {
+            const token = sessionStorage.getItem('access_token');
+            if (!token) {
+                setMessage("Sesión no encontrada. Por favor, reinicia sesión.");
+                setSyncLoading(null);
+                return;
+            }
+
             const response = await fetch(`${API_BASE_URL}/api/rag/sync`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({ sync_type: type, force })
             });
+
+            if (response.status === 401) {
+                setMessage("Tu sesión ha expirado o no tienes permisos.");
+                setSyncLoading(null);
+                return;
+            }
 
             if (response.ok) {
                 await response.json();
