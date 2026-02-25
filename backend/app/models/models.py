@@ -68,6 +68,9 @@ class Content(Base):
     seo_description = Column(String, nullable=True)
     tags = Column(JSON, nullable=True)  # Array of tags
     translations = Column(JSON, nullable=True)
+    # Content stats
+    view_count = Column(Integer, default=0)
+    
     # RAG sync fields
     vector_id = Column(String, nullable=True)
     vectorized_at = Column(DateTime(timezone=True), nullable=True)

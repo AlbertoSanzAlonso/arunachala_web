@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { CheckCircleIcon, XMarkIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon, XMarkIcon, CalendarIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from '../../config';
 
 
@@ -52,6 +52,7 @@ export default function DashboardHome() {
     const [finishedActivities, setFinishedActivities] = useState<any[]>([]);
     const [stats, setStats] = useState<any>(null);
     const [ongoingCourses, setOngoingCourses] = useState<any[]>([]);
+    const [rankings, setRankings] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -135,6 +136,18 @@ export default function DashboardHome() {
             }
         };
 
+        const fetchRankings = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/content/ranking?limit=5`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setRankings(data);
+                }
+            } catch (error) {
+                console.error('Error fetching content ranking:', error);
+            }
+        };
+
         const fetchActivityData = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/activities?active_only=false`);
@@ -168,6 +181,7 @@ export default function DashboardHome() {
         fetchSuggestions();
         fetchGeneralProposals();
         fetchActivityData();
+        fetchRankings();
     }, []);
 
     const acknowledgeFinish = async (id: number) => {
@@ -319,6 +333,40 @@ export default function DashboardHome() {
                                         <span className="text-gray-700 text-sm font-medium">{activity.title}</span>
                                     </div>
                                     <span className="text-gray-400 text-xs italic">{formatTimeAgo(activity.timestamp)}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+            </div>
+
+            {/* Ranking de Contenido */}
+            <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900">Ranking de Contenido</h3>
+                    <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-blue-100 text-blue-600 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded-full">Más vistos</span>
+                </div>
+
+                <div className="bg-white shadow-sm rounded-2xl p-4 sm:p-6 border border-gray-100">
+                    {rankings.length === 0 ? (
+                        <p className="text-gray-500 text-center py-4">Aún no hay datos suficientes</p>
+                    ) : (
+                        <ul className="divide-y divide-gray-100">
+                            {rankings.map((item, index) => (
+                                <li key={item.id} className="py-4 flex justify-between items-center group">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex shrink-0 items-center justify-center w-6 h-6 rounded-full bg-blue-50 text-blue-600 font-bold text-xs">
+                                            {index + 1}
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-gray-700 text-sm font-medium line-clamp-1">{item.title}</p>
+                                            <p className="text-[10px] text-gray-400 capitalize">{item.type === 'article' ? 'Artículo' : 'Meditación'}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex shrink-0 items-center gap-1.5 bg-gray-50 px-2 py-1 rounded-full text-gray-500">
+                                        <EyeIcon className="w-4 h-4 text-gray-400" />
+                                        <span className="text-xs font-bold">{item.view_count || 0}</span>
+                                    </div>
                                 </li>
                             ))}
                         </ul>

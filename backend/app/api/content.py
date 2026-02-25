@@ -181,6 +181,7 @@ class ContentResponse(ContentBase):
     created_at: datetime
     updated_at: Optional[datetime]
     author: Optional[AuthorResponse] = None
+    view_count: Optional[int] = 0
 
     class Config:
         from_attributes = True
@@ -278,11 +279,31 @@ def get_contents(
         
     return query.order_by(Content.created_at.desc()).all()
 
+@router.get("/ranking", response_model=List[ContentResponse])
+def get_content_ranking(
+    content_type: Optional[str] = Query(None, alias="type"),
+    limit: int = 5,
+    db: Session = Depends(get_db)
+):
+    """Get most viewed content, optionally filtered by type"""
+    query = db.query(Content).filter(Content.status == "published").options(joinedload(Content.author))
+    
+    if content_type:
+        query = query.filter(Content.type == content_type)
+        
+    return query.order_by(Content.view_count.desc()).limit(limit).all()
+
 @router.get("/slug/{slug}", response_model=ContentResponse)
 def get_content_by_slug(slug: str, db: Session = Depends(get_db)):
     db_content = db.query(Content).filter(Content.slug == slug).first()
     if not db_content:
         raise HTTPException(status_code=404, detail="Content not found")
+        
+    # Increment view count
+    db_content.view_count = (db_content.view_count or 0) + 1
+    db.commit()
+    db.refresh(db_content)
+    
     return db_content
 
 @router.get("/{content_id}", response_model=ContentResponse)
@@ -290,6 +311,12 @@ def get_content(content_id: int, db: Session = Depends(get_db)):
     db_content = db.query(Content).filter(Content.id == content_id).first()
     if not db_content:
         raise HTTPException(status_code=404, detail="Content not found")
+        
+    # Increment view count
+    db_content.view_count = (db_content.view_count or 0) + 1
+    db.commit()
+    db.refresh(db_content)
+    
     return db_content
 
 async def download_remote_image(url: str, slug: str) -> Optional[str]:
