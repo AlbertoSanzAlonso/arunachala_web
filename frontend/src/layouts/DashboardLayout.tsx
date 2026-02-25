@@ -262,7 +262,7 @@ export default function DashboardLayout() {
                                     <span className="hidden md:inline">Ir a la Web</span>
                                 </a>
                                 <Menu as="div" className="relative">
-                                    <Menu.Button className="flex items-center gap-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors p-1 pr-2 md:px-3 md:py-1.5 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#becf81]">
+                                    <Menu.Button className="flex items-center md:gap-2 rounded-full hover:bg-white/20 transition-colors p-0 md:p-1 md:pr-2 md:bg-white/10 md:px-3 md:py-1.5 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#becf81]">
                                         <span className="sr-only">Open user menu</span>
                                         {userProfile?.profile_picture ? (
                                             <img
