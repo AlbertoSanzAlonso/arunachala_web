@@ -111,6 +111,9 @@ def login(credentials: LoginRequest, db: Session = Depends(get_db)):
             "id": str(user.id),
             "email": user.email,
             "name": user.email.split('@')[0], 
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "profile_picture": user.profile_picture,
             "role": getattr(user.role, 'value', user.role)
         }
     }
@@ -137,6 +140,9 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
             "id": str(user.id),
             "email": user.email,
             "name": user.email.split('@')[0], 
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "profile_picture": user.profile_picture,
             "role": getattr(user.role, 'value', user.role)
         }
     }
@@ -160,6 +166,9 @@ def refresh_token(current_user: User = Depends(get_current_user)):
             "id": str(current_user.id),
             "email": current_user.email,
             "name": current_user.email.split('@')[0],
+            "first_name": current_user.first_name,
+            "last_name": current_user.last_name,
+            "profile_picture": current_user.profile_picture,
             "role": getattr(current_user.role, 'value', current_user.role)
         }
     }
