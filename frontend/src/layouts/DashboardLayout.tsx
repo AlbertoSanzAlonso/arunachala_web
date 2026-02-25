@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState } from 'react';
 import logoIcon from '../assets/images/logo_icon.webp';
 import logoWide from '../assets/images/logo_wide.webp';
 import { Link, Outlet, useLocation } from 'react-router-dom';
@@ -42,7 +42,7 @@ function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ');
 }
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
 
 export default function DashboardLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(false);

@@ -33,7 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         store.validateSession();
-    }, []);
+    }, [store]);
 
     return (
         <AuthContext.Provider value={{

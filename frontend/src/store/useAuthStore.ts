@@ -32,7 +32,7 @@ interface AuthState {
     validateSession: () => Promise<void>;
 }
 
-const SESSION_DURATION = 30 * 60; // 30 minutes in seconds
+
 const WARNING_DURATION = 2 * 60;  // 2 minutes in seconds
 
 export const useAuthStore = create<AuthState>((set, get) => ({
