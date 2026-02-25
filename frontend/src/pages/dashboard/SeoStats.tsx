@@ -172,7 +172,7 @@ export default function SeoStats() {
                                     </motion.div>
                                 </div>
                                 <span className="text-[8px] md:text-[10px] text-bark/20 rotate-45 origin-left md:rotate-0 truncate max-w-full">
-                                    {idx % 5 === 0 ? day.date.split('-').slice(1).reverse().join('/') : ''}
+                                    {(data?.history?.length || 0) < 10 || idx % 5 === 0 ? day.date.split('-').slice(1).reverse().join('/') : ''}
                                 </span>
                             </div>
                         ))}
