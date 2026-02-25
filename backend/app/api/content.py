@@ -182,6 +182,7 @@ class ContentResponse(ContentBase):
     updated_at: Optional[datetime]
     author: Optional[AuthorResponse] = None
     view_count: Optional[int] = 0
+    play_time_seconds: Optional[int] = 0
 
     class Config:
         from_attributes = True
@@ -282,14 +283,17 @@ def get_contents(
 @router.get("/ranking", response_model=List[ContentResponse])
 def get_content_ranking(
     content_type: Optional[str] = Query(None, alias="type"),
+    category: Optional[str] = None,
     limit: int = 5,
     db: Session = Depends(get_db)
 ):
-    """Get most viewed content, optionally filtered by type"""
+    """Get most viewed content, optionally filtered by type and category"""
     query = db.query(Content).filter(Content.status == "published").options(joinedload(Content.author))
     
     if content_type:
         query = query.filter(Content.type == content_type)
+    if category:
+        query = query.filter(Content.category == category)
         
     return query.order_by(Content.view_count.desc()).limit(limit).all()
 
@@ -305,6 +309,24 @@ def get_content_by_slug(slug: str, db: Session = Depends(get_db)):
     db.refresh(db_content)
     
     return db_content
+
+class PlaybackData(BaseModel):
+    seconds: int
+
+@router.post("/slug/{slug}/playback")
+def record_playback(
+    slug: str,
+    data: PlaybackData,
+    db: Session = Depends(get_db)
+):
+    db_content = db.query(Content).filter(Content.slug == slug).first()
+    if not db_content:
+        raise HTTPException(status_code=404, detail="Content not found")
+        
+    db_content.play_time_seconds = (db_content.play_time_seconds or 0) + data.seconds
+    db.commit()
+    
+    return {"success": True, "total_seconds": db_content.play_time_seconds}
 
 @router.get("/{content_id}", response_model=ContentResponse)
 def get_content(content_id: int, db: Session = Depends(get_db)):

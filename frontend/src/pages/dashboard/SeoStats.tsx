@@ -6,7 +6,8 @@ import {
     EyeIcon,
     ArrowTrendingUpIcon,
     MapPinIcon,
-    ExclamationTriangleIcon
+    ExclamationTriangleIcon,
+    ClockIcon
 } from '@heroicons/react/24/outline';
 
 interface SeoData {
@@ -27,6 +28,9 @@ interface SeoData {
 
 export default function SeoStats() {
     const [data, setData] = useState<SeoData | null>(null);
+    const [yogaRankings, setYogaRankings] = useState<any[]>([]);
+    const [therapyRankings, setTherapyRankings] = useState<any[]>([]);
+    const [meditationRankings, setMeditationRankings] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -40,6 +44,17 @@ export default function SeoStats() {
                 });
                 const result = await response.json();
                 setData(result);
+
+                // Fetch rankings
+                const yogaReq = await fetch(`${API_BASE_URL}/api/content/ranking?type=article&category=yoga&limit=10`);
+                if (yogaReq.ok) setYogaRankings(await yogaReq.json());
+
+                const therapyReq = await fetch(`${API_BASE_URL}/api/content/ranking?type=article&category=therapy&limit=10`);
+                if (therapyReq.ok) setTherapyRankings(await therapyReq.json());
+
+                const medReq = await fetch(`${API_BASE_URL}/api/content/ranking?type=meditation&limit=10`);
+                if (medReq.ok) setMeditationRankings(await medReq.json());
+
             } catch (err) {
                 console.error("Error fetching SEO stats:", err);
             } finally {
@@ -199,6 +214,112 @@ export default function SeoStats() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
                 </a>
+            </div>
+
+            {/* Content Rankings */}
+            <div className="pt-8 space-y-8">
+                <div>
+                    <h2 className="text-2xl font-headers text-forest mb-2">Rankings de Contenido</h2>
+                    <p className="text-bark/60">Los 10 contenidos más vistos por categoría y tiempos de reproducción de las meditaciones.</p>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Yoga */}
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-bark/5 hover:shadow-md transition-shadow h-full">
+                        <h3 className="text-lg font-bold text-forest mb-4 flex items-center gap-2">
+                            🌿 Artículos de Yoga
+                        </h3>
+                        <ul className="divide-y divide-gray-50 flex flex-col h-full">
+                            {yogaRankings.length === 0 ? (
+                                <p className="text-sm text-gray-400 italic text-center py-4">No hay datos</p>
+                            ) : (
+                                yogaRankings.map((item, index) => (
+                                    <li key={item.id} className="py-3 flex items-center justify-between gap-3">
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-forest/10 text-forest flex items-center justify-center text-xs font-bold">
+                                                {index + 1}
+                                            </span>
+                                            <span className="text-sm text-bark font-medium truncate" title={item.title}>
+                                                {item.title}
+                                            </span>
+                                        </div>
+                                        <span className="flex items-center gap-1 text-xs font-bold text-gray-500 bg-gray-50 px-2 py-1 rounded-full whitespace-nowrap">
+                                            <EyeIcon className="w-4 h-4" /> {item.view_count || 0}
+                                        </span>
+                                    </li>
+                                ))
+                            )}
+                        </ul>
+                    </div>
+
+                    {/* Therapy */}
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-bark/5 hover:shadow-md transition-shadow h-full">
+                        <h3 className="text-lg font-bold text-forest mb-4 flex items-center gap-2">
+                            🌸 Artículos de Terapia
+                        </h3>
+                        <ul className="divide-y divide-gray-50 flex flex-col h-full">
+                            {therapyRankings.length === 0 ? (
+                                <p className="text-sm text-gray-400 italic text-center py-4">No hay datos</p>
+                            ) : (
+                                therapyRankings.map((item, index) => (
+                                    <li key={item.id} className="py-3 flex items-center justify-between gap-3">
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-forest/10 text-forest flex items-center justify-center text-xs font-bold">
+                                                {index + 1}
+                                            </span>
+                                            <span className="text-sm text-bark font-medium truncate" title={item.title}>
+                                                {item.title}
+                                            </span>
+                                        </div>
+                                        <span className="flex items-center gap-1 text-xs font-bold text-gray-500 bg-gray-50 px-2 py-1 rounded-full whitespace-nowrap">
+                                            <EyeIcon className="w-4 h-4" /> {item.view_count || 0}
+                                        </span>
+                                    </li>
+                                ))
+                            )}
+                        </ul>
+                    </div>
+
+                    {/* Meditations */}
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-bark/5 hover:shadow-md transition-shadow h-full">
+                        <h3 className="text-lg font-bold text-forest mb-4 flex items-center gap-2">
+                            ☁️ Meditaciones
+                        </h3>
+                        <ul className="divide-y divide-gray-50 flex flex-col h-full">
+                            {meditationRankings.length === 0 ? (
+                                <p className="text-sm text-gray-400 italic text-center py-4">No hay datos</p>
+                            ) : (
+                                meditationRankings.map((item, index) => {
+                                    const avgSeconds = item.view_count > 0 ? Math.floor((item.play_time_seconds || 0) / item.view_count) : 0;
+                                    return (
+                                        <li key={item.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-forest/10 text-forest flex items-center justify-center text-xs font-bold">
+                                                    {index + 1}
+                                                </span>
+                                                <span className="text-sm text-bark font-medium truncate" title={item.title}>
+                                                    {item.title}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2 pr-1 justify-end ml-9 sm:ml-0">
+                                                <span className="flex items-center gap-1 text-[10px] sm:text-xs font-bold text-gray-500 line-clamp-1 whitespace-nowrap bg-gray-50 px-2 py-0.5 sm:py-1 rounded-full">
+                                                    <EyeIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> {item.view_count || 0}
+                                                </span>
+                                                <span className="flex items-center gap-1 text-[10px] sm:text-xs font-bold text-purple-600 line-clamp-1 whitespace-nowrap bg-purple-50 px-2 py-0.5 sm:py-1 rounded-full" title="Tiempo Medio">
+                                                    <ClockIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                                    <span className="font-medium opacity-80 mr-0.5 hidden md:inline">Media:</span>
+                                                    {avgSeconds < 60
+                                                        ? `${avgSeconds}s`
+                                                        : `${Math.floor(avgSeconds / 60)}m`}
+                                                </span>
+                                            </div>
+                                        </li>
+                                    );
+                                })
+                            )}
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     );
