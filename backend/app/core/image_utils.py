@@ -23,14 +23,30 @@ if STORAGE_TYPE == "supabase":
 else:
     supabase_client = None
 
-def save_upload_file(upload_file: UploadFile, subdirectory: str = "uploads") -> str:
+import re
+from unidecode import unidecode
+
+def slugify(text: str) -> str:
+    """Helper to convert text to SEO friendly slug"""
+    text = unidecode(text).lower()
+    text = re.sub(r'[^\w\s-]', '', text)
+    text = re.sub(r'[-\s]+', '-', text)
+    return text.strip('-')
+
+def save_upload_file(upload_file: UploadFile, subdirectory: str = "uploads", title: str = None) -> str:
     """
     Saves an uploaded file to local storage or Supabase based on configuration.
     Returns the URL/path to the saved file.
     """
     try:
-        # Generate unique filename
-        filename = f"{uuid.uuid4()}.webp"
+        # Generate SEO friendly filename from original name or title
+        original_base_name = os.path.splitext(upload_file.filename)[0] if upload_file.filename else "image"
+        base_name_str = title if title else original_base_name
+        base_name = slugify(base_name_str)
+        if not base_name:
+            base_name = "image"
+            
+        filename = f"{base_name}-{uuid.uuid4().hex[:8]}.webp"
         
         # Open image using Pillow
         upload_file.file.seek(0)

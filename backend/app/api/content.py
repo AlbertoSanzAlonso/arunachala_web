@@ -217,8 +217,10 @@ async def generate_image(
         save_dir = os.path.join(base_path, "static", target_subpath)
         os.makedirs(save_dir, exist_ok=True)
         
-        # Generate filename
-        filename = f"gen_{uuid.uuid4().hex}.jpg"
+        # Generate filename from prompt
+        from app.core.image_utils import slugify
+        base_name = slugify(prompt)[:50] if prompt else "gen"
+        filename = f"{base_name}-{uuid.uuid4().hex[:8]}.jpg"
         file_path = os.path.join(save_dir, filename)
         
         # Prepare URL (Pollinations doesn't require API key)

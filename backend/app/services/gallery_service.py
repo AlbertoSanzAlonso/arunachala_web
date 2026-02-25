@@ -42,7 +42,7 @@ class GalleryService:
         
         # Save file
         subdirectory = f"gallery/{category}"
-        image_url = save_upload_file(file, subdirectory=subdirectory)
+        image_url = save_upload_file(file, subdirectory=subdirectory, title=alt_text)
 
         # Create DB Entry
         new_image = Gallery(
@@ -120,7 +120,7 @@ class GalleryService:
         
         # Save new file
         subdirectory = f"gallery/{image.category}"
-        image_url = save_upload_file(file, subdirectory=subdirectory)
+        image_url = save_upload_file(file, subdirectory=subdirectory, title=image.alt_text)
         
         # Update DB
         image.url = image_url
