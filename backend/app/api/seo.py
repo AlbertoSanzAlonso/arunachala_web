@@ -17,26 +17,33 @@ async def get_search_console_stats(
     current_user = Depends(get_current_user)
 ):
     """Fetch search performance data from Google Search Console"""
+    # Try to load from environment variable first (recommended for production)
+    google_auth_json = os.getenv("GOOGLE_AUTH_JSON")
     creds_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "google-credentials.json")
     
-    if not os.path.exists(creds_path):
-        # Fallback to empty stats if no credentials
-        return {
-            "status": "not_configured",
-            "stats": {
-                "clicks": 0,
-                "impressions": 0,
-                "ctr": 0,
-                "position": 0
-            }
-        }
-
     try:
-        # Load credentials
-        creds = service_account.Credentials.from_service_account_file(
-            creds_path, 
-            scopes=['https://www.googleapis.com/auth/webmasters.readonly']
-        )
+        if google_auth_json:
+            # Load from environment variable
+            creds_data = json.loads(google_auth_json)
+            creds = service_account.Credentials.from_service_account_info(
+                creds_data,
+                scopes=['https://www.googleapis.com/auth/webmasters.readonly']
+            )
+            print("SEO: Loaded credentials from environment variable")
+        elif os.path.exists(creds_path):
+            # Fallback to file
+            creds = service_account.Credentials.from_service_account_file(
+                creds_path, 
+                scopes=['https://www.googleapis.com/auth/webmasters.readonly']
+            )
+            print("SEO: Loaded credentials from file")
+        else:
+            print(f"SEO: No credentials found at {creds_path} and no GOOGLE_AUTH_JSON env var")
+            return {
+                "status": "not_configured",
+                "stats": {"clicks": 0, "impressions": 0, "ctr": 0, "position": 0}
+            }
+
         service = build('searchconsole', 'v1', credentials=creds)
 
         # Config
