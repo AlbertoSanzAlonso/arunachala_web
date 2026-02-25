@@ -456,9 +456,11 @@ export default function ActivityManager() {
             });
 
             if (response.ok) {
-                await fetchItems();
+                setIsSaving(false);
                 handleCloseModal();
-                addToast('success', 'Guardado correctamente');
+                addToast('success', editingItem ? 'Actualizado correctamente' : 'Guardado correctamente');
+                // Refresh list in background (fetchItems sets its own loading state for the list)
+                fetchItems();
             } else {
                 addToast('error', 'Error al guardar');
             }

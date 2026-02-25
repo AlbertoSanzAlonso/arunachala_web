@@ -236,24 +236,6 @@ async def notify_n8n_content_change(
     # Execute async webhook to n8n
     asyncio.create_task(_send(log_id, vector_id, flat_payload))
 
-    # Direct delete from Qdrant if action is delete (remains same)
-    if action == 'delete':
-        try:
-            from qdrant_client import QdrantClient
-            from qdrant_client.http import models as rest
-            import hashlib
-            
-            q_client = QdrantClient(url="http://localhost:6333")
-            unique_str = f"{content_type}_{content_id}"
-            point_id = hashlib.md5(unique_str.encode()).hexdigest()
-                
-            if point_id:
-                q_client.delete(
-                    collection_name="arunachala_knowledge_base",
-                    points_selector=rest.PointIdsList(points=[point_id])
-                )
-                print(f"✅ Deleted Qdrant Point ID {point_id} directly.")
-                
-        except Exception as q_e:
-            print(f"⚠️  Direct Qdrant deletion failed: {q_e}")
+    # n8n takes care of the actual vector management (creation, update, and multi-chunk deletion)
+    # the backend just notifies n8n about the change.
 

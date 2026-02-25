@@ -183,6 +183,7 @@ def get_schedule(
 @router.post("", response_model=ScheduleResponse)
 async def create_schedule(
     schedule_data: ScheduleCreate,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -222,7 +223,7 @@ async def create_schedule(
     db.refresh(new_schedule)
     
     if new_schedule.class_id:
-        await notify_n8n_content_change(new_schedule.class_id, "yoga_class", "update", db=db)
+        background_tasks.add_task(notify_n8n_content_change, new_schedule.class_id, "yoga_class", "update", db=None)
     
     # Log to dashboard activity
     class_name = new_schedule.yoga_class.name if new_schedule.yoga_class else new_schedule.class_name or "Clase"
@@ -241,6 +242,7 @@ async def create_schedule(
 async def update_schedule(
     schedule_id: int,
     schedule_data: ScheduleUpdate,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -286,13 +288,14 @@ async def update_schedule(
     db.refresh(schedule)
     
     if schedule.class_id:
-        await notify_n8n_content_change(schedule.class_id, "yoga_class", "update", db=db)
+        background_tasks.add_task(notify_n8n_content_change, schedule.class_id, "yoga_class", "update", db=None)
     
     return schedule
 
 @router.delete("/{schedule_id}")
 async def delete_schedule(
     schedule_id: int,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -320,7 +323,7 @@ async def delete_schedule(
     db.commit()
     
     if class_id:
-        await notify_n8n_content_change(class_id, "yoga_class", "update", db=db)
+        background_tasks.add_task(notify_n8n_content_change, class_id, "yoga_class", "update", db=None)
     
     return {"message": "Schedule deleted successfully"}
 

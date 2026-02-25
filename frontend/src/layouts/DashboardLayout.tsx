@@ -46,47 +46,14 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 export default function DashboardLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [userProfile, setUserProfile] = useState<any>(null);
     const location = useLocation();
-    const { logout, showSessionWarning, extendSession, remainingTime } = useAuth();
+    const { user: userProfile, logout, showSessionWarning, extendSession, remainingTime } = useAuth();
 
     // Format remaining time (MM:SS)
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins}:${secs.toString().padStart(2, '0')}`;
-    };
-
-    useEffect(() => {
-        fetchUserProfile();
-
-        // Listen for profile updates
-        const handleProfileUpdate = () => {
-            fetchUserProfile();
-        };
-
-        window.addEventListener('profileUpdated', handleProfileUpdate);
-
-        return () => {
-            window.removeEventListener('profileUpdated', handleProfileUpdate);
-        };
-    }, []);
-
-    const fetchUserProfile = async () => {
-        try {
-            const token = sessionStorage.getItem('access_token');
-            const response = await fetch(`${API_URL}/api/auth/me`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setUserProfile(data);
-            }
-        } catch (error) {
-            console.error("Error loading user profile", error);
-        }
     };
 
     const getUserInitial = () => {

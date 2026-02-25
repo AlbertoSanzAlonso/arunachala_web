@@ -115,7 +115,7 @@ async def create_promotion(
         )
     
     # Notify n8n for RAG Sync
-    await notify_n8n_content_change(db_promotion.id, "promotion", "create", db=db, entity=db_promotion)
+    background_tasks.add_task(notify_n8n_content_change, db_promotion.id, "promotion", "create", db=None, entity=db_promotion)
     
     return db_promotion
 
@@ -167,13 +167,14 @@ async def update_promotion(
     
     # Notify n8n for RAG Sync
     rag_action = "update" if db_promotion.is_active else "delete"
-    await notify_n8n_content_change(db_promotion.id, "promotion", rag_action, db=db, entity=db_promotion)
+    background_tasks.add_task(notify_n8n_content_change, db_promotion.id, "promotion", rag_action, db=None, entity=db_promotion)
     
     return db_promotion
 
 @router.delete("/{promotion_id}")
 async def delete_promotion(
     promotion_id: int,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
@@ -197,6 +198,6 @@ async def delete_promotion(
     db.commit()
 
     # Notify n8n for RAG Sync
-    await notify_n8n_content_change(promotion_id, "promotion", "delete", db=db, entity=db_promotion)
+    background_tasks.add_task(notify_n8n_content_change, promotion_id, "promotion", "delete", db=None, entity=db_promotion)
 
     return {"message": "Promotion deleted"}

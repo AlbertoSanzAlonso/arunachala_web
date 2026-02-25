@@ -51,7 +51,7 @@ async def get_search_console_stats(
             'dimensions': ['date']
         }
         
-        response = service.searchanalytics().query(siteProperty=site_url, body=request).execute()
+        response = service.searchanalytics().query(siteUrl=site_url, body=request).execute()
         
         rows = response.get('rows', [])
         

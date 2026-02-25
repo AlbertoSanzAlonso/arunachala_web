@@ -486,6 +486,7 @@ export default function ContentManager() {
 
             if (response.ok) {
                 const data = await response.json();
+                setIsSaving(false);
                 setIsModalOpen(false);
                 fetchContents();
                 if (!editingContent && formData.status === 'draft') {

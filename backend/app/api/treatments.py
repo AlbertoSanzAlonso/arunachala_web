@@ -85,7 +85,7 @@ async def create_massage(
     
     image_url = None
     if image:
-        image_url = save_upload_file(image, subdirectory="treatments/massages")
+        image_url = save_upload_file(image, subdirectory="treatments/massages", title=name)
 
     if duration_min == 0:
         duration_min = None
@@ -114,7 +114,7 @@ async def create_massage(
         raise HTTPException(status_code=400, detail=f"Error al crear el masaje: {str(e)}")
     
     # Notify n8n for RAG update
-    await notify_n8n_content_change(db_massage.id, "massage", "create", db=db)
+    background_tasks.add_task(notify_n8n_content_change, db_massage.id, "massage", "create", db=None)
     
     # Log to dashboard activity
     activity_log = DashboardActivity(
@@ -170,7 +170,7 @@ async def update_massage(
             delete_file(db_massage.image_url)
             
         # Save new image and update URL
-        db_massage.image_url = save_upload_file(image, subdirectory="treatments/massages")
+        db_massage.image_url = save_upload_file(image, subdirectory="treatments/massages", title=name or db_massage.name)
 
     # Update other fields if provided
     if name is not None: db_massage.name = name
@@ -187,7 +187,7 @@ async def update_massage(
     db.refresh(db_massage)
     
     # Notify n8n for RAG update
-    await notify_n8n_content_change(db_massage.id, "massage", "update", db=db)
+    background_tasks.add_task(notify_n8n_content_change, db_massage.id, "massage", "update", db=None)
     
     # Re-translate if fields changed and no new translations provided
     if (name or excerpt or description or benefits) and not translations:
@@ -206,6 +206,7 @@ async def update_massage(
 @router.delete("/massages/{massage_id}")
 async def delete_massage(
     massage_id: int,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -220,9 +221,8 @@ async def delete_massage(
     if db_massage.image_url:
         delete_file(db_massage.image_url)
     
-    # Notify n8n
     # Notify n8n with entity before it's gone
-    await notify_n8n_content_change(db_massage.id, "massage", "delete", db=db, entity=db_massage)
+    background_tasks.add_task(notify_n8n_content_change, db_massage.id, "massage", "delete", db=None, entity=db_massage)
     
     # Log to dashboard activity
     activity_log = DashboardActivity(
@@ -275,7 +275,7 @@ async def create_therapy(
     
     image_url = None
     if image:
-        image_url = save_upload_file(image, subdirectory="treatments/therapies")
+        image_url = save_upload_file(image, subdirectory="treatments/therapies", title=name)
 
     if duration_min == 0:
         duration_min = None
@@ -304,7 +304,7 @@ async def create_therapy(
         raise HTTPException(status_code=400, detail=f"Error al crear la terapia: {str(e)}")
     
     # Notify n8n for RAG update
-    await notify_n8n_content_change(db_therapy.id, "therapy", "create", db=db)
+    background_tasks.add_task(notify_n8n_content_change, db_therapy.id, "therapy", "create", db=None)
     
     # Log to dashboard activity
     activity_log = DashboardActivity(
@@ -360,7 +360,7 @@ async def update_therapy(
             delete_file(db_therapy.image_url)
             
         # Save new image and update URL
-        db_therapy.image_url = save_upload_file(image, subdirectory="treatments/therapies")
+        db_therapy.image_url = save_upload_file(image, subdirectory="treatments/therapies", title=name or db_therapy.name)
 
     if name is not None: db_therapy.name = name
     if excerpt is not None: db_therapy.excerpt = excerpt or ""
@@ -376,7 +376,7 @@ async def update_therapy(
     db.refresh(db_therapy)
     
     # Notify n8n for RAG update
-    await notify_n8n_content_change(db_therapy.id, "therapy", "update", db=db)
+    background_tasks.add_task(notify_n8n_content_change, db_therapy.id, "therapy", "update", db=None)
     
     # Re-translate if fields changed and no new translations provided
     if (name or excerpt or description or benefits) and not translations:
@@ -395,6 +395,7 @@ async def update_therapy(
 @router.delete("/therapies/{therapy_id}")
 async def delete_therapy(
     therapy_id: int,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -409,9 +410,8 @@ async def delete_therapy(
     if db_therapy.image_url:
         delete_file(db_therapy.image_url)
     
-    # Notify n8n
     # Notify n8n with entity before it's gone
-    await notify_n8n_content_change(therapy_id, "therapy", "delete", db=db, entity=db_therapy)
+    background_tasks.add_task(notify_n8n_content_change, therapy_id, "therapy", "delete", db=None, entity=db_therapy)
     
     # Log to dashboard activity
     activity_log = DashboardActivity(

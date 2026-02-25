@@ -435,7 +435,7 @@ async def create_content(
     # Notify n8n for RAG update if published
     if db_content.status == "published":
         print(f"Triggering RAG sync for new content #{db_content.id}")
-        await notify_n8n_content_change(db_content.id, db_content.type, "create", db=db)
+        background_tasks.add_task(notify_n8n_content_change, db_content.id, db_content.type, "create", db=None)
     
     # Auto-translate if no translations provided
     if not content_data.translations and background_tasks:
@@ -552,10 +552,10 @@ async def update_content(
     # Notify n8n for RAG sync
     if db_content.status == "published":
         print(f"Triggering RAG sync for updated content #{db_content.id} (update)")
-        await notify_n8n_content_change(db_content.id, db_content.type, "update", db=db)
+        background_tasks.add_task(notify_n8n_content_change, db_content.id, db_content.type, "update", db=None)
     elif original_status == "published" and db_content.status != "published":
         print(f"Triggering RAG sync for unpublished content #{db_content.id} (delete)")
-        await notify_n8n_content_change(db_content.id, db_content.type, "delete", db=db)
+        background_tasks.add_task(notify_n8n_content_change, db_content.id, db_content.type, "delete", db=None)
     
     # Re-translate if main fields changed
     # We remove the check for 'not content_data.translations' because the frontend sends back old translations
@@ -595,7 +595,7 @@ async def delete_content(
 
     
     # Notify n8n
-    await notify_n8n_content_change(db_content.id, db_content.type, "delete", db=db, entity=db_content)
+    background_tasks.add_task(notify_n8n_content_change, db_content.id, db_content.type, "delete", db=None, entity=db_content)
     
     # Log to dashboard activity before deleting
     from app.models.models import DashboardActivity

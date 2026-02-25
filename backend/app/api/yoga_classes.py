@@ -77,7 +77,7 @@ async def create_yoga_class(
     db.refresh(db_class)
     
     # Notify n8n for RAG update
-    await notify_n8n_content_change(db_class.id, "yoga_class", "create", db=db)
+    background_tasks.add_task(notify_n8n_content_change, db_class.id, "yoga_class", "create", db=None)
     
     # Log to dashboard activity
     activity_log = DashboardActivity(
@@ -126,7 +126,7 @@ async def update_yoga_class(
     db.refresh(db_class)
     
     # Notify n8n for RAG update
-    await notify_n8n_content_change(db_class.id, "yoga_class", "update", db=db)
+    background_tasks.add_task(notify_n8n_content_change, db_class.id, "yoga_class", "update", db=None)
     
     # Re-translate if main fields changed and no new translations provided
     if (class_data.name or class_data.description) and not class_data.translations:
@@ -145,6 +145,7 @@ async def update_yoga_class(
 @router.delete("/{class_id}")
 async def delete_yoga_class(
     class_id: int,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -155,8 +156,8 @@ async def delete_yoga_class(
     if not db_class:
         raise HTTPException(status_code=404, detail="Class not found")
     
-    # Notify n8n BEFORE delete for reference if needed, or just action
-    await notify_n8n_content_change(db_class.id, "yoga_class", "delete", db=db, entity=db_class)
+    # Notify n8n for RAG update
+    background_tasks.add_task(notify_n8n_content_change, db_class.id, "yoga_class", "delete", db=None, entity=db_class)
     
     # Log to dashboard activity
     activity_log = DashboardActivity(

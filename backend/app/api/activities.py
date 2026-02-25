@@ -337,7 +337,7 @@ async def create_activity(
     image_url = None
     if image:
         subdir = "gallery/suggestions" if type == 'sugerencia' else "gallery/activities"
-        image_url = save_upload_file(image, subdirectory=subdir)
+        image_url = save_upload_file(image, subdirectory=subdir, title=title)
 
     # Handle dates
     start_dt = datetime.fromisoformat(start_date) if start_date else None
@@ -402,8 +402,8 @@ async def create_activity(
     db.add(activity_log)
     db.commit()
     
-    # Notify RAG system (n8n) with complete entity
-    await notify_n8n_content_change(new_activity.id, "activity", "create", db=db, entity=new_activity)
+    # Notify RAG system (n8n) with complete entity - using background task to avoid blocking
+    background_tasks.add_task(notify_n8n_content_change, new_activity.id, "activity", "create", db=None, entity=new_activity)
     
     # Auto-translate if no translations provided
     if not translations and background_tasks:
@@ -486,7 +486,7 @@ async def update_activity(
             delete_file(activity.image_url)
         
         subdir = "gallery/suggestions" if (type or activity.type) == 'sugerencia' else "gallery/activities"
-        activity.image_url = save_upload_file(image, subdirectory=subdir)
+        activity.image_url = save_upload_file(image, subdirectory=subdir, title=title or activity.title)
 
     if title is not None: activity.title = title
     if description is not None: activity.description = description
@@ -514,8 +514,8 @@ async def update_activity(
         db.add(gallery_item)
         db.commit()
     
-    # Notify RAG system (n8n) with complete entity
-    await notify_n8n_content_change(activity.id, "activity", "update", db=db, entity=activity)
+    # Notify RAG system (n8n) with complete entity - using background task to avoid blocking
+    background_tasks.add_task(notify_n8n_content_change, activity.id, "activity", "update", db=None, entity=activity)
     
     # Re-translate if main fields changed and no new translations provided
     if (title or description or activity_data) and not translations:
@@ -576,8 +576,8 @@ async def acknowledge_activity_finish(
     if activity.image_url:
         delete_file(activity.image_url)
     
-    # Notify RAG system BEFORE deleting
-    await notify_n8n_content_change(activity_id, "activity", "delete", db=db, entity=activity)
+    # Notify RAG system (n8n) - using background task to avoid blocking
+    background_tasks.add_task(notify_n8n_content_change, activity_id, "activity", "delete", db=None, entity=activity)
     
     # Notify subscribers BEFORE deleting
     if activity.is_active and activity.type != 'sugerencia':
@@ -611,8 +611,8 @@ async def delete_activity(
     if activity.image_url:
         delete_file(activity.image_url)
 
-    # Notify RAG system BEFORE deleting
-    await notify_n8n_content_change(activity_id, "activity", "delete", db=db, entity=activity)
+    # Notify RAG system (n8n) - using background task to avoid blocking
+    background_tasks.add_task(notify_n8n_content_change, activity_id, "activity", "delete", db=None, entity=activity)
     
     # Log to dashboard activity
     activity_log = DashboardActivity(

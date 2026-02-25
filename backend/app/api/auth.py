@@ -145,6 +145,25 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
 def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
 
+@router.post("/refresh")
+def refresh_token(current_user: User = Depends(get_current_user)):
+    """Issue a new access token for the current user to extend their session."""
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": current_user.email}, expires_delta=access_token_expires
+    )
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": str(current_user.id),
+            "email": current_user.email,
+            "name": current_user.email.split('@')[0],
+            "role": getattr(current_user.role, 'value', current_user.role)
+        }
+    }
+
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
 
