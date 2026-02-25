@@ -142,9 +142,9 @@ export default function SeoStats() {
                         <p>Aún no hay datos históricos suficientes.</p>
                     </div>
                 ) : (
-                    <div className="relative h-80 w-full flex items-end justify-between gap-1 md:gap-2 px-2">
+                    <div className="relative h-80 w-full flex items-end justify-center md:justify-evenly gap-2 md:gap-4 px-2">
                         {data?.history.map((day, idx) => (
-                            <div key={idx} className="group relative flex-grow flex flex-col items-center gap-2 h-full justify-end">
+                            <div key={idx} className="group relative flex-grow max-w-[30px] md:max-w-[45px] flex flex-col items-center gap-2 h-full justify-end">
                                 {/* Tooltip */}
                                 <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
                                     <div className="bg-bark text-white text-[10px] px-3 py-2 rounded-lg shadow-xl min-w-[100px]">
