@@ -148,7 +148,7 @@ const YogaSchedule: React.FC<YogaScheduleProps> = ({ onlyWeekly, onlyWeekend, hi
                         {DAYS.map(day => (
                             <div key={`bg-${day}`} className="border-r border-forest/5 last:border-r-0 flex flex-col">
                                 {Array.from({ length: rows }).map((_, i) => (
-                                    <div key={i} className="h-36 border-b border-forest/5 last:border-b-0 flex items-center justify-center">
+                                    <div key={i} className="h-28 border-b border-forest/5 last:border-b-0 flex items-center justify-center">
                                         <img src={omSymbol} alt="" className="w-24 h-24 object-contain opacity-[0.08]" style={{ filter: 'invert(28%) sepia(12%) saturate(2334%) hue-rotate(100deg) brightness(92%) contrast(87%)' }} />
                                     </div>
                                 ))}

@@ -117,7 +117,7 @@ const YogaPage: React.FC = () => {
     );
 
     return (
-        <div ref={containerRef} className="font-body text-bark h-screen overflow-y-auto flex flex-col relative md:snap-y md:snap-mandatory scroll-smooth">
+        <div ref={containerRef} className="font-body text-bark h-screen overflow-y-auto flex flex-col relative scroll-smooth">
             <PageSEO
                 title={t('yoga.seo.title')}
                 description={t('yoga.seo.description')}
@@ -142,7 +142,7 @@ const YogaPage: React.FC = () => {
             )}
 
             <main className="flex-grow bg-bone">
-                <div id="top" className="relative w-full min-h-[85vh] md:min-h-[90vh] flex items-center justify-center snap-center snap-always" role="banner">
+                <div id="top" className="relative w-full min-h-[85vh] md:min-h-[90vh] flex items-center justify-center relative" role="banner">
                     <div className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${customHero ? getImageUrl(customHero) : yogaHero})` }} aria-hidden="true">
                         <div className="absolute inset-0 bg-black/50" />
                     </div>
@@ -196,7 +196,7 @@ const YogaPage: React.FC = () => {
                     </div>
                 </div>
 
-                <section ref={scheduleRef} className="bg-white py-12 md:py-24 scroll-mt-24 md:snap-center md:snap-always relative">
+                <section ref={scheduleRef} className="bg-white py-8 md:py-16 scroll-mt-24 relative">
                     <FadeInSection className="max-w-7xl mx-auto px-4 md:px-8">
                         <Suspense fallback={<SectionLoader />}>
                             <YogaSchedule onlyWeekly />
@@ -205,7 +205,7 @@ const YogaPage: React.FC = () => {
                 </section>
 
                 {hasWeekendActivities && (
-                    <section className="bg-white py-12 md:py-24 scroll-mt-24 md:snap-center md:snap-always relative border-t border-forest/5">
+                    <section className="bg-white py-8 md:py-16 scroll-mt-24 relative border-t border-forest/5">
                         <FadeInSection className="max-w-7xl mx-auto px-4 md:px-8">
                             <Suspense fallback={<SectionLoader />}>
                                 <YogaSchedule onlyWeekend />
@@ -214,7 +214,7 @@ const YogaPage: React.FC = () => {
                     </section>
                 )}
 
-                <section ref={galleryRef} className="w-full max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-48 scroll-mt-24 md:snap-center md:snap-always">
+                <section ref={galleryRef} className="w-full max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-48 scroll-mt-24">
                     <FadeInSection>
                         <h2 className="text-3xl md:text-5xl font-headers text-forest mb-12 text-center uppercase tracking-tight">{t('yoga.sections.gallery')}</h2>
                         <Suspense fallback={<SectionLoader />}>
@@ -241,7 +241,7 @@ const YogaPage: React.FC = () => {
 
 
                 {/* Blog Section */}
-                <section ref={blogRef} className="scroll-mt-24 md:snap-center md:snap-always">
+                <section ref={blogRef} className="scroll-mt-24">
                     <BlogSection
                         category="yoga"
                         limit={6}
@@ -252,7 +252,7 @@ const YogaPage: React.FC = () => {
                     />
                 </section>
             </main>
-            <div className="md:snap-center md:snap-always" id="footer-snap">
+            <div id="footer-snap">
                 <Footer />
             </div>
         </div>
