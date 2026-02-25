@@ -33,7 +33,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         store.validateSession();
-    }, [store]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <AuthContext.Provider value={{
