@@ -112,7 +112,7 @@ const HomePage: React.FC = () => {
     };
 
     return (
-        <div id="home-scroll-container" ref={containerRef} className="font-body text-bark relative h-screen overflow-y-auto snap-y snap-mandatory scroll-smooth">
+        <div id="home-scroll-container" ref={containerRef} className="font-body text-bark relative h-screen overflow-y-auto md:snap-y md:snap-mandatory scroll-smooth">
             <PageSEO
                 title="Arunachala Yoga y Terapias | Centro de Bienestar en Cornellà"
                 description="Clases de Yoga, masajes y terapias: Centro de Yoga en Cornellá de Llobregat"
@@ -226,7 +226,7 @@ const HomePage: React.FC = () => {
                 </section>
 
                 {/* Reviews Section - Snap Start to ensure title visibility */}
-                <section className="w-full max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-12 snap-center snap-always scroll-mt-24">
+                <section className="w-full max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-12 scroll-mt-24">
                     <Suspense fallback={<div className="h-64 flex items-center justify-center">{t('home.loading.reviews')}</div>}>
                         <FadeInSection delay={0.3}>
                             <ReviewsSection />
