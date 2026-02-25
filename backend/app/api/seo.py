@@ -31,11 +31,17 @@ async def get_search_console_stats(
                 # 2. Try Base64 if JSON fails (to avoid quote/newline issues in Docker/Coolify)
                 import base64
                 try:
-                    decoded = base64.b64decode(google_auth_json).decode('utf-8')
+                    # Cleanup: remove whitespace and fix padding
+                    b64_str = google_auth_json.strip()
+                    padding_needed = len(b64_str) % 4
+                    if padding_needed:
+                        b64_str += '=' * (4 - padding_needed)
+                    
+                    decoded = base64.b64decode(b64_str).decode('utf-8')
                     creds_data = json.loads(decoded)
                     print("SEO: Loaded credentials from Base64 env var")
-                except Exception as e:
-                    print(f"SEO: Failed to decode Base64 env var: {e}")
+                except Exception as b64e:
+                    print(f"SEO: Failed to decode Base64 env var: {b64e}")
                     creds_data = None
 
             if creds_data:
