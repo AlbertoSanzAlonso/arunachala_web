@@ -16,29 +16,44 @@ async def get_search_console_stats(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    """Fetch search performance data from Google Search Console"""
     # Try to load from environment variable first (recommended for production)
     google_auth_json = os.getenv("GOOGLE_AUTH_JSON")
     creds_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "google-credentials.json")
     
     try:
+        creds = None
         if google_auth_json:
-            # Load from environment variable
-            creds_data = json.loads(google_auth_json)
-            creds = service_account.Credentials.from_service_account_info(
-                creds_data,
-                scopes=['https://www.googleapis.com/auth/webmasters.readonly']
-            )
-            print("SEO: Loaded credentials from environment variable")
-        elif os.path.exists(creds_path):
+            try:
+                # 1. Try direct JSON
+                creds_data = json.loads(google_auth_json)
+                print("SEO: Loaded credentials from direct JSON env var")
+            except json.JSONDecodeError:
+                # 2. Try Base64 if JSON fails (to avoid quote/newline issues in Docker/Coolify)
+                import base64
+                try:
+                    decoded = base64.b64decode(google_auth_json).decode('utf-8')
+                    creds_data = json.loads(decoded)
+                    print("SEO: Loaded credentials from Base64 env var")
+                except Exception as e:
+                    print(f"SEO: Failed to decode Base64 env var: {e}")
+                    creds_data = None
+
+            if creds_data:
+                creds = service_account.Credentials.from_service_account_info(
+                    creds_data,
+                    scopes=['https://www.googleapis.com/auth/webmasters.readonly']
+                )
+
+        if not creds and os.path.exists(creds_path):
             # Fallback to file
             creds = service_account.Credentials.from_service_account_file(
                 creds_path, 
                 scopes=['https://www.googleapis.com/auth/webmasters.readonly']
             )
             print("SEO: Loaded credentials from file")
-        else:
-            print(f"SEO: No credentials found at {creds_path} and no GOOGLE_AUTH_JSON env var")
+
+        if not creds:
+            print(f"SEO: No valid credentials found")
             return {
                 "status": "not_configured",
                 "stats": {"clicks": 0, "impressions": 0, "ctr": 0, "position": 0}
