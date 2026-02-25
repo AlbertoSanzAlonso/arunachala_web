@@ -531,6 +531,8 @@ INSTRUCCIONES EXTRA:
 {extra_instructions}
 
 REGLAS DE URLS:
+ - NUNCA muestres la URL en texto plano literal como "(URL: /ruta)".
+ - OBLIGATORIO: Si mencionas un artículo, terapia o servicio con ruta, hazlo SIEMPRE en formato Markdown: [Nombre de la terapia](/ruta)
  - Yoga: /clases-de-yoga (SIEMPRE).
  - Masaje: /terapias/masajes?item=SLUG
  - Terapia Holística: /terapias/terapias-holisticas?item=SLUG

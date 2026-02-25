@@ -11,8 +11,8 @@ interface PageSEOProps {
 }
 
 const PageSEO: React.FC<PageSEOProps> = ({
-    title = 'Arunachala Yoga y Terapias',
-    description = 'Centro de Yoga y Terapias en Cornella del Llobregat. Clases de Yoga y Terapias Holísticas para el bienestar integral.',
+    title = 'Arunachala Yoga y Terapias | Centro de Bienestar en Cornellà',
+    description = 'Clases de Yoga, masajes y terapias: Centro de Yoga en Cornellá de Llobregat',
     canonical = 'https://www.yogayterapiasarunachala.es',
     ogImage = 'https://www.yogayterapiasarunachala.es/logo_wide.webp',
     ogType = 'website',

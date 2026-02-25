@@ -211,7 +211,8 @@ async def notify_n8n_content_change(
                         log_entry = db_bg.query(RAGSyncLog).filter(RAGSyncLog.id == l_id).first()
                         if log_entry:
                             log_entry.webhook_sent_at = datetime.now()
-                            log_entry.status = 'processing'
+                            # Para delete, marcamos success directo ya que n8n no devuelve callback de delete
+                            log_entry.status = 'success' if action == 'delete' else 'processing'
                             db_bg.commit()
                     finally:
                         db_bg.close()

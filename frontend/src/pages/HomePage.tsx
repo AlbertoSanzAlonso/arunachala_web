@@ -2,6 +2,7 @@ import React, { Suspense, lazy, useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import videoBgWebm from '../assets/videos/VIDEOWEB.webm';
+import videoPosterWebp from '../assets/videos/VIDEOWEB_poster.webp';
 import yogaImg from '../assets/images/gallery/yoga_sample.webp';
 import therapyImg from '../assets/images/gallery/therapy_sample.webp';
 import gardenImg from '../assets/images/gallery/garden_sample.webp';
@@ -114,7 +115,7 @@ const HomePage: React.FC = () => {
         <div id="home-scroll-container" ref={containerRef} className="font-body text-bark relative h-screen overflow-y-auto snap-y snap-mandatory scroll-smooth">
             <PageSEO
                 title="Arunachala Yoga y Terapias | Centro de Bienestar en Cornellà"
-                description="Clases de Yoga (Hatha, Vinyasa), Meditación y Terapias Holísticas en Cornellà de Llobregat. Encuentra tu equilibrio en un espacio acogedor y profesional."
+                description="Clases de Yoga, masajes y terapias: Centro de Yoga en Cornellá de Llobregat"
                 structuredData={localBusinessSchema}
             />
             <Header />
@@ -145,6 +146,7 @@ const HomePage: React.FC = () => {
                     loop
                     muted
                     playsInline
+                    poster={videoPosterWebp}
                 >
                     <source src={videoBgWebm} type="video/webm" />
                     Your browser does not support the video tag.
