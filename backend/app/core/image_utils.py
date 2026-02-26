@@ -40,52 +40,68 @@ def save_upload_file(upload_file: UploadFile, subdirectory: str = "uploads", tit
     """
     try:
         # Generate SEO friendly filename from original name or title
-        original_base_name = os.path.splitext(upload_file.filename)[0] if upload_file.filename else "image"
+        original_ext = os.path.splitext(upload_file.filename)[1] if upload_file.filename else ".bin"
+        original_base_name = os.path.splitext(upload_file.filename)[0] if upload_file.filename else "file"
         base_name_str = title if title else original_base_name
         base_name = slugify(base_name_str)
         if not base_name:
-            base_name = "image"
+            base_name = "file"
             
-        filename = f"{base_name}-{uuid.uuid4().hex[:8]}.webp"
+        # Determine if it's an image we should convert to webp
+        is_image = upload_file.content_type and upload_file.content_type.startswith("image/")
         
-        # Open image using Pillow
-        upload_file.file.seek(0)
-        image = Image.open(upload_file.file)
+        if is_image:
+            filename = f"{base_name}-{uuid.uuid4().hex[:8]}.webp"
+            # Open image using Pillow
+            upload_file.file.seek(0)
+            image = Image.open(upload_file.file)
+        else:
+            # For audio/other, keep original extension or use binary
+            filename = f"{base_name}-{uuid.uuid4().hex[:8]}{original_ext}"
+            upload_file.file.seek(0)
+            file_content = upload_file.file.read()
 
         if STORAGE_TYPE == "supabase" and supabase_client:
-            # Save to memory buffer as WebP
-            buffer = io.BytesIO()
-            image.save(buffer, format="WEBP", quality=80, optimize=True)
-            buffer.seek(0)
-            
-            # Use 'arunachala-images' bucket
             bucket_name = "arunachala-images"
             file_path = f"{subdirectory}/{filename}"
             
+            if is_image:
+                # Save to memory buffer as WebP
+                buffer = io.BytesIO()
+                image.save(buffer, format="WEBP", quality=80, optimize=True)
+                content_to_upload = buffer.getvalue()
+                mimetype = "image/webp"
+            else:
+                content_to_upload = file_content
+                mimetype = upload_file.content_type or "application/octet-stream"
+            
             # Upload to Supabase Storage
             res = supabase_client.storage.from_(bucket_name).upload(
-                file=buffer.getvalue(),
+                file=content_to_upload,
                 path=file_path,
-                file_options={"content-type": "image/webp"}
+                file_options={"content-type": mimetype}
             )
             
             # Get public url
             public_url = supabase_client.storage.from_(bucket_name).get_public_url(file_path)
-            # Remove trailing '?' if present (some clients add it automatically)
             if public_url.endswith('?'):
                 public_url = public_url[:-1]
             return public_url
             
         else:
             # LOCAL STORAGE
-            # Create full destination directory
             destination_dir = os.path.join(STATIC_DIR, subdirectory)
             os.makedirs(destination_dir, exist_ok=True)
             
             file_location = os.path.join(destination_dir, filename)
 
-            # Save as WebP
-            image.save(file_location, "WEBP", quality=80, optimize=True)
+            if is_image:
+                # Save as WebP
+                image.save(file_location, "WEBP", quality=80, optimize=True)
+            else:
+                # Save original content
+                with open(file_location, "wb") as f:
+                    f.write(file_content)
             
             return f"/static/{subdirectory}/{filename}"
 
