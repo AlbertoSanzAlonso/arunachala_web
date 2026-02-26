@@ -32,29 +32,29 @@ interface ArticleModalProps {
 const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose }) => {
     const { t, i18n } = useTranslation();
     const contentRef = React.useRef<HTMLDivElement>(null);
+    const closeButtonRef = React.useRef<HTMLButtonElement>(null);
 
     React.useEffect(() => {
         if (isOpen && contentRef.current) {
-            // Force scroll to top immediately
-            contentRef.current.scrollTo(0, 0);
+            // Function to force scroll to top
+            const resetScroll = () => {
+                if (contentRef.current) {
+                    contentRef.current.scrollTop = 0;
+                }
+            };
 
-            // Multiple attempts to handle different loading stages
-            const timer1 = setTimeout(() => {
-                if (contentRef.current) contentRef.current.scrollTo(0, 0);
-            }, 0);
+            // Immediate reset
+            resetScroll();
 
-            const timer2 = setTimeout(() => {
-                if (contentRef.current) contentRef.current.scrollTo(0, 0);
-            }, 50);
-
-            const timer3 = setTimeout(() => {
-                if (contentRef.current) contentRef.current.scrollTo(0, 0);
-            }, 150);
+            // Multiple attempts to handle different loading stages/rendering cycles
+            const t1 = setTimeout(resetScroll, 0);
+            const t2 = setTimeout(resetScroll, 50);
+            const t3 = setTimeout(resetScroll, 200);
 
             return () => {
-                clearTimeout(timer1);
-                clearTimeout(timer2);
-                clearTimeout(timer3);
+                clearTimeout(t1);
+                clearTimeout(t2);
+                clearTimeout(t3);
             };
         }
     }, [isOpen, article?.id, article?.body]);
@@ -109,7 +109,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
 
     return (
         <Transition appear show={isOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-[60]" onClose={onClose}>
+            <Dialog as="div" className="relative z-[60]" onClose={onClose} initialFocus={closeButtonRef}>
                 <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -137,9 +137,9 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
 
                                 {/* Close Button */}
                                 <button
+                                    ref={closeButtonRef}
                                     onClick={onClose}
-                                    tabIndex={-1}
-                                    className="absolute top-4 right-4 z-10 p-2 bg-white/80 backdrop-blur-md rounded-full text-gray-500 hover:text-gray-800 hover:bg-white shadow-sm transition-all outline-none focus:outline-none"
+                                    className="absolute top-4 right-4 z-10 p-2 bg-white/80 backdrop-blur-md rounded-full text-gray-500 hover:text-gray-800 hover:bg-white shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-forest/20"
                                 >
                                     <XMarkIcon className="w-6 h-6" />
                                 </button>
