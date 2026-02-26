@@ -99,16 +99,9 @@ const BlogPage: React.FC = () => {
         // Filter by Tags (AND logic: article must have all selected tags)
         if (filters.tags && filters.tags.length > 0) {
             result = result.filter(a => {
-                let tags = getTranslated(a, 'tags', i18n.language);
-                if (typeof tags === 'string') {
-                    try { tags = JSON.parse(tags); } catch (e) { }
-                }
-                const safeTags = Array.isArray(tags) ? tags : a.tags;
-
-                if (!safeTags || safeTags.length === 0) return false;
-
-                // Check if ALL selected tags are present in article tags
-                return filters.tags.every(selectedTag => safeTags.includes(selectedTag));
+                // Use raw tags (a.tags) for filtering since filter state uses raw tags
+                const rawTags = a.tags || [];
+                return filters.tags.every(selectedTag => rawTags.includes(selectedTag));
             });
         }
 
@@ -319,26 +312,28 @@ const BlogPage: React.FC = () => {
 
                                             {/* Tags */}
                                             {(() => {
-                                                const tags = getTranslated(article, 'tags', i18n.language);
-                                                // Handle potential string return or undefined, fallback to article.tags
-                                                const safeTags = (Array.isArray(tags) && tags.length > 0) ? tags : article.tags;
+                                                const translatedTags = getTranslated(article, 'tags', i18n.language);
+                                                const safeTags = (Array.isArray(translatedTags) && translatedTags.length > 0) ? translatedTags : article.tags;
 
                                                 if (!safeTags || safeTags.length === 0) return null;
 
                                                 return (
                                                     <div className="flex flex-wrap gap-2 mt-4 relative z-10">
-                                                        {safeTags.slice(0, 3).map((tag: string, idx: number) => {
-                                                            const isActive = filters.tags.includes(tag);
+                                                        {safeTags.slice(0, 3).map((tagLabel: string, idx: number) => {
+                                                            // Match translated tag to its raw name using the same index
+                                                            const rawTagName = article.tags[idx] || tagLabel;
+                                                            const isActive = filters.tags.includes(rawTagName);
                                                             return (
                                                                 <span
                                                                     key={idx}
                                                                     onClick={(e) => {
                                                                         e.stopPropagation();
+                                                                        const tagName = rawTagName;
                                                                         setFilters(prev => ({
                                                                             ...prev,
                                                                             tags: isActive
-                                                                                ? prev.tags.filter(t => t !== tag)
-                                                                                : [...prev.tags, tag]
+                                                                                ? prev.tags.filter(t => t !== tagName)
+                                                                                : [...prev.tags, tagName]
                                                                         }));
                                                                     }}
                                                                     className={`px-2 py-1 rounded-full text-xs transition-all duration-200 cursor-pointer ${isActive
@@ -346,7 +341,7 @@ const BlogPage: React.FC = () => {
                                                                         : "bg-bone text-bark/60 hover:bg-matcha/20 hover:text-forest"
                                                                         }`}
                                                                 >
-                                                                    #{tag}
+                                                                    #{tagLabel}
                                                                 </span>
                                                             );
                                                         })}
@@ -361,43 +356,46 @@ const BlogPage: React.FC = () => {
                             {/* Pagination Controls */}
                             {Math.ceil(filteredArticles.length / ITEMS_PER_PAGE) > 1 && (
                                 <div className="flex justify-center items-center gap-2 md:gap-3 mt-16 mb-8">
-                                    {/* First Page */}
-                                    <button
-                                        onClick={() => {
-                                            setCurrentPage(1);
-                                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                                        }}
-                                        disabled={currentPage === 1}
-                                        className={`p-2 rounded-full transition-all ${currentPage === 1
-                                            ? 'text-bark/20 cursor-not-allowed'
-                                            : 'bg-white text-forest shadow-md hover:bg-forest hover:text-white'
-                                            }`}
-                                        aria-label="Primera página"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fillRule="evenodd" d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
-                                        </svg>
-                                    </button>
+                                    {/* First Page - Hide if total pages <= 5 */}
+                                    {Math.ceil(filteredArticles.length / ITEMS_PER_PAGE) > 5 && (
+                                        <button
+                                            onClick={() => {
+                                                setCurrentPage(1);
+                                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                            }}
+                                            disabled={currentPage === 1}
+                                            className={`p-2 rounded-full transition-all ${currentPage === 1
+                                                ? 'text-bark/20 cursor-not-allowed'
+                                                : 'bg-white text-forest shadow-md hover:bg-forest hover:text-white'
+                                                }`}
+                                            aria-label="Primera página"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    )}
 
-                                    {/* Prev Block */}
-                                    <button
-                                        onClick={() => {
-                                            // Jump to the first page of the previous block of 5
-                                            const prevRangeStart = Math.max(1, Math.floor((currentPage - 1) / 5) * 5 - 4);
-                                            setCurrentPage(prevRangeStart);
-                                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                                        }}
-                                        disabled={currentPage <= 5 && Math.floor((currentPage - 1) / 5) === 0}
-                                        className={`p-2 rounded-full transition-all ${currentPage <= 5 && Math.floor((currentPage - 1) / 5) === 0
-                                            ? 'text-bark/20 cursor-not-allowed'
-                                            : 'bg-white text-forest shadow-md hover:bg-forest hover:text-white'
-                                            }`}
-                                        aria-label={t('blog.prev_page', 'Anterior')}
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                                        </svg>
-                                    </button>
+                                    {/* Prev Block - Hide if total pages <= 5 */}
+                                    {Math.ceil(filteredArticles.length / ITEMS_PER_PAGE) > 5 && (
+                                        <button
+                                            onClick={() => {
+                                                const prevRangeStart = Math.max(1, Math.floor((currentPage - 1) / 5) * 5 - 4);
+                                                setCurrentPage(prevRangeStart);
+                                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                            }}
+                                            disabled={currentPage <= 5}
+                                            className={`p-2 rounded-full transition-all ${currentPage <= 5
+                                                ? 'text-bark/20 cursor-not-allowed'
+                                                : 'bg-white text-forest shadow-md hover:bg-forest hover:text-white'
+                                                }`}
+                                            aria-label={t('blog.prev_page', 'Anterior')}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    )}
 
                                     <div className="flex items-center gap-1 md:gap-2">
                                         {(() => {
@@ -428,62 +426,65 @@ const BlogPage: React.FC = () => {
                                         })()}
                                     </div>
 
-                                    {/* Next Block */}
-                                    <button
-                                        onClick={() => {
-                                            const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
-                                            // Jump to the first page of the next block of 5
-                                            const nextRangeStart = Math.min(totalPages, Math.floor((currentPage - 1) / 5) * 5 + 6);
-                                            setCurrentPage(nextRangeStart);
-                                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                                        }}
-                                        disabled={(() => {
-                                            const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
-                                            const currentBlockEnd = Math.floor((currentPage - 1) / 5) * 5 + 5;
-                                            return currentBlockEnd >= totalPages;
-                                        })()}
-                                        className={`p-2 rounded-full transition-all ${(() => {
-                                            const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
-                                            const currentBlockEnd = Math.floor((currentPage - 1) / 5) * 5 + 5;
-                                            return currentBlockEnd >= totalPages;
-                                        })()
-                                            ? 'text-bark/20 cursor-not-allowed'
-                                            : 'bg-white text-forest shadow-md hover:bg-forest hover:text-white'
-                                            }`}
-                                        aria-label={t('blog.next_page', 'Siguiente')}
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                                        </svg>
-                                    </button>
+                                    {/* Next Block - Hide if total pages <= 5 */}
+                                    {Math.ceil(filteredArticles.length / ITEMS_PER_PAGE) > 5 && (
+                                        <button
+                                            onClick={() => {
+                                                const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
+                                                const nextRangeStart = Math.min(totalPages, Math.floor((currentPage - 1) / 5) * 5 + 6);
+                                                setCurrentPage(nextRangeStart);
+                                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                            }}
+                                            disabled={(() => {
+                                                const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
+                                                const currentBlockEnd = Math.floor((currentPage - 1) / 5) * 5 + 5;
+                                                return currentBlockEnd >= totalPages;
+                                            })()}
+                                            className={`p-2 rounded-full transition-all ${(() => {
+                                                const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
+                                                const currentBlockEnd = Math.floor((currentPage - 1) / 5) * 5 + 5;
+                                                return currentBlockEnd >= totalPages;
+                                            })()
+                                                ? 'text-bark/20 cursor-not-allowed'
+                                                : 'bg-white text-forest shadow-md hover:bg-forest hover:text-white'
+                                                }`}
+                                            aria-label={t('blog.next_page', 'Siguiente')}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    )}
 
-                                    {/* Last Range */}
-                                    <button
-                                        onClick={() => {
-                                            const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
-                                            const lastRangeStart = Math.floor((totalPages - 1) / 5) * 5 + 1;
-                                            setCurrentPage(lastRangeStart);
-                                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                                        }}
-                                        disabled={(() => {
-                                            const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
-                                            const lastRangeStart = Math.floor((totalPages - 1) / 5) * 5 + 1;
-                                            return currentPage >= lastRangeStart;
-                                        })()}
-                                        className={`p-2 rounded-full transition-all ${(() => {
-                                            const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
-                                            const lastRangeStart = Math.floor((totalPages - 1) / 5) * 5 + 1;
-                                            return currentPage >= lastRangeStart;
-                                        })()
-                                            ? 'text-bark/20 cursor-not-allowed'
-                                            : 'bg-white text-forest shadow-md hover:bg-forest hover:text-white'
-                                            }`}
-                                        aria-label="Último rango"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414zm6 0a1 1 0 011.414 0l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414-1.414L14.586 10l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                                        </svg>
-                                    </button>
+                                    {/* Last Range - Hide if total pages <= 5 */}
+                                    {Math.ceil(filteredArticles.length / ITEMS_PER_PAGE) > 5 && (
+                                        <button
+                                            onClick={() => {
+                                                const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
+                                                const lastRangeStart = Math.floor((totalPages - 1) / 5) * 5 + 1;
+                                                setCurrentPage(lastRangeStart);
+                                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                            }}
+                                            disabled={(() => {
+                                                const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
+                                                const lastRangeStart = Math.floor((totalPages - 1) / 5) * 5 + 1;
+                                                return currentPage >= lastRangeStart;
+                                            })()}
+                                            className={`p-2 rounded-full transition-all ${(() => {
+                                                const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
+                                                const lastRangeStart = Math.floor((totalPages - 1) / 5) * 5 + 1;
+                                                return currentPage >= lastRangeStart;
+                                            })()
+                                                ? 'text-bark/20 cursor-not-allowed'
+                                                : 'bg-white text-forest shadow-md hover:bg-forest hover:text-white'
+                                                }`}
+                                            aria-label="Último rango"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414zm6 0a1 1 0 011.414 0l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414-1.414L14.586 10l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    )}
                                 </div>
                             )}
                         </>

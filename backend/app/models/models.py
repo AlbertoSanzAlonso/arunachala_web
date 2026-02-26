@@ -70,6 +70,7 @@ class Content(Base):
     translations = Column(JSON, nullable=True)
     # Content stats
     view_count = Column(Integer, default=0)
+    play_time_seconds = Column(Integer, default=0)
     
     # RAG sync fields
     vector_id = Column(String, nullable=True)

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 
 interface PageSEOProps {
     title?: string;
@@ -18,10 +19,11 @@ const PageSEO: React.FC<PageSEOProps> = ({
     ogType = 'website',
     structuredData
 }) => {
+    const { i18n } = useTranslation();
     const siteTitle = title.includes('Arunachala') ? title : `${title} | Arunachala Yoga y Terapias`;
 
     return (
-        <Helmet>
+        <Helmet htmlAttributes={{ lang: i18n.language.split('-')[0] }}>
             {/* Standard metadata tags */}
             <title>{siteTitle}</title>
             <meta name="description" content={description} />

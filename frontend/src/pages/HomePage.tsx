@@ -3,9 +3,6 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import videoBgWebm from '../assets/videos/VIDEOWEB.webm';
 import videoPosterWebp from '../assets/videos/VIDEOWEB_poster.webp';
-import yogaImg from '../assets/images/gallery/yoga_sample.webp';
-import therapyImg from '../assets/images/gallery/therapy_sample.webp';
-import gardenImg from '../assets/images/gallery/garden_sample.webp';
 import omSymbol from '../assets/images/om_symbol.png';
 import lotusFlower from '../assets/images/lotus_flower.png';
 import Header from '../components/Header';
@@ -26,7 +23,7 @@ const NewsletterForm = lazy(() => import('../components/NewsletterForm'));
 const HomePage: React.FC = () => {
     const { t } = useTranslation();
     const containerRef = useRef<HTMLDivElement>(null);
-    const [galleryImages, setGalleryImages] = useState<string[]>([yogaImg, therapyImg, gardenImg]);
+    const [galleryImages, setGalleryImages] = useState<string[]>([]);
     const [showBackToTop, setShowBackToTop] = useState(false);
 
     const getDailyMantra = () => {
@@ -217,13 +214,15 @@ const HomePage: React.FC = () => {
                 </section>
 
                 {/* Gallery Slider - Snap Center */}
-                <section className="w-full max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-12 snap-center snap-always">
-                    <Suspense fallback={<div className="h-96 flex items-center justify-center">{t('home.loading.gallery')}</div>}>
-                        <FadeInSection delay={0.2}>
-                            <ImageSlider images={galleryImages} />
-                        </FadeInSection>
-                    </Suspense>
-                </section>
+                {galleryImages.length > 0 && (
+                    <section className="w-full max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-12 snap-center snap-always">
+                        <Suspense fallback={<div className="h-96 flex items-center justify-center">{t('home.loading.gallery')}</div>}>
+                            <FadeInSection delay={0.2}>
+                                <ImageSlider images={galleryImages} />
+                            </FadeInSection>
+                        </Suspense>
+                    </section>
+                )}
 
                 {/* Reviews Section - Snap Start to ensure title visibility */}
                 <section className="w-full max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-12 scroll-mt-24">

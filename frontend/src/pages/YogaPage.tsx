@@ -21,6 +21,7 @@ const YogaPage: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const scheduleRef = useRef<HTMLDivElement>(null);
     const galleryRef = useRef<HTMLDivElement>(null);
+    const weekendRef = useRef<HTMLDivElement>(null);
     const blogRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
     const [galleryImages, setGalleryImages] = useState<string[]>([]);
@@ -43,14 +44,13 @@ const YogaPage: React.FC = () => {
                         });
                         setHasWeekendActivities(weekend.length > 0);
                     } else {
-                        // Check if fallback is active (based on YogaSchedule logic)
-                        setHasWeekendActivities(true);
+                        setHasWeekendActivities(false);
                     }
                 } else {
-                    setHasWeekendActivities(true); // Fallback to mocks
+                    setHasWeekendActivities(false);
                 }
             } catch (e) {
-                setHasWeekendActivities(true); // Fallback to mocks
+                setHasWeekendActivities(false);
             }
         };
         fetchWeekend();
@@ -92,8 +92,9 @@ const YogaPage: React.FC = () => {
         return () => clearInterval(interval);
     }, []);
 
-    const scrollToSchedule = () => scheduleRef.current?.scrollIntoView({ behavior: 'smooth' });
-    const scrollToBlog = () => blogRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const scrollTo = (ref: React.RefObject<HTMLDivElement>) => {
+        ref.current?.scrollIntoView({ behavior: 'smooth' });
+    };
 
     useEffect(() => {
         const container = containerRef.current;
@@ -170,26 +171,24 @@ const YogaPage: React.FC = () => {
                             {t('yoga.subtitle')}
                         </motion.p>
 
-                        <nav className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 w-full max-w-md md:max-w-4xl px-2">
+                        <nav className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 w-full max-w-md md:max-w-6xl px-2">
                             {[
-                                { title: t('yoga.buttons.schedule'), sub: t('yoga.buttons.schedule_sub'), action: scrollToSchedule, delay: 0.4 },
-                                { title: t('yoga.buttons.gallery'), sub: t('yoga.buttons.gallery_sub'), action: () => galleryRef.current?.scrollIntoView({ behavior: 'smooth' }), delay: 0.5 },
-                                { title: t('yoga.buttons.blog'), sub: t('yoga.buttons.blog_sub'), action: scrollToBlog, delay: 0.6 }
-                            ].map((btn, idx) => (
+                                { name: t('yoga.buttons.schedule'), ref: scheduleRef, delay: 0.4, show: true },
+                                { name: t('yoga.buttons.gallery'), ref: galleryRef, delay: 0.5, show: galleryImages.length > 0 },
+                                { name: t('yoga.buttons.weekend'), ref: weekendRef, delay: 0.6, show: hasWeekendActivities },
+                                { name: t('yoga.buttons.blog'), ref: blogRef, delay: 0.7, show: true }
+                            ].filter(item => item.show).map((item) => (
                                 <motion.button
-                                    key={idx}
+                                    key={item.name}
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
-                                    transition={{ duration: 0.3, delay: btn.delay }}
-                                    onClick={btn.action}
-                                    className="group h-32 md:h-64 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-md border border-white/20 shadow-xl flex flex-col items-center justify-center hover:bg-white/20 transition-all duration-300 w-full"
+                                    transition={{ duration: 0.3, delay: item.delay }}
+                                    onClick={() => scrollTo(item.ref)}
+                                    className="group relative h-32 md:h-48 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-md border border-white/20 shadow-xl flex flex-col items-center justify-center hover:bg-white/20 transition-all duration-300 w-full"
                                 >
-                                    <span className="text-2xl md:text-3xl font-headers text-white mb-1 md:mb-2 group-hover:text-matcha transition-colors uppercase">{btn.title}</span>
-                                    <span className="text-white/80 text-xs md:text-base opacity-95 md:opacity-0 group-hover:opacity-100 transition-opacity">
-                                        {btn.sub}
-                                    </span>
+                                    <span className="text-xl md:text-3xl font-headers text-white group-hover:text-matcha transition-colors uppercase">{item.name}</span>
                                 </motion.button>
                             ))}
                         </nav>
@@ -205,7 +204,7 @@ const YogaPage: React.FC = () => {
                 </section>
 
                 {hasWeekendActivities && (
-                    <section className="bg-white py-8 md:py-16 scroll-mt-24 relative border-t border-forest/5">
+                    <section ref={weekendRef} className="bg-white py-8 md:py-16 scroll-mt-24 relative border-t border-forest/5">
                         <FadeInSection className="max-w-7xl mx-auto px-4 md:px-8">
                             <Suspense fallback={<SectionLoader />}>
                                 <YogaSchedule onlyWeekend />
@@ -214,11 +213,11 @@ const YogaPage: React.FC = () => {
                     </section>
                 )}
 
-                <section ref={galleryRef} className="w-full max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-48 scroll-mt-24">
-                    <FadeInSection>
-                        <h2 className="text-3xl md:text-5xl font-headers text-forest mb-12 text-center uppercase tracking-tight">{t('yoga.sections.gallery')}</h2>
-                        <Suspense fallback={<SectionLoader />}>
-                            {galleryImages.length > 0 ? (
+                {galleryImages.length > 0 && (
+                    <section ref={galleryRef} className="w-full max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-48 scroll-mt-24">
+                        <FadeInSection>
+                            <h2 className="text-3xl md:text-5xl font-headers text-forest mb-12 text-center uppercase tracking-tight">{t('yoga.sections.gallery')}</h2>
+                            <Suspense fallback={<SectionLoader />}>
                                 <ImageSlider images={galleryImages}>
                                     <div className="absolute bottom-5 right-5 md:bottom-8 md:right-8 pointer-events-auto z-30">
                                         <button
@@ -229,15 +228,10 @@ const YogaPage: React.FC = () => {
                                         </button>
                                     </div>
                                 </ImageSlider>
-                            ) : (
-                                <div className="h-64 flex items-center justify-center bg-bone/30 rounded-xl">
-                                    <p className="text-bark/40 font-headers text-xl animate-pulse">{t('home.loading.gallery')}</p>
-                                </div>
-                            )}
-                        </Suspense>
-
-                    </FadeInSection>
-                </section>
+                            </Suspense>
+                        </FadeInSection>
+                    </section>
+                )}
 
 
                 {/* Blog Section */}

@@ -272,7 +272,7 @@ const Header: React.FC = () => {
                     </AnimatePresence>
 
                     {/* Language Switcher Mini */}
-                    <div className="flex items-center bg-[#4a5730]/50 backdrop-blur-sm rounded-full p-1 border border-[#F5F5DC]/20 z-50 overflow-hidden relative">
+                    <div className="notranslate flex items-center bg-[#4a5730]/50 backdrop-blur-sm rounded-full p-1 border border-[#F5F5DC]/20 z-50 overflow-hidden relative">
                         {LANGUAGES.map((lang) => {
                             const isActive = i18n.language.startsWith(lang.code);
                             return (

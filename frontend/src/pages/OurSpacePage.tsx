@@ -145,13 +145,13 @@ const OurSpacePage: React.FC = () => {
                     </div>
 
                     {/* Slider Section (New) */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="mb-16 rounded-2xl overflow-hidden shadow-xl"
-                    >
-                        {sliderImages.length > 0 && (
+                    {sliderImages.length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="mb-16 rounded-2xl overflow-hidden shadow-xl"
+                        >
                             <div className="relative h-[400px] md:h-[500px] bg-gray-100">
                                 <AnimatePresence mode='wait'>
                                     <motion.img
@@ -192,8 +192,8 @@ const OurSpacePage: React.FC = () => {
                                     ))}
                                 </div>
                             </div>
-                        )}
-                    </motion.div>
+                        </motion.div>
+                    )}
 
                     {/* Map Section */}
                     <motion.div

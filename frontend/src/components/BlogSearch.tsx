@@ -76,18 +76,16 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
     const availableTags = useMemo(() => {
         const currentLang = i18n.language.split('-')[0];
 
-        const translatedNames = allTags.map(tag => {
+        return allTags.map(tag => {
+            let label = tag.name;
             let translationValue = tag.translations && tag.translations[currentLang];
             if (typeof translationValue === 'object' && translationValue !== null && translationValue.name) {
-                return translationValue.name;
+                label = translationValue.name;
             } else if (typeof translationValue === 'string') {
-                return translationValue;
+                label = translationValue;
             }
-            // Fallback for tags without translation in the current language (e.g. newly created)
-            return tag.name;
-        }).filter(Boolean);
-
-        return Array.from(new Set(translatedNames)).sort();
+            return { name: tag.name, label };
+        }).sort((a, b) => a.label.localeCompare(b.label));
     }, [allTags, i18n.language]);
 
     // Filtered suggestions for autocomplete
@@ -104,11 +102,11 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
         { id: 'therapy', name: t('blog.categories.therapy', 'Terapias') },
     ];
 
-    const toggleTag = (tag: string) => {
-        if (filters.tags.includes(tag)) {
-            onFilterChange({ ...filters, tags: filters.tags.filter(t => t !== tag) });
+    const toggleTag = (tagName: string) => {
+        if (filters.tags.includes(tagName)) {
+            onFilterChange({ ...filters, tags: filters.tags.filter(t => t !== tagName) });
         } else {
-            onFilterChange({ ...filters, tags: [...filters.tags, tag] });
+            onFilterChange({ ...filters, tags: [...filters.tags, tagName] });
         }
     };
 
@@ -322,17 +320,17 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
                                     <span className="text-sm text-bark/30 italic px-2">{t('blog.no_tags', 'No hay etiquetas disponibles')}</span>
                                 ) : (
                                     availableTags.map((tag) => {
-                                        const isActive = filters.tags.includes(tag);
+                                        const isActive = filters.tags.includes(tag.name);
                                         return (
                                             <button
-                                                key={tag}
-                                                onClick={() => toggleTag(tag)}
+                                                key={tag.name}
+                                                onClick={() => toggleTag(tag.name)}
                                                 className={`px-3 py-1.5 rounded-full text-sm transition-all duration-200 border ${isActive
                                                     ? 'bg-forest text-white border-forest shadow-md'
                                                     : 'bg-white text-bark/60 border-bark/10 hover:border-forest/30 hover:text-forest'
                                                     }`}
                                             >
-                                                #{tag}
+                                                #{tag.label}
                                             </button>
                                         );
                                     })

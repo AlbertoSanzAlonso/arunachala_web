@@ -362,13 +362,25 @@ const AgentControl: React.FC = () => {
                 return;
             }
 
+            // Only send the fields expected by TaskBase (Pydantic model on backend)
+            // to avoid 422 error due to extra fields like 'id', 'last_run', etc.
+            const taskData = {
+                name: task.name,
+                task_type: task.task_type,
+                category: task.category,
+                schedule_type: task.schedule_type || 'weekly',
+                schedule_days: updates.schedule_days !== undefined ? updates.schedule_days : task.schedule_days,
+                schedule_time: updates.schedule_time !== undefined ? updates.schedule_time : task.schedule_time,
+                is_active: updates.is_active !== undefined ? updates.is_active : task.is_active
+            };
+
             const response = await fetch(`${API_BASE_URL}/api/automation/tasks/${task.id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ ...task, ...updates })
+                body: JSON.stringify(taskData)
             });
 
             if (response.status === 401) {
@@ -763,10 +775,10 @@ const AgentControl: React.FC = () => {
 
                     <div className="grid grid-cols-1 gap-4">
                         {tasks.map((task: any) => (
-                            <div key={task.id} className="group relative flex flex-col md:flex-row md:items-center justify-between p-5 rounded-2xl bg-white border border-gray-100 hover:border-matcha/30 hover:shadow-md transition-all gap-6">
-                                {/* Left side: Info */}
-                                <div className="flex items-center gap-4">
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${task.is_active ? 'bg-forest text-white' : 'bg-gray-100 text-gray-400'}`}>
+                            <div key={task.id} className="group relative flex flex-col lg:flex-row lg:items-center justify-between p-5 rounded-2xl bg-white border border-gray-100 hover:border-matcha/30 hover:shadow-md transition-all gap-4">
+                                {/* Left side: Info - Fixed width to prevent shifts */}
+                                <div className="flex items-center gap-4 min-w-[240px]">
+                                    <div className={`w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center transition-colors ${task.is_active ? 'bg-forest text-white' : 'bg-gray-100 text-gray-400'}`}>
                                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
@@ -775,34 +787,36 @@ const AgentControl: React.FC = () => {
                                         <span className={`block font-bold text-bark transition-colors ${task.is_active ? 'text-forest' : ''}`}>{task.name}</span>
                                         <div className="flex items-center gap-2 mt-1">
                                             <span className={`inline-block w-2 h-2 rounded-full ${task.is_active ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
-                                            <span className="text-[11px] text-gray-500 font-medium">
+                                            <span className="text-[11px] text-gray-500 font-medium whitespace-nowrap">
                                                 {task.last_run
                                                     ? `Última: ${new Date(task.last_run).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}`
-                                                    : (task.is_active ? 'Activa' : 'Inactiva')}
+                                                    : (task.is_active ? 'Programada' : 'Inactiva')}
                                             </span>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Right side: Controls */}
-                                <div className="flex flex-wrap items-center gap-6">
+                                {/* Right side: Controls - Wrapped in a stable flex container */}
+                                <div className="flex flex-wrap items-center gap-4 md:gap-8 ml-auto">
                                     {/* Day Picker */}
-                                    <div className="space-y-2">
-                                        <span className="block text-[10px] font-bold text-gray-400 uppercase ml-1">Días de ejecución</span>
-                                        <div className="flex flex-wrap gap-1.5 p-1.5 bg-gray-50 rounded-xl border border-gray-100">
+                                    <div className="space-y-1.5">
+                                        <span className="block text-[10px] font-bold text-gray-400 uppercase ml-1">Días</span>
+                                        <div className="flex gap-1 p-1 bg-gray-50 rounded-xl border border-gray-100 min-w-[210px] justify-center">
                                             {['1', '2', '3', '4', '5', '6', '0'].map((d) => {
                                                 const dayLabel = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][parseInt(d)];
-                                                const isActive = task.schedule_days?.split(',').includes(d);
+                                                const isActiveDay = task.schedule_days?.split(',').includes(d);
                                                 return (
                                                     <button
                                                         key={d}
-                                                        onClick={() => {
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
                                                             let days = task.schedule_days?.split(',').filter((x: string) => x) || [];
                                                             if (days.includes(d)) days = days.filter((x: string) => x !== d);
                                                             else days.push(d);
                                                             handleUpdateTaskSchedule(task, { schedule_days: days.join(',') });
                                                         }}
-                                                        className={`w-8 h-8 rounded-lg text-xs font-bold transition-all transform active:scale-90 ${isActive
+                                                        className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg text-[10px] sm:text-xs font-bold transition-all transform active:scale-95 ${isActiveDay
                                                             ? 'bg-forest text-white shadow-sm'
                                                             : 'bg-white text-gray-400 hover:text-bark hover:bg-gray-50'
                                                             }`}
@@ -815,36 +829,31 @@ const AgentControl: React.FC = () => {
                                     </div>
 
                                     {/* Time Picker */}
-                                    <div className="space-y-2">
+                                    <div className="space-y-1.5">
                                         <span className="block text-[10px] font-bold text-gray-400 uppercase ml-1">Hora</span>
-                                        <div className="relative">
-                                            <input
-                                                type="time"
-                                                value={task.schedule_time}
-                                                onChange={(e) => handleUpdateTaskSchedule(task, { schedule_time: e.target.value })}
-                                                className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-bark focus:ring-2 focus:ring-forest/20 focus:border-forest outline-none transition-all cursor-pointer"
-                                            />
-                                        </div>
+                                        <input
+                                            type="time"
+                                            value={task.schedule_time}
+                                            onChange={(e) => handleUpdateTaskSchedule(task, { schedule_time: e.target.value })}
+                                            className="w-24 px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-bark focus:ring-2 focus:ring-forest/20 focus:border-forest outline-none transition-all cursor-pointer"
+                                        />
                                     </div>
 
-                                    {/* Toggle */}
-                                    <div className="flex flex-col items-center gap-1">
+                                    {/* Status Button (Modified as requested) */}
+                                    <div className="flex flex-col items-center gap-1.5 min-w-[90px]">
                                         <span className={`text-[10px] font-bold uppercase transition-colors ${task.is_active ? 'text-forest' : 'text-gray-400'}`}>
-                                            {task.is_active ? 'Activa' : 'Pausada'}
+                                            {task.is_active ? 'EN MARCHA' : 'PARADO'}
                                         </span>
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-10 w-[1px] bg-gray-100 hidden md:block" />
-                                            <button
-                                                onClick={() => handleUpdateTaskSchedule(task, { is_active: !task.is_active })}
-                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-forest/20 focus:ring-offset-2 ${task.is_active ? 'bg-forest shadow-sm' : 'bg-gray-200'
-                                                    }`}
-                                            >
-                                                <span
-                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${task.is_active ? 'translate-x-6' : 'translate-x-1'
-                                                        }`}
-                                                />
-                                            </button>
-                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleUpdateTaskSchedule(task, { is_active: !task.is_active })}
+                                            className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm border ${task.is_active
+                                                ? 'bg-forest/10 border-forest text-forest hover:bg-forest hover:text-white'
+                                                : 'bg-gray-100 border-gray-200 text-gray-400 hover:bg-forest/20 hover:text-forest'
+                                                }`}
+                                        >
+                                            {task.is_active ? 'DETENER' : 'ACTIVAR'}
+                                        </button>
                                     </div>
                                 </div>
                             </div>

@@ -140,6 +140,40 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     }, [volume, isMuted, pause]);
 
+    // Playback time tracker
+    const playTimeAccumulator = useRef<number>(0);
+    const lastSysTimeRef = useRef<number>(Date.now());
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+        if (isPlaying && playingMeditation?.slug) {
+            lastSysTimeRef.current = Date.now();
+            interval = setInterval(() => {
+                const now = Date.now();
+                const diff = (now - lastSysTimeRef.current) / 1000;
+                lastSysTimeRef.current = now;
+
+                playTimeAccumulator.current += diff;
+
+                if (playTimeAccumulator.current >= 10) {
+                    const secondsToReport = Math.floor(playTimeAccumulator.current);
+                    playTimeAccumulator.current -= secondsToReport;
+
+                    fetch(`${API_BASE_URL}/api/content/slug/${playingMeditation.slug}/playback`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ seconds: secondsToReport })
+                    }).catch(() => {
+                        // ignore errors to not flood console
+                    });
+                }
+            }, 5000); // Check every 5s, report every 10s roughly
+        }
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [isPlaying, playingMeditation]);
+
     // Setup global listeners once
     useEffect(() => {
         const audio = audioRef.current;
