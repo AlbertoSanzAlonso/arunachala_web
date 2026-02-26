@@ -8,6 +8,8 @@ import { getTranslated } from '../utils/translate';
 import { getImageUrl } from '../utils/imageUtils';
 import ArticleModal from './ArticleModal';
 import { MOCK_ARTICLES } from '../mocks/mockData';
+import omSymbol from '../assets/images/om_symbol.png';
+import lotusFlower from '../assets/images/lotus_flower.png';
 
 interface Article {
     id: number;
@@ -253,20 +255,16 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                                             return;
                                                         }
                                                         target.setAttribute('data-fallback', 'true');
-                                                        target.src = article.category === 'yoga'
-                                                            ? getImageUrl('/static/gallery/articles/om_symbol.webp')
-                                                            : getImageUrl('/static/gallery/articles/lotus_flower.webp');
+                                                        target.src = article.category === 'yoga' ? omSymbol : lotusFlower;
                                                         target.className = "w-24 h-24 object-contain opacity-30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:scale-110 transition-transform duration-500";
                                                     }}
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center">
-                                                    {(article.category === 'yoga' || (article.thumbnail_url && article.thumbnail_url.includes('om_symbol.webp'))) ? (
-                                                        <img src={getImageUrl('/static/gallery/articles/om_symbol.webp')} alt="Yoga" className="w-24 h-24 object-contain opacity-30 group-hover:scale-110 transition-transform duration-500" />
-                                                    ) : (article.category === 'therapy' || (article.thumbnail_url && article.thumbnail_url.includes('lotus_flower.webp'))) ? (
-                                                        <img src={getImageUrl('/static/gallery/articles/lotus_flower.webp')} alt="Terapia" className="w-24 h-24 object-contain opacity-30 group-hover:scale-110 transition-transform duration-500" />
+                                                    {article.category === 'yoga' ? (
+                                                        <img src={omSymbol} alt="Yoga" className="w-24 h-24 object-contain opacity-30 group-hover:scale-110 transition-transform duration-500" />
                                                     ) : (
-                                                        <TagIcon className="w-16 h-16 text-forest/30" />
+                                                        <img src={lotusFlower} alt="Terapia" className="w-24 h-24 object-contain opacity-30 group-hover:scale-110 transition-transform duration-500" />
                                                     )}
                                                 </div>
                                             )}

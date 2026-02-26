@@ -7,6 +7,8 @@ import { getTranslated } from '../utils/translate';
 import { getImageUrl } from '../utils/imageUtils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import omSymbol from '../assets/images/om_symbol.png';
+import lotusFlower from '../assets/images/lotus_flower.png';
 
 interface Article {
     id: number;
@@ -166,20 +168,16 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
                                                     return;
                                                 }
                                                 target.setAttribute('data-fallback', 'true');
-                                                target.src = article.category === 'yoga'
-                                                    ? getImageUrl('/static/gallery/articles/om_symbol.webp')
-                                                    : getImageUrl('/static/gallery/articles/lotus_flower.webp');
+                                                target.src = article.category === 'yoga' ? omSymbol : lotusFlower;
                                                 target.className = "w-48 h-48 object-contain opacity-30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2";
                                             }}
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-forest/20 to-matcha/20 px-10">
-                                            {(article.category === 'yoga' || (article.thumbnail_url && article.thumbnail_url.includes('om_symbol.webp'))) ? (
-                                                <img src={getImageUrl('/static/gallery/articles/om_symbol.webp')} alt="Yoga" className="w-48 h-48 object-contain opacity-30" />
-                                            ) : (article.category === 'therapy' || (article.thumbnail_url && article.thumbnail_url.includes('lotus_flower.webp'))) ? (
-                                                <img src={getImageUrl('/static/gallery/articles/lotus_flower.webp')} alt="Terapia" className="w-48 h-48 object-contain opacity-30" />
+                                            {article.category === 'yoga' ? (
+                                                <img src={omSymbol} alt="Yoga" className="w-48 h-48 object-contain opacity-30" />
                                             ) : (
-                                                <TagIcon className="w-20 h-20 text-forest/30" />
+                                                <img src={lotusFlower} alt="Terapia" className="w-48 h-48 object-contain opacity-30" />
                                             )}
                                         </div>
                                     )}
