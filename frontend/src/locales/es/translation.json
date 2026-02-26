@@ -131,7 +131,12 @@
       "gallery": "Galería",
       "gallery_sub": "Nuestro Espacio",
       "blog": "Blog",
-      "blog_sub": "Artículos y Reflexiones"
+      "blog_sub": "Artículos y Reflexiones",
+      "weekend": "Talleres/Eventos"
+    },
+    "blog": {
+      "title": "Blog de Yoga",
+      "subtitle": "Artículos, consejos y reflexiones sobre la práctica del yoga"
     },
     "sections": {
       "schedule": "Horarios de Clases",
