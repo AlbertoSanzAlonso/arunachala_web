@@ -467,7 +467,12 @@
     "search": {
       "placeholder": "Buscar artículos...",
       "no_results": "No se encontraron artículos",
-      "advanced_search": "Búsqueda avanzada"
+      "advanced_search": "Búsqueda avanzada",
+      "year": "Año",
+      "all_years": "Todos los años",
+      "month": "Mes",
+      "all_months": "Todos los meses",
+      "tags_filter": "Filtrar por etiquetas"
     },
     "filter": {
       "category": "Categoría",
@@ -480,6 +485,8 @@
       "therapy": "Terapias",
       "general": "General"
     },
+    "no_tags": "No hay etiquetas disponibles",
+    "clear_tags": "Limpiar etiquetas",
     "category_pages": {
       "yoga": {
         "title": "Blog de Yoga",

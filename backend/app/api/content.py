@@ -267,18 +267,37 @@ def get_contents(
     author_id: Optional[int] = Query(None, description="Filter by author ID (e.g. 4 for AI Agent)"),
     db: Session = Depends(get_db)
 ):
-    query = db.query(Content).options(joinedload(Content.author))
-    
-    if content_type:
-        query = query.filter(Content.type == content_type)
-    if category:
-        query = query.filter(Content.category == category)
-    if status:
-        query = query.filter(Content.status == status)
-    if author_id is not None:
-        query = query.filter(Content.author_id == author_id)
+    try:
+        query = db.query(Content).options(joinedload(Content.author))
         
-    return query.order_by(Content.created_at.desc()).all()
+        if content_type:
+            query = query.filter(Content.type == content_type)
+        if category:
+            query = query.filter(Content.category == category)
+        if status:
+            query = query.filter(Content.status == status)
+        if author_id is not None:
+            query = query.filter(Content.author_id == author_id)
+            
+        results = query.order_by(Content.created_at.desc()).all()
+        
+        # Robustly handle potential JSON parsing issues from DB
+        for item in results:
+            if item.tags and isinstance(item.tags, str):
+                try:
+                    import json
+                    item.tags = json.loads(item.tags)
+                    if not isinstance(item.tags, list):
+                        item.tags = [str(item.tags)]
+                except:
+                    item.tags = []
+                    
+        return results
+    except Exception as e:
+        print(f"🔥 ERROR in get_contents: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error interno al recuperar contenido: {str(e)}")
 
 @router.get("/ranking", response_model=List[ContentResponse])
 def get_content_ranking(
@@ -364,16 +383,20 @@ async def download_remote_image(url: str, slug: str) -> Optional[str]:
         
         async with httpx.AsyncClient(follow_redirects=True) as client:
             headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-                "Accept": "image/webp,image/apng,image/*,*/*;q=0.8"
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+                "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8"
             }
             response = await client.get(url, headers=headers, timeout=30.0)
             if response.status_code == 200:
+                print(f"✅ Downloaded {len(response.content)} bytes from {url}")
                 # Save image using unified logic (local or supabase)
+                # We specifically pass the SEO filename here
                 local_path = save_image_from_bytes(response.content, subdirectory="gallery/articles", filename=filename)
+                if local_path:
+                    print(f"✅ Image saved/uploaded: {local_path}")
                 return local_path
             else:
-                print(f"Failed to download image: Status {response.status_code}")
+                print(f"❌ Failed to download image: Status {response.status_code} for {url}")
                 return None
                 
     except Exception as e:

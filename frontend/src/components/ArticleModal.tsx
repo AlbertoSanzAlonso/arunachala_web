@@ -228,7 +228,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
                                             }
                                         }
 
-                                        let displayTags = article?.tags || [];
+                                        let displayTags = Array.isArray(article?.tags) ? article.tags : [];
 
                                         if (translations && translations[lang] && Array.isArray(translations[lang].tags)) {
                                             displayTags = translations[lang].tags;

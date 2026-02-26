@@ -108,9 +108,10 @@ def save_image_from_bytes(content: bytes, subdirectory: str = "gallery/articles"
     try:
         # Generate unique filename if not provided
         if not filename:
-            filename = f"gen_{uuid.uuid4().hex}.webp"
+            filename = f"gen_{uuid.uuid4().hex[:8]}.webp"
+        elif not filename.endswith(".webp") and not "." in filename:
+             filename = f"{filename}.webp"
         elif not filename.endswith(".webp"):
-            # Ensure it ends in .webp if we are converting
             filename = os.path.splitext(filename)[0] + ".webp"
         
         # Open image using Pillow to optimize/convert
@@ -133,17 +134,26 @@ def save_image_from_bytes(content: bytes, subdirectory: str = "gallery/articles"
             file_path = f"{subdirectory}/{filename}"
             
             # Upload to Supabase Storage
-            supabase_client.storage.from_(bucket_name).upload(
-                file=buffer.getvalue(),
-                path=file_path,
-                file_options={"content-type": "image/webp"}
-            )
-            
-            # Get public url
-            public_url = supabase_client.storage.from_(bucket_name).get_public_url(file_path)
-            if public_url.endswith('?'):
-                public_url = public_url[:-1]
-            return public_url
+            # Upload to Supabase Storage
+            try:
+                print(f"📡 Supabase: Uploading to {bucket_name}/{file_path}")
+                supabase_client.storage.from_(bucket_name).upload(
+                    file=buffer.getvalue(),
+                    path=file_path,
+                    file_options={"content-type": "image/webp"}
+                )
+                
+                # Get public url
+                public_url = supabase_client.storage.from_(bucket_name).get_public_url(file_path)
+                if public_url.endswith('?'):
+                    public_url = public_url[:-1]
+                print(f"✅ Supabase: Uploaded successfully -> {public_url}")
+                return public_url
+            except Exception as upload_err:
+                print(f"❌ Supabase: Upload failed: {upload_err}")
+                # Don't return None here yet, might fall back to local if directory exists and is writable
+                # but in production we want to know why this failed.
+                raise upload_err
             
         else:
             # LOCAL STORAGE
