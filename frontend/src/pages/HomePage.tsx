@@ -26,17 +26,21 @@ const HomePage: React.FC = () => {
     const [galleryImages, setGalleryImages] = useState<string[]>([]);
     const [showBackToTop, setShowBackToTop] = useState(false);
 
-    const getDailyMantra = () => {
-        const mantras = t('home.mantras', { returnObjects: true }) as any[];
-        if (!mantras || mantras.length === 0) return { text: "Om", translation: "Universal Sound" };
-        const today = new Date();
-        const index = (today.getDate() + today.getMonth()) % mantras.length;
-        return mantras[index];
-    };
-
-    const dailyMantra = getDailyMantra();
+    const [dailyMantra, setDailyMantra] = useState<{ text_sanskrit: string, translation: string } | null>(null);
 
     useEffect(() => {
+        const fetchMantra = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/mantras/daily`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setDailyMantra(data);
+                }
+            } catch (error) {
+                console.error("Failed to load mantra:", error);
+            }
+        };
+
         const fetchGallery = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/gallery/?category=home`);
@@ -52,6 +56,7 @@ const HomePage: React.FC = () => {
             }
         };
 
+        fetchMantra();
         fetchGallery();
         const interval = setInterval(fetchGallery, 5000);
         return () => clearInterval(interval);
@@ -180,15 +185,17 @@ const HomePage: React.FC = () => {
                     </div>
 
                     {/* Mantra of the Day Section */}
-                    <div className="text-center animate-fade-in max-w-2xl px-6 py-6 rounded-2xl bg-black/10 backdrop-blur-sm border border-bone/10 shadow-2xl hover:bg-black/20 transition-all duration-700">
-                        <p className="text-xs md:text-sm uppercase tracking-[0.4em] text-bone/60 mb-4 font-light">{t('home.mantra_title')}</p>
-                        <h3 className="text-2xl md:text-4xl font-serif italic text-bone mb-3 leading-relaxed drop-shadow-md">
-                            "{dailyMantra.text}"
-                        </h3>
-                        <p className="text-bone/70 text-sm md:text-base font-light italic">
-                            — {dailyMantra.translation}
-                        </p>
-                    </div>
+                    {dailyMantra && (
+                        <div className="text-center animate-fade-in max-w-2xl px-6 py-6 rounded-2xl bg-black/10 backdrop-blur-sm border border-bone/10 shadow-2xl hover:bg-black/20 transition-all duration-700">
+                            <p className="text-xs md:text-sm uppercase tracking-[0.4em] text-bone/60 mb-4 font-light">{t('home.mantra_title')}</p>
+                            <h3 className="text-2xl md:text-4xl font-serif italic text-bone mb-3 leading-relaxed drop-shadow-md">
+                                "{dailyMantra.text_sanskrit}"
+                            </h3>
+                            <p className="text-bone/70 text-sm md:text-base font-light italic">
+                                — {dailyMantra.translation}
+                            </p>
+                        </div>
+                    )}
 
                 </div>
             </section>

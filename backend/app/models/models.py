@@ -318,3 +318,13 @@ class Promotion(Base):
     needs_reindex = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+class Mantra(Base):
+    __tablename__ = "mantras"
+    id = Column(Integer, primary_key=True, index=True)
+    text_sanskrit = Column(String, nullable=False)
+    translation = Column(String, nullable=False)
+    is_predefined = Column(Boolean, default=False)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())

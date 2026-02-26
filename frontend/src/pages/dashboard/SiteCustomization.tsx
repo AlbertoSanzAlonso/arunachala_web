@@ -8,6 +8,7 @@ import { API_BASE_URL } from '../../config';
 import { getImageUrl } from '../../utils/imageUtils';
 import PageLoader from '../../components/PageLoader';
 import ConfirmModal from '../../components/ConfirmModal';
+import MantraControl from '../../components/dashboard/MantraControl';
 
 interface CustomizableImage {
     key: string;
@@ -275,6 +276,8 @@ export default function SiteCustomization() {
                     </div>
                 ))}
             </div>
+
+            <MantraControl />
 
             <ConfirmModal
                 open={deleteModalOpen}
