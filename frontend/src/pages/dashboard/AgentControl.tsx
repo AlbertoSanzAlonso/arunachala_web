@@ -52,7 +52,7 @@ const AgentControl: React.FC = () => {
         }
     });
 
-    const { data: tasks = [] } = useQuery({
+    const { data: tasksFetched = [] } = useQuery({
         queryKey: ['automationTasks'],
         queryFn: async () => {
             const response = await fetch(`${API_BASE_URL}/api/automation/tasks`);
@@ -60,6 +60,8 @@ const AgentControl: React.FC = () => {
             return response.json();
         }
     });
+
+    const tasks = React.useMemo(() => [...tasksFetched].sort((a, b) => a.id - b.id), [tasksFetched]);
 
     useEffect(() => {
         fetchConfig();

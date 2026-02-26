@@ -106,7 +106,7 @@ const TherapiesPage: React.FC = () => {
     }, []);
 
     return (
-        <div ref={containerRef} className="font-body text-bark h-screen overflow-y-auto flex flex-col relative md:snap-y md:snap-mandatory scroll-smooth">
+        <div ref={containerRef} className="font-body text-bark h-screen overflow-y-auto flex flex-col relative snap-y snap-mandatory md:snap-none scroll-smooth">
             <PageSEO
                 title={t('therapies.seo.title')}
                 description={t('therapies.seo.description')}
@@ -233,7 +233,7 @@ const TherapiesPage: React.FC = () => {
             )}
 
             <main className="flex-grow bg-bone">
-                <div className="relative w-full min-h-[85vh] md:min-h-[90vh] flex items-center justify-center snap-center snap-always">
+                <div className="relative w-full min-h-[85vh] md:min-h-[90vh] flex items-center justify-center snap-center snap-always md:snap-align-none">
                     <div
                         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
                         style={{ backgroundImage: `url(${customHero ? getImageUrl(customHero) : therapyHero})` }}
@@ -288,7 +288,7 @@ const TherapiesPage: React.FC = () => {
                     </div>
                 </div>
 
-                <section ref={massagesRef} className="py-8 md:py-48 bg-white scroll-mt-24 md:snap-center md:snap-always relative">
+                <section ref={massagesRef} className="py-8 md:py-48 bg-white scroll-mt-24 snap-center snap-always md:snap-align-none relative">
                     <FadeInSection className="max-w-7xl mx-auto md:px-8">
                         <div className="text-center mb-16 px-8">
                             <h2 className="text-4xl md:text-6xl font-headers text-forest mb-4 uppercase">{t('therapies.sections.massages')}</h2>
@@ -318,7 +318,7 @@ const TherapiesPage: React.FC = () => {
 
                                 <div
                                     ref={massageScrollRef}
-                                    className="flex gap-4 md:gap-8 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-8 pt-4 px-0 md:px-8"
+                                    className="flex gap-4 md:gap-8 overflow-x-auto snap-x snap-mandatory md:snap-none hide-scrollbar pb-8 pt-4 px-0 md:px-8"
                                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                                 >
                                     <div className="flex-none w-[7.5vw] md:hidden" />
@@ -327,7 +327,7 @@ const TherapiesPage: React.FC = () => {
                                             key={msg.id}
                                             whileHover={{ y: -10 }}
                                             onClick={() => setSelectedTreatment(msg)}
-                                            className="flex-none w-[85vw] md:w-[calc(50%-16px)] lg:w-[calc(33.333%-22px)] snap-center group cursor-pointer p-8 rounded-3xl bg-bone/30 border border-forest/10 hover:shadow-2xl transition-all duration-500 relative overflow-hidden"
+                                            className="flex-none w-[85vw] md:w-[calc(50%-16px)] lg:w-[calc(33.333%-22px)] snap-center md:snap-align-none group cursor-pointer p-8 rounded-3xl bg-bone/30 border border-forest/10 hover:shadow-2xl transition-all duration-500 relative overflow-hidden"
                                         >
                                             <div className="absolute inset-0 bg-white/0 group-hover:bg-white/50 transition-colors duration-500" />
                                             <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden flex items-center justify-center bg-forest/5">
@@ -383,7 +383,7 @@ const TherapiesPage: React.FC = () => {
                     </FadeInSection>
                 </section>
 
-                <section ref={therapiesRef} className="py-8 md:py-48 bg-bone scroll-mt-24 md:snap-center md:snap-always">
+                <section ref={therapiesRef} className="py-8 md:py-48 bg-bone scroll-mt-24 snap-center snap-always md:snap-align-none">
                     <FadeInSection className="max-w-7xl mx-auto md:px-8">
                         <div className="text-center mb-16 px-8">
                             <h2 className="text-4xl md:text-6xl font-headers text-forest mb-4 uppercase">{t('therapies.sections.therapies')}</h2>
@@ -413,7 +413,7 @@ const TherapiesPage: React.FC = () => {
 
                                 <div
                                     ref={therapyScrollRef}
-                                    className="flex gap-4 md:gap-8 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-8 pt-4 px-0 md:px-8"
+                                    className="flex gap-4 md:gap-8 overflow-x-auto snap-x snap-mandatory md:snap-none hide-scrollbar pb-8 pt-4 px-0 md:px-8"
                                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                                 >
                                     <div className="flex-none w-[7.5vw] md:hidden" />
@@ -422,7 +422,7 @@ const TherapiesPage: React.FC = () => {
                                             key={thr.id}
                                             whileHover={{ y: -10 }}
                                             onClick={() => setSelectedTreatment(thr)}
-                                            className="flex-none w-[85vw] md:w-[calc(50%-16px)] lg:w-[calc(33.333%-22px)] snap-center group cursor-pointer p-8 rounded-3xl bg-white border border-forest/10 hover:shadow-2xl transition-all duration-500 relative overflow-hidden"
+                                            className="flex-none w-[85vw] md:w-[calc(50%-16px)] lg:w-[calc(33.333%-22px)] snap-center md:snap-align-none group cursor-pointer p-8 rounded-3xl bg-white border border-forest/10 hover:shadow-2xl transition-all duration-500 relative overflow-hidden"
                                         >
                                             <div className="absolute inset-0 bg-white/0 group-hover:bg-bone/20 transition-colors duration-500" />
                                             <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden flex items-center justify-center bg-forest/5">
@@ -478,7 +478,7 @@ const TherapiesPage: React.FC = () => {
                     </FadeInSection>
                 </section>
 
-                <section ref={appointmentRef} className="py-8 md:py-32 bg-forest text-bone md:snap-center md:snap-always relative overflow-hidden scroll-mt-24">
+                <section ref={appointmentRef} className="py-8 md:py-32 bg-forest text-bone snap-center snap-always md:snap-align-none relative overflow-hidden scroll-mt-24">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-matcha/10 rounded-full -mr-32 -mt-32 blur-3xl" />
                     <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full -ml-32 -mb-32 blur-2xl" />
                     <FadeInSection className="max-w-4xl mx-auto px-8 relative z-10">
@@ -514,7 +514,7 @@ const TherapiesPage: React.FC = () => {
                     </FadeInSection>
                 </section>
 
-                <section ref={blogRef} className="scroll-mt-24 md:snap-center md:snap-always">
+                <section ref={blogRef} className="scroll-mt-24 snap-center snap-always md:snap-align-none">
                     <BlogSection
                         category="therapy"
                         limit={6}
@@ -525,7 +525,7 @@ const TherapiesPage: React.FC = () => {
                     />
                 </section>
             </main>
-            <div className="md:snap-center md:snap-always" id="footer-snap">
+            <div className="snap-center snap-always md:snap-align-none" id="footer-snap">
                 <Footer />
             </div>
         </div>
