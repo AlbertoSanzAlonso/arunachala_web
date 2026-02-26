@@ -233,7 +233,7 @@ const TherapiesPage: React.FC = () => {
             )}
 
             <main className="flex-grow bg-bone">
-                <div className="relative w-full min-h-[85vh] md:min-h-[90vh] flex items-center justify-center snap-center snap-always md:snap-align-none">
+                <div className="relative w-full min-h-[85vh] md:min-h-[90vh] flex items-center justify-center snap-center snap-always md:snap-none">
                     <div
                         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
                         style={{ backgroundImage: `url(${customHero ? getImageUrl(customHero) : therapyHero})` }}
@@ -288,7 +288,7 @@ const TherapiesPage: React.FC = () => {
                     </div>
                 </div>
 
-                <section ref={massagesRef} className="py-8 md:py-48 bg-white scroll-mt-24 snap-center snap-always md:snap-align-none relative">
+                <section ref={massagesRef} className="py-8 md:py-48 bg-white scroll-mt-24 snap-center snap-always md:snap-none relative">
                     <FadeInSection className="max-w-7xl mx-auto md:px-8">
                         <div className="text-center mb-16 px-8">
                             <h2 className="text-4xl md:text-6xl font-headers text-forest mb-4 uppercase">{t('therapies.sections.massages')}</h2>
@@ -327,7 +327,7 @@ const TherapiesPage: React.FC = () => {
                                             key={msg.id}
                                             whileHover={{ y: -10 }}
                                             onClick={() => setSelectedTreatment(msg)}
-                                            className="flex-none w-[85vw] md:w-[calc(50%-16px)] lg:w-[calc(33.333%-22px)] snap-center md:snap-align-none group cursor-pointer p-8 rounded-3xl bg-bone/30 border border-forest/10 hover:shadow-2xl transition-all duration-500 relative overflow-hidden"
+                                            className="flex-none w-[85vw] md:w-[calc(50%-16px)] lg:w-[calc(33.333%-22px)] snap-center md:snap-none group cursor-pointer p-8 rounded-3xl bg-bone/30 border border-forest/10 hover:shadow-2xl transition-all duration-500 relative overflow-hidden"
                                         >
                                             <div className="absolute inset-0 bg-white/0 group-hover:bg-white/50 transition-colors duration-500" />
                                             <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden flex items-center justify-center bg-forest/5">
@@ -422,7 +422,7 @@ const TherapiesPage: React.FC = () => {
                                             key={thr.id}
                                             whileHover={{ y: -10 }}
                                             onClick={() => setSelectedTreatment(thr)}
-                                            className="flex-none w-[85vw] md:w-[calc(50%-16px)] lg:w-[calc(33.333%-22px)] snap-center md:snap-align-none group cursor-pointer p-8 rounded-3xl bg-white border border-forest/10 hover:shadow-2xl transition-all duration-500 relative overflow-hidden"
+                                            className="flex-none w-[85vw] md:w-[calc(50%-16px)] lg:w-[calc(33.333%-22px)] snap-center md:snap-none group cursor-pointer p-8 rounded-3xl bg-white border border-forest/10 hover:shadow-2xl transition-all duration-500 relative overflow-hidden"
                                         >
                                             <div className="absolute inset-0 bg-white/0 group-hover:bg-bone/20 transition-colors duration-500" />
                                             <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden flex items-center justify-center bg-forest/5">

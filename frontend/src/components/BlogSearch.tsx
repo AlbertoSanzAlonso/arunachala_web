@@ -38,16 +38,22 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, initi
 
     // Extract available years
     const years = useMemo(() => {
-        const uniqueYears = Array.from(new Set(articles.map(a => new Date(a.created_at).getFullYear().toString()))).sort((a, b) => b.localeCompare(a));
+        if (!articles || !Array.isArray(articles)) return ['all'];
+        const uniqueYears = Array.from(new Set(articles.map(a => {
+            if (!a.created_at) return null;
+            const d = new Date(a.created_at);
+            return isNaN(d.getTime()) ? null : d.getFullYear().toString();
+        }).filter(Boolean) as string[])).sort((a, b) => b.localeCompare(a));
         return ['all', ...uniqueYears];
     }, [articles]);
 
     // Extract available months for the SELECTED Year
     const months = useMemo(() => {
-        if (filters.year === 'all') return [];
+        if (!articles || !Array.isArray(articles) || filters.year === 'all') return [];
 
         const uniqueMonths = new Set<string>();
         articles.filter(a => {
+            if (!a.created_at) return false;
             const d = new Date(a.created_at);
             return !isNaN(d.getTime()) && d.getFullYear().toString() === filters.year;
         }).forEach(a => {

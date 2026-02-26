@@ -69,13 +69,19 @@ const BlogPage: React.FC = () => {
                 const title = normalize(getTranslated(a, 'title', i18n.language) || '');
                 const excerpt = normalize(getTranslated(a, 'excerpt', i18n.language) || '');
 
-                // Also search in tags
+                // Robust tags handling
                 let tags = getTranslated(a, 'tags', i18n.language);
                 if (typeof tags === 'string') {
-                    try { tags = JSON.parse(tags); } catch (e) { }
+                    try { tags = JSON.parse(tags); } catch (e) { tags = null; }
                 }
-                const safeTags = (Array.isArray(tags) ? tags : a.tags) || [];
-                const tagsMatch = safeTags.some((tag: string) => normalize(tag).includes(normalizedQ));
+
+                // Ensure we have an array of strings
+                const rawTags = Array.isArray(a.tags) ? a.tags : [];
+                const safeTags: string[] = (Array.isArray(tags) ? tags : rawTags) || [];
+
+                const tagsMatch = safeTags.some((tag: any) =>
+                    typeof tag === 'string' && normalize(tag).includes(normalizedQ)
+                );
 
                 return title.includes(normalizedQ) || excerpt.includes(normalizedQ) || tagsMatch;
             });
@@ -134,15 +140,22 @@ const BlogPage: React.FC = () => {
     };
 
     const handleArticleClick = async (article: Article) => {
+        if (!article.slug) {
+            setSelectedArticle(article);
+            setIsModalOpen(true);
+            return;
+        }
+
         try {
-            // Unoptimistic UI: Show modal immediately with available info? 
-            // Better: fetch body first then show, or show skeleton? 
-            // Let's fetch quickly.
+            // Show modal immediately with current data
+            setSelectedArticle(article);
+            setIsModalOpen(true);
+
+            // Fetch full content in background
             const response = await fetch(`${API_BASE_URL}/api/content/slug/${article.slug}`);
             if (response.ok) {
                 const fullArticle = await response.json();
                 setSelectedArticle(fullArticle);
-                setIsModalOpen(true);
             }
         } catch (error) {
             console.error("Error loading full article", error);
