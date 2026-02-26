@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { PhotoIcon, ArrowPathIcon, CheckCircleIcon, ExclamationTriangleIcon, TrashIcon, XMarkIcon, MusicalNoteIcon } from '@heroicons/react/24/outline';
-import { Dialog, Transition } from '@headlessui/react';
+import { Dialog, Transition, Combobox } from '@headlessui/react';
+import { MagnifyingGlassIcon, CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import Cropper from 'react-easy-crop';
 import { Point, Area } from 'react-easy-crop/types';
 import getCroppedImg from '../../utils/cropImage';
@@ -9,6 +10,19 @@ import { getImageUrl } from '../../utils/imageUtils';
 import PageLoader from '../../components/PageLoader';
 import ConfirmModal from '../../components/ConfirmModal';
 import MantraControl from '../../components/dashboard/MantraControl';
+import { useTranslation } from 'react-i18next';
+
+interface Meditation {
+    id: number;
+    title: string;
+    media_url?: string;
+    slug?: string;
+    translations?: {
+        [key: string]: {
+            title?: string;
+        };
+    };
+}
 
 interface CustomizableImage {
     key: string;
@@ -61,6 +75,11 @@ export default function SiteCustomization() {
     const [isLoading, setIsLoading] = useState(true);
     const [uploadingKey, setUploadingKey] = useState<string | null>(null);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const { i18n } = useTranslation();
+
+    // Meditations for background music selection
+    const [meditations, setMeditations] = useState<Meditation[]>([]);
+    const [meditationQuery, setMeditationQuery] = useState('');
 
     // Delete Confirmation Modal State
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -77,7 +96,20 @@ export default function SiteCustomization() {
 
     useEffect(() => {
         fetchConfigs();
+        fetchMeditations();
     }, []);
+
+    const fetchMeditations = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/content?type=meditation&status=published`);
+            if (response.ok) {
+                const data = await response.json();
+                setMeditations(data || []);
+            }
+        } catch (error) {
+            console.error("Error fetching meditations:", error);
+        }
+    };
 
     const fetchConfigs = async () => {
         try {
@@ -189,8 +221,53 @@ export default function SiteCustomization() {
             setMessage({ type: 'error', text: 'Error de conexión al eliminar la imagen' });
         } finally {
             setKeyToDelete(null);
+            setDeleteModalOpen(false);
         }
     };
+
+    const handleMeditationSelect = async (meditation: Meditation) => {
+        if (!meditation.media_url) {
+            setMessage({ type: 'error', text: 'Esta meditación no tiene un archivo de audio asociado.' });
+            return;
+        }
+
+        setIsLoading(true);
+        setMessage(null);
+
+        try {
+            const token = sessionStorage.getItem('access_token');
+            const formData = new FormData();
+            formData.append('value', meditation.media_url);
+
+            const response = await fetch(`${API_BASE_URL}/api/site-config/homepage_music_url`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            if (response.ok) {
+                setConfigs(prev => ({ ...prev, homepage_music_url: meditation.media_url || null }));
+                setMessage({ type: 'success', text: `Música de inicio actualizada: ${meditation.title}` });
+            } else {
+                setMessage({ type: 'error', text: 'Error al actualizar la música de fondo' });
+            }
+        } catch (error) {
+            console.error("Error setting meditation as background music:", error);
+            setMessage({ type: 'error', text: 'Error de conexión' });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const filteredMeditations = meditationQuery === ''
+        ? meditations
+        : meditations.filter((m) => {
+            const currentLang = i18n.language.split('-')[0];
+            const title = m.translations?.[currentLang]?.title || m.title;
+            return title.toLowerCase().includes(meditationQuery.toLowerCase());
+        });
 
     if (isLoading) return <PageLoader />;
 
@@ -287,12 +364,25 @@ export default function SiteCustomization() {
                     </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-8">
-                    <div className="flex-1 w-full">
+                <div className="flex flex-col gap-8">
+                    <div className="w-full">
                         {configs['homepage_music_url'] ? (
                             <div className="bg-bone/50 p-6 rounded-2xl flex flex-col gap-4 border border-forest/10">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-xs font-bold text-forest uppercase tracking-widest">Canción seleccionada:</span>
+                                    <div className="flex flex-col">
+                                        <span className="text-xs font-bold text-forest uppercase tracking-widest">Canción seleccionada:</span>
+                                        <p className="text-sm text-bark font-medium truncate max-w-md">
+                                            {(() => {
+                                                const currentUrl = configs['homepage_music_url'];
+                                                const meditation = meditations.find((m: Meditation) => m.media_url === currentUrl);
+                                                if (meditation) {
+                                                    const currentLang = i18n.language.split('-')[0];
+                                                    return meditation.translations?.[currentLang]?.title || meditation.title;
+                                                }
+                                                return currentUrl?.split('/').pop() || 'Archivo subido';
+                                            })()}
+                                        </p>
+                                    </div>
                                     <button
                                         onClick={() => handleDeleteClick('homepage_music_url')}
                                         className="text-red-600 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition-all"
@@ -301,7 +391,7 @@ export default function SiteCustomization() {
                                         <TrashIcon className="h-5 w-5" />
                                     </button>
                                 </div>
-                                <audio controls src={getImageUrl(configs['homepage_music_url'])} className="w-full h-10 accent-forest" />
+                                <audio controls key={configs['homepage_music_url']} src={getImageUrl(configs['homepage_music_url'])} className="w-full h-10 accent-forest" />
                             </div>
                         ) : (
                             <div className="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center text-gray-400">
@@ -311,44 +401,118 @@ export default function SiteCustomization() {
                         )}
                     </div>
 
-                    <div className="flex-none">
-                        <label className={`px-8 py-3 rounded-full font-bold text-sm transition-all cursor-pointer shadow-lg inline-block ${uploadingKey === 'homepage_music_url'
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                        {/* Selector de Meditaciones */}
+                        <div className="bg-bone/30 p-6 rounded-2xl border border-gray-100 italic">
+                            <label className="block text-sm font-bold text-bark mb-4 uppercase tracking-wider">Elegir de Meditaciones Existentes</label>
+                            <Combobox value={null} onChange={handleMeditationSelect}>
+                                <div className="relative mt-1">
+                                    <div className="relative w-full cursor-default overflow-hidden rounded-xl bg-white text-left border border-gray-200 focus-within:ring-2 focus-within:ring-forest focus-within:border-forest transition-all">
+                                        <Combobox.Input
+                                            className="w-full border-none py-3 pl-10 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
+                                            displayValue={(m: any) => m?.title || ''}
+                                            onChange={(event) => setMeditationQuery(event.target.value)}
+                                            placeholder="Buscar meditación..."
+                                        />
+                                        <div className="absolute inset-y-0 left-0 flex items-center pl-3">
+                                            <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                        </div>
+                                        <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
+                                            <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                        </Combobox.Button>
+                                    </div>
+                                    <Transition
+                                        as={React.Fragment}
+                                        leave="transition ease-in duration-100"
+                                        leaveFrom="opacity-100"
+                                        leaveTo="opacity-0"
+                                        afterLeave={() => setMeditationQuery('')}
+                                    >
+                                        <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-xl bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-50">
+                                            {filteredMeditations.length === 0 && meditationQuery !== '' ? (
+                                                <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
+                                                    No se encontraron meditaciones.
+                                                </div>
+                                            ) : (
+                                                filteredMeditations.map((meditation: Meditation) => {
+                                                    const currentLang = i18n.language.split('-')[0];
+                                                    const displayTitle = meditation.translations?.[currentLang]?.title || meditation.title;
+                                                    return (
+                                                        <Combobox.Option
+                                                            key={meditation.id}
+                                                            className={({ active }) =>
+                                                                `relative cursor-default select-none py-3 pl-10 pr-4 ${active ? 'bg-forest text-white' : 'text-gray-900'
+                                                                }`
+                                                            }
+                                                            value={meditation}
+                                                        >
+                                                            {({ selected, active }) => (
+                                                                <>
+                                                                    <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
+                                                                        {displayTitle}
+                                                                    </span>
+                                                                    {selected ? (
+                                                                        <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${active ? 'text-white' : 'text-forest'}`}>
+                                                                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                                                        </span>
+                                                                    ) : null}
+                                                                </>
+                                                            )}
+                                                        </Combobox.Option>
+                                                    )
+                                                })
+                                            )}
+                                        </Combobox.Options>
+                                    </Transition>
+                                </div>
+                            </Combobox>
+                            <p className="mt-3 text-xs text-gray-500">Busca y selecciona una de tus meditaciones ya publicadas.</p>
+                        </div>
+
+                        {/* Botón de Subida Directa */}
+                        <div className="bg-bone/30 p-6 rounded-2xl border border-gray-100 flex flex-col items-center justify-center min-h-[140px]">
+                            <label className="block text-sm font-bold text-bark mb-4 uppercase tracking-wider">O Subir Archivo Nuevo</label>
+                            <label className={`w-full text-center px-8 py-3 rounded-xl font-bold text-sm transition-all cursor-pointer shadow-lg inline-block ${uploadingKey === 'homepage_music_url'
                                 ? 'bg-gray-100 text-gray-400'
                                 : 'bg-forest text-white hover:bg-matcha hover:-translate-y-1'
-                            }`}>
-                            <input
-                                type="file"
-                                className="hidden"
-                                accept="audio/*"
-                                onChange={async (e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) {
-                                        setUploadingKey('homepage_music_url');
-                                        try {
-                                            const token = sessionStorage.getItem('access_token');
-                                            const formData = new FormData();
-                                            formData.append('file', file);
-                                            const response = await fetch(`${API_BASE_URL}/api/site-config/upload/homepage_music_url`, {
-                                                method: 'POST',
-                                                headers: { 'Authorization': `Bearer ${token}` },
-                                                body: formData
-                                            });
-                                            if (response.ok) {
-                                                const data = await response.json();
-                                                setConfigs(prev => ({ ...prev, homepage_music_url: data.url }));
-                                                setMessage({ type: 'success', text: 'Música de fondo actualizada' });
+                                }`}>
+                                <input
+                                    type="file"
+                                    className="hidden"
+                                    accept="audio/*"
+                                    onChange={async (e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            setUploadingKey('homepage_music_url');
+                                            try {
+                                                const token = sessionStorage.getItem('access_token');
+                                                const formData = new FormData();
+                                                formData.append('file', file);
+                                                const response = await fetch(`${API_BASE_URL}/api/site-config/upload/homepage_music_url`, {
+                                                    method: 'POST',
+                                                    headers: { 'Authorization': `Bearer ${token}` },
+                                                    body: formData
+                                                });
+                                                if (response.ok) {
+                                                    const data = await response.json();
+                                                    setConfigs(prev => ({ ...prev, homepage_music_url: data.url }));
+                                                    setMessage({ type: 'success', text: 'Música de fondo actualizada' });
+                                                } else {
+                                                    const errorData = await response.json().catch(() => ({}));
+                                                    setMessage({ type: 'error', text: `Error al subir audio: ${errorData.detail || 'Error del servidor'}` });
+                                                }
+                                            } catch (err) {
+                                                setMessage({ type: 'error', text: 'Error de conexión al subir audio' });
+                                            } finally {
+                                                setUploadingKey(null);
                                             }
-                                        } catch (err) {
-                                            setMessage({ type: 'error', text: 'Error al subir audio' });
-                                        } finally {
-                                            setUploadingKey(null);
                                         }
-                                    }
-                                }}
-                                disabled={!!uploadingKey}
-                            />
-                            {uploadingKey === 'homepage_music_url' ? 'Subiendo...' : 'Seleccionar Canción'}
-                        </label>
+                                    }}
+                                    disabled={!!uploadingKey}
+                                />
+                                {uploadingKey === 'homepage_music_url' ? 'Subiendo...' : 'Seleccionar Canción'}
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>

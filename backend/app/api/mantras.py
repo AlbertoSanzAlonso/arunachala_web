@@ -97,7 +97,14 @@ def regenerate_daily_mantra(
         mantras = db.query(Mantra).filter(Mantra.is_active == True).all()
         
     if not mantras:
-        raise HTTPException(status_code=404, detail="No mantras available")
+        # Emergency fallback if table is empty
+        return {
+            "id": 0, 
+            "text_sanskrit": "Lokah Samastah Sukhino Bhavantu", 
+            "translation": "Que todos los seres sean felices y libres",
+            "is_predefined": True,
+            "is_active": True
+        }
         
     selected = random.choice(mantras)
     

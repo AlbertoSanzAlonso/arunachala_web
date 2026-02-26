@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowPathIcon, CheckCircleIcon, PlusIcon, TrashIcon, BookmarkIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, CheckCircleIcon, PlusIcon, TrashIcon, BookmarkIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from '../../config';
 import ConfirmModal from '../ConfirmModal';
 
@@ -240,7 +240,7 @@ export default function MantraControl() {
             {message && (
                 <div className={`mt-6 p-4 rounded-xl flex items-center gap-3 animate-fade-in ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
                     }`}>
-                    {message.type === 'success' ? <CheckCircleIcon className="h-5 w-5" /> : <ArrowPathIcon className="h-5 w-5" />}
+                    {message.type === 'success' ? <CheckCircleIcon className="h-5 w-5" /> : <ExclamationTriangleIcon className="h-5 w-5" />}
                     <p className="text-sm font-medium">{message.text}</p>
                 </div>
             )}
@@ -253,8 +253,8 @@ export default function MantraControl() {
                         <div
                             key={mantra.id}
                             className={`px-4 py-2 rounded-full text-sm flex items-center gap-2 group transition-all ${dailyMantra?.id === mantra.id
-                                    ? 'bg-forest text-white shadow-md ring-2 ring-forest/20'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                ? 'bg-forest text-white shadow-md ring-2 ring-forest/20'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
                         >
                             <span className="font-serif italic">{mantra.text_sanskrit}</span>
