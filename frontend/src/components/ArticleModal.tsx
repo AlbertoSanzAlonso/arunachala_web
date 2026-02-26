@@ -35,18 +35,29 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
 
     React.useEffect(() => {
         if (isOpen && contentRef.current) {
-            // Immediate reset
-            contentRef.current.scrollTop = 0;
+            // Force scroll to top immediately
+            contentRef.current.scrollTo(0, 0);
 
-            // Delayed reset to handle layout shifts/images
-            const timer = setTimeout(() => {
-                if (contentRef.current) {
-                    contentRef.current.scrollTop = 0;
-                }
-            }, 100);
-            return () => clearTimeout(timer);
+            // Multiple attempts to handle different loading stages
+            const timer1 = setTimeout(() => {
+                if (contentRef.current) contentRef.current.scrollTo(0, 0);
+            }, 0);
+
+            const timer2 = setTimeout(() => {
+                if (contentRef.current) contentRef.current.scrollTo(0, 0);
+            }, 50);
+
+            const timer3 = setTimeout(() => {
+                if (contentRef.current) contentRef.current.scrollTo(0, 0);
+            }, 150);
+
+            return () => {
+                clearTimeout(timer1);
+                clearTimeout(timer2);
+                clearTimeout(timer3);
+            };
         }
-    }, [isOpen, article]);
+    }, [isOpen, article?.id, article?.body]);
 
     if (!article) return null;
 
@@ -183,7 +194,11 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
                                 </div>
 
                                 {/* Content */}
-                                <div ref={contentRef} className="p-6 md:p-10 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                                <div
+                                    key={`article-content-${article.id}`}
+                                    ref={contentRef}
+                                    className="p-6 md:p-10 max-h-[60vh] overflow-y-auto custom-scrollbar"
+                                >
                                     {/* RESTORED TITLE UNDER IMAGE */}
                                     <h2 className="text-3xl md:text-4xl font-headers text-forest mb-6 leading-tight">
                                         {translatedTitle}

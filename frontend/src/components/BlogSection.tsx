@@ -92,12 +92,22 @@ const BlogSection: React.FC<BlogSectionProps> = ({
 
 
     const handleArticleClick = async (article: Article) => {
+        if (!article.slug) {
+            setSelectedArticle(article);
+            setIsModalOpen(true);
+            return;
+        }
+
         try {
+            // Show modal immediately with current data
+            setSelectedArticle(article);
+            setIsModalOpen(true);
+
+            // Fetch full content in background
             const response = await fetch(`${API_BASE_URL}/api/content/slug/${article.slug}`);
             if (response.ok) {
                 const fullArticle = await response.json();
                 setSelectedArticle(fullArticle);
-                setIsModalOpen(true);
             }
         } catch (error) {
             console.error("Error loading full article", error);
