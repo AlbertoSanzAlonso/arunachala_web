@@ -655,6 +655,7 @@ async def update_content(
 @router.delete("/{content_id}")
 async def delete_content(
     content_id: int,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
