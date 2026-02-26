@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { PhotoIcon, ArrowPathIcon, CheckCircleIcon, ExclamationTriangleIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { PhotoIcon, ArrowPathIcon, CheckCircleIcon, ExclamationTriangleIcon, TrashIcon, XMarkIcon, MusicalNoteIcon } from '@heroicons/react/24/outline';
 import { Dialog, Transition } from '@headlessui/react';
 import Cropper from 'react-easy-crop';
 import { Point, Area } from 'react-easy-crop/types';
@@ -275,6 +275,82 @@ export default function SiteCustomization() {
                         </div>
                     </div>
                 ))}
+            </div>
+
+            {/* Multimedia Section: Background Music */}
+            <div className="mt-12 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden p-8">
+                <div className="flex items-center gap-3 mb-6">
+                    <MusicalNoteIcon className="h-8 w-8 text-forest" />
+                    <div>
+                        <h2 className="text-xl font-headers text-gray-900">Música de Fondo (Página de Inicio)</h2>
+                        <p className="text-sm text-gray-500">Esta canción sonará automáticamente al abrir la Home (Volumen 50%)</p>
+                    </div>
+                </div>
+
+                <div className="flex flex-col md:flex-row items-center gap-8">
+                    <div className="flex-1 w-full">
+                        {configs['homepage_music_url'] ? (
+                            <div className="bg-bone/50 p-6 rounded-2xl flex flex-col gap-4 border border-forest/10">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs font-bold text-forest uppercase tracking-widest">Canción seleccionada:</span>
+                                    <button
+                                        onClick={() => handleDeleteClick('homepage_music_url')}
+                                        className="text-red-600 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition-all"
+                                        title="Eliminar música"
+                                    >
+                                        <TrashIcon className="h-5 w-5" />
+                                    </button>
+                                </div>
+                                <audio controls src={getImageUrl(configs['homepage_music_url'])} className="w-full h-10 accent-forest" />
+                            </div>
+                        ) : (
+                            <div className="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center text-gray-400">
+                                <MusicalNoteIcon className="h-12 w-12 mx-auto mb-2 opacity-20" />
+                                <p className="text-sm">No hay música seleccionada</p>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex-none">
+                        <label className={`px-8 py-3 rounded-full font-bold text-sm transition-all cursor-pointer shadow-lg inline-block ${uploadingKey === 'homepage_music_url'
+                                ? 'bg-gray-100 text-gray-400'
+                                : 'bg-forest text-white hover:bg-matcha hover:-translate-y-1'
+                            }`}>
+                            <input
+                                type="file"
+                                className="hidden"
+                                accept="audio/*"
+                                onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                        setUploadingKey('homepage_music_url');
+                                        try {
+                                            const token = sessionStorage.getItem('access_token');
+                                            const formData = new FormData();
+                                            formData.append('file', file);
+                                            const response = await fetch(`${API_BASE_URL}/api/site-config/upload/homepage_music_url`, {
+                                                method: 'POST',
+                                                headers: { 'Authorization': `Bearer ${token}` },
+                                                body: formData
+                                            });
+                                            if (response.ok) {
+                                                const data = await response.json();
+                                                setConfigs(prev => ({ ...prev, homepage_music_url: data.url }));
+                                                setMessage({ type: 'success', text: 'Música de fondo actualizada' });
+                                            }
+                                        } catch (err) {
+                                            setMessage({ type: 'error', text: 'Error al subir audio' });
+                                        } finally {
+                                            setUploadingKey(null);
+                                        }
+                                    }
+                                }}
+                                disabled={!!uploadingKey}
+                            />
+                            {uploadingKey === 'homepage_music_url' ? 'Subiendo...' : 'Seleccionar Canción'}
+                        </label>
+                    </div>
+                </div>
             </div>
 
             <MantraControl />

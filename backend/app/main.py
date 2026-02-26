@@ -143,7 +143,7 @@ app.include_router(announcements.router, prefix="/api/announcement") # Alias sin
 
 app.include_router(tags.router, prefix="/api/tags", tags=["tags"])
 app.include_router(seo.router)
-app.include_router(mantras.router)
+app.include_router(mantras.router, prefix="/api/mantras", tags=["mantras"])
 # Mount Static Files (for uploaded images)
 import os
 static_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static")

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowPathIcon, CheckCircleIcon, PlusIcon, TrashIcon, BookmarkIcon } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from '../../config';
+import ConfirmModal from '../ConfirmModal';
 
 interface Mantra {
     id: number;
@@ -17,6 +18,10 @@ export default function MantraControl() {
     const [newTranslation, setNewTranslation] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+
+    // Delete Confirmation
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [mantraToDelete, setMantraToDelete] = useState<number | null>(null);
 
     useEffect(() => {
         fetchDailyMantra();
@@ -49,19 +54,27 @@ export default function MantraControl() {
 
     const handleRegenerate = async () => {
         setIsLoading(true);
+        setMessage(null);
         try {
             const token = sessionStorage.getItem('access_token');
             const response = await fetch(`${API_BASE_URL}/api/mantras/regenerate`, {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
             if (response.ok) {
                 const data = await response.json();
                 setDailyMantra(data);
                 setMessage({ type: 'success', text: 'Mantra regenerado correctamente' });
+            } else {
+                const errorData = await response.json().catch(() => ({}));
+                console.error("Regenerate failed:", response.status, errorData);
+                setMessage({ type: 'error', text: `Error ${response.status}: No se pudo regenerar el mantra` });
             }
         } catch (error) {
-            setMessage({ type: 'error', text: 'Error al regenerar mantra' });
+            console.error("Regenerate error:", error);
+            setMessage({ type: 'error', text: 'Error de conexión al regenerar mantra' });
         } finally {
             setIsLoading(false);
         }
@@ -70,6 +83,7 @@ export default function MantraControl() {
     const handleSaveCustom = async (asDaily: boolean = false) => {
         if (!newSanskrit || !newTranslation) return;
         setIsLoading(true);
+        setMessage(null);
         try {
             const token = sessionStorage.getItem('access_token');
             const response = await fetch(`${API_BASE_URL}/api/mantras?set_as_daily=${asDaily}`, {
@@ -98,23 +112,33 @@ export default function MantraControl() {
         }
     };
 
-    const handleDelete = async (id: number) => {
-        if (!window.confirm('¿Eliminar este mantra?')) return;
+    const handleDeleteClick = (id: number) => {
+        setMantraToDelete(id);
+        setDeleteModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (mantraToDelete === null) return;
         try {
             const token = sessionStorage.getItem('access_token');
-            const response = await fetch(`${API_BASE_URL}/api/mantras/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/api/mantras/${mantraToDelete}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
-                if (dailyMantra?.id === id) {
+                if (dailyMantra?.id === mantraToDelete) {
                     handleRegenerate();
                 }
                 fetchAllMantras();
-                setMessage({ type: 'success', text: 'Mantra eliminado' });
+                setMessage({ type: 'success', text: 'Mantra eliminado correctamente' });
+            } else {
+                setMessage({ type: 'error', text: 'Error al eliminar el mantra' });
             }
         } catch (error) {
-            setMessage({ type: 'error', text: 'Error al eliminar mantra' });
+            setMessage({ type: 'error', text: 'Error de conexión al eliminar' });
+        } finally {
+            setDeleteModalOpen(false);
+            setMantraToDelete(null);
         }
     };
 
@@ -147,7 +171,7 @@ export default function MantraControl() {
 
                                     {dailyMantra.id !== 0 && (
                                         <button
-                                            onClick={() => handleDelete(dailyMantra.id)}
+                                            onClick={() => handleDeleteClick(dailyMantra.id)}
                                             className="p-2 text-gray-400 hover:text-red-600 transition-colors"
                                             title="Eliminar de la biblioteca"
                                         >
@@ -229,14 +253,14 @@ export default function MantraControl() {
                         <div
                             key={mantra.id}
                             className={`px-4 py-2 rounded-full text-sm flex items-center gap-2 group transition-all ${dailyMantra?.id === mantra.id
-                                ? 'bg-forest text-white shadow-md ring-2 ring-forest/20'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    ? 'bg-forest text-white shadow-md ring-2 ring-forest/20'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
                         >
                             <span className="font-serif italic">{mantra.text_sanskrit}</span>
                             {!mantra.is_predefined && (
                                 <button
-                                    onClick={() => handleDelete(mantra.id)}
+                                    onClick={() => handleDeleteClick(mantra.id)}
                                     className={`opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded-full hover:bg-black/10 ${dailyMantra?.id === mantra.id ? 'text-white/80 hover:text-white' : 'text-gray-400 hover:text-red-500'
                                         }`}
                                 >
@@ -247,6 +271,17 @@ export default function MantraControl() {
                     ))}
                 </div>
             </div>
+
+            <ConfirmModal
+                open={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={confirmDelete}
+                title="Eliminar Mantra"
+                message="¿Estás seguro de que quieres eliminar este mantra de la biblioteca?"
+                confirmText="Eliminar"
+                cancelText="Cancelar"
+                isDangerous={true}
+            />
         </div>
     );
 }

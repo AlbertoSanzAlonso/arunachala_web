@@ -10,7 +10,7 @@ from app.core.database import get_db
 from app.models.models import Mantra, Personalization, User
 from app.api.auth import get_current_admin_user
 
-router = APIRouter(prefix="/api/mantras", tags=["mantras"])
+router = APIRouter(tags=["mantras"])
 
 class MantraSchema(BaseModel):
     id: int

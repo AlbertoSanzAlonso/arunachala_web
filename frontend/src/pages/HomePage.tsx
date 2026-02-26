@@ -25,6 +25,8 @@ const HomePage: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [galleryImages, setGalleryImages] = useState<string[]>([]);
     const [showBackToTop, setShowBackToTop] = useState(false);
+    const [bgMusicUrl, setBgMusicUrl] = useState<string | null>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const [dailyMantra, setDailyMantra] = useState<{ text_sanskrit: string, translation: string } | null>(null);
 
@@ -56,11 +58,56 @@ const HomePage: React.FC = () => {
             }
         };
 
+        const fetchSiteConfig = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/site-config`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const music = data.find((item: any) => item.key === 'homepage_music_url');
+                    if (music?.value) {
+                        setBgMusicUrl(getImageUrl(music.value));
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to load site config:", error);
+            }
+        };
+
         fetchMantra();
         fetchGallery();
+        fetchSiteConfig();
         const interval = setInterval(fetchGallery, 5000);
         return () => clearInterval(interval);
     }, []);
+
+    // Handle Background Music Autoplay & Volume
+    useEffect(() => {
+        if (bgMusicUrl && audioRef.current) {
+            const audio = audioRef.current;
+            audio.volume = 0.5;
+
+            // Function to try playing
+            const playAudio = () => {
+                audio.play().catch(err => {
+                    console.log("Autoplay blocked, waiting for interaction", err);
+                });
+            };
+
+            // Initial attempt
+            playAudio();
+
+            // Fallback: Play on first click anywhere in the container
+            const startOnInteraction = () => {
+                playAudio();
+                window.removeEventListener('click', startOnInteraction);
+            };
+            window.addEventListener('click', startOnInteraction);
+
+            return () => {
+                window.removeEventListener('click', startOnInteraction);
+            };
+        }
+    }, [bgMusicUrl]);
 
     useEffect(() => {
         const container = containerRef.current;
@@ -120,6 +167,9 @@ const HomePage: React.FC = () => {
                 description="Clases de Yoga, masajes y terapias: Centro de Yoga en Cornellá de Llobregat"
                 structuredData={localBusinessSchema}
             />
+            {bgMusicUrl && (
+                <audio ref={audioRef} src={bgMusicUrl} loop style={{ display: 'none' }} />
+            )}
             <Header />
 
             {/* Floating Back to Top Button */}
