@@ -171,27 +171,35 @@ const YogaPage: React.FC = () => {
                             {t('yoga.subtitle')}
                         </motion.p>
 
-                        <nav className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 w-full max-w-md md:max-w-6xl px-2">
-                            {[
+                        {(() => {
+                            const navItems = [
                                 { name: t('yoga.buttons.schedule'), ref: scheduleRef, delay: 0.4, show: true },
                                 { name: t('yoga.buttons.gallery'), ref: galleryRef, delay: 0.5, show: galleryImages.length > 0 },
                                 { name: t('yoga.buttons.weekend'), ref: weekendRef, delay: 0.6, show: hasWeekendActivities },
                                 { name: t('yoga.buttons.blog'), ref: blogRef, delay: 0.7, show: true }
-                            ].filter(item => item.show).map((item) => (
-                                <motion.button
-                                    key={item.name}
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    transition={{ duration: 0.3, delay: item.delay }}
-                                    onClick={() => scrollTo(item.ref)}
-                                    className="group relative h-32 md:h-48 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-md border border-white/20 shadow-xl flex flex-col items-center justify-center hover:bg-white/20 transition-all duration-300 w-full"
-                                >
-                                    <span className="text-xl md:text-3xl font-headers text-white group-hover:text-matcha transition-colors uppercase">{item.name}</span>
-                                </motion.button>
-                            ))}
-                        </nav>
+                            ].filter(item => item.show);
+
+                            const isOdd = navItems.length % 2 !== 0;
+
+                            return (
+                                <nav className={`grid ${isOdd ? 'grid-cols-1' : 'grid-cols-2'} md:flex md:justify-center gap-4 md:gap-8 w-full max-w-md md:max-w-6xl px-2`}>
+                                    {navItems.map((item) => (
+                                        <motion.button
+                                            key={item.name}
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            transition={{ duration: 0.3, delay: item.delay }}
+                                            onClick={() => scrollTo(item.ref)}
+                                            className={`group relative ${isOdd ? 'h-24' : 'h-32'} md:h-48 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-md border border-white/20 shadow-xl flex flex-col items-center justify-center hover:bg-white/20 transition-all duration-300 w-full md:w-64`}
+                                        >
+                                            <span className="text-xl md:text-3xl font-headers text-white group-hover:text-matcha transition-colors uppercase">{item.name}</span>
+                                        </motion.button>
+                                    ))}
+                                </nav>
+                            );
+                        })()}
                     </div>
                 </div>
 

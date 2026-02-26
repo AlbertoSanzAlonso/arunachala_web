@@ -264,27 +264,35 @@ const TherapiesPage: React.FC = () => {
                             {t('therapies.subtitle')}
                         </motion.p>
 
-                        <nav className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 w-full max-w-md md:max-w-6xl px-2">
-                            {[
+                        {(() => {
+                            const navItems = [
                                 { name: t('therapies.buttons.massages'), ref: massagesRef, delay: 0.4 },
                                 { name: t('therapies.buttons.therapies'), ref: therapiesRef, delay: 0.5 },
                                 { name: t('therapies.appointment.title'), ref: appointmentRef, delay: 0.6 },
                                 { name: t('therapies.buttons.blog'), ref: blogRef, delay: 0.7 }
-                            ].map((item) => (
-                                <motion.button
-                                    key={item.name}
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    transition={{ duration: 0.3, delay: item.delay }}
-                                    onClick={() => scrollTo(item.ref)}
-                                    className="group relative h-32 md:h-48 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-md border border-white/20 shadow-xl flex flex-col items-center justify-center hover:bg-white/20 transition-all duration-300 w-full"
-                                >
-                                    <span className="text-xl md:text-3xl font-headers text-white group-hover:text-matcha transition-colors uppercase">{item.name}</span>
-                                </motion.button>
-                            ))}
-                        </nav>
+                            ];
+
+                            const isOdd = navItems.length % 2 !== 0;
+
+                            return (
+                                <nav className={`grid ${isOdd ? 'grid-cols-1' : 'grid-cols-2'} md:flex md:justify-center gap-4 md:gap-8 w-full max-w-md md:max-w-6xl px-2`}>
+                                    {navItems.map((item) => (
+                                        <motion.button
+                                            key={item.name}
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            transition={{ duration: 0.3, delay: item.delay }}
+                                            onClick={() => scrollTo(item.ref)}
+                                            className={`group relative ${isOdd ? 'h-24' : 'h-32'} md:h-48 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-md border border-white/20 shadow-xl flex flex-col items-center justify-center hover:bg-white/20 transition-all duration-300 w-full md:w-64`}
+                                        >
+                                            <span className="text-xl md:text-3xl font-headers text-white group-hover:text-matcha transition-colors uppercase">{item.name}</span>
+                                        </motion.button>
+                                    ))}
+                                </nav>
+                            );
+                        })()}
                     </div>
                 </div>
 
