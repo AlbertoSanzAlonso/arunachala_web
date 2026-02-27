@@ -287,9 +287,9 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                                     <span>{formatDate(article.created_at)}</span>
                                                 </div>
 
-                                                <div className="flex items-center gap-2 text-forest group-hover:text-matcha transition-colors">
-                                                    <span className="text-xs font-bold uppercase tracking-widest">{t('common.read_more', 'Leer')}</span>
-                                                    <ArrowRightIcon className="w-4 h-4" />
+                                                <div className="flex items-center gap-1.5 text-forest group-hover:text-matcha transition-colors">
+                                                    <span className="text-[10px] font-bold tracking-tight">{t('common.read_more', 'Leer')}</span>
+                                                    <ArrowRightIcon className="w-3.5 h-3.5" />
                                                 </div>
                                             </div>
 

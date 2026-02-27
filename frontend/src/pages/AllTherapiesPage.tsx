@@ -310,7 +310,10 @@ const AllTherapiesPage: React.FC = () => {
                                                     <ShareIcon className="w-5 h-5" />
                                                 </button>
                                             </div>
-                                            <button className="text-forest font-bold group-hover:text-matcha transition-colors">{t('therapies.common.read_more')} →</button>
+                                            <button className="text-forest text-[10px] font-bold group-hover:text-matcha transition-colors flex items-center gap-1">
+                                                {t('therapies.common.read_more')}
+                                                <span className="text-sm">→</span>
+                                            </button>
                                         </div>
                                     </motion.div>
                                 ))}

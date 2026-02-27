@@ -210,9 +210,9 @@ const NewsSection: React.FC = () => {
                                                 {getTranslated(item, 'excerpt', i18n.language) || getTranslated(item, 'body', i18n.language)?.replace(/<[^>]*>/g, '').slice(0, 120) + '...'}
                                             </p>
 
-                                            <div className="mt-auto flex items-center gap-2 text-forest group-hover:text-matcha transition-colors">
-                                                <span className="text-[10px] font-bold uppercase tracking-widest">{t('common.read_more', 'Leer más')}</span>
-                                                <ArrowRightIcon className="w-4 h-4" />
+                                            <div className="mt-auto flex items-center gap-1.5 text-forest group-hover:text-matcha transition-colors">
+                                                <span className="text-[10px] font-bold tracking-tight">{t('common.read_more', 'Leer más')}</span>
+                                                <ArrowRightIcon className="w-3.5 h-3.5" />
                                             </div>
                                         </div>
                                     </motion.article>
