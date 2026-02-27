@@ -10,6 +10,7 @@ import { PlayIcon, PauseIcon, SpeakerWaveIcon, SpeakerXMarkIcon, ArrowsPointingO
 import { API_BASE_URL } from '../config';
 import { isChristmasSeason } from '../utils/dateUtils';
 import { getImageUrl } from '../utils/imageUtils';
+import { useUIStore } from '../store/uiStore';
 
 const LANGUAGES = [
     { code: 'es', label: 'ES' },
@@ -24,6 +25,7 @@ const Header: React.FC = () => {
     const [showVolume, setShowVolume] = React.useState(false);
     const navigate = useNavigate();
     const { t, i18n } = useTranslation();
+    const { addToast } = useUIStore();
 
     // Automatically detect Christmas mode based on date
     const isChristmas = isChristmasSeason();
@@ -129,9 +131,10 @@ const Header: React.FC = () => {
         } else {
             try {
                 await navigator.clipboard.writeText(shareUrl);
-                alert(t('common.copied_to_clipboard', 'Enlace copiado al portapapeles'));
+                addToast('success', t('common.copied_to_clipboard', 'Enlace copiado al portapapeles'));
             } catch (err) {
                 console.error("Copy failed:", err);
+                addToast('error', t('common.copy_failed', 'Error al copiar el enlace'));
             }
         }
     };

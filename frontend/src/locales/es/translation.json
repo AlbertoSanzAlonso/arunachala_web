@@ -166,6 +166,7 @@
     "close": "Cerrar",
     "share": "Compartir",
     "copied_to_clipboard": "Enlace copiado al portapapeles",
+    "copy_failed": "Error al copiar el enlace",
     "read_more": "Leer más",
     "days": {
       "monday": "Lunes",

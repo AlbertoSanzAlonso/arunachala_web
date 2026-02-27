@@ -9,6 +9,8 @@ import MeditationsPage from './pages/MeditationsPage';
 import ChatBot from './components/ChatBot';
 import MeditationPlayerModal from './components/MeditationPlayerModal';
 import ScrollToTop from './components/ScrollToTop';
+import ToastNotification from './components/ToastNotification';
+import { useUIStore } from './store/uiStore';
 
 
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -53,6 +55,7 @@ const UnsubscribePage = lazy(() => import('./pages/UnsubscribePage'));
 
 const AppContent = () => {
     const location = useLocation();
+    const { toasts, removeToast } = useUIStore();
 
     // Hide ChatBot on login, register, and all dashboard paths
     const hideChatBot =
@@ -64,6 +67,7 @@ const AppContent = () => {
 
     return (
         <Suspense fallback={<PageLoader />}>
+            <ToastNotification toasts={toasts} onRemove={removeToast} />
             {!hideChatBot && <ChatBot />}
             <MeditationPlayerModal />
             <Routes>

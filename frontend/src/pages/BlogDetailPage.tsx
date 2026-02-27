@@ -12,6 +12,7 @@ import { getTranslated } from '../utils/translate';
 import { getImageUrl } from '../utils/imageUtils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useUIStore } from '../store/uiStore';
 
 interface Article {
     id: number;
@@ -31,6 +32,7 @@ interface Article {
 const BlogDetailPage: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
     const { t, i18n } = useTranslation();
+    const { addToast } = useUIStore();
     const navigate = useNavigate();
     const [article, setArticle] = useState<Article | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -157,9 +159,10 @@ const BlogDetailPage: React.FC = () => {
         } else {
             try {
                 await navigator.clipboard.writeText(shareUrl);
-                alert(t('common.copied_to_clipboard', 'Enlace copiado al portapapeles'));
+                addToast('success', t('common.copied_to_clipboard', 'Enlace copiado al portapapeles'));
             } catch (err) {
                 console.error("Copy failed:", err);
+                addToast('error', t('common.copy_failed', 'Error al copiar el enlace'));
             }
         }
     };

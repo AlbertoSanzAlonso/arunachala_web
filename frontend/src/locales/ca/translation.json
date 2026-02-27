@@ -161,6 +161,7 @@
     "close": "Tancar",
     "share": "Compartir",
     "copied_to_clipboard": "Enllaç copiat al porta-retalls",
+    "copy_failed": "Error en copiar l'enllaç",
     "read_more": "Llegir més",
     "days": {
       "monday": "Dilluns",

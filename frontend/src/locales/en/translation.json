@@ -161,6 +161,7 @@
     "close": "Close",
     "share": "Share",
     "copied_to_clipboard": "Link copied to clipboard",
+    "copy_failed": "Failed to copy link",
     "read_more": "Read more",
     "days": {
       "monday": "Monday",

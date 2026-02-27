@@ -6,11 +6,13 @@ import { useAudio } from '../context/AudioContext';
 import { API_BASE_URL } from '../config';
 import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../utils/imageUtils';
+import { useUIStore } from '../store/uiStore';
 
 import VolumeControl from './VolumeControl';
 
 const MeditationPlayerModal: React.FC = () => {
     const { t, i18n } = useTranslation();
+    const { addToast } = useUIStore();
     const {
         playingMeditation,
         isPlaying,
@@ -79,9 +81,10 @@ const MeditationPlayerModal: React.FC = () => {
             // Fallback: Copy to clipboard
             try {
                 await navigator.clipboard.writeText(shareUrl);
-                alert(t('common.copied_to_clipboard', 'Enlace copiado al portapapeles'));
+                addToast('success', t('common.copied_to_clipboard', 'Enlace copiado al portapapeles'));
             } catch (err) {
                 console.error("Copy failed:", err);
+                addToast('error', t('common.copy_failed', 'Error al copiar el enlace'));
             }
         }
     };
