@@ -203,7 +203,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                         onClick={() => scroll('left')}
                                         disabled={!canScrollLeft}
                                         className={`absolute left-0 z-20 p-3 rounded-full bg-white/90 shadow-xl border border-forest/10 -translate-x-1/2 hidden md:flex items-center justify-center transition-all duration-300 hover:bg-forest hover:text-white disabled:opacity-0 disabled:pointer-events-none group-hover/slider:translate-x-0 ${!canScrollLeft ? 'opacity-0' : 'opacity-100'}`}
-                                        aria-label="Anterior"
+                                        aria-label={t('meditations.prev', 'Anterior')}
                                     >
                                         <ChevronLeftIcon className="w-6 h-6" />
                                     </button>
@@ -211,7 +211,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                         onClick={() => scroll('right')}
                                         disabled={!canScrollRight}
                                         className={`absolute right-0 z-20 p-3 rounded-full bg-white/90 shadow-xl border border-forest/10 translate-x-1/2 hidden md:flex items-center justify-center transition-all duration-300 hover:bg-forest hover:text-white disabled:opacity-0 disabled:pointer-events-none group-hover/slider:translate-x-0 ${!canScrollRight ? 'opacity-0' : 'opacity-100'}`}
-                                        aria-label="Siguiente"
+                                        aria-label={t('meditations.next', 'Siguiente')}
                                     >
                                         <ChevronRightIcon className="w-6 h-6" />
                                     </button>
@@ -288,23 +288,30 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                                 </div>
 
                                                 <div className="flex items-center gap-2 text-forest group-hover:text-matcha transition-colors">
-                                                    <span className="text-xs font-bold uppercase tracking-widest">Leer</span>
+                                                    <span className="text-xs font-bold uppercase tracking-widest">{t('common.read_more', 'Leer')}</span>
                                                     <ArrowRightIcon className="w-4 h-4" />
                                                 </div>
                                             </div>
 
-                                            {article.tags && article.tags.length > 0 && (
-                                                <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-forest/5">
-                                                    {article.tags.slice(0, 2).map((tag, idx) => (
-                                                        <span
-                                                            key={idx}
-                                                            className="px-3 py-1 bg-bone text-bark/60 rounded-full text-[10px] font-bold uppercase tracking-tighter"
-                                                        >
-                                                            #{tag}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            )}
+                                            {(() => {
+                                                const translatedTags = getTranslated(article, 'tags', i18n.language);
+                                                const safeTags = (Array.isArray(translatedTags) && translatedTags.length > 0) ? translatedTags : article.tags;
+
+                                                if (!safeTags || safeTags.length === 0) return null;
+
+                                                return (
+                                                    <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-forest/5">
+                                                        {safeTags.slice(0, 2).map((tag: string, idx: number) => (
+                                                            <span
+                                                                key={idx}
+                                                                className="px-3 py-1 bg-bone text-bark/60 rounded-full text-[10px] font-bold uppercase tracking-tighter"
+                                                            >
+                                                                #{tag}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                );
+                                            })()}
                                         </div>
                                     </motion.article>
                                 ))}

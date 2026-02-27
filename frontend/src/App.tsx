@@ -10,7 +10,9 @@ import ChatBot from './components/ChatBot';
 import MeditationPlayerModal from './components/MeditationPlayerModal';
 import ScrollToTop from './components/ScrollToTop';
 import ToastNotification from './components/ToastNotification';
+import LanguageSync from './components/LanguageSync';
 import { useUIStore } from './store/uiStore';
+
 
 
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -130,6 +132,7 @@ function App() {
             <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
                 <AudioProvider>
                     <ScrollToTop />
+                    <LanguageSync />
                     <AppContent />
                 </AudioProvider>
             </BrowserRouter>

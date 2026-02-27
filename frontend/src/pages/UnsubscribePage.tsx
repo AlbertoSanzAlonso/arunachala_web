@@ -5,10 +5,17 @@ import { motion } from 'framer-motion';
 import { API_BASE_URL } from '../config';
 
 const UnsubscribePage: React.FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [searchParams] = useSearchParams();
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
     const email = searchParams.get('email');
+    const lng = searchParams.get('lng');
+
+    useEffect(() => {
+        if (lng && i18n.language !== lng) {
+            i18n.changeLanguage(lng);
+        }
+    }, [lng, i18n]);
 
     useEffect(() => {
         const performUnsubscribe = async () => {

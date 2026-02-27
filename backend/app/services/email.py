@@ -296,8 +296,8 @@ class EmailService:
         message["To"] = email
         message["Subject"] = t["subject"]
         
-        unsubscribe_url = f"{self.frontend_url}/unsubscribe?email={email}"
-        explore_url = f"{self.frontend_url}/actividades"
+        unsubscribe_url = f"{self.frontend_url}/unsubscribe?email={email}&lng={language}"
+        explore_url = f"{self.frontend_url}/actividades?lng={language}"
         
         html_content = f"""
         <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #eef2e6;">
@@ -342,9 +342,11 @@ class EmailService:
         
         # Add the related image as CID
         if logo_data:
-            # When add_alternative is used, the message becomes multipart/alternative
-            # We need to add the image to the HTML part's related payload
-            message.get_payload()[1].add_related(logo_data, 'image', 'png', cid='logo_cid')
+            # We need to find the html part to add the related image to it
+            for part in message.iter_parts():
+                if part.get_content_subtype() == 'html':
+                    part.add_related(logo_data, 'image', 'png', cid='logo_cid')
+                    break
 
         try:
             await aiosmtplib.send(
