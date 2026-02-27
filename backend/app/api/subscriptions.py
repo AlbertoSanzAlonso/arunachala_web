@@ -84,6 +84,18 @@ async def test_smtp_config():
         "mail_from": email_service.mail_from
     }
 
+@router.get("/test-email-send-debug")
+async def test_email_send_debug(email: str = "albertosanzdev@gmail.com"):
+    """Debug endpoint to force synchronous email send and capture exact SMTP error."""
+    try:
+        from app.services.email import email_service
+        # We will directly invoke the SMTP send to capture the exception without background tasks
+        success = await email_service.send_welcome_email(email, "Test", "es")
+        return {"success": success, "message": "Si returna False revisar logs, o ver si no hay excepcion pero retorna False"}
+    except Exception as e:
+        import traceback
+        return {"success": False, "error": str(e), "traceback": traceback.format_exc()}
+
 @router.delete("/{email}")
 def unsubscribe(email: str, db: Session = Depends(get_db)):
     sub = db.query(Subscription).filter(Subscription.email == email).first()
