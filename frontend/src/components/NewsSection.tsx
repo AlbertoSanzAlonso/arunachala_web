@@ -158,7 +158,7 @@ const NewsSection: React.FC = () => {
                             <div
                                 ref={scrollRef}
                                 onScroll={handleScroll}
-                                className="flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar pb-12 pt-4 px-[10vw] md:px-1 w-full"
+                                className="flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-12 pt-4 px-[10vw] md:px-1 w-full"
                                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                             >
                                 {news.map((item, idx) => (
@@ -169,7 +169,7 @@ const NewsSection: React.FC = () => {
                                         viewport={{ once: true }}
                                         transition={{ delay: idx * 0.1 }}
                                         onClick={() => handleNewsClick(item)}
-                                        className="flex-none w-[80vw] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer group flex flex-col h-full border border-white"
+                                        className="flex-none w-[80vw] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer group flex flex-col h-full border border-white snap-center"
                                     >
                                         <div className="h-48 bg-forest/5 overflow-hidden relative">
                                             {item.thumbnail_url ? (
