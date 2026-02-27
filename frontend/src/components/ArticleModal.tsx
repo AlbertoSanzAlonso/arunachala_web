@@ -40,7 +40,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
 
     const handleShare = async () => {
         if (!article) return;
-        const shareUrl = `${window.location.origin}/blog/${article.category}/${article.slug}`;
+        const shareUrl = `${window.location.origin}/blog/${article.slug}`;
         const title = translatedTitle;
 
         if (navigator.share) {

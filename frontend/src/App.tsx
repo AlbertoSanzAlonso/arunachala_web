@@ -127,12 +127,12 @@ const AppContent = () => {
 function App() {
     return (
         <AuthProvider>
-            <AudioProvider>
-                <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+            <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+                <AudioProvider>
                     <ScrollToTop />
                     <AppContent />
-                </BrowserRouter>
-            </AudioProvider>
+                </AudioProvider>
+            </BrowserRouter>
         </AuthProvider>
     );
 }

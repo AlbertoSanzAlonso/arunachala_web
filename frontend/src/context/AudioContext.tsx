@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
 import { getImageUrl } from '../utils/imageUtils';
@@ -69,13 +70,12 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const currentMeditationRef = useRef<Meditation | null>(null);
     const playMeditationRef = useRef<any>(null);
     const { i18n } = useTranslation();
+    const location = useLocation();
     const isFirstMount = useRef(true);
+    const hasInitializedHomeMusic = useRef(false);
 
     // Initialize homepage background music
     useEffect(() => {
-        if (!isFirstMount.current) return;
-        isFirstMount.current = false;
-
         const initializeHomeMusic = async () => {
             try {
                 // 1. Get the music URL from config
@@ -90,11 +90,15 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 if (!medRes.ok) return;
                 const meditations = await medRes.json();
 
-                const matchingMeditation = meditations.find((m: Meditation) => m.media_url === musicUrl);
+                const normalizeUrl = (u: string) => u ? u.replace(API_BASE_URL, '').split('?')[0].replace(/\/+$/, '') : '';
+                const normalizedTarget = normalizeUrl(musicUrl);
+
+                const matchingMeditation = meditations.find((m: Meditation) => {
+                    const normalizedMed = normalizeUrl(m.media_url || '');
+                    return normalizedMed === normalizedTarget && normalizedMed !== '';
+                });
 
                 if (matchingMeditation && !currentMeditationRef.current) {
-                    // Initialize but don't necessarily play immediately to respect autoplay policies
-                    // unless we are on the home page and want to try
                     setPlayingMeditation(matchingMeditation);
                     setPlaylist([matchingMeditation]);
 
@@ -103,40 +107,69 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                         const url = matchingMeditation.media_url || '';
                         const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
                         audio.src = fullUrl;
-                        audio.volume = 0.5; // Default volume for background music
+                        audio.volume = 0.5;
                         setVolumeState(0.5);
                         audio.load();
+                        audio.autoplay = true;
+                        audio.loop = true;
 
-                        // If we are on home page, try to play
-                        if (window.location.pathname === '/') {
-                            audio.play().then(() => {
-                                setIsPlaying(true);
-                            }).catch(() => {
-                                // Autoplay blocked, will play on next interaction
-                                const playOnInteract = () => {
-                                    if (audio.paused && window.location.pathname === '/') {
-                                        audio.play().then(() => {
-                                            setIsPlaying(true);
-                                        }).catch(() => { });
-                                    }
-                                    window.removeEventListener('click', playOnInteract);
-                                    window.removeEventListener('touchstart', playOnInteract);
-                                    window.removeEventListener('scroll', playOnInteract);
-                                };
-                                window.addEventListener('click', playOnInteract);
-                                window.addEventListener('touchstart', playOnInteract);
-                                window.addEventListener('scroll', playOnInteract, { once: true });
-                            });
+                        // If we are currently on home, try to play
+                        if (location.pathname === '/' || location.pathname === '') {
+                            attemptPlay();
                         }
                     }
                 }
+                hasInitializedHomeMusic.current = true;
             } catch (error) {
                 console.error("Error initializing background music:", error);
             }
         };
 
-        initializeHomeMusic();
+        if (!hasInitializedHomeMusic.current) {
+            initializeHomeMusic();
+        }
+    }, [location.pathname]);
+
+    // Handle play attempts and interaction listeners
+    const attemptPlay = useCallback(() => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        const handleActualPlay = () => {
+            audio.play().then(() => {
+                setIsPlaying(true);
+                cleanup();
+            }).catch(() => {
+                // Still blocked, keep listeners
+            });
+        };
+
+        const cleanup = () => {
+            window.removeEventListener('click', handleActualPlay);
+            window.removeEventListener('touchstart', handleActualPlay);
+            window.removeEventListener('scroll', handleActualPlay);
+            window.removeEventListener('mousemove', handleActualPlay);
+        };
+
+        // Try immediate
+        audio.play().then(() => {
+            setIsPlaying(true);
+            cleanup();
+        }).catch(() => {
+            // Autoplay blocked, wait for interaction
+            window.addEventListener('click', handleActualPlay);
+            window.addEventListener('touchstart', handleActualPlay);
+            window.addEventListener('scroll', handleActualPlay, { once: true });
+            window.addEventListener('mousemove', handleActualPlay, { once: true });
+        });
     }, []);
+
+    // Also trigger attemptPlay when location switches to home and it's initialized but paused
+    useEffect(() => {
+        if ((location.pathname === '/' || location.pathname === '') && audioRef.current?.paused && playingMeditation) {
+            attemptPlay();
+        }
+    }, [location.pathname, playingMeditation, attemptPlay]);
 
     // Keep refs in sync
     useEffect(() => {
