@@ -36,7 +36,7 @@ const OurSpacePage: React.FC = () => {
                 }
 
                 // Fetch Slider Images
-                const response = await fetch(`${API_BASE_URL}/api/gallery?category=center`);
+                const response = await fetch(`${API_BASE_URL}/api/gallery/?category=center`);
                 if (response.ok) {
                     const data: GalleryImage[] = await response.json();
                     setSliderImages(data);
