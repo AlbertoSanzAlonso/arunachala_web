@@ -1,5 +1,7 @@
 import os
 import aiosmtplib
+import base64
+import httpx
 from email.message import EmailMessage
 from typing import Optional
 from datetime import datetime
@@ -231,7 +233,18 @@ class EmailService:
         """
         Sends a warm welcome email to new subscribers.
         """
-        logo_url = f"{self.frontend_url}/logo_transparent.png"
+        # Fetch logo to embed as base64
+        actual_logo_url = f"{self.frontend_url}/logo_transparent.png"
+        logo_base64 = ""
+        try:
+            async with httpx.AsyncClient() as client:
+                resp = await client.get(actual_logo_url, timeout=5.0)
+                if resp.status_code == 200:
+                    logo_base64 = base64.b64encode(resp.content).decode()
+        except Exception as e:
+            print(f"⚠️ Could not fetch logo for embedding: {e}")
+
+        logo_src = f"data:image/png;base64,{logo_base64}" if logo_base64 else actual_logo_url
         name = first_name or ("amig@ de Arunachala" if language != "en" else "friend of Arunachala")
         
         translations = {
@@ -292,7 +305,7 @@ class EmailService:
             <!-- Header with Logo -->
             <div style="background-color: #5c6b3c; padding: 30px 20px; text-align: center;">
                 <div style="display: inline-block; width: 80px; height: 80px; border-radius: 50%; background-color: #F5F5DC; padding: 10px; border: 2px solid #F5F5DC;">
-                    <img src="{logo_url}" alt="Arunachala Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                    <img src="{logo_src}" alt="Arunachala Logo" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <h1 style="color: #F5F5DC; margin: 15px 0 0 0; font-size: 24px; letter-spacing: 2px; font-weight: 300;">ARUNACHALA</h1>
                 <p style="color: #F5F5DC; opacity: 0.8; font-size: 13px; margin: 5px 0 0 0; text-transform: uppercase; letter-spacing: 1px;">Yoga & Terapias</p>

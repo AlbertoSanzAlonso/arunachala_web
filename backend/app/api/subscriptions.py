@@ -71,38 +71,10 @@ def subscribe(sub: SubscriptionCreate, background_tasks: BackgroundTasks, db: Se
     db.refresh(new_sub)
     return new_sub
 
-@router.get("/test-smtp-config")
-async def test_smtp_config():
-    """Debug endpoint to verify if SMTP vars are loaded in production."""
-    from app.services.email import email_service
-    return {
-        "use_smtp": email_service.use_smtp,
-        "mail_server_set": bool(email_service.mail_server),
-        "mail_server_value": email_service.mail_server,
-        "mail_user_set": bool(email_service.mail_username),
-        "mail_port": email_service.mail_port,
-        "mail_from": email_service.mail_from
-    }
-
-@router.get("/test-email-send-debug")
-async def test_email_send_debug(email: str = "albertosanzdev@gmail.com"):
-    """Debug endpoint to force synchronous email send and capture exact SMTP error."""
-    try:
-        from app.services.email import email_service
-        # We will directly invoke the SMTP send to capture the exception without background tasks
-        success = await email_service.send_welcome_email(email, "Test", "es")
-        logo_url = f"{email_service.frontend_url}/logo_transparent.png"
-        return {
-            "success": success, 
-            "message": "Check your email",
-            "debug_info": {
-                "frontend_url": email_service.frontend_url,
-                "logo_url": logo_url
-            }
-        }
-    except Exception as e:
-        import traceback
-        return {"success": False, "error": str(e), "traceback": traceback.format_exc()}
+@router.get("/")
+def get_subscriptions(db: Session = Depends(get_db)):
+    """Admin endpoint to see subscribers"""
+    return db.query(Subscription).all()
 
 @router.delete("/{email}")
 def unsubscribe(email: str, db: Session = Depends(get_db)):
