@@ -109,7 +109,9 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
                         // If we are on home page, try to play
                         if (window.location.pathname === '/') {
-                            audio.play().catch(() => {
+                            audio.play().then(() => {
+                                setIsPlaying(true);
+                            }).catch(() => {
                                 // Autoplay blocked, will play on next interaction
                                 const playOnInteract = () => {
                                     audio.play().catch(() => { });
