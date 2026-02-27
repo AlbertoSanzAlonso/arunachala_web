@@ -79,12 +79,14 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (!audio) return;
 
         const handleActualPlay = () => {
-            audio.play().then(() => {
-                setIsPlaying(true);
-                cleanup();
-            }).catch(() => {
-                // Still blocked, keep listeners
-            });
+            if (audio.src) {
+                audio.play().then(() => {
+                    setIsPlaying(true);
+                    cleanup();
+                }).catch(() => {
+                    // Still blocked or no source, keep listeners
+                });
+            }
         };
 
         const cleanup = () => {
@@ -92,19 +94,23 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             window.removeEventListener('touchstart', handleActualPlay);
             window.removeEventListener('scroll', handleActualPlay);
             window.removeEventListener('mousemove', handleActualPlay);
+            window.removeEventListener('keydown', handleActualPlay);
         };
 
         // Try immediate
-        audio.play().then(() => {
-            setIsPlaying(true);
-            cleanup();
-        }).catch(() => {
-            // Autoplay blocked, wait for interaction
-            window.addEventListener('click', handleActualPlay);
-            window.addEventListener('touchstart', handleActualPlay);
-            window.addEventListener('scroll', handleActualPlay, { once: true });
-            window.addEventListener('mousemove', handleActualPlay, { once: true });
-        });
+        if (audio.src) {
+            audio.play().then(() => {
+                setIsPlaying(true);
+                cleanup();
+            }).catch(() => {
+                // Autoplay blocked, wait for interaction
+                window.addEventListener('click', handleActualPlay);
+                window.addEventListener('touchstart', handleActualPlay);
+                window.addEventListener('scroll', handleActualPlay, { once: true });
+                window.addEventListener('mousemove', handleActualPlay, { once: true });
+                window.addEventListener('keydown', handleActualPlay, { once: true });
+            });
+        }
     }, []);
 
     // Initialize homepage background music
@@ -214,11 +220,11 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
 
         const audio = audioRef.current;
+        audio.preload = 'auto'; // Optimize for speed
 
         if (currentMeditationRef.current?.id === meditation.id) {
             if (audio.paused) {
-                audio.play().catch(err => console.warn("Playback error:", err));
-                setIsPlaying(true);
+                attemptPlay();
             } else {
                 pause();
             }
@@ -233,9 +239,8 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             audio.muted = isMuted;
             audio.load();
 
-            audio.play().catch(err => {
-                console.warn("Playback error (catch):", err);
-            });
+            // Use generalized attemptPlay to handle potential autoplay block (especially on shared links)
+            attemptPlay();
 
             setPlayingMeditation(meditation);
         }
@@ -243,7 +248,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (shouldOpenModal) {
             setIsPlayerModalOpen(true);
         }
-    }, [volume, isMuted, pause]);
+    }, [volume, isMuted, pause, attemptPlay]);
 
     // Playback time tracker
     const playTimeAccumulator = useRef<number>(0);
