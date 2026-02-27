@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAudio } from '../context/AudioContext';
-import { PlayIcon, PauseIcon, SpeakerWaveIcon, SpeakerXMarkIcon, ArrowsPointingOutIcon, ForwardIcon, BackwardIcon } from '@heroicons/react/24/solid';
+import { PlayIcon, PauseIcon, SpeakerWaveIcon, SpeakerXMarkIcon, ArrowsPointingOutIcon, ForwardIcon, BackwardIcon, ShareIcon } from '@heroicons/react/24/solid';
 import { API_BASE_URL } from '../config';
 import { isChristmasSeason } from '../utils/dateUtils';
 import { getImageUrl } from '../utils/imageUtils';
@@ -109,6 +109,33 @@ const Header: React.FC = () => {
     // Use the context-provided inView status to decide visibility
     const shouldShowMiniPlayer = !!playingMeditation && !isMeditationInView;
 
+    const handleShare = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!playingMeditation) return;
+
+        const shareUrl = `${window.location.origin}/meditaciones/${playingMeditation.slug || ''}`;
+        const title = playingMeditation.title;
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: title,
+                    text: t('meditations.share_text', 'Escucha esta meditación en Arunachala Yoga'),
+                    url: shareUrl,
+                });
+            } catch (err) {
+                console.error("Share failed:", err);
+            }
+        } else {
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                alert(t('common.copied_to_clipboard', 'Enlace copiado al portapapeles'));
+            } catch (err) {
+                console.error("Copy failed:", err);
+            }
+        }
+    };
+
 
     const isHome = window.location.pathname === '/';
 
@@ -138,7 +165,7 @@ const Header: React.FC = () => {
                 </div>
 
                 {/* Right Side Controls */}
-                <div className="flex items-center gap-2 md:gap-4">
+                <div className="flex items-center gap-4 md:gap-6">
                     {/* Mini Player */}
                     <AnimatePresence>
                         {shouldShowMiniPlayer && (
@@ -230,6 +257,14 @@ const Header: React.FC = () => {
                                     {/* Action Group */}
                                     <div className="flex items-center px-2 gap-1 h-full bg-white/5 border-l border-white/10">
                                         <button
+                                            onClick={handleShare}
+                                            className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-white"
+                                            title={t('common.share', 'Compartir')}
+                                        >
+                                            <ShareIcon className="w-4 h-4" />
+                                        </button>
+
+                                        <button
                                             onClick={(e) => { e.stopPropagation(); setIsPlayerModalOpen(true); }}
                                             className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-white"
                                             title="Abrir reproductor"
@@ -258,6 +293,14 @@ const Header: React.FC = () => {
                                         ) : (
                                             <PlayIcon className="w-4 h-4 pl-0.5" />
                                         )}
+                                    </button>
+
+                                    <button
+                                        onClick={handleShare}
+                                        className="w-8 h-8 flex items-center justify-center text-[#5c6b3c]/80 hover:text-[#5c6b3c] active:scale-90 transition-transform"
+                                        title={t('common.share', 'Compartir')}
+                                    >
+                                        <ShareIcon className="w-4.5 h-4.5" />
                                     </button>
 
                                     <button

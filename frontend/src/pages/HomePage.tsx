@@ -25,8 +25,6 @@ const HomePage: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [galleryImages, setGalleryImages] = useState<string[]>([]);
     const [showBackToTop, setShowBackToTop] = useState(false);
-    const [bgMusicUrl, setBgMusicUrl] = useState<string | null>(null);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const [dailyMantra, setDailyMantra] = useState<{ text_sanskrit: string, translation: string } | null>(null);
 
@@ -58,56 +56,12 @@ const HomePage: React.FC = () => {
             }
         };
 
-        const fetchSiteConfig = async () => {
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/site-config`);
-                if (response.ok) {
-                    const data = await response.json();
-                    const music = data.find((item: any) => item.key === 'homepage_music_url');
-                    if (music?.value) {
-                        setBgMusicUrl(getImageUrl(music.value));
-                    }
-                }
-            } catch (error) {
-                console.error("Failed to load site config:", error);
-            }
-        };
-
         fetchMantra();
         fetchGallery();
-        fetchSiteConfig();
         const interval = setInterval(fetchGallery, 5000);
         return () => clearInterval(interval);
     }, []);
 
-    // Handle Background Music Autoplay & Volume
-    useEffect(() => {
-        if (bgMusicUrl && audioRef.current) {
-            const audio = audioRef.current;
-            audio.volume = 0.5;
-
-            // Function to try playing
-            const playAudio = () => {
-                audio.play().catch(err => {
-                    console.log("Autoplay blocked, waiting for interaction", err);
-                });
-            };
-
-            // Initial attempt
-            playAudio();
-
-            // Fallback: Play on first click anywhere in the container
-            const startOnInteraction = () => {
-                playAudio();
-                window.removeEventListener('click', startOnInteraction);
-            };
-            window.addEventListener('click', startOnInteraction);
-
-            return () => {
-                window.removeEventListener('click', startOnInteraction);
-            };
-        }
-    }, [bgMusicUrl]);
 
     useEffect(() => {
         const container = containerRef.current;
@@ -161,15 +115,12 @@ const HomePage: React.FC = () => {
     };
 
     return (
-        <div id="home-scroll-container" ref={containerRef} className="font-body text-bark relative h-screen overflow-y-auto snap-y snap-mandatory md:snap-none scroll-smooth">
+        <div id="home-scroll-container" ref={containerRef} className="font-body text-bark relative h-screen overflow-y-auto scroll-smooth">
             <PageSEO
                 title="Arunachala Yoga y Terapias | Centro de Bienestar en Cornellà"
                 description="Clases de Yoga, masajes y terapias: Centro de Yoga en Cornellá de Llobregat"
                 structuredData={localBusinessSchema}
             />
-            {bgMusicUrl && (
-                <audio ref={audioRef} src={bgMusicUrl} loop style={{ display: 'none' }} />
-            )}
             <Header />
 
             {/* Floating Back to Top Button */}
@@ -191,7 +142,7 @@ const HomePage: React.FC = () => {
             </AnimatePresence>
 
             {/* Hero Section with Video */}
-            <section className="relative min-h-[85vh] md:min-h-screen w-full overflow-hidden flex items-center justify-center snap-center snap-always md:snap-none">
+            <section className="relative min-h-[75vh] md:min-h-[90vh] w-full overflow-hidden flex flex-col items-center pt-24 md:pt-32">
                 <video
                     className="absolute top-0 left-0 w-full h-full object-cover opacity-85"
                     autoPlay
@@ -207,7 +158,7 @@ const HomePage: React.FC = () => {
                 <div className="absolute top-0 left-0 w-full h-full bg-black/50"></div>
 
                 {/* Main Content Container */}
-                <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-4xl px-4 gap-6 md:gap-16 pt-12 pb-32 md:pt-12 md:pb-0">
+                <div className="relative z-10 flex flex-col items-center w-full max-w-4xl px-4 gap-6 md:gap-10 pb-32 md:pb-0">
 
                     {/* Navigation Buttons */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-12 w-full text-center">
@@ -253,7 +204,7 @@ const HomePage: React.FC = () => {
             {/* Content Sections */}
             <main className="bg-bone relative z-10">
                 {/* Wellness Quiz Section - Snap Start to align with Hero Border */}
-                <section className="snap-center snap-always md:snap-none scroll-mt-24 pt-12">
+                <section className="scroll-mt-24 pt-12">
                     <Suspense fallback={<div className="h-64 flex items-center justify-center">{t('home.loading.experience')}</div>}>
                         <FadeInSection>
                             <WellnessQuiz />
@@ -262,7 +213,7 @@ const HomePage: React.FC = () => {
                 </section>
 
                 {/* Featured Activities Section */}
-                <section className="snap-center snap-always md:snap-none scroll-mt-24">
+                <section className="scroll-mt-24">
                     <Suspense fallback={<div className="h-32 flex items-center justify-center">{t('home.loading.activities', 'Cargando actividades...')}</div>}>
                         <FadeInSection delay={0.1}>
                             <FeaturedActivities />
@@ -272,7 +223,7 @@ const HomePage: React.FC = () => {
 
                 {/* Gallery Slider - Snap Center */}
                 {galleryImages.length > 0 && (
-                    <section className="w-full max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-12 snap-center snap-always md:snap-none">
+                    <section className="w-full max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-12">
                         <Suspense fallback={<div className="h-96 flex items-center justify-center">{t('home.loading.gallery')}</div>}>
                             <FadeInSection delay={0.2}>
                                 <ImageSlider images={galleryImages} />
@@ -293,7 +244,7 @@ const HomePage: React.FC = () => {
                 </section>
 
                 {/* Newsletter Subscription Section */}
-                <section className="w-full max-w-4xl mx-auto px-4 md:px-8 mb-24 snap-center snap-always md:snap-none">
+                <section className="w-full max-w-4xl mx-auto px-4 md:px-8 mb-24">
                     <Suspense fallback={<div className="h-64 flex items-center justify-center">{t('common.loading')}</div>}>
                         <FadeInSection delay={0.4}>
                             <NewsletterForm />
@@ -302,7 +253,7 @@ const HomePage: React.FC = () => {
                 </section>
             </main>
 
-            <div className="snap-center snap-always md:snap-none">
+            <div>
                 <Footer />
             </div>
         </div>

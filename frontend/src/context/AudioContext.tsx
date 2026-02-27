@@ -69,6 +69,64 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const currentMeditationRef = useRef<Meditation | null>(null);
     const playMeditationRef = useRef<any>(null);
     const { i18n } = useTranslation();
+    const isFirstMount = useRef(true);
+
+    // Initialize homepage background music
+    useEffect(() => {
+        if (!isFirstMount.current) return;
+        isFirstMount.current = false;
+
+        const initializeHomeMusic = async () => {
+            try {
+                // 1. Get the music URL from config
+                const configRes = await fetch(`${API_BASE_URL}/api/site-config/homepage_music_url`);
+                if (!configRes.ok) return;
+                const configData = await configRes.json();
+                const musicUrl = configData.value;
+                if (!musicUrl) return;
+
+                // 2. Fetch all meditations to find the matching one
+                const medRes = await fetch(`${API_BASE_URL}/api/content?type=meditation&status=published`);
+                if (!medRes.ok) return;
+                const meditations = await medRes.json();
+
+                const matchingMeditation = meditations.find((m: Meditation) => m.media_url === musicUrl);
+
+                if (matchingMeditation && !currentMeditationRef.current) {
+                    // Initialize but don't necessarily play immediately to respect autoplay policies
+                    // unless we are on the home page and want to try
+                    setPlayingMeditation(matchingMeditation);
+                    setPlaylist([matchingMeditation]);
+
+                    const audio = audioRef.current;
+                    if (audio) {
+                        const url = matchingMeditation.media_url || '';
+                        const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
+                        audio.src = fullUrl;
+                        audio.volume = 0.5; // Default volume for background music
+                        setVolumeState(0.5);
+                        audio.load();
+
+                        // If we are on home page, try to play
+                        if (window.location.pathname === '/') {
+                            audio.play().catch(() => {
+                                // Autoplay blocked, will play on next interaction
+                                const playOnInteract = () => {
+                                    audio.play().catch(() => { });
+                                    window.removeEventListener('click', playOnInteract);
+                                };
+                                window.addEventListener('click', playOnInteract);
+                            });
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Error initializing background music:", error);
+            }
+        };
+
+        initializeHomeMusic();
+    }, []);
 
     // Keep refs in sync
     useEffect(() => {

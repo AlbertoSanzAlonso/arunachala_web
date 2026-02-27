@@ -1,6 +1,6 @@
 import React, { Fragment, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { XMarkIcon, PlayCircleIcon, PauseCircleIcon, ForwardIcon, BackwardIcon } from '@heroicons/react/24/solid';
+import { XMarkIcon, PlayCircleIcon, PauseCircleIcon, ForwardIcon, BackwardIcon, ShareIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 import { useAudio } from '../context/AudioContext';
 import { API_BASE_URL } from '../config';
@@ -58,6 +58,32 @@ const MeditationPlayerModal: React.FC = () => {
     const stopAudio = (e?: React.MouseEvent) => {
         if (e) e.stopPropagation();
         stop();
+    };
+
+    const handleShare = async () => {
+        if (!playingMeditation) return;
+        const shareUrl = `${window.location.origin}/meditaciones/${playingMeditation.slug || ''}${searchParams.get('play') ? '?play=true' : ''}`;
+        const title = playingMeditation.title;
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: title,
+                    text: t('meditations.share_text', 'Escucha esta meditación en Arunachala Yoga'),
+                    url: shareUrl,
+                });
+            } catch (err) {
+                console.error("Share failed:", err);
+            }
+        } else {
+            // Fallback: Copy to clipboard
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                alert(t('common.copied_to_clipboard', 'Enlace copiado al portapapeles'));
+            } catch (err) {
+                console.error("Copy failed:", err);
+            }
+        }
     };
 
     if (!playingMeditation) return null;
@@ -171,12 +197,23 @@ const MeditationPlayerModal: React.FC = () => {
                                                         onMuteToggle={() => setIsMuted(!isMuted)}
                                                     />
 
-                                                    <button
-                                                        onClick={stopAudio}
-                                                        className="text-red-500/60 hover:text-red-500 transition-colors uppercase text-[10px] font-bold tracking-widest"
-                                                    >
-                                                        {t('meditations.stop')}
-                                                    </button>
+                                                    <div className="flex items-center gap-4">
+                                                        <button
+                                                            onClick={handleShare}
+                                                            className="text-forest hover:text-matcha transition-colors flex items-center gap-2"
+                                                            title={t('common.share', 'Compartir')}
+                                                        >
+                                                            <ShareIcon className="w-5 h-5" />
+                                                            <span className="text-[10px] font-bold uppercase tracking-widest hidden sm:inline">{t('common.share', 'Compartir')}</span>
+                                                        </button>
+
+                                                        <button
+                                                            onClick={stopAudio}
+                                                            className="text-red-500/60 hover:text-red-500 transition-colors uppercase text-[10px] font-bold tracking-widest"
+                                                        >
+                                                            {t('meditations.stop')}
+                                                        </button>
+                                                    </div>
                                                 </div>
 
                                                 <div className="flex items-center justify-center gap-8">

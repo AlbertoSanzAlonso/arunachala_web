@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
-import { CalendarIcon, TagIcon } from '@heroicons/react/24/outline';
+import { CalendarIcon, TagIcon, ShareIcon } from '@heroicons/react/24/outline';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BackButton from '../components/BackButton';
@@ -139,6 +139,31 @@ const BlogDetailPage: React.FC = () => {
     const translatedBody = getTranslated(article, 'body', i18n.language);
     const translatedExcerpt = getTranslated(article, 'excerpt', i18n.language);
 
+    const handleShare = async () => {
+        if (!article) return;
+        const shareUrl = window.location.href;
+        const title = translatedTitle;
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: title,
+                    text: translatedExcerpt || t('blog.share_text', 'Echa un vistazo a este artículo en Arunachala Yoga'),
+                    url: shareUrl,
+                });
+            } catch (err) {
+                console.error("Share failed:", err);
+            }
+        } else {
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                alert(t('common.copied_to_clipboard', 'Enlace copiado al portapapeles'));
+            } catch (err) {
+                console.error("Copy failed:", err);
+            }
+        }
+    };
+
     return (
         <div className="font-body text-bark min-h-screen flex flex-col relative bg-bone">
             <Helmet>
@@ -176,12 +201,20 @@ const BlogDetailPage: React.FC = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="flex items-center gap-4 text-bark/60 mb-8 pb-8 border-b border-bark/10"
+                        className="flex items-center justify-between gap-4 text-bark/60 mb-8 pb-8 border-b border-bark/10"
                     >
                         <div className="flex items-center gap-2">
                             <CalendarIcon className="w-5 h-5" />
                             <span>{formatDate(article.created_at)}</span>
                         </div>
+
+                        <button
+                            onClick={handleShare}
+                            className="flex items-center gap-2 px-4 py-2 rounded-full border border-forest/20 text-forest hover:bg-forest hover:text-white transition-all text-sm font-medium"
+                        >
+                            <ShareIcon className="w-4 h-4" />
+                            {t('common.share', 'Compartir')}
+                        </button>
                     </motion.div>
 
                     {/* Featured Image */}

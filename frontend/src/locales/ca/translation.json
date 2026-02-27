@@ -116,7 +116,8 @@
     "error_search": "No s'han trobat meditacions amb aquest terme de cerca.",
     "prev": "Anterior",
     "next": "Següent",
-    "page": "Pàgina"
+    "page": "Pàgina",
+    "share_text": "Escolta aquesta meditació a Arunachala Yoga"
   },
   "yoga": {
     "title": "IOGA",
@@ -158,6 +159,8 @@
     "loading": "Carregant...",
     "sending": "Enviant...",
     "close": "Tancar",
+    "share": "Compartir",
+    "copied_to_clipboard": "Enllaç copiat al porta-retalls",
     "read_more": "Llegir més",
     "days": {
       "monday": "Dilluns",
@@ -455,6 +458,7 @@
     "no_articles": "No hi ha articles disponibles",
     "back_to_blog": "Tornar al Blog",
     "related_articles": "Articles Relacionats",
+    "share_text": "Dona un cop d'ull a aquest article a Arunachala Yoga",
     "read_more": "Llegir més",
     "view_all": "Veure Tots els Articles",
     "search": {

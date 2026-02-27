@@ -116,7 +116,8 @@
     "error_search": "No meditations found with that search term.",
     "prev": "Previous",
     "next": "Next",
-    "page": "Page"
+    "page": "Page",
+    "share_text": "Listen to this meditation at Arunachala Yoga"
   },
   "yoga": {
     "title": "YOGA",
@@ -158,6 +159,8 @@
     "loading": "Loading...",
     "sending": "Sending...",
     "close": "Close",
+    "share": "Share",
+    "copied_to_clipboard": "Link copied to clipboard",
     "read_more": "Read more",
     "days": {
       "monday": "Monday",
@@ -455,6 +458,7 @@
     "no_articles": "No articles available",
     "back_to_blog": "Back to Blog",
     "related_articles": "Related Articles",
+    "share_text": "Check out this article at Arunachala Yoga",
     "read_more": "Read more",
     "view_all": "View All Articles",
     "search": {

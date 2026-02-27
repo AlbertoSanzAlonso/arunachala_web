@@ -116,7 +116,8 @@
     "error_search": "No se encontraron meditaciones con ese término de búsqueda.",
     "prev": "Anterior",
     "next": "Siguiente",
-    "page": "Página"
+    "page": "Página",
+    "share_text": "Escucha esta meditación en Arunachala Yoga"
   },
   "yoga": {
     "title": "YOGA",
@@ -163,6 +164,8 @@
     "loading": "Cargando...",
     "sending": "Enviando...",
     "close": "Cerrar",
+    "share": "Compartir",
+    "copied_to_clipboard": "Enlace copiado al portapapeles",
     "read_more": "Leer más",
     "days": {
       "monday": "Lunes",
@@ -467,6 +470,7 @@
     "back_to_yoga": "Volver a Yoga",
     "back_to_therapies": "Volver a Terapias",
     "related_articles": "Artículos Relacionados",
+    "share_text": "Echa un vistazo a este artículo en Arunachala Yoga",
     "read_more": "Leer más",
     "view_all": "Ver Todos los Artículos",
     "search": {
