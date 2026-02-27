@@ -161,12 +161,11 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                         audio.volume = 0.5;
                         setVolumeState(0.5);
                         audio.load();
-                        audio.autoplay = true;
                         audio.loop = true;
 
                         // If we are currently on home, try to play
                         // BUT don't play if we're in the dashboard
-                        if ((location.pathname === '/' || location.pathname === '') && !location.pathname.startsWith('/dashboard')) {
+                        if ((location.pathname === '/' || location.pathname === '') && !location.pathname.includes('dashboard')) {
                             attemptPlay();
                         }
                     }
@@ -184,7 +183,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     // Also trigger attemptPlay when location switches to home and it's initialized but paused
     useEffect(() => {
-        if ((location.pathname === '/' || location.pathname === '') && !location.pathname.startsWith('/dashboard') && audioRef.current?.paused && playingMeditation) {
+        if ((location.pathname === '/' || location.pathname === '') && !location.pathname.includes('dashboard') && audioRef.current?.paused && playingMeditation) {
             attemptPlay();
         }
     }, [location.pathname, playingMeditation, attemptPlay]);
