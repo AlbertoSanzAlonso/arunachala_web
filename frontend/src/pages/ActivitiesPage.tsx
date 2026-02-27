@@ -592,7 +592,7 @@ const ActivitiesPage: React.FC = () => {
                 </div>
 
                 {onClick && (
-                    <div className="mt-6 flex items-center gap-1 text-forest text-[10px] font-bold tracking-tight group-hover:gap-2 transition-all duration-300">
+                    <div className="mt-6 flex items-center gap-0.5 text-forest text-[10px] font-bold tracking-tight group-hover:gap-2 transition-all duration-300">
                         {t('common.read_more', 'Leer más')}
                         <span className="text-sm">→</span>
                     </div>

@@ -305,7 +305,7 @@ const AllMassagesPage: React.FC = () => {
                                                     <ShareIcon className="w-5 h-5" />
                                                 </button>
                                             </div>
-                                            <button className="text-forest text-[10px] font-bold group-hover:text-matcha transition-colors flex items-center gap-1">
+                                            <button className="text-forest text-[10px] font-bold group-hover:text-matcha transition-colors flex items-center gap-0.5">
                                                 {t('therapies.common.read_more')}
                                                 <span className="text-sm">→</span>
                                             </button>
