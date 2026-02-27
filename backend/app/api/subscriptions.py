@@ -80,3 +80,16 @@ def unsubscribe(email: str, db: Session = Depends(get_db)):
     db.delete(sub)
     db.commit()
     return {"message": "Successfully unsubscribed and removed from our database"}
+
+@router.get("/test-smtp-config")
+async def test_smtp_config():
+    """Debug endpoint to verify if SMTP vars are loaded in production."""
+    from app.services.email import email_service
+    return {
+        "use_smtp": email_service.use_smtp,
+        "mail_server_set": bool(email_service.mail_server),
+        "mail_server_value": email_service.mail_server,
+        "mail_user_set": bool(email_service.mail_username),
+        "mail_port": email_service.mail_port,
+        "mail_from": email_service.mail_from
+    }
