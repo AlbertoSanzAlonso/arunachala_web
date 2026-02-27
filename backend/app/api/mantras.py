@@ -12,6 +12,23 @@ from app.api.auth import get_current_admin_user
 
 router = APIRouter(tags=["mantras"])
 
+DEFAULT_MANTRAS = [
+    {"text_sanskrit": "Lokah Samastah Sukhino Bhavantu", "translation": "Que todos los seres en todas partes sean felices y libres"},
+    {"text_sanskrit": "Om Namah Shivaya", "translation": "Honro la divinidad que habita en mí"},
+    {"text_sanskrit": "Sat Nam", "translation": "La truth es mi identidad"},
+    {"text_sanskrit": "Om Shanti Shanti Shanti", "translation": "Paz, paz, paz"},
+    {"text_sanskrit": "So Hum", "translation": "Yo soy eso"},
+    {"text_sanskrit": "Om Gam Ganapataye Namaha", "translation": "Saludos al eliminador de obstáculos"},
+    {"text_sanskrit": "Om Mani Padme Hum", "translation": "La joya está en el loto"},
+    {"text_sanskrit": "Tayata Om Bekanze Bekanze", "translation": "Mantra de la medicina para la sanación"}
+]
+
+def _ensure_mantras_exist(db: Session):
+    if db.query(Mantra).count() == 0:
+        for m in DEFAULT_MANTRAS:
+            db.add(Mantra(text_sanskrit=m["text_sanskrit"], translation=m["translation"], is_predefined=True, is_active=True))
+        db.commit()
+
 class MantraSchema(BaseModel):
     id: int
     text_sanskrit: str
@@ -48,17 +65,13 @@ def get_daily_mantra(db: Session = Depends(get_db)):
             return mantra
 
     # Otherwise, pick a random one
+    _ensure_mantras_exist(db)
     mantras = db.query(Mantra).filter(Mantra.is_active == True).all()
-    if not mantras:
-        # Emergency fallback if table is empty (shouldn't happen with seed)
-        return {
-            "id": 0, 
-            "text_sanskrit": "Lokah Samastah Sukhino Bhavantu", 
-            "translation": "Que todos los seres sean felices y libres",
-            "is_predefined": True,
-            "is_active": True
-        }
     
+    # Just in case it's still somehow empty
+    if not mantras:
+        return {"id": 0, "text_sanskrit": "Om Shanti", "translation": "Paz", "is_predefined": True, "is_active": True}
+        
     selected = random.choice(mantras)
     
     # Update config
@@ -93,18 +106,13 @@ def regenerate_daily_mantra(
         
     mantras = query.all()
     if not mantras:
+        _ensure_mantras_exist(db)
         # If only one mantra exists, just return it
         mantras = db.query(Mantra).filter(Mantra.is_active == True).all()
         
     if not mantras:
-        # Emergency fallback if table is empty
-        return {
-            "id": 0, 
-            "text_sanskrit": "Lokah Samastah Sukhino Bhavantu", 
-            "translation": "Que todos los seres sean felices y libres",
-            "is_predefined": True,
-            "is_active": True
-        }
+        # Emergency fallback if table is still empty
+        return {"id": 0, "text_sanskrit": "Om Shanti", "translation": "Paz", "is_predefined": True, "is_active": True}
         
     selected = random.choice(mantras)
     
