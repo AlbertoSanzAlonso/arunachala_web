@@ -71,8 +71,41 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const playMeditationRef = useRef<any>(null);
     const { i18n } = useTranslation();
     const location = useLocation();
-    const isFirstMount = useRef(true);
     const hasInitializedHomeMusic = useRef(false);
+
+    // Handle play attempts and interaction listeners
+    const attemptPlay = useCallback(() => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        const handleActualPlay = () => {
+            audio.play().then(() => {
+                setIsPlaying(true);
+                cleanup();
+            }).catch(() => {
+                // Still blocked, keep listeners
+            });
+        };
+
+        const cleanup = () => {
+            window.removeEventListener('click', handleActualPlay);
+            window.removeEventListener('touchstart', handleActualPlay);
+            window.removeEventListener('scroll', handleActualPlay);
+            window.removeEventListener('mousemove', handleActualPlay);
+        };
+
+        // Try immediate
+        audio.play().then(() => {
+            setIsPlaying(true);
+            cleanup();
+        }).catch(() => {
+            // Autoplay blocked, wait for interaction
+            window.addEventListener('click', handleActualPlay);
+            window.addEventListener('touchstart', handleActualPlay);
+            window.addEventListener('scroll', handleActualPlay, { once: true });
+            window.addEventListener('mousemove', handleActualPlay, { once: true });
+        });
+    }, []);
 
     // Initialize homepage background music
     useEffect(() => {
@@ -128,41 +161,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (!hasInitializedHomeMusic.current) {
             initializeHomeMusic();
         }
-    }, [location.pathname]);
-
-    // Handle play attempts and interaction listeners
-    const attemptPlay = useCallback(() => {
-        const audio = audioRef.current;
-        if (!audio) return;
-
-        const handleActualPlay = () => {
-            audio.play().then(() => {
-                setIsPlaying(true);
-                cleanup();
-            }).catch(() => {
-                // Still blocked, keep listeners
-            });
-        };
-
-        const cleanup = () => {
-            window.removeEventListener('click', handleActualPlay);
-            window.removeEventListener('touchstart', handleActualPlay);
-            window.removeEventListener('scroll', handleActualPlay);
-            window.removeEventListener('mousemove', handleActualPlay);
-        };
-
-        // Try immediate
-        audio.play().then(() => {
-            setIsPlaying(true);
-            cleanup();
-        }).catch(() => {
-            // Autoplay blocked, wait for interaction
-            window.addEventListener('click', handleActualPlay);
-            window.addEventListener('touchstart', handleActualPlay);
-            window.addEventListener('scroll', handleActualPlay, { once: true });
-            window.addEventListener('mousemove', handleActualPlay, { once: true });
-        });
-    }, []);
+    }, [location.pathname, attemptPlay]);
 
     // Also trigger attemptPlay when location switches to home and it's initialized but paused
     useEffect(() => {
