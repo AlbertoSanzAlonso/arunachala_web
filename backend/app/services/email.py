@@ -233,18 +233,17 @@ class EmailService:
         """
         Sends a warm welcome email to new subscribers.
         """
-        # Fetch logo to embed as base64
+        # Fetch logo bytes for CID embedding
         actual_logo_url = f"{self.frontend_url}/logo_transparent.png"
-        logo_base64 = ""
+        logo_data = None
         try:
             async with httpx.AsyncClient() as client:
                 resp = await client.get(actual_logo_url, timeout=5.0)
                 if resp.status_code == 200:
-                    logo_base64 = base64.b64encode(resp.content).decode()
+                    logo_data = resp.content
         except Exception as e:
             print(f"⚠️ Could not fetch logo for embedding: {e}")
 
-        logo_src = f"data:image/png;base64,{logo_base64}" if logo_base64 else actual_logo_url
         name = first_name or ("amig@ de Arunachala" if language != "en" else "friend of Arunachala")
         
         translations = {
@@ -304,8 +303,8 @@ class EmailService:
         <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #eef2e6;">
             <!-- Header with Logo -->
             <div style="background-color: #5c6b3c; padding: 30px 20px; text-align: center;">
-                <div style="display: inline-block; width: 80px; height: 80px; border-radius: 50%; background-color: #F5F5DC; padding: 10px; border: 2px solid #F5F5DC;">
-                    <img src="{logo_src}" alt="Arunachala Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                <div style="display: inline-block; width: 80px; height: 80px; border-radius: 50%; background-color: #ffffff; padding: 10px; border: 2px solid #ffffff; overflow: hidden;">
+                    <img src="cid:logo_cid" alt="Arunachala" style="width: 100%; height: 100%; object-fit: contain; display: block;">
                 </div>
                 <h1 style="color: #F5F5DC; margin: 15px 0 0 0; font-size: 24px; letter-spacing: 2px; font-weight: 300;">ARUNACHALA</h1>
                 <p style="color: #F5F5DC; opacity: 0.8; font-size: 13px; margin: 5px 0 0 0; text-transform: uppercase; letter-spacing: 1px;">Yoga & Terapias</p>
@@ -337,7 +336,15 @@ class EmailService:
         </div>
         """
         message.set_content(f"{t['greeting'].format(name=name)}. {t['intro']} {t['body']}")
+        
+        # Add the HTML alternative
         message.add_alternative(html_content, subtype="html")
+        
+        # Add the related image as CID
+        if logo_data:
+            # When add_alternative is used, the message becomes multipart/alternative
+            # We need to add the image to the HTML part's related payload
+            message.get_payload()[1].add_related(logo_data, 'image', 'png', cid='logo_cid')
 
         try:
             await aiosmtplib.send(
