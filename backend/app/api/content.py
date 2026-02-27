@@ -314,8 +314,7 @@ def get_content_ranking(
     if category:
         query = query.filter(Content.category == category)
         
-    # Sort by created_at as fallback for view_count while DB is updated
-    return query.order_by(Content.created_at.desc()).limit(limit).all()
+    return query.order_by(Content.view_count.desc()).limit(limit).all()
 
 @router.get("/slug/{slug}", response_model=ContentResponse)
 def get_content_by_slug(slug: str, db: Session = Depends(get_db)):
