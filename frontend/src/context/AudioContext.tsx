@@ -72,11 +72,21 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const { i18n } = useTranslation();
     const location = useLocation();
     const hasInitializedHomeMusic = useRef(false);
+    const activePlayListener = useRef<(() => void) | null>(null);
 
     // Handle play attempts and interaction listeners
     const attemptPlay = useCallback(() => {
         const audio = audioRef.current;
         if (!audio) return;
+
+        const cleanup = () => {
+            if (activePlayListener.current) {
+                window.removeEventListener('click', activePlayListener.current);
+                window.removeEventListener('touchstart', activePlayListener.current);
+                window.removeEventListener('keydown', activePlayListener.current);
+                activePlayListener.current = null;
+            }
+        };
 
         const handleActualPlay = () => {
             if (audio.src) {
@@ -84,32 +94,29 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                     setIsPlaying(true);
                     cleanup();
                 }).catch(() => {
-                    // Still blocked or no source, keep listeners
+                    // Still blocked or no source, keep listeners active
                 });
             }
         };
 
-        const cleanup = () => {
-            window.removeEventListener('click', handleActualPlay);
-            window.removeEventListener('touchstart', handleActualPlay);
-            window.removeEventListener('scroll', handleActualPlay);
-            window.removeEventListener('mousemove', handleActualPlay);
-            window.removeEventListener('keydown', handleActualPlay);
-        };
-
         // Try immediate
         if (audio.src) {
-            audio.play().then(() => {
-                setIsPlaying(true);
-                cleanup();
-            }).catch(() => {
-                // Autoplay blocked, wait for interaction
-                window.addEventListener('click', handleActualPlay);
-                window.addEventListener('touchstart', handleActualPlay);
-                window.addEventListener('scroll', handleActualPlay, { once: true });
-                window.addEventListener('mousemove', handleActualPlay, { once: true });
-                window.addEventListener('keydown', handleActualPlay, { once: true });
-            });
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    setIsPlaying(true);
+                    cleanup();
+                }).catch((error) => {
+                    // Autoplay was blocked
+                    if (error.name === 'NotAllowedError') {
+                        cleanup(); // Remove any previous listeners just in case
+                        activePlayListener.current = handleActualPlay;
+                        window.addEventListener('click', handleActualPlay);
+                        window.addEventListener('touchstart', handleActualPlay);
+                        window.addEventListener('keydown', handleActualPlay, { once: true });
+                    }
+                });
+            }
         }
     }, []);
 
