@@ -91,7 +91,15 @@ async def test_email_send_debug(email: str = "albertosanzdev@gmail.com"):
         from app.services.email import email_service
         # We will directly invoke the SMTP send to capture the exception without background tasks
         success = await email_service.send_welcome_email(email, "Test", "es")
-        return {"success": success, "message": "Si returna False revisar logs, o ver si no hay excepcion pero retorna False"}
+        logo_url = f"{email_service.frontend_url}/logo_transparent.png"
+        return {
+            "success": success, 
+            "message": "Check your email",
+            "debug_info": {
+                "frontend_url": email_service.frontend_url,
+                "logo_url": logo_url
+            }
+        }
     except Exception as e:
         import traceback
         return {"success": False, "error": str(e), "traceback": traceback.format_exc()}
