@@ -323,10 +323,10 @@ def get_content_by_slug(slug: str, db: Session = Depends(get_db)):
     if not db_content:
         raise HTTPException(status_code=404, detail="Content not found")
         
-    # Increment view count - Disabled temporarily as missing from DB
-    # db_content.view_count = (db_content.view_count or 0) + 1
-    # db.commit()
-    # db.refresh(db_content)
+    # Increment view count
+    db_content.view_count = (db_content.view_count or 0) + 1
+    db.commit()
+    db.refresh(db_content)
     
     return db_content
 
@@ -343,10 +343,10 @@ def record_playback(
     if not db_content:
         raise HTTPException(status_code=404, detail="Content not found")
         
-    # db_content.play_time_seconds = (db_content.play_time_seconds or 0) + data.seconds
-    # db.commit()
+    db_content.play_time_seconds = (db_content.play_time_seconds or 0) + data.seconds
+    db.commit()
     
-    return {"success": True, "total_seconds": 0}
+    return {"success": True, "total_seconds": db_content.play_time_seconds}
 
 @router.get("/{content_id}", response_model=ContentResponse)
 def get_content(content_id: int, db: Session = Depends(get_db)):
@@ -354,10 +354,10 @@ def get_content(content_id: int, db: Session = Depends(get_db)):
     if not db_content:
         raise HTTPException(status_code=404, detail="Content not found")
         
-    # Increment view count - Disabled temporarily as missing from DB
-    # db_content.view_count = (db_content.view_count or 0) + 1
-    # db.commit()
-    # db.refresh(db_content)
+    # Increment view count
+    db_content.view_count = (db_content.view_count or 0) + 1
+    db.commit()
+    db.refresh(db_content)
     
     return db_content
 

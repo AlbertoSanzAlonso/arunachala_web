@@ -68,9 +68,9 @@ class Content(Base):
     seo_description = Column(String, nullable=True)
     tags = Column(JSON, nullable=True)  # Array of tags
     translations = Column(JSON, nullable=True)
-    # Content stats - Temporally commented out as missing from DB
-    # view_count = Column(Integer, default=0)
-    # play_time_seconds = Column(Integer, default=0)
+    # Content stats
+    view_count = Column(Integer, default=0)
+    play_time_seconds = Column(Integer, default=0)
     
     # RAG sync fields
     vector_id = Column(String, nullable=True)

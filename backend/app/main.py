@@ -77,6 +77,26 @@ scheduler = AsyncIOScheduler()
 
 @app.on_event("startup")
 async def startup_event():
+    # --- DB Migration for View Tracking ---
+    try:
+        from sqlalchemy import text
+        from app.core.database import engine
+        with engine.connect() as conn:
+            try:
+                conn.execute(text("ALTER TABLE contents ADD COLUMN view_count INTEGER DEFAULT 0;"))
+                conn.commit()
+                print("✅ view_count column added")
+            except Exception:
+                pass
+            try:
+                conn.execute(text("ALTER TABLE contents ADD COLUMN play_time_seconds INTEGER DEFAULT 0;"))
+                conn.commit()
+                print("✅ play_time_seconds column added")
+            except Exception:
+                pass
+    except Exception as e:
+        print(f"⚠️ Startup Migration Error: {e}")
+
     # --- Redis Cache ---
     from app.core.redis_cache import cache
     await cache.connect()
