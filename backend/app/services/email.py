@@ -100,7 +100,7 @@ class EmailService:
                 "button_update": "Ver Cambios",
                 "whatsapp_note": "Si tienes cualquier duda, recuerda que puedes escribirnos respondiendo a este correo o por WhatsApp.",
                 "sign_off": "Con cariño,<br>El equipo de Arunachala",
-                "address": "📍 Cornellà de Llobregat, Barcelona",
+                "address": "📍 Pasaje de Mateo Oliva, 3 - Cornellà de Llobregat",
                 "footer_info": "Has recibido este correo porque estás suscrito a nuestras novedades.",
                 "unsubscribe": "Darme de baja"
             },
@@ -118,7 +118,7 @@ class EmailService:
                 "button_update": "Veure Canvis",
                 "whatsapp_note": "Si tens qualsevol dubte, recorda que pots escriure'ns responent a aquest correu o per WhatsApp.",
                 "sign_off": "Amb carinyo,<br>L'equip d'Arunachala",
-                "address": "📍 Cornellà de Llobregat, Barcelona",
+                "address": "📍 Passatge de Mateu Oliva, 3 - Cornellà de Llobregat",
                 "footer_info": "Has rebut aquest correu perquè estàs subscrit a les nostres novetats.",
                 "unsubscribe": "Donar-me de baixa"
             },
@@ -136,7 +136,7 @@ class EmailService:
                 "button_update": "View Updates",
                 "whatsapp_note": "If you have any questions, remember you can write to us by replying to this email or via WhatsApp.",
                 "sign_off": "With love,<br>The Arunachala Team",
-                "address": "📍 Cornellà de Llobregat, Barcelona",
+                "address": "📍 Mateo Oliva's Passage, 3 - Cornellà de Llobregat",
                 "footer_info": "You received this email because you are subscribed to our news.",
                 "unsubscribe": "Unsubscribe"
             }
@@ -255,7 +255,7 @@ class EmailService:
                 "button": "Explorar Actividades",
                 "whatsapp_note": "Si alguna vez tienes una duda o simplemente quieres saludarnos, puedes responder a este correo o escribirnos por WhatsApp.",
                 "sign_off": "Con gratitud,<br>El equipo de Arunachala",
-                "address": "📍 Cornellà de Llobregat, Barcelona",
+                "address": "📍 Pasaje de Mateo Oliva, 3 - Cornellà de Llobregat",
                 "footer_info": "Este es un correo de bienvenida. Para no recibir más correos, puedes darte de baja en cualquier momento.",
                 "unsubscribe": "Darme de baja"
             },
@@ -267,7 +267,7 @@ class EmailService:
                 "button": "Explorar Activitats",
                 "whatsapp_note": "Si algun cop tens un dubte o simplement vols saludar-nos, pots respondre a aquest correu o escriure'ns per WhatsApp.",
                 "sign_off": "Amb gratitud,<br>L'equip d'Arunachala",
-                "address": "📍 Cornellà de Llobregat, Barcelona",
+                "address": "📍 Passatge de Mateu Oliva, 3 - Cornellà de Llobregat",
                 "footer_info": "Aquest és un correu de benvinguda. Per no rebre més correos, pots donar-te de baixa en qualsevol moment.",
                 "unsubscribe": "Donar-me de baixa"
             },
@@ -279,7 +279,7 @@ class EmailService:
                 "button": "Explore Activities",
                 "whatsapp_note": "If you ever have a question or just want to say hi, you can reply to this email or reach us via WhatsApp.",
                 "sign_off": "With gratitude,<br>The Arunachala Team",
-                "address": "📍 Cornellà de Llobregat, Barcelona",
+                "address": "📍 Mateo Oliva's Passage, 3 - Cornellà de Llobregat",
                 "footer_info": "This is a welcome email. To stop receiving emails, you can unsubscribe at any time.",
                 "unsubscribe": "Unsubscribe"
             }

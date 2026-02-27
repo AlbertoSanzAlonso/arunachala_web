@@ -108,7 +108,7 @@ const BlogCategoryPage: React.FC = () => {
                             animate={{ opacity: 1, y: 0 }}
                             className="inline-block mb-4"
                         >
-                            <span className="bg-forest text-white px-6 py-2 rounded-full text-sm font-headers uppercase tracking-wider">
+                            <span className="bg-forest text-white px-6 py-2 rounded-full text-sm font-headers tracking-wider">
                                 {getCategoryLabel(category || '')}
                             </span>
                         </motion.div>

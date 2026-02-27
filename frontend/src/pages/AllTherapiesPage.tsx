@@ -188,7 +188,7 @@ const AllTherapiesPage: React.FC = () => {
                             <div className="p-8 md:p-10 flex-1">
                                 {selectedTreatment.duration_min && selectedTreatment.duration_min > 0 && (
                                     <span className="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-widest text-white bg-matcha rounded-full">
-                                        {selectedTreatment.duration_min} MIN
+                                        {selectedTreatment.duration_min} min
                                     </span>
                                 )}
                                 <h3 className="text-3xl md:text-4xl font-headers text-forest mb-6">

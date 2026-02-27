@@ -206,8 +206,8 @@ const TherapiesPage: React.FC = () => {
 
                             <div className="p-8 md:p-10 flex-1">
                                 {selectedTreatment.duration_min && selectedTreatment.duration_min > 0 && (
-                                    <span className="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-widest text-white uppercase bg-matcha rounded-full">
-                                        {selectedTreatment.duration_min} MIN
+                                    <span className="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-widest text-white bg-matcha rounded-full">
+                                        {selectedTreatment.duration_min} min
                                     </span>
                                 )}
                                 <h3 className="text-3xl md:text-4xl font-headers text-forest mb-2 uppercase">
@@ -331,7 +331,7 @@ const TherapiesPage: React.FC = () => {
                                             onClick={() => scrollTo(item.ref)}
                                             className={`group relative ${isOdd ? 'h-24' : 'h-32'} md:h-48 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-md border border-white/20 shadow-xl flex flex-col items-center justify-center hover:bg-white/20 transition-all duration-300 w-full md:w-64`}
                                         >
-                                            <span className="text-xl md:text-3xl font-headers text-white group-hover:text-matcha transition-colors uppercase">{item.name}</span>
+                                            <span className="text-xl md:text-3xl font-headers text-white group-hover:text-matcha transition-colors">{item.name}</span>
                                         </motion.button>
                                     ))}
                                 </nav>

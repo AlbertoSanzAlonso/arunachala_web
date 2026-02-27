@@ -304,7 +304,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                                         {safeTags.slice(0, 2).map((tag: string, idx: number) => (
                                                             <span
                                                                 key={idx}
-                                                                className="px-3 py-1 bg-bone text-bark/60 rounded-full text-[10px] font-bold uppercase tracking-tighter"
+                                                                className="px-3 py-1 bg-bone text-bark/60 rounded-full text-[10px] font-bold tracking-tighter"
                                                             >
                                                                 #{tag}
                                                             </span>

@@ -94,8 +94,8 @@ const FeaturedActivities: React.FC = () => {
                                     {/* Left: Content */}
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-2">
-                                            <span className="px-2 py-0.5 bg-matcha/10 text-matcha text-[9px] font-bold uppercase tracking-wider rounded-full">
-                                                {t(`activities.types.${activity.type}`, activity.type)}
+                                            <span className="px-3 py-1 bg-matcha/10 text-matcha text-[10px] font-bold tracking-widest rounded-full border border-matcha/20">
+                                                {t(`activities.types.${activity.type}`)}
                                             </span>
                                             <span className="text-amber-500 text-sm">✨</span>
                                         </div>

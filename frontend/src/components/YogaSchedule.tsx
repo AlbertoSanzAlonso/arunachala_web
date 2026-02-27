@@ -177,7 +177,7 @@ const YogaSchedule: React.FC<YogaScheduleProps> = ({ onlyWeekly, onlyWeekend, hi
                                                 <div className="flex justify-between items-center mb-0.5">
                                                     <span className="font-bold text-[10px] md:text-xs leading-none opacity-80">{item.start_time}</span>
                                                     {yc.age_range && (
-                                                        <span className="text-[8px] md:text-[9px] uppercase font-bold tracking-tight bg-white/30 text-current px-1.5 py-0.5 rounded border border-current/10 flex-none ml-1">
+                                                        <span className="text-[8px] md:text-[9px] font-bold tracking-tight bg-white/30 text-current px-1.5 py-0.5 rounded border border-current/10 flex-none ml-1">
                                                             {yc.age_range}
                                                         </span>
                                                     )}
@@ -251,12 +251,12 @@ const YogaSchedule: React.FC<YogaScheduleProps> = ({ onlyWeekly, onlyWeekend, hi
                     </div>
 
                     <div className="lg:hidden">
-                        <div className="flex overflow-x-auto gap-2 mb-6 pb-2 scrollbar-hide">
+                        <div className="flex flex-wrap justify-center gap-2 mb-6">
                             {DAYS.map(day => (
                                 <button
                                     key={day}
                                     onClick={() => setActiveDay(day)}
-                                    className={`px-6 py-2 rounded-full whitespace-nowrap transition-colors uppercase text-sm tracking-wider ${activeDay === day
+                                    className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors text-sm tracking-wide ${activeDay === day
                                         ? 'bg-forest text-bone font-bold shadow-lg'
                                         : 'bg-bone text-bark border border-bark/10 hover:bg-forest/10'
                                         }`}
@@ -278,7 +278,7 @@ const YogaSchedule: React.FC<YogaScheduleProps> = ({ onlyWeekly, onlyWeekend, hi
                                             <span className="font-bold text-2xl">{item.start_time}</span>
                                             <div className="flex flex-col items-end gap-1">
                                                 <span className="text-xs font-mono opacity-70 border border-current px-2 py-1 rounded-full">{durationMin} min</span>
-                                                {yc.age_range && <span className="text-[10px] uppercase font-black tracking-widest bg-black/10 px-2 py-0.5 rounded">{yc.age_range}</span>}
+                                                {yc.age_range && <span className="text-[10px] font-black tracking-widest bg-black/10 px-2 py-0.5 rounded">{yc.age_range}</span>}
                                             </div>
                                         </div>
                                         <h4 className="text-xl font-headers font-bold uppercase">{getTranslated(yc, 'name', i18n.language)}</h4>
@@ -310,7 +310,7 @@ const YogaSchedule: React.FC<YogaScheduleProps> = ({ onlyWeekly, onlyWeekend, hi
                             >
                                 <div className="p-6 md:p-8 flex flex-col h-full">
                                     <div className="flex justify-between items-start mb-6">
-                                        <span className="px-3 py-1 bg-matcha/10 text-matcha text-[10px] font-bold uppercase tracking-widest rounded-full border border-matcha/20">
+                                        <span className="px-3 py-1 bg-matcha/10 text-matcha text-[10px] font-bold tracking-widest rounded-full border border-matcha/20">
                                             {t(`activities.types.${activity.type}`)}
                                         </span>
                                         <div className="flex items-center gap-2 text-forest font-bold text-sm bg-forest/5 px-3 py-1 rounded-lg">

@@ -157,7 +157,7 @@ const AboutPage: React.FC = () => {
                     </div>
 
                     {/* Arunachala Origin */}
-                    <section className="mb-24 relative overflow-hidden rounded-[3rem] bg-forest text-white p-12 md:p-24 shadow-2xl">
+                    <section className="mt-24 mb-24 relative overflow-hidden rounded-[3rem] bg-forest text-white p-12 md:p-24 shadow-2xl">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-matcha/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl" />
 

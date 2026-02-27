@@ -185,7 +185,7 @@ const BlogDetailPage: React.FC = () => {
 
                     {/* Category Badge */}
                     <div className="mb-6">
-                        <span className="inline-block bg-forest text-white px-4 py-2 rounded-full text-sm font-headers uppercase tracking-wider">
+                        <span className="inline-block bg-forest text-white px-4 py-2 rounded-full text-sm font-headers tracking-wider">
                             {getCategoryLabel(article.category)}
                         </span>
                     </div>
