@@ -1,4 +1,4 @@
-import api from './api';
+import { API_BASE_URL } from '../config';
 
 export interface GalleryImage {
     id: number;
@@ -12,39 +12,70 @@ export type GalleryCategory = 'home' | 'yoga' | 'therapies' | 'center';
 
 export const galleryService = {
     getAll: async (category?: string) => {
-        const response = await api.get<GalleryImage[]>(`/gallery/${category ? `?category=${category}` : ''}`);
-        return response.data;
+        const response = await fetch(`${API_BASE_URL}/api/gallery/${category ? `?category=${category}` : ''}`);
+        if (!response.ok) throw new Error('Failed to fetch gallery');
+        return response.json();
     },
 
     upload: async (formData: FormData) => {
-        const response = await api.post<GalleryImage>('/gallery/upload', formData);
-        return response.data;
+        const response = await fetch(`${API_BASE_URL}/api/gallery/upload`, {
+            method: 'POST',
+            body: formData
+        });
+        if (!response.ok) throw new Error('Failed to upload image');
+        return response.json();
     },
 
     uploadBulk: async (formData: FormData) => {
-        const response = await api.post<GalleryImage[]>('/gallery/bulk-upload/', formData);
-        return response.data;
+        const response = await fetch(`${API_BASE_URL}/api/gallery/bulk-upload/`, {
+            method: 'POST',
+            body: formData
+        });
+        if (!response.ok) throw new Error('Failed to upload bulk');
+        return response.json();
     },
 
     delete: async (id: number) => {
-        await api.delete(`/gallery/${id}`);
+        const response = await fetch(`${API_BASE_URL}/api/gallery/${id}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) throw new Error('Failed to delete image');
     },
 
     deleteMultiple: async (ids: number[]) => {
-        await api.post('/gallery/delete-multiple', { ids });
+        const response = await fetch(`${API_BASE_URL}/api/gallery/delete-multiple`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids })
+        });
+        if (!response.ok) throw new Error('Failed to delete multiple');
     },
 
     reorder: async (items: { id: number, position: number }[]) => {
-        await api.post('/gallery/reorder', items);
+        const response = await fetch(`${API_BASE_URL}/api/gallery/reorder`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(items)
+        });
+        if (!response.ok) throw new Error('Failed to reorder');
     },
 
     crop: async (id: number, formData: FormData) => {
-        const response = await api.put<GalleryImage>(`/gallery/${id}/crop`, formData);
-        return response.data;
+        const response = await fetch(`${API_BASE_URL}/api/gallery/${id}/crop`, {
+            method: 'PUT',
+            body: formData
+        });
+        if (!response.ok) throw new Error('Failed to crop image');
+        return response.json();
     },
 
     update: async (id: number, data: Partial<GalleryImage>) => {
-        const response = await api.put<GalleryImage>(`/gallery/${id}`, data);
-        return response.data;
+        const response = await fetch(`${API_BASE_URL}/api/gallery/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!response.ok) throw new Error('Failed to update image');
+        return response.json();
     }
 };
