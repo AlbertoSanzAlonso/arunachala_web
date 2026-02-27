@@ -109,15 +109,21 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
                         // If we are on home page, try to play
                         if (window.location.pathname === '/') {
+                            // Set state to true immediately to reflect "active/playing" in UI
+                            setIsPlaying(true);
+
                             audio.play().then(() => {
                                 setIsPlaying(true);
                             }).catch(() => {
                                 // Autoplay blocked, will play on next interaction
                                 const playOnInteract = () => {
-                                    audio.play().catch(() => { });
+                                    audio.play().then(() => {
+                                        setIsPlaying(true);
+                                    }).catch(() => { });
                                     window.removeEventListener('click', playOnInteract);
                                 };
                                 window.addEventListener('click', playOnInteract);
+                                window.addEventListener('scroll', playOnInteract, { once: true });
                             });
                         }
                     }
