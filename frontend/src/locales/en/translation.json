@@ -89,7 +89,7 @@
     "yoga": "Yoga Classes",
     "therapies": "Therapies & Massages",
     "space": "Our Space",
-    "about": "About Us",
+    "about": "About me",
     "contact": "Contact",
     "activities": "Activities",
     "meditations": "Meditations",
@@ -419,12 +419,17 @@
     "cta_p1": "At Aruṇāchala Yoga and Therapies, I offer you a space of care and presence where you can rediscover yourself. This is your place.",
     "mantra": "Om Namaḥ Śivaya",
     "seo": {
-      "title": "Susana Pérez Gil | Who Am I | Arunachala Yoga",
+      "title": "About me | Susana Pérez Gil & Arunachala Yoga",
       "description": "Meet Susana Pérez Gil, founder of Arunachala. Over 25 years of experience in Yoga, massage, and holistic therapies in Cornellà."
     },
     "news": {
       "title": "News",
       "subtitle": "Follow our path closely"
+    },
+    "instagram": {
+      "title": "Connect with me",
+      "subtitle": "Follow me on Instagram to see my daily life",
+      "follow": "Follow @yogayterapiasarunachala"
     }
   },
   "contact_page": {
@@ -448,7 +453,7 @@
     },
     "seo": {
       "title": "Contact | Arunachala Yoga & Therapies Cornellà",
-      "description": "Contact Arunachala Yoga in Cornellà. Book your yoga class or therapy session. We are at Passatge de Mateo Oliva, 3."
+      "description": "Contact Arunachala Yoga in Cornellà. Book your yoga class or therapy session. We are at Pasaje de Mateo Oliva, 3."
     }
   },
   "blog": {
@@ -505,7 +510,7 @@
         "cif": "Tax ID",
         "cif_value": "[Tax identification number]",
         "address": "Address",
-        "address_value": "Passatge de Mateo Oliva 3, ground floor, 08940 Cornellà de Llobregat, Barcelona",
+        "address_value": "Pasaje de Mateo Oliva 3, ground floor, 08940 Cornellà de Llobregat, Barcelona",
         "email": "Email",
         "phone": "Phone"
       },

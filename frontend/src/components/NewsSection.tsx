@@ -95,6 +95,7 @@ const NewsSection: React.FC = () => {
     };
 
     if (isLoading) return null;
+    if (news.length === 0) return null;
 
     return (
         <section className="mb-24 overflow-hidden">
@@ -196,7 +197,7 @@ const NewsSection: React.FC = () => {
                                         </div>
 
                                         <div className="p-8 flex flex-col flex-grow">
-                                            <div className="flex items-center gap-2 text-matcha font-headers text-[10px] tracking-widest uppercase mb-4">
+                                            <div className="flex items-center gap-2 text-matcha font-headers text-[10px] tracking-widest mb-4">
                                                 <CalendarIcon className="w-4 h-4" />
                                                 {formatDate(item.created_at)}
                                             </div>
@@ -210,7 +211,7 @@ const NewsSection: React.FC = () => {
                                             </p>
 
                                             <div className="mt-auto flex items-center gap-2 text-forest group-hover:text-matcha transition-colors">
-                                                <span className="text-[10px] font-bold uppercase tracking-widest">Leer más</span>
+                                                <span className="text-[10px] font-bold uppercase tracking-widest">{t('common.read_more', 'Leer más')}</span>
                                                 <ArrowRightIcon className="w-4 h-4" />
                                             </div>
                                         </div>

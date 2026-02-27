@@ -299,7 +299,7 @@ const BlogPage: React.FC = () => {
                                                 </div>
                                             )}
                                             {/* Category Badge */}
-                                            <div className="absolute top-4 right-4 bg-forest/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-headers uppercase tracking-wider">
+                                            <div className="absolute top-4 right-4 bg-forest/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-headers tracking-wider">
                                                 {getCategoryLabel(article.category)}
                                             </div>
                                         </div>

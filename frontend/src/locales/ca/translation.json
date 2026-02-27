@@ -89,7 +89,7 @@
     "yoga": "Classes de Ioga",
     "therapies": "Teràpies i Massatges",
     "space": "El Nostre Espai",
-    "about": "Sobre Nosaltres",
+    "about": "Sobre mi",
     "contact": "Contacte",
     "activities": "Activitats",
     "meditations": "Meditacions",
@@ -419,12 +419,17 @@
     "cta_p1": "A Ioga i Teràpies Aruṇāchala, t'ofereixo un espai de cura i presència on retrobar-te. Aquest és el teu lloc.",
     "mantra": "Om Namaḥ Śivaya",
     "seo": {
-      "title": "Susana Pérez Gil | Qui Soc | Ioga Arunachala",
+      "title": "Sobre mi | Susana Pérez Gil i Arunachala Ioga",
       "description": "Coneix la Susana Pérez Gil, fundadora d'Arunachala. Més de 25 anys d'experiència en Ioga, massatges i teràpies holístiques a Cornellà."
     },
     "news": {
       "title": "Notícies",
       "subtitle": "Segueix de prop el nostre camí"
+    },
+    "instagram": {
+      "title": "Connecta amb mi",
+      "subtitle": "Segueix-me a Instagram per veure el meu dia a dia",
+      "follow": "Seguir a @yogayterapiasarunachala"
     }
   },
   "contact_page": {

@@ -268,7 +268,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                                     )}
                                                 </div>
                                             )}
-                                            <div className="absolute top-4 right-4 bg-forest/90 backdrop-blur-sm text-white px-4 py-1.5 rounded-full text-[10px] font-headers uppercase tracking-widest shadow-lg">
+                                            <div className="absolute top-4 right-4 bg-forest/90 backdrop-blur-sm text-white px-4 py-1.5 rounded-full text-[10px] font-headers tracking-widest shadow-lg">
                                                 {getCategoryLabel(article.category)}
                                             </div>
                                         </div>
