@@ -169,7 +169,7 @@ const NewsSection: React.FC = () => {
                                         viewport={{ once: true }}
                                         transition={{ delay: idx * 0.1 }}
                                         onClick={() => handleNewsClick(item)}
-                                        className="flex-none w-[80vw] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer group flex flex-col h-full border border-white snap-center"
+                                        className="flex-none w-[80vw] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer group flex flex-col h-full border border-white snap-center snap-always"
                                     >
                                         <div className="h-48 bg-forest/5 overflow-hidden relative">
                                             {item.thumbnail_url ? (

@@ -232,7 +232,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                         viewport={{ once: true }}
                                         transition={{ delay: index * 0.1 }}
                                         onClick={() => handleArticleClick(article)}
-                                        className={`flex-none w-[80vw] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] bg-white rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 cursor-pointer group snap-center`}
+                                        className={`flex-none w-[80vw] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] bg-white rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 cursor-pointer group snap-center snap-always`}
                                     >
                                         <div className="h-56 bg-forest/10 overflow-hidden relative">
                                             {article.thumbnail_url && !article.thumbnail_url.includes('om_symbol.webp') && !article.thumbnail_url.includes('lotus_flower.webp') ? (
