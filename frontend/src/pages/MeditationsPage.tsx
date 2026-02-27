@@ -12,6 +12,8 @@ import MeditationSearch, { FilterState } from '../components/MeditationSearch';
 import { getTranslated } from '../utils/translate';
 import { useAudio } from '../context/AudioContext';
 import { PlayIcon, PauseIcon, StopIcon } from '@heroicons/react/24/solid';
+import { ShareIcon } from '@heroicons/react/24/outline';
+import { useUIStore } from '../store/uiStore';
 import VolumeControl from '../components/VolumeControl';
 import { getImageUrl } from '../utils/imageUtils';
 
@@ -53,6 +55,7 @@ const MeditationsPage: React.FC = () => {
     } = useAudio();
 
     const [meditations, setMeditations] = useState<Meditation[]>([]);
+    const { addToast } = useUIStore();
 
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
@@ -150,6 +153,32 @@ const MeditationsPage: React.FC = () => {
 
         play(meditation, shouldOpenModal, filteredMeditations);
     }, [routeSlug, searchParams, navigate, play, filteredMeditations]);
+
+    const handleShare = useCallback(async (e: React.MouseEvent, meditation: Meditation) => {
+        e.stopPropagation();
+        const shareUrl = `${window.location.origin}/meditaciones/${meditation.slug || ''}?play=true`;
+        const title = getTranslated(meditation, 'title', i18n.language);
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: title,
+                    text: t('meditations.share_text', 'Escucha esta meditación en Arunachala Yoga'),
+                    url: shareUrl,
+                });
+            } catch (err) {
+                console.error("Share failed:", err);
+            }
+        } else {
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                addToast('success', t('common.copied_to_clipboard', 'Enlace copiado al portapapeles'));
+            } catch (err) {
+                console.error("Copy failed:", err);
+                addToast('error', t('common.copy_failed', 'Error al copiar el enlace'));
+            }
+        }
+    }, [i18n.language, t, addToast]);
 
     useEffect(() => {
         const fetchMeditations = async () => {
@@ -315,7 +344,7 @@ const MeditationsPage: React.FC = () => {
                                                         />
                                                     )}
 
-                                                    <div className="absolute flex gap-4 z-10">
+                                                    <div className="absolute flex gap-3 z-10">
                                                         {playingMeditation?.id === meditation.id ? (
                                                             <>
                                                                 <button
@@ -324,9 +353,9 @@ const MeditationsPage: React.FC = () => {
                                                                     title={isPlaying ? "Pausar" : "Reanudar"}
                                                                 >
                                                                     {isPlaying ? (
-                                                                        <PauseIcon className="w-12 h-12 text-forest" />
+                                                                        <PauseIcon className="w-10 h-10 text-forest" />
                                                                     ) : (
-                                                                        <PlayIcon className="w-12 h-12 text-forest pl-1" />
+                                                                        <PlayIcon className="w-10 h-10 text-forest pl-1" />
                                                                     )}
                                                                 </button>
                                                                 <button
@@ -334,7 +363,7 @@ const MeditationsPage: React.FC = () => {
                                                                     className="bg-white/90 rounded-full p-3 shadow-lg hover:scale-110 transition-transform duration-200"
                                                                     title="Detener y Reiniciar"
                                                                 >
-                                                                    <StopIcon className="w-12 h-12 text-red-500" />
+                                                                    <StopIcon className="w-10 h-10 text-red-500" />
                                                                 </button>
                                                             </>
                                                         ) : (
@@ -342,9 +371,16 @@ const MeditationsPage: React.FC = () => {
                                                                 onClick={(e) => { e.stopPropagation(); if (meditation.media_url) handlePlay(meditation); }}
                                                                 className="bg-white/90 rounded-full p-3 shadow-lg hover:scale-110 transition-transform duration-200"
                                                             >
-                                                                <PlayIcon className="w-12 h-12 text-forest pl-1" />
+                                                                <PlayIcon className="w-10 h-10 text-forest pl-1" />
                                                             </button>
                                                         )}
+                                                        <button
+                                                            onClick={(e) => handleShare(e, meditation)}
+                                                            className="bg-white/90 rounded-full p-3 shadow-lg hover:scale-110 transition-transform duration-200"
+                                                            title={t('common.share', 'Compartir')}
+                                                        >
+                                                            <ShareIcon className="w-10 h-10 text-forest" />
+                                                        </button>
                                                     </div>
 
                                                     {/* Sound Wave Animation & Volume Control */}

@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, ShareIcon } from '@heroicons/react/24/outline';
+import { useUIStore } from '../store/uiStore';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import FadeInSection from '../components/FadeInSection';
@@ -82,6 +83,39 @@ const AllMassagesPage: React.FC = () => {
         }
     };
 
+    const { addToast } = useUIStore();
+
+    const handleShare = async (e: React.MouseEvent, treatment: Treatment) => {
+        e.stopPropagation();
+        const normalize = (str: string) =>
+            str.toLowerCase().trim()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                .replace(/\s+/g, '-');
+
+        const shareUrl = `${window.location.origin}/terapias/masajes?item=${normalize(treatment.name)}`;
+        const title = getTranslated(treatment, 'name', i18n.language);
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: title,
+                    text: t('therapies.share_text', 'Mira este masaje en Arunachala Yoga'),
+                    url: shareUrl,
+                });
+            } catch (err) {
+                console.error("Share failed:", err);
+            }
+        } else {
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                addToast('success', t('common.copied_to_clipboard', 'Enlace copiado al portapapeles'));
+            } catch (err) {
+                console.error("Copy failed:", err);
+                addToast('error', t('common.copy_failed', 'Error al copiar el enlace'));
+            }
+        }
+    };
+
     return (
         <div className="font-body text-bark min-h-screen flex flex-col bg-bone">
             <Helmet>
@@ -108,12 +142,21 @@ const AllMassagesPage: React.FC = () => {
                             onClick={(e) => e.stopPropagation()}
                             className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col md:flex-row relative"
                         >
-                            <button
-                                onClick={handleCloseModal}
-                                className="absolute top-4 right-4 p-2 bg-white/80 rounded-full hover:bg-forest hover:text-white transition-colors z-10"
-                            >
-                                <XMarkIcon className="w-6 h-6" />
-                            </button>
+                            <div className="absolute top-4 right-4 flex gap-2 z-10">
+                                <button
+                                    onClick={(e) => handleShare(e, selectedTreatment)}
+                                    className="p-2 bg-white/80 rounded-full hover:bg-forest hover:text-white transition-colors"
+                                    title={t('common.share', 'Compartir')}
+                                >
+                                    <ShareIcon className="w-6 h-6" />
+                                </button>
+                                <button
+                                    onClick={handleCloseModal}
+                                    className="p-2 bg-white/80 rounded-full hover:bg-forest hover:text-white transition-colors"
+                                >
+                                    <XMarkIcon className="w-6 h-6" />
+                                </button>
+                            </div>
 
                             <div className="w-full md:w-2/5 h-64 md:h-auto bg-gray-100 flex-shrink-0">
                                 {selectedTreatment.image_url ? (
@@ -250,9 +293,18 @@ const AllMassagesPage: React.FC = () => {
                                             <p className="text-sm italic text-matcha font-bold mb-4 line-clamp-2 relative z-10">{getTranslated(massage, 'benefits', i18n.language)}</p>
                                         )}
                                         <div className="flex justify-between items-center mt-6 border-t border-forest/5 pt-4 relative z-10">
-                                            <span className="text-forest/60 text-sm font-bold">
-                                                {massage.duration_min && massage.duration_min > 0 ? `${massage.duration_min} min` : ''}
-                                            </span>
+                                            <div className="flex items-center gap-4">
+                                                <span className="text-forest/60 text-sm font-bold">
+                                                    {massage.duration_min && massage.duration_min > 0 ? `${massage.duration_min} min` : ''}
+                                                </span>
+                                                <button
+                                                    onClick={(e) => handleShare(e, massage)}
+                                                    className="text-forest/40 hover:text-forest transition-colors"
+                                                    title={t('common.share', 'Compartir')}
+                                                >
+                                                    <ShareIcon className="w-5 h-5" />
+                                                </button>
+                                            </div>
                                             <button className="text-forest font-bold group-hover:text-matcha transition-colors uppercase">{t('therapies.common.read_more')} →</button>
                                         </div>
                                     </motion.div>

@@ -1,7 +1,8 @@
 import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Dialog, Transition } from '@headlessui/react';
-import { XMarkIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, CalendarIcon, ShareIcon } from '@heroicons/react/24/outline';
+import { useUIStore } from '../store/uiStore';
 import { useTranslation } from 'react-i18next';
 import { getTranslated } from '../utils/translate';
 import { getImageUrl } from '../utils/imageUtils';
@@ -35,6 +36,33 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
     const { t, i18n } = useTranslation();
     const contentRef = React.useRef<HTMLDivElement>(null);
     const closeButtonRef = React.useRef<HTMLButtonElement>(null);
+    const { addToast } = useUIStore();
+
+    const handleShare = async () => {
+        if (!article) return;
+        const shareUrl = `${window.location.origin}/blog/${article.category}/${article.slug}`;
+        const title = translatedTitle;
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: title,
+                    text: t('blog.share_text', 'Mira este artículo en Arunachala Yoga'),
+                    url: shareUrl,
+                });
+            } catch (err) {
+                console.error("Share failed:", err);
+            }
+        } else {
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                addToast('success', t('common.copied_to_clipboard', 'Enlace copiado al portapapeles'));
+            } catch (err) {
+                console.error("Copy failed:", err);
+                addToast('error', t('common.copy_failed', 'Error al copiar el enlace'));
+            }
+        }
+    };
 
     React.useEffect(() => {
         if (isOpen && contentRef.current) {
@@ -137,14 +165,23 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
                         >
                             <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-[2rem] bg-white text-left align-middle shadow-2xl transition-all relative">
 
-                                {/* Close Button */}
-                                <button
-                                    ref={closeButtonRef}
-                                    onClick={onClose}
-                                    className="absolute top-4 right-4 z-10 p-2 bg-white/80 backdrop-blur-md rounded-full text-gray-500 hover:text-gray-800 hover:bg-white shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-forest/20"
-                                >
-                                    <XMarkIcon className="w-6 h-6" />
-                                </button>
+                                {/* Action Buttons */}
+                                <div className="absolute top-4 right-4 z-10 flex gap-2">
+                                    <button
+                                        onClick={handleShare}
+                                        className="p-2 bg-white/80 backdrop-blur-md rounded-full text-gray-500 hover:text-forest hover:bg-white shadow-sm transition-all focus:outline-none"
+                                        title={t('common.share', 'Compartir')}
+                                    >
+                                        <ShareIcon className="w-6 h-6" />
+                                    </button>
+                                    <button
+                                        ref={closeButtonRef}
+                                        onClick={onClose}
+                                        className="p-2 bg-white/80 backdrop-blur-md rounded-full text-gray-500 hover:text-gray-800 hover:bg-white shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-forest/20"
+                                    >
+                                        <XMarkIcon className="w-6 h-6" />
+                                    </button>
+                                </div>
 
                                 {/* Header Image */}
                                 <div className="h-64 md:h-80 bg-forest/10 relative overflow-hidden">
