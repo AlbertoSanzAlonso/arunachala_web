@@ -144,10 +144,10 @@ const Header: React.FC = () => {
 
     return (
         <>
-            <header className={`${isHome ? 'sticky w-full' : 'fixed left-0 right-0'} top-0 z-50 p-2 lg:py-3 lg:px-8 flex justify-between items-center bg-[#5c6b3c] shadow-md transition-colors duration-300`}>
+            <header className={`${isHome ? 'sticky w-full' : 'fixed left-0 right-0'} top-0 z-50 p-2 lg:py-4 lg:px-8 flex justify-between items-center bg-[#5c6b3c] shadow-md transition-colors duration-300`}>
                 {/* Logo Section */}
                 <div
-                    className={`cursor-pointer flex items-center justify-center h-12 w-12 md:h-16 md:w-16 rounded-full border border-[#F5F5DC] transition-transform duration-300 hover:scale-110 shadow-sm ${isChristmas
+                    className={`cursor-pointer flex items-center justify-center h-12 w-12 md:h-16 md:w-16 lg:h-[70px] lg:w-[70px] rounded-full border border-[#F5F5DC] transition-transform duration-300 hover:scale-110 shadow-sm ${isChristmas
                         ? 'bg-[#F5F5DC] p-1 md:p-1' // Use same beige as before
                         : 'bg-[#F5F5DC] p-1.5 md:p-1.5'
                         }`}
