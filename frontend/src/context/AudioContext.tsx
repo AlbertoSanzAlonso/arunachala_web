@@ -55,7 +55,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [progress, setProgress] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
-    const [volume, setVolumeState] = useState(1);
+    const [volume, setVolumeState] = useState(0.2);
     const [isMuted, setIsMutedState] = useState(false);
     const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
     const [isMeditationInView, setIsMeditationInView] = useState(false);
@@ -158,8 +158,8 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                         const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
                         audio.src = fullUrl;
                         audio.preload = 'auto'; // Start downloading immediately
-                        audio.volume = 0.5;
-                        setVolumeState(0.5);
+                        audio.volume = 0.2;
+                        setVolumeState(0.2);
                         audio.load();
                         audio.loop = true;
 
