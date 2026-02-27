@@ -303,7 +303,7 @@ class EmailService:
         <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #eef2e6;">
             <!-- Header with Logo -->
             <div style="background-color: #5c6b3c; padding: 30px 20px; text-align: center;">
-                <div style="display: inline-block; width: 80px; height: 80px; border-radius: 50%; background-color: #ffffff; padding: 10px; border: 2px solid #ffffff; overflow: hidden;">
+                <div style="display: inline-block; width: 80px; height: 80px; border-radius: 50%; background-color: #ffffff; padding: 15px; border: 2px solid #ffffff; overflow: hidden;">
                     <img src="cid:logo_cid" alt="Arunachala" style="width: 100%; height: 100%; object-fit: contain; display: block;">
                 </div>
                 <h1 style="color: #F5F5DC; margin: 15px 0 0 0; font-size: 24px; letter-spacing: 2px; font-weight: 300;">ARUNACHALA</h1>
