@@ -13,7 +13,7 @@ class EmailService:
         self.mail_username = os.getenv("MAIL_USERNAME")
         self.mail_password = os.getenv("MAIL_PASSWORD")
         self.mail_from = os.getenv("MAIL_FROM")
-        self.frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+        self.frontend_url = os.getenv("FRONTEND_URL", "https://www.yogayterapiasarunachala.es")
         
         # Check if we have enough info for SMTP
         self.use_smtp = all([self.mail_server, self.mail_username, self.mail_password])
