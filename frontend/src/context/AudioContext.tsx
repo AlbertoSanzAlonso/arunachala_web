@@ -111,17 +111,21 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     useEffect(() => {
         const initializeHomeMusic = async () => {
             try {
-                // 1. Get the music URL from config
-                const configRes = await fetch(`${API_BASE_URL}/api/site-config/homepage_music_url`);
-                if (!configRes.ok) return;
-                const configData = await configRes.json();
+                // 1. Fetch both config and meditations in parallel to save time
+                const [configRes, medRes] = await Promise.all([
+                    fetch(`${API_BASE_URL}/api/site-config/homepage_music_url`),
+                    fetch(`${API_BASE_URL}/api/content?type=meditation&status=published`)
+                ]);
+
+                if (!configRes.ok || !medRes.ok) return;
+
+                const [configData, meditations] = await Promise.all([
+                    configRes.json(),
+                    medRes.json()
+                ]);
+
                 const musicUrl = configData.value;
                 if (!musicUrl) return;
-
-                // 2. Fetch all meditations to find the matching one
-                const medRes = await fetch(`${API_BASE_URL}/api/content?type=meditation&status=published`);
-                if (!medRes.ok) return;
-                const meditations = await medRes.json();
 
                 const normalizeUrl = (u: string) => u ? u.replace(API_BASE_URL, '').split('?')[0].replace(/\/+$/, '') : '';
                 const normalizedTarget = normalizeUrl(musicUrl);
@@ -140,6 +144,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                         const url = matchingMeditation.media_url || '';
                         const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
                         audio.src = fullUrl;
+                        audio.preload = 'auto'; // Start downloading immediately
                         audio.volume = 0.5;
                         setVolumeState(0.5);
                         audio.load();
