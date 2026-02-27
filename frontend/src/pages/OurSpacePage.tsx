@@ -22,6 +22,7 @@ const OurSpacePage: React.FC = () => {
     const [sliderImages, setSliderImages] = useState<GalleryImage[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
+    const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchImages = async () => {
@@ -115,7 +116,7 @@ const OurSpacePage: React.FC = () => {
                                 className="flex items-center gap-2 text-forest font-bold pt-4 hover:text-matcha transition-colors w-fit group"
                             >
                                 <MapPinIcon className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                                <span>Yoga y Terapias Arunachala - Passatge de Mateu Oliva, 3, 08940 Cornellà de Llobregat</span>
+                                <span>{t('contact_page.info.address', 'Yoga y Terapias Arunachala - Pasaje de Mateo Oliva, 3, 08940 Cornellà de Llobregat')}</span>
                             </a>
                         </motion.div>
 
@@ -221,7 +222,10 @@ const OurSpacePage: React.FC = () => {
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
                             {/* Illustrative Map */}
-                            <div className="relative group overflow-hidden rounded-xl border border-bone/50 shadow-md">
+                            <div
+                                className="relative group overflow-hidden rounded-xl border border-bone/50 shadow-md cursor-zoom-in"
+                                onClick={() => setIsMapModalOpen(true)}
+                            >
                                 <img
                                     src={illustrativeMap}
                                     alt="Mapa ilustrativo"
@@ -258,6 +262,41 @@ const OurSpacePage: React.FC = () => {
                     </motion.div>
                 </div>
             </main>
+
+            <AnimatePresence>
+                {isMapModalOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsMapModalOpen(false)}
+                        className="fixed inset-0 z-[100] bg-forest/90 backdrop-blur-sm flex items-center justify-center p-4 md:p-10"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="relative max-w-5xl w-full bg-white rounded-3xl overflow-hidden shadow-2xl"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <button
+                                onClick={() => setIsMapModalOpen(false)}
+                                className="absolute top-4 right-4 z-10 p-2 bg-bark/10 hover:bg-bark/20 rounded-full transition-colors"
+                            >
+                                <ChevronLeftIcon className="w-6 h-6 rotate-180" />
+                            </button>
+                            <img
+                                src={illustrativeMap}
+                                alt="Mapa ilustrativo ampliado"
+                                className="w-full h-auto max-h-[85vh] object-contain"
+                            />
+                            <div className="p-6 bg-forest text-white text-center font-headers text-lg tracking-widest uppercase">
+                                {t('space.illustrative_map_label', 'Mapa de referencia')}
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
             <Footer />
         </div>
     );

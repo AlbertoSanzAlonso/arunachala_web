@@ -187,23 +187,23 @@ const AllTherapiesPage: React.FC = () => {
 
                             <div className="p-8 md:p-10 flex-1">
                                 {selectedTreatment.duration_min && selectedTreatment.duration_min > 0 && (
-                                    <span className="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-widest text-white uppercase bg-matcha rounded-full">
+                                    <span className="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-widest text-white bg-matcha rounded-full">
                                         {selectedTreatment.duration_min} MIN
                                     </span>
                                 )}
-                                <h3 className="text-3xl md:text-4xl font-headers text-forest mb-6 uppercase">
+                                <h3 className="text-3xl md:text-4xl font-headers text-forest mb-6">
                                     {getTranslated(selectedTreatment, 'name', i18n.language)}
                                 </h3>
 
                                 <div className="prose prose-stone max-w-none">
-                                    <h4 className="text-lg font-bold text-forest uppercase tracking-wide mb-2">{t('therapies.modal.description')}</h4>
+                                    <h4 className="text-lg font-bold text-forest tracking-wide mb-2">{t('therapies.modal.description')}</h4>
                                     <p className="text-bark/80 leading-relaxed mb-6 whitespace-pre-line">
                                         {getTranslated(selectedTreatment, 'description', i18n.language) || getTranslated(selectedTreatment, 'excerpt', i18n.language) || t('therapies.modal.no_description')}
                                     </p>
 
                                     {getTranslated(selectedTreatment, 'benefits', i18n.language) && (
                                         <>
-                                            <h4 className="text-lg font-bold text-forest uppercase tracking-wide mb-2">{t('therapies.modal.benefits')}</h4>
+                                            <h4 className="text-lg font-bold text-forest tracking-wide mb-2">{t('therapies.modal.benefits')}</h4>
                                             <p className="text-matcha font-medium leading-relaxed italic">
                                                 {getTranslated(selectedTreatment, 'benefits', i18n.language)}
                                             </p>
@@ -213,7 +213,7 @@ const AllTherapiesPage: React.FC = () => {
 
                                 {selectedTreatment.price && (
                                     <div className="mb-6">
-                                        <h4 className="text-lg font-bold text-forest uppercase tracking-wide mb-2">{t('therapies.modal.price')}</h4>
+                                        <h4 className="text-lg font-bold text-forest tracking-wide mb-2">{t('therapies.modal.price')}</h4>
                                         <p className="text-2xl font-headers text-matcha font-bold">
                                             {selectedTreatment.price}
                                         </p>
@@ -223,13 +223,13 @@ const AllTherapiesPage: React.FC = () => {
                                 <div className="mt-8 pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
                                     <button
                                         onClick={() => navigate('/contacto')}
-                                        className="w-full sm:w-auto px-6 py-3 bg-forest text-white font-bold rounded-full hover:bg-matcha transition-colors uppercase tracking-widest text-sm"
+                                        className="w-full sm:w-auto px-6 py-3 bg-forest text-white font-bold rounded-full hover:bg-matcha transition-colors tracking-widest text-sm"
                                     >
                                         {t('therapies.appointment.cta')}
                                     </button>
                                     <button
                                         onClick={handleCloseModal}
-                                        className="text-sm font-bold text-forest hover:text-matcha uppercase tracking-widest transition-colors"
+                                        className="text-sm font-bold text-forest hover:text-matcha tracking-widest transition-colors"
                                     >
                                         {t('therapies.modal.close')}
                                     </button>
@@ -249,7 +249,7 @@ const AllTherapiesPage: React.FC = () => {
 
                     {/* Header */}
                     <FadeInSection className="text-center mb-16">
-                        <h1 className="text-4xl md:text-6xl font-headers text-forest mb-4 uppercase">{t('therapies.sections.therapies')}</h1>
+                        <h1 className="text-4xl md:text-6xl font-headers text-forest mb-4">{t('therapies.sections.therapies')}</h1>
                         <p className="text-bark/70 text-lg md:text-xl max-w-2xl mx-auto">{t('therapies.sections.therapies_sub')}</p>
                     </FadeInSection>
 
@@ -292,7 +292,7 @@ const AllTherapiesPage: React.FC = () => {
                                             )}
                                         </div>
 
-                                        <h3 className="text-2xl font-headers text-forest mb-4 uppercase relative z-10">{getTranslated(therapy, 'name', i18n.language)}</h3>
+                                        <h3 className="text-2xl font-headers text-forest mb-4 relative z-10">{getTranslated(therapy, 'name', i18n.language)}</h3>
                                         <p className="text-bark/80 mb-4 leading-relaxed line-clamp-3 relative z-10">{getTranslated(therapy, 'excerpt', i18n.language) || getTranslated(therapy, 'description', i18n.language)}</p>
                                         {getTranslated(therapy, 'benefits', i18n.language) && (
                                             <p className="text-sm italic text-matcha font-bold mb-4 line-clamp-2 relative z-10">{getTranslated(therapy, 'benefits', i18n.language)}</p>
@@ -310,7 +310,7 @@ const AllTherapiesPage: React.FC = () => {
                                                     <ShareIcon className="w-5 h-5" />
                                                 </button>
                                             </div>
-                                            <button className="text-forest font-bold group-hover:text-matcha transition-colors uppercase">{t('therapies.common.read_more')} →</button>
+                                            <button className="text-forest font-bold group-hover:text-matcha transition-colors">{t('therapies.common.read_more')} →</button>
                                         </div>
                                     </motion.div>
                                 ))}

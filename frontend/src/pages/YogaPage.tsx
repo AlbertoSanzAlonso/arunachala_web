@@ -157,7 +157,7 @@ const YogaPage: React.FC = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8 }}
-                            className="text-6xl md:text-9xl font-headers text-white mb-6 md:mb-8 tracking-wide drop-shadow-lg mt-8 md:mt-32 uppercase"
+                            className="text-6xl md:text-9xl font-headers text-white mb-6 md:mb-8 tracking-wide drop-shadow-lg mt-8 md:mt-32"
                         >
                             {t('yoga.title')}
                         </motion.h1>
@@ -194,7 +194,7 @@ const YogaPage: React.FC = () => {
                                             onClick={() => scrollTo(item.ref)}
                                             className={`group relative ${isOdd ? 'h-24' : 'h-32'} md:h-48 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-md border border-white/20 shadow-xl flex flex-col items-center justify-center hover:bg-white/20 transition-all duration-300 w-full md:w-64`}
                                         >
-                                            <span className="text-xl md:text-3xl font-headers text-white group-hover:text-matcha transition-colors uppercase">{item.name}</span>
+                                            <span className="text-xl md:text-3xl font-headers text-white group-hover:text-matcha transition-colors">{item.name}</span>
                                         </motion.button>
                                     ))}
                                 </nav>
@@ -224,13 +224,13 @@ const YogaPage: React.FC = () => {
                 {galleryImages.length > 0 && (
                     <section ref={galleryRef} className="w-full max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-48 scroll-mt-24">
                         <FadeInSection>
-                            <h2 className="text-3xl md:text-5xl font-headers text-forest mb-12 text-center uppercase tracking-tight">{t('yoga.sections.gallery')}</h2>
+                            <h2 className="text-3xl md:text-5xl font-headers text-forest mb-12 text-center tracking-tight">{t('yoga.sections.gallery')}</h2>
                             <Suspense fallback={<SectionLoader />}>
                                 <ImageSlider images={galleryImages}>
                                     <div className="absolute bottom-5 right-5 md:bottom-8 md:right-8 pointer-events-auto z-30">
                                         <button
                                             onClick={() => navigate('/galeria/clases-de-yoga')}
-                                            className="px-6 py-2 md:px-8 md:py-3 bg-black/30 hover:bg-white backdrop-blur-md border border-white/30 rounded-full text-white hover:text-forest font-headers tracking-wide transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2 group text-sm md:text-base uppercase"
+                                            className="px-6 py-2 md:px-8 md:py-3 bg-black/30 hover:bg-white backdrop-blur-md border border-white/30 rounded-full text-white hover:text-forest font-headers tracking-wide transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2 group text-sm md:text-base"
                                         >
                                             {t('yoga.common.view_all_gallery')} <span className="text-xl leading-none mb-1">→</span>
                                         </button>
