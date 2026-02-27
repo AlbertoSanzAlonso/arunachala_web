@@ -71,16 +71,6 @@ def subscribe(sub: SubscriptionCreate, background_tasks: BackgroundTasks, db: Se
     db.refresh(new_sub)
     return new_sub
 
-@router.delete("/{email}")
-def unsubscribe(email: str, db: Session = Depends(get_db)):
-    sub = db.query(Subscription).filter(Subscription.email == email).first()
-    if not sub:
-        raise HTTPException(status_code=404, detail="Subscription not found")
-    
-    db.delete(sub)
-    db.commit()
-    return {"message": "Successfully unsubscribed and removed from our database"}
-
 @router.get("/test-smtp-config")
 async def test_smtp_config():
     """Debug endpoint to verify if SMTP vars are loaded in production."""
@@ -93,3 +83,13 @@ async def test_smtp_config():
         "mail_port": email_service.mail_port,
         "mail_from": email_service.mail_from
     }
+
+@router.delete("/{email}")
+def unsubscribe(email: str, db: Session = Depends(get_db)):
+    sub = db.query(Subscription).filter(Subscription.email == email).first()
+    if not sub:
+        raise HTTPException(status_code=404, detail="Subscription not found")
+    
+    db.delete(sub)
+    db.commit()
+    return {"message": "Successfully unsubscribed and removed from our database"}
