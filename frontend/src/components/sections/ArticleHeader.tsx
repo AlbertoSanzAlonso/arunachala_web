@@ -25,36 +25,27 @@ const ArticleHeader: React.FC<ArticleHeaderProps> = ({
                 <BackButton to={`/blog?p=${currentPage}`} label={t('blog.back_to_blog')} />
             </div>
 
-            <div className="mb-6">
+            <div className="mb-6 flex items-center justify-between">
                 <span className="inline-block bg-forest text-white px-4 py-2 rounded-full text-sm font-headers tracking-wider">
                     {t(`blog.categories.${category}`, category)}
                 </span>
-            </div>
-
-            <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-4xl md:text-6xl font-headers text-forest mb-6 leading-tight"
-            >
-                {title}
-            </motion.h1>
-
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="flex items-center justify-between py-6 border-y border-bark/5 mb-12"
-            >
-                <div></div>
-
+                
                 <button
                     onClick={onShare}
                     className="flex items-center gap-2 px-4 py-2 rounded-full border border-forest/20 text-forest hover:bg-forest hover:text-white transition-all text-sm font-medium"
                 >
                     <ShareIcon className="w-4 h-4" />
-                    {t('common.share')}
+                    <span className="hidden sm:inline">{t('common.share')}</span>
                 </button>
-            </motion.div>
+            </div>
+
+            <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-4xl md:text-6xl font-headers text-forest mb-12 leading-tight"
+            >
+                {title}
+            </motion.h1>
         </>
     );
 };
