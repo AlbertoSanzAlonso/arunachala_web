@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -6,7 +6,6 @@ import { CalendarIcon, ArrowRightIcon, TagIcon } from '@heroicons/react/24/outli
 import { Article } from '../../../types/blog';
 import { getImageUrl } from '../../../utils/imageUtils';
 import { getTranslated } from '../../../utils/translate';
-import ArticleLightbox from './ArticleLightbox';
 
 interface ArticleCardProps {
     article: Article;
@@ -16,8 +15,6 @@ interface ArticleCardProps {
 const ArticleCard: React.FC<ArticleCardProps> = ({ article, index }) => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
-    const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-    const [isZoomed, setIsZoomed] = useState(false);
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString(i18n.language, {

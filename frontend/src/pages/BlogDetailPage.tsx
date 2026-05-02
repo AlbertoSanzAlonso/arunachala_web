@@ -32,13 +32,36 @@ const BlogDetailPage: React.FC = () => {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [isZoomed, setIsZoomed] = useState(false);
 
-    const fetchRelatedArticles = useCallback(async (category: string, currentId: number) => {
+    const fetchRelatedArticles = useCallback(async (category: string, currentId: number, tags: string[] = []) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/content?type=article&category=${category}&status=published`);
+            // Fetch all published articles to find the best matches
+            const response = await fetch(`${API_BASE_URL}/api/content?type=article&status=published`);
             if (response.ok) {
                 const data = await response.json();
-                const related = data.filter((a: Article) => a.id !== currentId).slice(0, 3);
-                setRelatedArticles(related);
+                
+                // Filter out current article and calculate relevance score
+                const scored = data
+                    .filter((a: Article) => a.id !== currentId)
+                    .map((a: Article) => {
+                        const matchingTags = (a.tags || []).filter(t => tags.includes(t));
+                        return { 
+                            article: a, 
+                            score: matchingTags.length 
+                        };
+                    })
+                    // Filter: must have matching tags OR be in the same category
+                    .filter((item: any) => item.score > 0 || item.article.category === category)
+                    .sort((a: any, b: any) => {
+                        // 1. Sort by number of matching tags
+                        if (b.score !== a.score) return b.score - a.score;
+                        // 2. Sort by same category
+                        if (a.article.category === category && b.article.category !== category) return -1;
+                        if (a.article.category !== category && b.article.category === category) return 1;
+                        // 3. Sort by date (newest first)
+                        return new Date(b.article.created_at).getTime() - new Date(a.article.created_at).getTime();
+                    });
+
+                setRelatedArticles(scored.slice(0, 3).map((s: any) => s.article));
             }
         } catch (error) {
             console.error('Error fetching related articles:', error);
@@ -51,7 +74,7 @@ const BlogDetailPage: React.FC = () => {
             if (response.ok) {
                 const data = await response.json();
                 setArticle(data);
-                fetchRelatedArticles(data.category, data.id);
+                fetchRelatedArticles(data.category, data.id, data.tags || []);
             } else {
                 navigate('/blog');
             }
