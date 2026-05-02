@@ -325,11 +325,11 @@ const TherapiesPage: React.FC = () => {
                     </div>
                 </div>
 
-                <section ref={massagesRef} className="py-8 md:py-48 bg-white scroll-mt-24 relative">
-                    <FadeInSection className="max-w-7xl mx-auto md:px-8">
-                        <div className="text-center mb-16 px-8">
-                            <h2 className="text-4xl md:text-6xl font-headers text-forest mb-4 uppercase">{t('therapies.sections.massages')}</h2>
-                            <p className="text-bark/70 text-lg md:text-xl">{t('therapies.sections.massages_sub')}</p>
+                <section ref={massagesRef} className="py-8 md:py-32 bg-white scroll-mt-24 relative">
+                    <FadeInSection className="max-w-7xl mx-auto md:px-6">
+                        <div className="text-center mb-16 px-6">
+                            <h2 className="text-4xl md:text-5xl font-headers text-forest mb-4 uppercase tracking-wider">{t('therapies.sections.massages')}</h2>
+                            <p className="text-bark/70 text-xl font-light">{t('therapies.sections.massages_sub')}</p>
                         </div>
 
                         {massages.length > 0 ? (
@@ -355,7 +355,7 @@ const TherapiesPage: React.FC = () => {
 
                                 <div
                                     ref={massageScrollRef}
-                                    className="flex gap-4 md:gap-8 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-8 pt-4 px-[10vw] md:px-8"
+                                    className="flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-8 pt-4 px-[10vw] md:px-1 w-full"
                                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                                 >
                                     {massages.map((msg) => (
@@ -363,7 +363,7 @@ const TherapiesPage: React.FC = () => {
                                             key={msg.id}
                                             whileHover={{ y: -10 }}
                                             onClick={() => setSelectedTreatment(msg)}
-                                            className="flex-none w-[80vw] md:w-[calc(50%-16px)] lg:w-[calc(33.333%-22px)] group cursor-pointer p-8 rounded-3xl bg-bone/30 border border-forest/10 hover:shadow-2xl transition-all duration-500 relative overflow-hidden snap-center snap-always"
+                                            className="flex-none w-[80vw] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] group cursor-pointer p-8 rounded-[2rem] bg-bone/30 border border-forest/10 hover:shadow-2xl transition-all duration-500 relative overflow-hidden snap-center snap-always"
                                         >
                                             <div className="absolute inset-0 bg-white/0 group-hover:bg-white/50 transition-colors duration-500" />
                                             <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden flex items-center justify-center bg-forest/5">
@@ -425,11 +425,11 @@ const TherapiesPage: React.FC = () => {
                     </FadeInSection>
                 </section>
 
-                <section ref={therapiesRef} className="py-8 md:py-48 bg-bone scroll-mt-24 snap-center snap-always md:snap-align-none">
-                    <FadeInSection className="max-w-7xl mx-auto md:px-8">
-                        <div className="text-center mb-16 px-8">
-                            <h2 className="text-4xl md:text-6xl font-headers text-forest mb-4 uppercase">{t('therapies.sections.therapies')}</h2>
-                            <p className="text-bark/70 text-lg md:text-xl">{t('therapies.sections.therapies_sub')}</p>
+                <section ref={therapiesRef} className="py-8 md:py-32 bg-bone scroll-mt-24 snap-center snap-always md:snap-align-none">
+                    <FadeInSection className="max-w-7xl mx-auto md:px-6">
+                        <div className="text-center mb-16 px-6">
+                            <h2 className="text-4xl md:text-5xl font-headers text-forest mb-4 uppercase tracking-wider">{t('therapies.sections.therapies')}</h2>
+                            <p className="text-bark/70 text-xl font-light">{t('therapies.sections.therapies_sub')}</p>
                         </div>
 
                         {therapies.length > 0 ? (
@@ -455,7 +455,7 @@ const TherapiesPage: React.FC = () => {
 
                                 <div
                                     ref={therapyScrollRef}
-                                    className="flex gap-4 md:gap-8 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-8 pt-4 px-[10vw] md:px-8"
+                                    className="flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-8 pt-4 px-[10vw] md:px-1 w-full"
                                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                                 >
                                     {therapies.map((thr) => (
@@ -463,7 +463,7 @@ const TherapiesPage: React.FC = () => {
                                             key={thr.id}
                                             whileHover={{ y: -10 }}
                                             onClick={() => setSelectedTreatment(thr)}
-                                            className="flex-none w-[80vw] md:w-[calc(50%-16px)] lg:w-[calc(33.333%-22px)] group cursor-pointer p-8 rounded-3xl bg-white border border-forest/10 hover:shadow-2xl transition-all duration-500 relative overflow-hidden snap-center snap-always"
+                                            className="flex-none w-[80vw] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] group cursor-pointer p-8 rounded-[2rem] bg-white border border-forest/10 hover:shadow-2xl transition-all duration-500 relative overflow-hidden snap-center snap-always"
                                         >
                                             <div className="absolute inset-0 bg-white/0 group-hover:bg-bone/20 transition-colors duration-500" />
                                             <div className="h-48 -mx-8 -mt-8 mb-6 overflow-hidden flex items-center justify-center bg-forest/5">
