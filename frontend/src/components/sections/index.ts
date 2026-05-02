@@ -11,3 +11,4 @@ export { default as ActivityCard } from './ActivityCard';
 export { default as ArticleHeader } from './ArticleHeader';
 export { default as BottomNavigation } from './BottomNavigation';
 export { default as FloatingNavigation } from './FloatingNavigation';
+export { default as ArticleCTA } from './ArticleCTA';

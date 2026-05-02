@@ -17,6 +17,7 @@ import ArticleLightbox from 'components/sections/ArticleLightbox';
 import FloatingNavigation from 'components/sections/FloatingNavigation';
 import BottomNavigation from 'components/sections/BottomNavigation';
 import ArticleHeader from 'components/sections/ArticleHeader';
+import ArticleCTA from 'components/sections/ArticleCTA';
 
 const BlogDetailPage: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -180,6 +181,8 @@ const BlogDetailPage: React.FC = () => {
                     )}
 
                     <ArticleContent body={translatedBody} onImageClick={setSelectedImage} />
+
+                    <ArticleCTA />
 
 
                     <RelatedArticles articles={relatedArticles} />
