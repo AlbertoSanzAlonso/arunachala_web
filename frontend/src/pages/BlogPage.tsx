@@ -26,7 +26,11 @@ const BlogPage: React.FC = () => {
     
     // Pagination
     const ITEMS_PER_PAGE = 9;
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(() => {
+        // Initialize from session storage if available
+        const savedPage = sessionStorage.getItem('blog_current_page');
+        return savedPage ? parseInt(savedPage) : 1;
+    });
 
     const fetchArticles = useCallback(async () => {
         setIsLoading(true);
@@ -55,20 +59,24 @@ const BlogPage: React.FC = () => {
                         top: parseInt(savedScroll),
                         behavior: 'instant' as any
                     });
+                    // Important: Clear scroll but maybe keep page for next visit? 
+                    // Usually we clear both to avoid weird behavior on new entry
                     sessionStorage.removeItem('blog_scroll_pos');
-                }, 100);
+                    sessionStorage.removeItem('blog_current_page');
+                }, 150); // Slightly more delay to ensure layout is ready
             }
         };
         
         loadInitialData();
 
-        // Save scroll position on unmount
+        // Save state on unmount
         return () => {
             if (window.location.pathname.startsWith('/blog/')) {
                 sessionStorage.setItem('blog_scroll_pos', window.scrollY.toString());
+                sessionStorage.setItem('blog_current_page', currentPage.toString());
             }
         };
-    }, [fetchArticles]);
+    }, [fetchArticles, currentPage]);
 
     // Reset pagination on filter change
     useEffect(() => {

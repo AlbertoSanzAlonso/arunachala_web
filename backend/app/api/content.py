@@ -167,17 +167,15 @@ def get_content_by_slug(slug: str, db: Session = Depends(get_db)):
     db_content = db.query(Content).filter(Content.slug == slug).first()
     if not db_content: raise HTTPException(status_code=404, detail="Content not found")
     
-    # Calculate Navigation (Prev/Next) within same type and category
+    # Calculate Navigation (Prev/Next) within same type (all blog posts)
     prev_item = db.query(Content).filter(
         Content.type == db_content.type,
-        Content.category == db_content.category,
         Content.status == "published",
         Content.created_at < db_content.created_at
     ).order_by(Content.created_at.desc()).first()
     
     next_item = db.query(Content).filter(
         Content.type == db_content.type,
-        Content.category == db_content.category,
         Content.status == "published",
         Content.created_at > db_content.created_at
     ).order_by(Content.created_at.asc()).first()
@@ -207,14 +205,12 @@ def get_content(content_id: int, db: Session = Depends(get_db)):
     # Calculate Navigation (Prev/Next)
     prev_item = db.query(Content).filter(
         Content.type == db_content.type,
-        Content.category == db_content.category,
         Content.status == "published",
         Content.created_at < db_content.created_at
     ).order_by(Content.created_at.desc()).first()
     
     next_item = db.query(Content).filter(
         Content.type == db_content.type,
-        Content.category == db_content.category,
         Content.status == "published",
         Content.created_at > db_content.created_at
     ).order_by(Content.created_at.asc()).first()
