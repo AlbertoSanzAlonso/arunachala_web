@@ -10,16 +10,20 @@ from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
+def get_openai_client():
+    if not settings.OPENAI_API_KEY:
+        return None
+    return OpenAI(api_key=settings.OPENAI_API_KEY)
+
 def translate_object_fields(fields: Dict[str, str], target_lang: str) -> Dict[str, str]:
     """
     Translates a dictionary of fields into a target language using OpenAI.
     Returns a dictionary with the same keys and translated values.
     """
-    if not settings.OPENAI_API_KEY:
-        logger.error("OPENAI_API_KEY not set")
+    client = get_openai_client()
+    if not client:
+        logger.error("OPENAI_API_KEY not set or client could not be initialized")
         return {}
-
-    client = OpenAI(api_key=settings.OPENAI_API_KEY)
     
     # Identify which language we are translating to
     lang_names = {
@@ -53,6 +57,17 @@ Translate the following content into {lang_name}.
     except Exception as e:
         logger.error(f"Error calling OpenAI for translation: {e}")
         return {}
+
+async def translate_content(content_dict: Dict[str, str], target_languages: List[str]) -> Dict[str, Any]:
+    """
+    Translates content for multiple languages.
+    """
+    results = {}
+    for lang in target_languages:
+        translated = translate_object_fields(content_dict, lang)
+        if translated:
+            results[lang] = translated
+    return results
 
 async def update_record_translations(db: Session, model_class, record_id: int, translations: Dict[str, Any]):
     """
