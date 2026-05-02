@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-forest: #2F4F4F;
+    --color-bone: #F5F5DC;
+    --color-matcha: #8FBC8F;
+    --color-bark: #5D4037;
+  }
+
+  body {
+    background-color: var(--color-bone);
+    color: var(--color-bark);
+    font-family: 'Mulish', sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--color-forest);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(47, 79, 79, 0.05);
+  border-radius: 10px;
+  margin: 1.5rem 0;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(47, 79, 79, 0.2);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(47, 79, 79, 0.4);
+}
+
+/* Dashboard zoom helper - Only for desktop */
+@media (min-width: 1024px) {
+  .dashboard-scale {
+    zoom: 1.1;
+  }
+
+  /* Fallback for browsers without zoom support */
+  @supports not (zoom: 1.1) {
+    .dashboard-scale {
+      transform: scale(1.1);
+      transform-origin: top left;
+      width: 90.9%;
+      height: 90.9%;
+    }
+  }
+}
+
+/* Mobile-first responsiveness helpers */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@media (max-width: 640px) {
+  .dashboard-container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .mobile-tabs-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    white-space: nowrap;
+    padding-bottom: 2px;
+  }
+}
+
+/* Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(47, 79, 79, 0.2) transparent;
+}
+
+/* Fix for missing bullets in prose (Tailwind Typography) */
+.prose ul {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+}
+
+.prose ol {
+  list-style-type: decimal !important;
+  padding-left: 1.5rem !important;
+}
+
+.prose li {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}

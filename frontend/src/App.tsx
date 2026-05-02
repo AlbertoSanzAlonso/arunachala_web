@@ -1,0 +1,157 @@
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import PageLoader from './components/PageLoader';
+import DashboardLayout from './layouts/DashboardLayout';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import { AudioProvider } from './context/AudioContext';
+import MeditationsPage from './pages/MeditationsPage';
+import ChatBot from './components/ChatBot';
+import MeditationPlayerModal from './components/MeditationPlayerModal';
+import ScrollToTop from './components/ScrollToTop';
+import ToastNotification from './components/ToastNotification';
+import LanguageSync from './components/LanguageSync';
+import FloatingNav from './components/FloatingNav';
+import { useUIStore } from './store/uiStore';
+
+
+
+const HomePage = lazy(() => import('./pages/HomePage'));
+const YogaPage = lazy(() => import('./pages/YogaPage'));
+const TherapiesPage = lazy(() => import('./pages/TherapiesPage'));
+const BlogPage = lazy(() => import('./pages/BlogPage'));
+const BlogDetailPage = lazy(() => import('./pages/BlogDetailPage'));
+const YogaGalleryPage = lazy(() => import('./pages/YogaGalleryPage'));
+const TherapiesGalleryPage = lazy(() => import('./pages/TherapiesGalleryPage'));
+const AllMassagesPage = lazy(() => import('./pages/AllMassagesPage'));
+const AllTherapiesPage = lazy(() => import('./pages/AllTherapiesPage'));
+const ActivitiesPage = lazy(() => import('./pages/ActivitiesPage'));
+const OurSpacePage = lazy(() => import('./pages/OurSpacePage'));
+const PromotionsPage = lazy(() => import('./pages/PromotionsPage'));
+
+// Dashboard Pages
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
+const DashboardHome = lazy(() => import('./pages/dashboard/DashboardHome'));
+const GalleryManager = lazy(() => import('./pages/dashboard/GalleryManager'));
+const ContentManager = lazy(() => import('./pages/dashboard/content'));
+const ScheduleManager = lazy(() => import('./pages/dashboard/ScheduleManager'));
+const SeoStats = lazy(() => import('./pages/dashboard/SeoStats'));
+const UserProfile = lazy(() => import('./pages/dashboard/profile/UserProfile'));
+const CreateUser = lazy(() => import('./pages/dashboard/CreateUser'));
+const ClassTypeManager = lazy(() => import('./pages/dashboard/ClassTypeManager'));
+const TreatmentsManager = lazy(() => import('./pages/dashboard/TreatmentsManager'));
+const UserManager = lazy(() => import('./pages/dashboard/UserManager'));
+const AgentControl = lazy(() => import('./pages/dashboard/AgentControl'));
+const ActivityManager = lazy(() => import('./pages/dashboard/ActivityManager'));
+const PromotionManager = lazy(() => import('./pages/dashboard/PromotionManager'));
+const SiteCustomization = lazy(() => import('./pages/dashboard/SiteCustomization'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const LegalNoticePage = lazy(() => import('./pages/LegalNoticePage'));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
+const UnsubscribePage = lazy(() => import('./pages/UnsubscribePage'));
+const ConfirmSubscriptionPage = lazy(() => import('./pages/ConfirmSubscriptionPage'));
+const SubscribePage = lazy(() => import('./pages/SubscribePage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+
+
+
+
+const AppContent = () => {
+    const location = useLocation();
+    const { toasts, removeToast } = useUIStore();
+
+    // Hide ChatBot on login, register, and all dashboard paths
+    const hideChatBot =
+        location.pathname.startsWith('/login') ||
+        location.pathname.startsWith('/dashboard') ||
+        location.pathname.startsWith('/forgot-password') ||
+        location.pathname.startsWith('/reset-password') ||
+        location.pathname.startsWith('/unsubscribe') ||
+        location.pathname.startsWith('/newsletter') ||
+        location.pathname.startsWith('/confirmar-suscripcion');
+
+    return (
+        <Suspense fallback={<PageLoader />}>
+            <ToastNotification toasts={toasts} onRemove={removeToast} />
+            <div style={{ display: hideChatBot ? 'none' : 'block' }}>
+                <ChatBot />
+            </div>
+            <FloatingNav />
+            <MeditationPlayerModal />
+            <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<HomePage />} />
+                <Route path="/clases-de-yoga" element={<YogaPage />} />
+                <Route path="/terapias-y-masajes" element={<TherapiesPage />} />
+                <Route path="/terapias/masajes" element={<AllMassagesPage />} />
+                <Route path="/terapias/terapias-holisticas" element={<AllTherapiesPage />} />
+                <Route path="/blog" element={<BlogPage />} />
+                <Route path="/blog/yoga" element={<BlogPage />} />
+                <Route path="/blog/therapy" element={<BlogPage />} />
+                <Route path="/blog/general" element={<BlogPage />} />
+                <Route path="/blog/:slug" element={<BlogDetailPage />} />
+                <Route path="/galeria/clases-de-yoga" element={<YogaGalleryPage />} />
+                <Route path="/galeria/terapias-y-masajes" element={<TherapiesGalleryPage />} />
+                <Route path="/actividades" element={<ActivitiesPage />} />
+                <Route path="/nuestro-espacio" element={<OurSpacePage />} />
+                <Route path="/quienes-somos" element={<AboutPage />} />
+                <Route path="/contacto" element={<ContactPage />} />
+                <Route path="/aviso-legal" element={<LegalNoticePage />} />
+                <Route path="/politica-de-privacidad" element={<PrivacyPolicyPage />} />
+                <Route path="/unsubscribe" element={<UnsubscribePage />} />
+                <Route path="/confirmar-suscripcion" element={<ConfirmSubscriptionPage />} />
+                <Route path="/newsletter" element={<SubscribePage />} />
+                <Route path="/meditaciones" element={<MeditationsPage />} />
+                <Route path="/promociones" element={<PromotionsPage />} />
+                <Route path="/meditaciones/:slug" element={<MeditationsPage />} />
+
+                {/* Catch-all 404 Route */}
+                <Route path="*" element={<NotFoundPage />} />
+
+                {/* Auth Route */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+                {/* Protected Dashboard Routes */}
+                <Route element={<ProtectedRoute />}>
+                    <Route path="/dashboard" element={<DashboardLayout />}>
+                        <Route index element={<DashboardHome />} />
+                        <Route path="gallery" element={<GalleryManager />} />
+                        <Route path="content" element={<ContentManager />} />
+                        <Route path="schedule" element={<ScheduleManager />} />
+                        <Route path="seo" element={<SeoStats />} />
+                        <Route path="profile" element={<UserProfile />} />
+                        <Route path="create-user" element={<CreateUser />} />
+                        <Route path="classes" element={<ClassTypeManager />} />
+                        <Route path="treatments" element={<TreatmentsManager />} />
+                        <Route path="users" element={<UserManager />} />
+                        <Route path="agent" element={<AgentControl />} />
+                        <Route path="activities" element={<ActivityManager />} />
+                        <Route path="promotions" element={<PromotionManager />} />
+                        <Route path="customize" element={<SiteCustomization />} />
+                    </Route>
+                </Route>
+            </Routes>
+        </Suspense>
+    );
+};
+
+function App() {
+    return (
+        <AuthProvider>
+            <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+                <AudioProvider>
+                    <ScrollToTop />
+                    <LanguageSync />
+                    <AppContent />
+                </AudioProvider>
+            </BrowserRouter>
+        </AuthProvider>
+    );
+}
+
+export default App;

@@ -1,0 +1,657 @@
+{
+  "footer": {
+    "address": "Yoga y Terapias Aruṇāchala\nPasaje de Mateo Oliva 3, bajos\n(junto Plaza Pallars)\n08940 Cornellà de Llobregat\nBarcelona",
+    "labels": {
+      "home": "Inicio",
+      "yoga": "Yoga y Horarios",
+      "therapies": "Masaje y terapias",
+      "blog": "Blog",
+      "legal": "Aviso Legal",
+      "privacy": "Política de Privacidad",
+      "instagram": "Síguenos en Instagram",
+      "youtube": "Suscríbete a nuestro canal de YouTube",
+      "spotify": "Escúchanos en Spotify"
+    },
+    "rights": "Todos los derechos reservados."
+  },
+  "gallery": {
+    "yoga": {
+      "title": "Galería de Yoga",
+      "back": "Volver a Yoga",
+      "subtitle": "Nuestros espacios y momentos dedicados a la práctica del Yoga.\nEncuentra la inspiración que necesitas para tu camino.",
+      "empty": "Estamos preparando las imágenes de Yoga para ti."
+    },
+    "therapies": {
+      "title": "Galería de Terapias",
+      "back": "Volver a Terapias",
+      "subtitle": "Un vistazo a nuestro espacio de sanación y bienestar.",
+      "empty": "Próximamente fotos del centro..."
+    }
+  },
+  "therapies": {
+    "title": "MASAJE Y TERAPIAS",
+    "subtitle": "Un espacio para el reencuentro contigo mismo a través del cuidado corporal y emocional.",
+    "seo": {
+      "title": "Masaje y Terapias en Cornellà | Aruṇāchala",
+      "description": "Descubre nuestras terapias y masajes en Cornellà de Llobregat. Reiki, Terapia Floral, Masaje Tailandés y más para tu bienestar."
+    },
+    "buttons": {
+      "massages": "Masajes",
+      "therapies": "Terapias",
+      "gallery": "Galería",
+      "blog": "Blog"
+    },
+    "sections": {
+      "massages": "Nuestros Masajes",
+      "massages_sub": "Libera tensiones y recupera la vitalidad de tu cuerpo.",
+      "therapies": "Terapias Holísticas",
+      "therapies_sub": "Acompañamiento en tu proceso de sanación y autoconocimiento.",
+      "gallery": "Galería",
+      "gallery_sub": "Un vistazo a nuestro espacio de sanación.",
+      "blog": "Blog de Bienestar",
+      "blog_sub": "Lecturas para nutrir tu alma y equilibrar tu vida."
+    },
+    "modal": {
+      "description": "Descripción",
+      "benefits": "Beneficios",
+      "price": "Precio",
+      "close": "Cerrar",
+      "no_description": "Sin descripción disponible."
+    },
+    "none": {
+      "massages": "No hay masajes disponibles en este momento.",
+      "therapies": "No hay terapias disponibles en este momento.",
+      "gallery": "Próximamente fotos del centro..."
+    },
+    "common": {
+      "read_more": "Saber más"
+    },
+    "appointment": {
+      "title": "HORARIOS Y RESERVAS",
+      "subtitle": "Atención personalizada con cita previa",
+      "description": "Nuestras sesiones de masaje y terapias holísticas se programan de forma individualizada. Al trabajar con cita previa, nos aseguramos de dedicarte el tiempo y el espacio que mereces para tu bienestar integral.",
+      "cta": "Contactar para reservar"
+    }
+  },
+  "welcome": "Bienvenido a Aruṇāchala",
+  "hero": {
+    "yoga": {
+      "title": "YOGA",
+      "subtitle": "Muévete y respira"
+    },
+    "therapies": {
+      "title": "MASAJE Y TERAPIAS",
+      "subtitle": "Recupera tu bienestar"
+    }
+  },
+  "menu": {
+    "home": "Inicio",
+    "yoga": "Clases de Yoga",
+    "therapies": "Terapias y Masajes",
+    "space": "Nuestro Espacio",
+    "about": "Sobre mí",
+    "contact": "Contacto",
+    "activities": "Actividades",
+    "meditations": "Meditaciones",
+    "promotions": "Promociones"
+  },
+  "promotions": {
+    "title": "Promociones Especiales",
+    "subtitle": "Descubre nuestras oportunidades únicas para profundizar en tu bienestar.",
+    "label": "Ofertas Exclusivas",
+    "code": "CÓDIGO:",
+    "about_section_title": "Nuestras Promociones",
+    "contact_cta": "¿Tienes dudas sobre alguna promoción? ¡Contáctanos!"
+  },
+  "meditations": {
+    "title": "Meditaciones",
+    "subtitle": "Encuentra un momento de calma y conexión con nuestras meditaciones guiadas y mantras.",
+    "loading": "Cargando meditaciones...",
+    "empty": "Próximamente compartiremos nuevas meditaciones contigo.",
+    "open_player": "Abrir Reproductor",
+    "guided_meditation": "Meditación Guiada",
+    "stop": "Detener",
+    "error_playback": "No se pudo reproducir el audio. Verifica tu conexión o el formato del archivo.",
+    "search_placeholder": "Buscar meditaciones...",
+    "error_search": "No se encontraron meditaciones con ese término de búsqueda.",
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "page": "Página",
+    "share_text": "Escucha esta meditación en Aruṇāchala Yoga"
+  },
+  "yoga": {
+    "title": "YOGA",
+    "subtitle": "Encuentra equilibrio y paz a través del movimiento y la respiración.",
+    "seo": {
+      "title": "Clases de Yoga en Barcelona | Aruṇāchala",
+      "description": "Descubre nuestras clases de yoga en Cornellà de Llobregat. Hatha Yoga, Vinyasa y meditación para todos los niveles."
+    },
+    "buttons": {
+      "schedule": "Horarios",
+      "schedule_sub": "Reserva tu clase",
+      "gallery": "Galería",
+      "gallery_sub": "Nuestro Espacio",
+      "blog": "Blog",
+      "blog_sub": "Artículos y Reflexiones",
+      "weekend": "Talleres/Eventos"
+    },
+    "blog": {
+      "title": "Blog de Yoga",
+      "subtitle": "Artículos, consejos y reflexiones sobre la práctica del yoga"
+    },
+    "sections": {
+      "schedule": "Horarios de Clases",
+      "search_class": "Buscar clase o estilo...",
+      "no_classes": "No hay clases",
+      "no_search_results": "No hay resultados que coincidan",
+      "rates": "Tarifas",
+      "price": "Precio",
+      "discount": "descuento",
+      "view_rates": "Ver Tarifas",
+      "no_rates_yet": "No hay tarifas publicadas todavía.",
+      "annex_title": "Actividades de Fin de Semana",
+      "annex_subtitle": "Anexo al Horario de Clases",
+      "gallery": "Galería de Imágenes",
+      "blog": "Últimas Publicaciones",
+      "blog_sub": "Inspiración para tu práctica y vida diaria"
+    },
+    "common": {
+      "back_to_top": "Volver al principio",
+      "view_all_gallery": "Ver Galería Completa",
+      "view_all_blog": "Ver todo el blog",
+      "read_article": "Leer artículo"
+    }
+  },
+  "common": {
+    "view_all": "Ver todos",
+    "see_all": "Ver todas",
+    "view_all_news": "Ver todas las noticias",
+    "thanks": "¡Gracias!",
+    "back": "Atrás",
+    "back_home": "Volver al inicio",
+    "loading": "Cargando...",
+    "sending": "Enviando...",
+    "close": "Cerrar",
+    "share": "Compartir",
+    "copied_to_clipboard": "Enlace copiado al portapapeles",
+    "copy_failed": "Error al copiar el enlace",
+    "read_more": "Leer más",
+    "days": {
+      "monday": "Lunes",
+      "tuesday": "Martes",
+      "wednesday": "Miércoles",
+      "thursday": "Jueves",
+      "friday": "Viernes",
+      "saturday": "Sábado",
+      "sunday": "Domingo"
+    },
+    "times": {
+      "morning": "MAÑANA",
+      "afternoon": "TARDE"
+    }
+  },
+  "home": {
+    "mantra_title": "Mantra del Día",
+    "loading": {
+      "experience": "Cargando Experiencia...",
+      "gallery": "Cargando Galería...",
+      "reviews": "Cargando Reseñas...",
+      "activities": "Cargando Actividades..."
+    },
+    "featured_activities": {
+      "title": "Próximas Actividades"
+    },
+    "mantras": [
+      {
+        "text": "Lokah Samastah Sukhino Bhavantu",
+        "translation": "Que todos los seres en todas partes sean felices y libres"
+      },
+      {
+        "text": "Om Namah Shivaya",
+        "translation": "Honro la divinidad que habita en mí"
+      },
+      {
+        "text": "Sat Nam",
+        "translation": "La verdad es mi identidad"
+      },
+      {
+        "text": "Om Mani Padme Hum",
+        "translation": "La joya en el loto de mi corazón"
+      },
+      {
+        "text": "Aham Brahmasmi",
+        "translation": "Yo soy la totalidad del universo"
+      }
+    ],
+    "quiz": {
+      "title": "Un Momento para Escucharte",
+      "subtitle": "Tómate un segundo para sentir tu respiración antes de responder.\nDescubre qué necesita tu cuerpo y mente hoy.",
+      "cta_start": "Empezar",
+      "progress": "Paso {{current}} de 4",
+      "restart": "Volver a empezar",
+      "other": "Otros... (Cuéntanos más)",
+      "custom_placeholder": "Escribe aquí tu respuesta...",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "appointment": "Reservar Cita",
+      "recommendation_title": "Tu Recomendación Personalizada",
+      "loading_ai": "Consultando con el especialista...",
+      "analyzing": "Analizando tus respuestas para ofrecerte la mejor recomendación...",
+      "l1": {
+        "question": "¿Cómo llegas hoy aquí?",
+        "options": {
+          "A": "Siento que mi cuerpo me está enviando señales de alerta (dolor, rigidez).",
+          "B": "Mi mente está muy ruidosa o me siento emocionalmente cansado/a.",
+          "C": "Busco un espacio para profundizar en mi autocuidado, sin una molestia urgente."
+        }
+      },
+      "l2": {
+        "A": {
+          "question": "¿Cómo se manifiesta ese mensaje de tu cuerpo?",
+          "options": {
+            "A1": "Es algo punzante o localizado que limita mis movimientos.",
+            "A2": "Es una sensación de pesadez general, como si cargara una mochila muy pesada."
+          }
+        },
+        "B": {
+          "question": "¿Qué es lo que más pesa en tu interior?",
+          "options": {
+            "B1": "La prisa, el \"no llegar a todo\" y la sensación de alerta constante.",
+            "B2": "Una sensación de estancamiento, tristeza o falta de claridad."
+          }
+        },
+        "C": {
+          "question": "¿Qué tipo de experiencia te llama más hoy?",
+          "options": {
+            "C1": "Movimiento consciente y vitalidad.",
+            "C2": "Calma profunda y relajación."
+          }
+        }
+      },
+      "l3": {
+        "A1": {
+          "question": "¿Este dolor ha aparecido por un esfuerzo puntual o te acompaña desde hace tiempo?",
+          "options": {
+            "1": "Es algo puntual.",
+            "2": "Es algo crónico."
+          }
+        },
+        "A2": {
+          "question": "¿Sientes que tu cuerpo necesita soltar tensión o que necesita fortalecerse para sostenerte mejor?",
+          "options": {
+            "1": "Necesito soltar tensión.",
+            "2": "Necesito ganar fuerza."
+          }
+        },
+        "B1": {
+          "question": "¿Te cuesta más desconectar durante el día o conciliar el sueño por la noche?",
+          "options": {
+            "1": "El día es el reto.",
+            "2": "La noche es el reto."
+          }
+        },
+        "B2": {
+          "question": "¿Prefieres el silencio para mirar hacia dentro o necesitas que alguien te guíe con suavidad?",
+          "options": {
+            "1": "Prefiero el silencio.",
+            "2": "Prefiero que me guíen."
+          }
+        },
+        "C1": {
+          "question": "¿Prefieres una práctica dinámica o algo más suave?",
+          "options": {
+            "1": "Dinámica.",
+            "2": "Suave."
+          }
+        },
+        "C2": {
+          "question": "¿Buscas un trabajo físico o energético?",
+          "options": {
+            "1": "Físico (Masaje).",
+            "2": "Energético (Reiki/Flores)."
+          }
+        }
+      },
+      "l4": {
+        "question": "¿Deseas profundizar más en tu malestar o compartir algún detalle adicional?",
+        "options": {
+          "no": "No, ver mi recomendación ahora",
+          "yes": "Sí, me gustaría explicarlo más a fondo"
+        }
+      }
+    }
+  },
+  "activities": {
+    "title": "Nuestras Actividades",
+    "subtitle": "Cursos temporales, talleres intensivos y eventos especiales diseñados para tu crecimiento.",
+    "seo": {
+      "title": "Actividades y Cursos | Aruṇāchala",
+      "description": "Descubre nuestras actividades activas, cursos temporales y eventos especiales en Aruṇāchala."
+    },
+    "share_text": "Mira esta actividad en Aruṇāchala Yoga",
+    "types": {
+      "taller": "Taller",
+      "curso": "Curso",
+      "evento": "Evento",
+      "retiro": "Retiro",
+      "sugerencia": "Sugerencia"
+    },
+    "sections": {
+      "courses": "Cursos",
+      "events": "Talleres y Eventos",
+      "suggestions": "Sugerencias"
+    },
+    "consult_price": "Consultar precio",
+    "no_talleres": "No hay talleres ni ciclos en estos momentos.",
+    "no_events": "No hay eventos en estos momentos.",
+    "no_polls": "No hay votaciones activas en este momento.",
+    "contact_to_signup": "Contactar para apuntarme",
+    "add_to_calendar": "Añadir al calendario",
+    "suggestions_header": "Sugerencias y Propuestas",
+    "suggestions_subheader": "Ayúdanos a mejorar día a día con nuevas actividades",
+    "labels": {
+      "date": "Fecha de inicio",
+      "end_date": "Fecha de finalización",
+      "location": "Ubicación",
+      "price": "Inversión",
+      "info": "Reserva",
+      "info_desc": "Plazas limitadas por orden de inscripción."
+    },
+    "suggestions": {
+      "share_text": "Participa en esta propuesta de actividad en Aruṇāchala Yoga",
+      "vote_now": "Registrar mi voto",
+      "vote_recorded": "Tu voto ha sido registrado correctamente.",
+      "label_comments": "Comentarios adicionales",
+      "placeholder_comments": "Cuéntanos un poco más...",
+      "voto_unit": "voto",
+      "voto_plural": "votos",
+      "label_custom_tag": "¿Tienes alguna idea?",
+      "custom_title": "Mándanos tu propuesta",
+      "custom_subtitle": "Si buscas algo muy específico que no está en la lista anterior, cuéntanoslo aquí.",
+      "custom_label": "Tu propuesta",
+      "custom_details_label": "Detalles o comentarios",
+      "placeholder_custom": "Ej: Taller sobre filosofía del yoga...",
+      "submit_idea": "Enviar mi idea",
+      "idea_received": "¡Idea recibida!",
+      "thanks_desc": "Muchas gracias por tu propuesta, la estudiaremos con cariño.",
+      "suggest_another": "Sugerir otra idea",
+      "vote_again": "Votar de nuevo",
+      "already_voted_title": "Ya hemos recibido tu participación",
+      "already_voted_desc": "Muchas gracias por tu interés, tendremos en cuenta tu opinión para futuras actividades.",
+      "other_option": "Otra propuesta...",
+      "placeholder_custom_poll": "Escribe tu idea aquí..."
+    },
+    "subscription": {
+      "title": "Recibe nuestras novedades",
+      "subtitle": "Suscríbete para recibir un correo cada vez que publiquemos una nueva actividad o taller.",
+      "placeholder": "Tu correo electrónico",
+      "name_placeholder": "Tu nombre (opcional)",
+      "button": "Suscribirme",
+      "success_title": "¡Genial!",
+      "success_msg": "Te hemos enviado un correo de confirmación. Por favor, revisa tu bandeja de entrada y la carpeta de correo no deseado (spam) para activar tu suscripción.",
+      "already_subscribed_msg": "Ya estás suscrito a nuestras novedades. ¡Gracias por tu interés!",
+      "error_msg": "Hubo un error al suscribirte. Inténtalo de nuevo.",
+      "unsubscribed_title": "Suscripción Cancelada",
+      "unsubscribed_msg": "Tu correo ha sido eliminado de nuestra lista correctamente. Lamentamos verte partir.",
+      "unsubscribe_error": "No hemos podido procesar tu solicitud. Por favor, contacta directamente con nosotros.",
+      "confirm_title": "Confirma tu suscripción",
+      "confirm_msg": "Tu suscripción a nuestras novedades está casi lista. Por favor, confirma tu correo electrónico.",
+      "confirm_button_process": "Confirmar ahora",
+      "confirmed_success_title": "¡Suscripción Confirmada!",
+      "confirmed_success_msg": "Gracias por confirmar tu correo. Pronto recibirás nuestras novedades en tu bandeja de entrada.",
+      "confirm_error": "No hemos podido confirmar tu suscripción. El enlace puede haber expirado o ser inválido.",
+      "already_confirmed_msg": "Tu suscripción ya estaba confirmada. ¡Gracias por formar parte de Aruṇāchala!",
+      "msg_landing": "Únete a nuestra lista para recibir las novedades de mis próximas actividades, talleres y retiros antes que nadie.",
+      "share_cta": "¡Compártelo con tus contactos!"
+    }
+  },
+  "space": {
+    "title": "Nuestro Espacio",
+    "subtitle": "Un refugio de paz en la ciudad",
+    "description_1": "En Aruṇāchala, tu centro de yoga y bienestar en Cornellà de Llobregat, hemos creado un entorno diseñado específicamente para la calma y la introspección. Nuestro espacio está concebido no solo como un lugar para practicar yoga o recibir terapias, sino como un santuario urbano donde desconectar del ruido exterior y reconectar contigo mismo.",
+    "description_2": "Ubicado en el corazón de Cornellà, disponemos de una sala principal diáfana, bañada por luz natural y equipada con materiales orgánicos de alta calidad. El ambiente, impregnado de aromas suaves y silencio, convierte a nuestro centro en el refugio ideal para tu práctica profunda y meditativa desde el primer momento en que cruzas la puerta.",
+    "no_images": "Imágenes próximamente",
+    "location_title": "Cómo llegar",
+    "transport": {
+      "tram_label": "Tranvía",
+      "tram_details": "Líneas T1 – T2 (El Pedró)",
+      "bus_label": "Autobús",
+      "bus_details": "Bus 57, 68, 94 o 95",
+      "metro_label": "Metro",
+      "metro_details": "Metro: Línea 5 (Cornellà Centre)"
+    },
+    "illustrative_map_label": "Mapa de referencia",
+    "open_gps": "Abrir en GPS"
+  },
+  "about": {
+    "title": "¿Quién Soy?",
+    "subtitle": "Yoga y Terapias Aruṇāchala",
+    "mission": "Un espacio de cuidado, presencia y transformación.",
+    "intro": "Mi nombre es Susana Pérez Gil y desde hace años acompaño a personas a través del Yoga y las Terapias Manuales, integrando cuerpo, mente y dimensión emocional-espiritual.",
+    "path_title": "Mi camino hacia Aruṇāchala",
+    "path_p1": "Mi camino comenzó hace más de 25 años, impulsado por una profunda inspiración por la India, su cultura y su espiritualidad. Empecé a practicar Yoga con un objetivo sencillo: sentirme bien físicamente y mantener una mente estable. Sin embargo, pronto experimenté lo que hoy reconozco como el primero de muchos saltos de conciencia.",
+    "specialties_title": "Formación y Especialidades",
+    "specialties_intro": "Para ofrecerte un cuidado completo, me he especializado en diversas disciplinas que combinan lo físico con lo energético:",
+    "cat_manual": "Terapias Manuales",
+    "cat_manual_desc": "Me formé en Quiromasaje, Drenaje Linfático, Reflexología y digitopresión.",
+    "cat_subtle": "Técnicas Sutiles",
+    "cat_subtle_desc": "Y más adelante en técnicas más sutiles como la Técnica Metamórfica y el Reiki. Todo ello me permitió comprender el cuerpo no sólo desde lo físico, sino también desde lo energético y emocional.",
+    "cat_yoga": "Profesora de Yoga",
+    "cat_yoga_desc": "Realicé la Formación de Profesora de Yoga, ampliando posteriormente mi formación en Yoga para diferentes etapas y momentos vitales, y profundizando en la tradición del Yoga como camino de autoconocimiento.",
+    "approach": "El Yoga, presente desde el inicio, acabó convirtiéndose en eje central de mi vida profesional, junto a los Masajes y las Terapias. Durante este proceso nació también mi amor por el sánscrito y los mantras, una herramienta que sigue acompañando mis clases y sesiones como puente entre cuerpo, respiración y conciencia.",
+    "arunachala_title": "Así nació Yoga y Terapias Aruṇāchala",
+    "arunachala_p1": "Con el tiempo surgió un sueño claro: crear un espacio propio donde unir Yoga y Terapias Manuales, un lugar donde cada persona pudiera sentirse acompañada desde el respeto, la escucha y la presencia.\n\nEse sueño tomó forma tras un viaje muy especial a la India, donde viví una experiencia profundamente transformadora: el ascenso a la Montaña Sagrada Aruṇāchala, en Tiruvannamalai. Allí comprendí que el centro que estaba gestándose ya tenía nombre, Aruṇāchala.\n\nUn espacio que ofrece Yoga, Masajes y Terapias como un camino de bienestar integral, adaptación y cuidado consciente.",
+    "quote": "\"Un lugar donde cada práctica y cada sesión se viven como una invitación a volver a un@ mism@.\"",
+    "cta_title": "¿Cómo puedo acompañarte?",
+    "cta_p1": "En Yoga y Terapias Aruṇāchala, te ofrezco un espacio de cuidado y presencia donde reencontrarte. Este es tu sitio.",
+    "mantra": "Om Namaḥ Śivaya",
+    "seo": {
+      "title": "Sobre mí | Susana Pérez Gil y Aruṇāchala Yoga",
+      "description": "Conoce a Susana Pérez Gil, fundadora de Aruṇāchala. Más de 25 años de experiencia en Yoga, masajes y terapias holísticas en Cornellà."
+    },
+    "instagram": {
+      "title": "Conecta conmigo",
+      "subtitle": "Sígueme en Instagram para ver mi día a día",
+      "follow": "Seguir a @yogayterapiasarunachala"
+    },
+    "news": {
+      "title": "Noticias",
+      "subtitle": "Sigue de cerca nuestro camino"
+    }
+  },
+  "contact_page": {
+    "title": "Contacto",
+    "subtitle": "¿Tienes alguna duda? Estamos aquí para ayudarte",
+    "whatsapp": {
+      "title": "Hablemos por WhatsApp",
+      "description": "¿Prefieres un trato más directo? Escríbenos por WhatsApp para resolver dudas o reservar tu cita al instante.",
+      "button": "Abrir Chat de WhatsApp",
+      "note": "Te responderemos encantados lo antes posible."
+    },
+    "info": {
+      "title": "Información de Contacto",
+      "address_label": "Dirección",
+      "address": "Yoga y Terapias Aruṇāchala - Pasaje de Mateo Oliva, 3, 08940 Cornellà de Llobregat, Barcelona",
+      "phone_label": "Teléfono / WhatsApp",
+      "email_label": "Email",
+      "hours_label": "Horario",
+      "hours_desc": "Consulta nuestro horario de clases y actividades.",
+      "quote": "Un lugar donde cada práctica y cada sesión son una invitación a volver a uno mismo."
+    },
+    "seo": {
+      "title": "Contacto | Yoga y Terapias Aruṇāchala Cornellà",
+      "description": "Contacta con Aruṇāchala Yoga en Cornellà. Reserva tu clase de yoga o sesión de terapia. Estamos en Pasaje de Mateo Oliva, 3."
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Artículos sobre yoga, meditación y bienestar",
+    "section_title": "Últimas Publicaciones",
+    "all": "Todos",
+    "no_articles": "No hay artículos disponibles",
+    "back_to_blog": "Volver al Blog",
+    "back_to_yoga": "Volver a Yoga",
+    "back_to_therapies": "Volver a Terapias",
+    "related_articles": "Artículos Relacionados",
+    "share_text": "Echa un vistazo a este artículo en Aruṇāchala Yoga",
+    "read_more": "Leer más",
+    "view_all": "Ver Todos los Artículos",
+    "search": {
+      "placeholder": "Buscar artículos...",
+      "no_results": "No se encontraron artículos",
+      "advanced_search": "Búsqueda avanzada",
+      "year": "Año",
+      "all_years": "Todos los años",
+      "month": "Mes",
+      "all_months": "Todos los meses",
+      "tags_filter": "Filtrar por etiquetas"
+    },
+    "filter": {
+      "category": "Categoría",
+      "date": "Fecha",
+      "tags": "Etiquetas"
+    },
+    "categories": {
+      "all": "Todos",
+      "yoga": "Yoga",
+      "therapy": "Terapias",
+      "general": "General"
+    },
+    "no_tags": "No hay etiquetas disponibles",
+    "clear_tags": "Limpiar etiquetas",
+    "category_pages": {
+      "yoga": {
+        "title": "Blog de Yoga",
+        "subtitle": "Artículos, consejos y reflexiones sobre la práctica del yoga"
+      },
+      "therapy": {
+        "title": "Blog de Terapias",
+        "subtitle": "Artículos sobre terapias holísticas, masajes y bienestar"
+      },
+      "general": {
+        "title": "Blog General",
+        "subtitle": "Artículos sobre bienestar y vida consciente"
+      }
+    },
+    "seo": {
+      "title": "Blog | Aruṇāchala Yoga y Terapias",
+      "description": "Descubre artículos sobre yoga, meditación, terapias holísticas y bienestar en nuestro blog."
+    },
+    "cta": {
+      "title": "¿Te ha inspirado este artículo?",
+      "description_yoga": "Ven a practicar con nosotros en Aruṇāchala. Un espacio de calma en el corazón de Cornellà.",
+      "description_therapy": "Ven a cuidar de ti en Aruṇāchala. Tu refugio de sanación y calma en Cornellà.",
+      "button": "Contacta con nosotros"
+    }
+  },
+  "legal": {
+    "title": "Aviso Legal",
+    "subtitle": "Información legal y condiciones de uso del sitio web",
+    "last_updated": "Última actualización",
+    "seo": {
+      "title": "Aviso Legal | Aruṇāchala Yoga y Terapias",
+      "description": "Aviso legal y condiciones de uso del sitio web de Aruṇāchala Yoga y Terapias en Cornellà de Llobregat."
+    },
+    "sections": {
+      "identification": {
+        "title": "Identificación",
+        "company": "Titular",
+        "company_value": "Susana Pérez Gil - Aruṇāchala Yoga y Terapias",
+        "cif": "NIF",
+        "cif_value": "46616079R",
+        "address": "Dirección",
+        "address_value": "Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona",
+        "email": "Email",
+        "phone": "Teléfono"
+      },
+      "object": {
+        "title": "Objeto del Sitio Web",
+        "content": "Este sitio web ofrece información sobre las clases de yoga, terapias holísticas y masajes de Aruṇāchala. Al utilizar esta web, aceptas las condiciones de uso aquí establecidas."
+      },
+      "conditions": {
+        "title": "Condiciones de Uso",
+        "content": "El usuario se compromete a usar el sitio web de forma adecuada y conforme a la ley, sin difundir contenidos inapropiados ni realizar acciones que puedan dañar el funcionamiento de la web."
+      },
+      "property": {
+        "title": "Propiedad Intelectual",
+        "content": "Todos los contenidos de este sitio web (textos, imágenes, logotipos, diseño) son propiedad de Aruṇāchala. Puedes visualizarlos para uso personal, pero no puedes reproducirlos, distribuirlos o modificarlos sin autorización."
+      },
+      "liability": {
+        "title": "Limitación de Responsabilidad",
+        "content": "Aruṇāchala se esfuerza por mantener la información actualizada y correcta, pero no se responsabiliza de posibles errores u omisiones en los contenidos, ni de interrupciones temporales en el servicio."
+      },
+      "law": {
+        "title": "Legislación Aplicable",
+        "content": "Este aviso legal se rige por la legislación española. Cualquier disputa se resolverá en los tribunales de Barcelona."
+      }
+    }
+  },
+  "privacy": {
+    "title": "Política de Privacidad",
+    "subtitle": "Información sobre cómo tratamos tus datos personales",
+    "intro": "En cumplimiento del Reglamento (UE) 2016/679 del Parlamento Europeo y del Consejo de 27 de abril de 2016 (RGPD) y la Ley Orgánica 3/2018, de 5 de diciembre, de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD), te informamos sobre cómo tratamos tus datos personales.",
+    "last_updated": "Última actualización",
+    "seo": {
+      "title": "Política de Privacidad | Aruṇāchala Yoga y Terapias",
+      "description": "Política de privacidad y protección de datos personales de Aruṇāchala Yoga y Terapias en Cornellà de Llobregat."
+    },
+    "sections": {
+      "responsible": {
+        "title": "1. Responsable del tratamiento",
+        "content": "Titular: Susana Pérez Gil - Aruṇāchala Yoga y Terapias\nNIF: 46616079R\nDirección: Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona\nEmail: yogayterapiasarunachala@gmail.com\nTeléfono: +34 678 481 971"
+      },
+      "data": {
+        "title": "2. ¿Qué datos recogemos?",
+        "content": "Podemos recoger los siguientes datos personales:\n\n- Datos de contacto: nombre, apellidos, email, teléfono\n- Datos de reserva: información sobre las clases o sesiones reservadas\n- Datos de salud: información médica relevante para las terapias (solo con tu consentimiento explícito)"
+      },
+      "purpose": {
+        "title": "3. ¿Para qué usamos tus datos?",
+        "content": "Utilizamos tus datos para:\n\n- Gestión de clases y reservas: organizar y confirmar tu asistencia a clases de yoga y sesiones de terapia\n- Comunicación: responder a tus consultas y enviarte información sobre nuestros servicios\n- Información comercial: enviarte novedades, promociones o eventos (solo si nos das tu consentimiento)\n- Atención terapéutica: adaptar las sesiones a tus necesidades de salud (solo datos necesarios y con tu consentimiento)"
+      },
+      "legal_base": {
+        "title": "4. Base legal del tratamiento",
+        "content": "Tratamos tus datos basándonos en:\n\n- Ejecución de un contrato: para gestionar tu reserva o inscripción en nuestros servicios\n- Consentimiento: para enviar comunicaciones comerciales o tratar datos de salud\n- Interés legítimo: para mejorar nuestros servicios"
+      },
+      "recipients": {
+        "title": "5. ¿Con quién compartimos tus datos?",
+        "content": "No vendemos ni cedemos tus datos a terceros. Únicamente podrían ser compartidos con:\n\n- Proveedores de servicios: plataformas de email, gestión de reservas o pagos (bajo acuerdos de confidencialidad)\n- Autoridades: cuando sea legalmente obligatorio"
+      },
+      "retention": {
+        "title": "6. ¿Cuánto tiempo conservamos tus datos?",
+        "content": "Conservamos tus datos mientras:\n\n- Mantengas una relación activa con nosotros (como alumno/a o cliente)\n- Hasta que solicites su supresión\n- Durante el tiempo legalmente exigido (datos fiscales: 6 años)"
+      },
+      "rights": {
+        "title": "7. Tus derechos",
+        "content": "Tienes derecho a:\n\n- Acceder a tus datos personales\n- Rectificar datos inexactos o incompletos\n- Suprimir tus datos cuando ya no sean necesarios\n- Oponerte al tratamiento de tus datos\n- Limitar el tratamiento en determinadas circunstancias\n- Portabilidad de tus datos a otro responsable\n- Retirar el consentimiento en cualquier momento\n\nPara ejercer tus derechos, envíanos un email a: yogayterapiasarunachala@gmail.com\n\nTambién puedes presentar una reclamación ante la Agencia Española de Protección de Datos (www.aepd.es)."
+      },
+      "security": {
+        "title": "8. Seguridad de tus datos",
+        "content": "Hemos adoptado medidas de seguridad apropiadas para proteger tus datos personales contra acceso no autorizado, pérdida o alteración."
+      },
+      "minors": {
+        "title": "9. Datos de menores",
+        "content": "No recogemos intencionadamente datos de menores de 14 años sin el consentimiento de sus padres o tutores. Si eres padre/madre y crees que tu hijo/a nos ha proporcionado datos, contacta con nosotros."
+      },
+      "updates": {
+        "title": "10. Cambios en la política de privacidad",
+        "content": "Podemos actualizar esta política de privacidad. Te recomendamos revisarla periódicamente. La fecha de última actualización aparece al inicio de este documento."
+      }
+    }
+  },
+  "chatbot": {
+    "welcome": "¡Namasté! 🙏 Bienvenido a Aruṇāchala. Soy tu asistente virtual. ¿En qué puedo ayudarte hoy? Puedes preguntarme sobre horarios, clases de yoga, o terapias.",
+    "placeholder": "Escribe tu pregunta...",
+    "tooltip": "¿Cómo puedo ayudarte? ✨",
+    "status": "Namasté 🙏 Online",
+    "ai_notice": "✨ Inteligencia Artificial entrenada para Aruṇāchala ✨"
+  },
+  "reviews": {
+    "reviews_empty_title": "Tu opinión nos importa",
+    "reviews_empty_desc": "Aún no hemos conectado las reseñas de Google. Si has pasado por nuestro centro, nos encantaría conocer tu experiencia.",
+    "reviews_leave": "Dejar una reseña en Google",
+    "reviews_title": "Lo que dicen de nosotros",
+    "reviews_google_count": "reseñas en Google",
+    "reviews_verified": "Cliente verificado",
+    "reviews_share": "Nos importa tu opinión, compártela"
+  }
+}

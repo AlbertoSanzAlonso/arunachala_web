@@ -1,0 +1,634 @@
+import React, { useState, useEffect, lazy, Suspense } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { PlusIcon, PencilIcon, TrashIcon, PhotoIcon, EyeIcon } from '@heroicons/react/24/outline';
+import { API_BASE_URL } from '../../config';
+import PageLoader from '../../components/PageLoader';
+import CropModal from '../../components/CropModal';
+import 'react-quill/dist/quill.snow.css';
+// Dynamic import to avoid SSR issues
+const ReactQuill = lazy(() => import('react-quill'));
+
+interface TreatmentType {
+    id: number;
+    name: string;
+    excerpt: string | null;
+    description: string | null;
+    benefits: string | null;
+    duration_min: number | null;
+    price: string | null;
+    image_url: string | null;
+    is_active: boolean;
+}
+
+const API_URL = API_BASE_URL;
+
+export default function TreatmentsManager() {
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    // Initialize tab from URL
+    const initialTab = (searchParams.get('tab') as 'massages' | 'therapies') || 'massages';
+    const [activeTab, setActiveTab] = useState<'massages' | 'therapies'>(initialTab);
+
+    // Sync URL when tab changes
+    useEffect(() => {
+        setSearchParams(prev => {
+            prev.set('tab', activeTab);
+            return prev;
+        }, { replace: true });
+    }, [activeTab, setSearchParams]);
+
+    const [items, setItems] = useState<TreatmentType[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [editingItem, setEditingItem] = useState<TreatmentType | null>(null);
+
+    // Form States
+    const [name, setName] = useState('');
+    const [excerpt, setExcerpt] = useState('');
+    const [description, setDescription] = useState('');
+    const [benefits, setBenefits] = useState('');
+    const [durationMin, setDurationMin] = useState('');
+    const [price, setPrice] = useState('');
+    const [isActive, setIsActive] = useState(true);
+    const [selectedFile, setSelectedFile] = useState<File | Blob | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+    // Cropper States
+    const [imageSrc, setImageSrc] = useState<string | null>(null);
+    const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+
+    useEffect(() => {
+        fetchItems();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeTab]);
+
+    const fetchItems = async () => {
+        setIsLoading(true);
+        try {
+            const endpoint = activeTab === 'massages' ? 'massages' : 'therapies';
+            const response = await fetch(`${API_URL}/api/treatments/${endpoint}`);
+            if (response.ok) {
+                const data = await response.json();
+                setItems(data);
+            }
+        } catch (error) {
+            console.error('Error fetching items:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleAuthError = () => {
+        sessionStorage.removeItem('access_token');
+        sessionStorage.removeItem('user_role');
+        window.location.href = '/login';
+    };
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = () => {
+                setImageSrc(reader.result?.toString() || null);
+                setIsCropModalOpen(true);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleCropSave = async (croppedBlob: Blob) => {
+        setIsSaving(true);
+        try {
+            setSelectedFile(croppedBlob);
+            setPreviewUrl(URL.createObjectURL(croppedBlob));
+            setIsCropModalOpen(false);
+            setImageSrc(null);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleCropCancel = () => {
+        setIsCropModalOpen(false);
+        setImageSrc(null);
+        // Reset input value if needed, effectively cancelling upload
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSaving(true);
+        const token = sessionStorage.getItem('access_token');
+        const endpoint = activeTab === 'massages' ? 'massages' : 'therapies';
+
+        try {
+            const url = editingItem
+                ? `${API_URL}/api/treatments/${endpoint}/${editingItem.id}`
+                : `${API_URL}/api/treatments/${endpoint}`;
+
+            const method = editingItem ? 'PUT' : 'POST';
+
+            const formData = new FormData();
+            formData.append('name', name);
+            if (excerpt) formData.append('excerpt', excerpt);
+            if (description) formData.append('description', description);
+            if (benefits) formData.append('benefits', benefits);
+
+            // Handle duration: send 0 if empty to signal clearing
+            if (durationMin && durationMin.trim() !== '') {
+                formData.append('duration_min', durationMin);
+            } else {
+                formData.append('duration_min', '0');
+            }
+            if (price) {
+                // Ensure price has € symbol
+                const finalPrice = price.includes('€') ? price : `${price}€`;
+                formData.append('price', finalPrice);
+            }
+            formData.append('is_active', String(isActive));
+            // If editing and cleared, send empty? The backend expects int or None.
+            // If we send nothing, and it's PUT, it might keep old value if DB logic checks for None.
+            // However, FormData entries are strings. We need to handle clearing.
+            // Our backend logic: `if duration_min is not None: db_massage.duration_min = duration_min`
+            // If we don't send it, it won't update.
+            // To clear it, we might need to send a special value or handle optional better.
+            // For now, let's assume empty string means don't update or set to null?
+            // The backend Pydantic model `duration_min: Optional[int] = Form(None)`.
+
+            if (selectedFile) {
+                // If it's a blob from cropper, we need to correct the filename
+                if (selectedFile instanceof Blob && !(selectedFile instanceof File)) {
+                    formData.append('image', selectedFile, 'image.webp');
+                } else {
+                    formData.append('image', selectedFile);
+                }
+            }
+
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                    // Do NOT set Content-Type header for FormData, browser does it automatically
+                },
+                body: formData
+            });
+
+            if (response.ok) {
+                await fetchItems();
+                handleCloseModal();
+            } else if (response.status === 401 || response.status === 403) {
+                handleAuthError();
+            } else {
+                const error = await response.json();
+                alert(error.detail || 'Error al guardar');
+            }
+        } catch (error) {
+            console.error('Error saving item:', error);
+            alert('Error al guardar');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleDeleteClick = (id: number) => {
+        setItemToDelete(id);
+        setShowDeleteConfirm(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!itemToDelete) return;
+
+        setIsSaving(true);
+        const token = sessionStorage.getItem('access_token');
+        const endpoint = activeTab === 'massages' ? 'massages' : 'therapies';
+
+        try {
+            const response = await fetch(`${API_URL}/api/treatments/${endpoint}/${itemToDelete}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                await fetchItems();
+                setShowDeleteConfirm(false);
+                setItemToDelete(null);
+            } else if (response.status === 401 || response.status === 403) {
+                handleAuthError();
+            } else {
+                alert('Error al eliminar');
+            }
+        } catch (error) {
+            console.error('Error deleting item:', error);
+            alert('Error al eliminar');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleEdit = (item: TreatmentType) => {
+        setEditingItem(item);
+        setName(item.name);
+        setExcerpt(item.excerpt || '');
+        setDescription(item.description || '');
+        setBenefits(item.benefits || '');
+        setPrice(item.price || '');
+
+        // Handle duration
+        if (item.duration_min !== null && item.duration_min !== undefined) {
+            setDurationMin(item.duration_min.toString());
+        } else {
+            setDurationMin('');
+        }
+        setIsActive(item.is_active ?? true);
+
+        setPreviewUrl(item.image_url ? (item.image_url.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`) : null);
+        setSelectedFile(null);
+        setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+        setEditingItem(null);
+        setName('');
+        setExcerpt('');
+        setDescription('');
+        setBenefits('');
+        setDurationMin('');
+        setPrice('');
+        setIsActive(true);
+        setSelectedFile(null);
+        setPreviewUrl(null);
+        setImageSrc(null);
+        setIsCropModalOpen(false);
+    };
+
+    return (
+        <div>
+            {isSaving && <PageLoader />}
+
+            {/* Cropper Modal */}
+            {imageSrc && (
+                <CropModal
+                    open={isCropModalOpen}
+                    onClose={handleCropCancel}
+                    imageSrc={imageSrc}
+                    onSave={handleCropSave}
+                    aspectRatio={4 / 3}
+                />
+            )}
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="sm:flex-auto">
+                    <h1 className="text-xl sm:text-2xl font-bold leading-6 text-gray-900">
+                        Gestión de Tratamientos
+                    </h1>
+                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-500">
+                        Administra los tipos de masajes y terapias. Los elementos <b>activos</b> aparecen en la web, los <b>inactivos</b> son borradores.
+                    </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 sm:flex-none">
+                    <button
+                        type="button"
+                        onClick={() => setShowModal(true)}
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary-100 hover:bg-primary-500 transition-all active:scale-95"
+                    >
+                        <PlusIcon className="h-5 w-5" />
+                        Crear Nuevo
+                    </button>
+                </div>
+            </div>
+
+            {/* Tabs */}
+            <div className="mt-6 border-b border-gray-100 bg-white/50 -mx-4 px-4 sm:mx-0 sm:px-0 sticky top-16 lg:top-24 z-30 backdrop-blur-md">
+                <nav className="mobile-tabs-container hide-scrollbar -mb-px flex space-x-6 sm:space-x-8" aria-label="Tabs">
+                    <button
+                        onClick={() => setActiveTab('massages')}
+                        className={`
+                            whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-all
+                            ${activeTab === 'massages'
+                                ? 'border-primary-500 text-primary-600'
+                                : 'border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-200'}
+                        `}
+                    >
+                        Masajes
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('therapies')}
+                        className={`
+                            whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-all
+                            ${activeTab === 'therapies'
+                                ? 'border-primary-500 text-primary-600'
+                                : 'border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-200'}
+                        `}
+                    >
+                        Terapias
+                    </button>
+                </nav>
+            </div>
+
+            {isLoading ? (
+                <div className="flex flex-col items-center justify-center py-20 gap-4">
+                    <div className="w-10 h-10 border-4 border-primary-100 border-t-primary-600 rounded-full animate-spin"></div>
+                    <p className="text-sm font-medium text-gray-400">Cargando contenido...</p>
+                </div>
+            ) : (
+                <div className="mt-8 grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {items.map((item) => (
+                        <div key={item.id} className="relative flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-all group">
+                            <div className="h-40 sm:h-48 w-full bg-gray-50 overflow-hidden flex items-center justify-center relative">
+                                {item.image_url ? (
+                                    <img
+                                        src={item.image_url.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`}
+                                        alt={item.name}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    />
+                                ) : (
+                                    <img
+                                        src={'/logo_icon.webp'}
+                                        alt="Placeholder"
+                                        className="h-20 opacity-20 group-hover:scale-110 transition-transform duration-500"
+                                    />
+                                )}
+                                <div className="absolute top-3 right-3">
+                                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm ${item.is_active ? 'bg-green-500 text-white' : 'bg-gray-400 text-white'}`}>
+                                        {item.is_active ? 'Público (Web)' : 'Borrador'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="flex-1 p-5 sm:p-6">
+                                <h3 className="text-lg font-bold text-gray-900 leading-tight">{item.name}</h3>
+                                <p className="mt-2 text-sm text-gray-500 line-clamp-3 leading-relaxed">
+                                    {item.excerpt}
+                                </p>
+                                <div className="mt-4 flex flex-wrap items-center gap-3">
+                                    {item.duration_min && (
+                                        <div className="flex items-center gap-1.5 px-2 py-1 bg-gray-50 rounded-lg">
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase">⏳ {item.duration_min}m</span>
+                                        </div>
+                                    )}
+                                    {item.price && (
+                                        <div className="flex items-center gap-1.5 px-2 py-1 bg-primary-50 rounded-lg">
+                                            <span className="text-[11px] font-bold text-primary-700">{item.price.includes('€') ? item.price : `${item.price}€`}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex border-t border-gray-100 bg-gray-50/50">
+                                <button
+                                    onClick={() => handleEdit(item)}
+                                    className="flex-1 px-4 py-3 text-sm font-bold text-gray-600 hover:bg-white hover:text-primary-600 transition-all flex items-center justify-center gap-2"
+                                >
+                                    <PencilIcon className="h-4 w-4" /> Editar
+                                </button>
+                                <div className="w-px bg-gray-100"></div>
+                                <button
+                                    onClick={() => handleDeleteClick(item.id)}
+                                    className="flex-1 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-all flex items-center justify-center gap-2"
+                                >
+                                    <TrashIcon className="h-4 w-4" /> Eliminar
+                                </button>
+                                <div className="w-px bg-gray-100"></div>
+                                <a
+                                    href={activeTab === 'massages' ? '/terapias/masajes' : '/terapias/terapias-holisticas'}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 px-4 py-3 text-sm font-bold text-blue-500 hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
+                                >
+                                    <EyeIcon className="h-4 w-4" /> Ver
+                                </a>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Modal */}
+            {showModal && (
+                <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4 overflow-hidden">
+                        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                            <h3 className="text-lg font-medium text-gray-900">
+                                {editingItem ? 'Editar' : 'Nuevo'} {activeTab === 'massages' ? 'Masaje' : 'Terapia'}
+                            </h3>
+                        </div>
+                        <form onSubmit={handleSubmit} className="px-6 py-6 overflow-y-auto max-h-[80vh]">
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Nombre *</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm p-3 border"
+                                        placeholder="Ej: Masaje Relajante"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Extracto (Para miniatura)</label>
+                                    <textarea
+                                        rows={2}
+                                        value={excerpt}
+                                        onChange={(e) => setExcerpt(e.target.value)}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm p-3 border"
+                                        placeholder="Breve descripción que aparecerá en la tarjeta..."
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Descripción Completa</label>
+                                    <p className="text-xs text-gray-400 mb-2">Editor de texto enriquecido. Puedes usar negrita, cursiva, listas, etc.</p>
+                                    <Suspense fallback={<div className="h-40 border rounded-md bg-gray-50 animate-pulse" />}>
+                                        <ReactQuill
+                                            theme="snow"
+                                            value={description}
+                                            onChange={setDescription}
+                                            modules={{
+                                                toolbar: [
+                                                    ['bold', 'italic', 'underline'],
+                                                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                                                    ['clean']
+                                                ]
+                                            }}
+                                            className="bg-white rounded-md"
+                                            style={{ minHeight: '140px' }}
+                                        />
+                                    </Suspense>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Beneficios</label>
+                                    <textarea
+                                        rows={3}
+                                        value={benefits}
+                                        onChange={(e) => setBenefits(e.target.value)}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm p-3 border"
+                                        placeholder="Beneficio 1, Beneficio 2..."
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Duración (min) - <span className="text-gray-400 font-normal">Opcional</span></label>
+                                    <input
+                                        type="number"
+                                        value={durationMin}
+                                        onChange={(e) => setDurationMin(e.target.value)}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm p-3 border"
+                                        placeholder="Opcional. Ej: 60"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Precio (Opcional)</label>
+                                    <div className="relative rounded-md shadow-sm mt-1">
+                                        <input
+                                            type="number"
+                                            value={price.replace('€', '').trim()}
+                                            onChange={(e) => setPrice(e.target.value)}
+                                            className="block w-full rounded-md border-gray-300 pr-12 focus:border-primary-500 focus:ring-primary-500 sm:text-sm p-3 border"
+                                            placeholder="50"
+                                        />
+                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                                            <span className="text-gray-500 sm:text-sm">€</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-bold text-gray-700">Estado del Tratamiento</span>
+                                        <span className="text-xs text-gray-500">{isActive ? 'Público en la web' : 'Borrador (Oculto)'}</span>
+                                    </div>
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={isActive}
+                                            onChange={(e) => setIsActive(e.target.checked)}
+                                            className="sr-only peer"
+                                        />
+                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                                    </label>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Imagen</label>
+                                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                                        <div className="text-center">
+                                            {previewUrl ? (
+                                                <div className="relative mb-4">
+                                                    <img 
+                                                    src={previewUrl} 
+                                                    alt="Preview" 
+                                                    className="mx-auto h-48 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity" 
+                                                    onClick={() => {
+                                                        if (previewUrl && !previewUrl.startsWith('data:')) {
+                                                            setImageSrc(previewUrl);
+                                                            setIsCropModalOpen(true);
+                                                        }
+                                                    }}
+                                                    title="Haz clic para volver a recortar esta imagen" 
+                                                />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setSelectedFile(null);
+                                                            setPreviewUrl(null);
+                                                        }}
+                                                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 -mt-2 -mr-2 shadow-sm hover:bg-red-600"
+                                                    >
+                                                        <TrashIcon className="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <PhotoIcon className="mx-auto h-12 w-12 text-gray-300" aria-hidden="true" />
+                                            )}
+
+                                            <div className="mt-4 flex flex-col items-center gap-2 text-sm leading-6 text-gray-600">
+                                                <label
+                                                    htmlFor="file-upload"
+                                                    className="relative cursor-pointer rounded-md bg-primary-600 px-4 py-2 font-semibold text-white shadow-sm hover:bg-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary-600 focus-within:ring-offset-2"
+                                                >
+                                                    <span>Sube una imagen</span>
+                                                    <input
+                                                        id="file-upload"
+                                                        name="file-upload"
+                                                        type="file"
+                                                        className="sr-only"
+                                                        accept="image/*"
+                                                        onChange={handleFileChange}
+                                                    />
+                                                </label>
+                                                <p>o arrastra y suelta</p>
+                                            </div>
+                                            <p className="text-xs leading-5 text-gray-600">PNG, JPG, WEBP hasta 5MB</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="mt-8 flex justify-end gap-3 sticky bottom-0 bg-white pt-4">
+                                <button
+                                    type="button"
+                                    onClick={handleCloseModal}
+                                    className="rounded-md border border-gray-300 bg-white px-6 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isSaving}
+                                    className="rounded-md bg-primary-600 px-6 py-2 text-sm font-medium text-white hover:bg-primary-700 shadow-sm disabled:opacity-50"
+                                >
+                                    {isSaving ? 'Guardando...' : (editingItem ? 'Actualizar' : 'Crear')}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteConfirm && (
+                <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+                        <div className="px-6 py-4">
+                            <h3 className="text-lg font-medium text-gray-900 mb-4">
+                                Confirmar Eliminación
+                            </h3>
+                            <p className="text-sm text-gray-500 mb-6">
+                                ¿Estás seguro de que quieres eliminar este elemento?
+                            </p>
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setShowDeleteConfirm(false);
+                                        setItemToDelete(null);
+                                    }}
+                                    className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleDeleteConfirm}
+                                    disabled={isSaving}
+                                    className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                                >
+                                    {isSaving ? 'Eliminando...' : 'Eliminar'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}

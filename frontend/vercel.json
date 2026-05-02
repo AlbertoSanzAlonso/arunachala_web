@@ -1,0 +1,9 @@
+{
+  "trailingSlash": true,
+  "rewrites": [
+    {
+      "source": "/sitemap.xml",
+      "destination": "https://api.yogayterapiasarunachala.es/sitemap.xml"
+    }
+  ]
+}

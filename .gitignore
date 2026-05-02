@@ -1,0 +1,98 @@
+# --- SEGURIDAD ---
+.env
+*.env
+backend/.env
+google-credentials.json
+backend/google-credentials.json
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+backend/test_*.py
+backend/check_*.py
+backend/debug_*.py
+backend/*.db
+backend/*.log
+
+# --- DATOS ---
+postgres_data/
+n8n_data/
+nocodb_data/
+infraestructura/qdrant_data/
+
+# --- SISTEMA ---
+.DS_Store
+Thumbs.db
+
+# --- PROYECTO ---
+node_modules/
+venv/
+.venv/
+backend/.venv/
+backend/.temp_venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# --- FRONTEND ---
+frontend/build/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# --- HEAVY ASSETS (Local only) ---
+frontend/src/assets/videos/VIDEOWEB.mov
+frontend/src/assets/videos/Video aniversario Arunachala .mp4
+frontend/src/assets/videos/VIDEOWEB_hero.mp4
+
+# --- ANTIGUO ---
+Analisis competencia/
+scripts/
+web/assets/palettes/
+web/prototypes/
+
+# --- IDE CONFIGURACION ---
+.vscode/settings.json
+.idea/
+.cursor/
+
+# --- AGENTES CONFIGURACION ---
+.opencode/
+
+# --- AGENTES Y SKILLS ---
+.agent/
+.claude/
+.gemini/
+.codex/
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+setup-skills.sh
+
+# --- DB & LOGS ---
+*.db
+*.log
+backend/static/
+backend/app/static/
+backend/docker/postgres_data/

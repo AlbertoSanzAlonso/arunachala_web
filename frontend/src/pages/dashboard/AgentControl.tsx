@@ -1,0 +1,1137 @@
+import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../../config';
+import { useNavigate } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Cog6ToothIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+import { motion, AnimatePresence } from 'framer-motion';
+import ConfirmModal from '../../components/ConfirmModal';
+
+const AgentControl: React.FC = () => {
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    const [tone, setTone] = useState("Asistente Amable");
+    const [responseLength, setResponseLength] = useState("balanced");
+    const [emojiStyle, setEmojiStyle] = useState("moderate");
+    const [focusAreas, setFocusAreas] = useState<string[]>(["info"]); // Changed to array
+    const [customFocus, setCustomFocus] = useState("");
+    const [instructions, setInstructions] = useState("");
+    const [quizModel, setQuizModel] = useState("groq");
+    const [chatbotModel, setChatbotModel] = useState("openai");
+    const [isActive, setIsActive] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState<string | null>(null);
+    const [showResetModal, setShowResetModal] = useState(false);
+    const [resetStep, setResetStep] = useState(1); // 1: Select Type, 2: Final Warning
+    const [resetScope, setResetScope] = useState<string | null>(null);
+    const [resetLoading, setResetLoading] = useState(false);
+    const [showTriggerModal, setShowTriggerModal] = useState(false);
+    const [confirmAction, setConfirmAction] = useState<{
+        title: string;
+        message: string;
+        onConfirm: () => void;
+        type?: 'danger' | 'warning' | 'info';
+        confirmText?: string;
+    } | null>(null);
+    const [showAdvanced, setShowAdvanced] = useState(false);
+
+    // RAG Status State
+    const [syncLoading, setSyncLoading] = useState<string | null>(null); // null, 'all', 'yoga', etc.
+    const [suppressPolling, setSuppressPolling] = useState(false);
+    const lastNotifiedIdRef = React.useRef<number>(0);
+
+    const [triggerLoading, setTriggerLoading] = useState<string | null>(null);
+    const [pendingChanges, setPendingChanges] = useState<Record<number, any>>({});
+
+    const { data: ragStatus } = useQuery({
+        queryKey: ['ragStatus'],
+        queryFn: async () => {
+            const response = await fetch(`${API_BASE_URL}/api/rag/sync-status`);
+            if (!response.ok) throw new Error('Failed to fetch RAG status');
+            return response.json();
+        },
+        refetchInterval: (query) => {
+            if (suppressPolling) return false;
+            const data = query.state?.data;
+            const isProcessing = data && data.processing_count > 0;
+            return syncLoading !== null || isProcessing ? 3000 : false;
+        }
+    });
+
+    const { data: tasksFetched = [] } = useQuery({
+        queryKey: ['automationTasks'],
+        queryFn: async () => {
+            const response = await fetch(`${API_BASE_URL}/api/automation/tasks`);
+            if (!response.ok) throw new Error('Failed to fetch automation tasks');
+            return response.json();
+        }
+    });
+
+    const tasks = React.useMemo(() => [...tasksFetched].sort((a, b) => a.id - b.id), [tasksFetched]);
+
+    useEffect(() => {
+        fetchConfig();
+    }, []);
+
+    useEffect(() => {
+        if (!ragStatus) return;
+        const data = ragStatus;
+        if (data.latest_success && data.latest_success.id > lastNotifiedIdRef.current) {
+            const syncTime = new Date(data.latest_success.vectorized_at).getTime();
+            const tolerance = lastNotifiedIdRef.current === 0 ? 10000 : 120000;
+            if (Date.now() - syncTime < tolerance) {
+                const typeLabels: Record<string, string> = {
+                    'article': 'Artículo',
+                    'yoga_class': 'Clase Yoga',
+                    'promotion': 'Promoción',
+                    'meditation': 'Meditación',
+                    'activity': 'Actividad',
+                    'therapy': 'Terapia',
+                    'massage': 'Masaje',
+                    'announcement': 'Noticia'
+                };
+                const label = typeLabels[data.latest_success.entity_type] || 'Contenido';
+                setMessage(`✅ Nuevo contenido aprendido: ${label} "${data.latest_success.title}"`);
+                setTimeout(() => setMessage(null), 5000);
+            }
+            lastNotifiedIdRef.current = data.latest_success.id;
+        }
+    }, [ragStatus]);
+
+    const handleSync = async (type: string, force: boolean = false) => {
+        setSyncLoading(type);
+        try {
+            const token = sessionStorage.getItem('access_token');
+            if (!token) {
+                setMessage("Sesión no encontrada. Por favor, reinicia sesión.");
+                setSyncLoading(null);
+                return;
+            }
+
+            const response = await fetch(`${API_BASE_URL}/api/rag/sync`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ sync_type: type, force })
+            });
+
+            if (response.status === 401) {
+                setMessage("Tu sesión ha expirado o no tienes permisos.");
+                setSyncLoading(null);
+                return;
+            }
+
+            if (response.ok) {
+                await response.json();
+                const friendlyType: Record<string, string> = {
+                    'all': 'todo el contenido',
+                    'yoga': 'las clases de yoga',
+                    'massage': 'los masajes',
+                    'therapy': 'las terapias',
+                    'article': 'los artículos del blog',
+                    'meditation': 'las meditaciones guiadas',
+                    'activity': 'las actividades',
+                    'promotion': 'las promociones',
+                    'announcement': 'las noticias'
+                };
+
+                setMessage(`¡Hecho! Se está actualizando la memoria con ${friendlyType[type] || 'el contenido'}. El progreso aparecerá abajo.`);
+                // Refresh immediately
+                queryClient.invalidateQueries({ queryKey: ['ragStatus'] });
+            } else {
+                setMessage("Hubo un problema al intentar actualizar la memoria.");
+            }
+        } catch (error) {
+            setMessage("Error de conexión. Por favor, inténtalo de nuevo.");
+        } finally {
+            setSyncLoading(null);
+        }
+    };
+
+    const fetchConfig = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/config`);
+            if (response.ok) {
+                const data = await response.json();
+                setTone(data.tone || "Asistente Amable");
+                setResponseLength(data.response_length || "balanced");
+                setEmojiStyle(data.emoji_style || "moderate");
+
+                // Parse focus area string to list
+                const rawFocus = data.focus_area || "info";
+                const parsedFocus = rawFocus.split(',');
+
+                // Separate standard options from custom
+                const standards = ['info', 'booking', 'coaching'];
+                const standardSelected = parsedFocus.filter((f: string) => standards.includes(f));
+                const customSelected = parsedFocus.filter((f: string) => !standards.includes(f));
+
+                setFocusAreas(standardSelected);
+                if (customSelected.length > 0) {
+                    setCustomFocus(customSelected[0]); // Assume one custom focus for now
+                }
+
+                setInstructions(data.system_instructions || "");
+                setQuizModel(data.quiz_model || "groq");
+                setChatbotModel(data.chatbot_model || "openai");
+                setIsActive(data.is_active ?? true);
+            }
+        } catch (error) {
+            console.error("Failed to fetch agent config", error);
+        }
+    };
+
+    const handleSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setMessage(null);
+
+        // Validation: Must have at least one focus (either standard or custom)
+        if (focusAreas.length === 0 && !customFocus.trim()) {
+            setMessage("Error: Debe elegir al menos un enfoque principal o escribir uno en 'Otro'.");
+            setLoading(false);
+            return;
+        }
+
+        // Combine standard and custom
+        let finalFocus = [...focusAreas];
+        if (customFocus.trim()) {
+            finalFocus.push(customFocus.trim());
+        }
+        const focusString = finalFocus.join(',');
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/config`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tone,
+                    response_length: responseLength,
+                    emoji_style: emojiStyle,
+                    focus_area: focusString,
+                    system_instructions: instructions,
+                    quiz_model: quizModel,
+                    chatbot_model: chatbotModel,
+                    is_active: isActive
+                })
+            });
+
+            if (response.ok) {
+                setMessage("Configuración guardada correctamente. El agente actualizará su comportamiento de inmediato.");
+                setTimeout(() => {
+                    navigate('/dashboard');
+                }, 1500);
+            } else {
+                setMessage("Error al guardar la configuración.");
+            }
+        } catch (error) {
+            setMessage("Error de conexión al guardar.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleResetMemory = async () => {
+        if (!resetScope) return;
+        setResetLoading(true);
+        try {
+            const token = sessionStorage.getItem('access_token');
+            const response = await fetch(`${API_BASE_URL}/api/rag/chat-memory-reset`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ scope: resetScope })
+            });
+
+            if (response.ok) {
+                const successMessages: Record<string, string> = {
+                    'all': '¡Borrado total completado! La IA ha olvidado todo y ahora es una hoja en blanco.',
+                    'yoga_class': 'Hecho. La IA ya no recuerda nada sobre las clases de yoga.',
+                    'massage': 'Se ha limpiado el conocimiento sobre los masajes.',
+                    'therapy': 'La IA ha olvidado todo lo relacionado con las terapias.',
+                    'article': 'He borrado los artículos del blog de la memoria de la IA.',
+                    'meditation': 'Se han eliminado las meditaciones del conocimiento de la IA.',
+                    'activity': 'Se han eliminado las actividades del conocimiento de la IA.',
+                    'promotion': 'Se han eliminado las promociones del conocimiento de la IA.',
+                    'announcement': 'Se han eliminado las noticias del conocimiento de la IA.'
+                };
+
+                setMessage(successMessages[resetScope] || 'La memoria ha sido reiniciada correctamente.');
+                setShowResetModal(false);
+                setResetStep(1);
+
+                // OPTIMISTIC UPDATE: Set relevant vectorized count to 0 immediately
+                if (ragStatus) {
+                    const newStatus = { ...ragStatus };
+                    newStatus.processing_count = 0;
+
+                    // SUPPRESS POLLING for 5 seconds to let DB stabilize
+                    setSuppressPolling(true);
+                    setTimeout(() => setSuppressPolling(false), 5000);
+
+                    if (resetScope === 'all') {
+                        Object.keys(newStatus).forEach(key => {
+                            if (newStatus[key] && typeof newStatus[key] === 'object' && newStatus[key].total !== undefined) {
+                                newStatus[key].vectorized = 0;
+                                newStatus[key].sync_percentage = 0;
+                                newStatus[key].needs_reindex = newStatus[key].total;
+                            }
+                        });
+                        newStatus.total_needs_reindex = Object.keys(newStatus)
+                            .filter(k => typeof newStatus[k] === 'object' && newStatus[k].total !== undefined)
+                            .reduce((sum, k) => (sum as number) + (newStatus[k].total as number), 0);
+                    } else {
+                        const tableMap: Record<string, string> = {
+                            'yoga_class': 'yoga_classes',
+                            'massage': 'massage_types',
+                            'therapy': 'therapy_types',
+                            'article': 'articles',
+                            'meditation': 'meditations',
+                            'activity': 'activities',
+                            'promotion': 'promotions',
+                            'announcement': 'announcements'
+                        };
+                        const targetKey = tableMap[resetScope];
+                        if (targetKey && newStatus[targetKey]) {
+                            newStatus[targetKey].vectorized = 0;
+                            newStatus[targetKey].sync_percentage = 0;
+                            newStatus[targetKey].needs_reindex = newStatus[targetKey].total;
+                            // Recalculate total needs reindex
+                            newStatus.total_needs_reindex = Object.keys(newStatus)
+                                .filter(k => typeof newStatus[k] === 'object' && newStatus[k].total !== undefined)
+                                .reduce((sum, k) => (sum as number) + (newStatus[k].needs_reindex !== undefined ? newStatus[k].needs_reindex : (newStatus[k].total || 0)), 0);
+                        }
+                    }
+                    queryClient.setQueryData(['ragStatus'], newStatus);
+                }
+
+                // Still fetch to be safe after a short delay
+                setTimeout(() => queryClient.invalidateQueries({ queryKey: ['ragStatus'] }), 4000);
+            } else {
+                setMessage("No se pudo completar el reinicio de memoria.");
+            }
+        } catch (error) {
+            setMessage("Error de conexión al reiniciar.");
+        } finally {
+            setResetLoading(false);
+        }
+    };
+
+    // Tasks fetched via React Query
+
+    const handleTriggerTask = async (taskType: string, category?: string) => {
+        const triggerKey = `${taskType}-${category || 'all'}`;
+        setTriggerLoading(triggerKey);
+        try {
+            const token = sessionStorage.getItem('access_token');
+            console.log("Triggering task with token type:", typeof token, "exists:", !!token);
+
+            if (!token) {
+                setMessage("Error: No se encontró el token de sesión. Por favor, vuelve a iniciar sesión.");
+                return;
+            }
+
+            const response = await fetch(`${API_BASE_URL}/api/automation/trigger`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ task_type: taskType, category })
+            });
+
+            if (response.status === 401) {
+                setMessage("Tu sesión ha expirado o es inválida. Por favor, reinicia sesión.");
+                return;
+            }
+
+            if (response.ok) {
+                setShowTriggerModal(true);
+            } else {
+                setMessage("Error al disparar la tarea automática.");
+            }
+        } catch (error) {
+            setMessage("Error de conexión al disparar la tarea.");
+        } finally {
+            setTriggerLoading(null);
+        }
+    };
+
+    const handleUpdateTaskSchedule = async (task: any, updates: any) => {
+        try {
+            const token = sessionStorage.getItem('access_token');
+            if (!token) {
+                setMessage("Sesión no encontrada. Por favor, reinicia sesión.");
+                return;
+            }
+
+            // Only send the fields expected by TaskBase (Pydantic model on backend)
+            // to avoid 422 error due to extra fields like 'id', 'last_run', etc.
+            const taskData = {
+                name: task.name,
+                task_type: task.task_type,
+                category: task.category,
+                schedule_type: task.schedule_type || 'weekly',
+                schedule_days: updates.schedule_days !== undefined ? updates.schedule_days : task.schedule_days,
+                schedule_time: updates.schedule_time !== undefined ? updates.schedule_time : task.schedule_time,
+                is_active: updates.is_active !== undefined ? updates.is_active : task.is_active
+            };
+
+            const response = await fetch(`${API_BASE_URL}/api/automation/tasks/${task.id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(taskData)
+            });
+
+            if (response.status === 401) {
+                setMessage("Sesión expirada. Por favor, reinicia sesión.");
+                return;
+            }
+
+            if (response.ok) {
+                queryClient.invalidateQueries({ queryKey: ['automationTasks'] });
+                setMessage(`Horario actualizado para: ${task.name}`);
+            }
+        } catch (error) {
+            console.error("Failed to update task schedule", error);
+            setMessage("Error al actualizar el horario.");
+        }
+    };
+
+    const OptionGroup = ({ label, options, value, onChange }: any) => (
+        <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
+            <div className="flex flex-wrap gap-2">
+                {options.map((opt: any) => (
+                    <button
+                        key={opt.val}
+                        type="button"
+                        onClick={() => onChange(opt.val)}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${value === opt.val
+                            ? 'bg-forest text-white shadow-md'
+                            : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                            }`}
+                    >
+                        {opt.label}
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+
+    const MultiSelectOptionGroup = () => {
+        const toggleOption = (val: string) => {
+            if (focusAreas.includes(val)) {
+                // Allow deselecting IF there are more items OR custom text exists
+                if (focusAreas.length > 1 || customFocus.trim().length > 0) {
+                    setFocusAreas(focusAreas.filter(f => f !== val));
+                }
+            } else {
+                setFocusAreas([...focusAreas, val]);
+            }
+        };
+
+        const options = [
+            { val: 'info', label: 'Informativo (Resolver dudas)' },
+            { val: 'booking', label: 'Comercial (Cerrar reservas)' },
+            { val: 'coaching', label: 'Motivacional (Bienestar)' }
+        ];
+
+        return (
+            <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Enfoque Principal (Selección Múltiple)</label>
+                <div className="flex flex-col gap-3">
+                    <div className="flex flex-wrap gap-2">
+                        {options.map((opt) => (
+                            <button
+                                key={opt.val}
+                                type="button"
+                                onClick={() => toggleOption(opt.val)}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${focusAreas.includes(opt.val)
+                                    ? 'bg-forest text-white shadow-md'
+                                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                                    }`}
+                            >
+                                {opt.label}
+                            </button>
+                        ))}
+                    </div>
+                    {/* Custom Option */}
+                    <div className="flex items-center gap-2 mt-2">
+                        <span className="text-sm text-gray-500">Otro:</span>
+                        <input
+                            type="text"
+                            value={customFocus}
+                            onChange={(e) => setCustomFocus(e.target.value)}
+                            placeholder="Ej: Dar soporte técnico..."
+                            className="flex-1 p-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-forest bg-gray-50 focus:bg-white transition-all"
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <div className="p-6 max-w-4xl mx-auto">
+            <div className="flex items-center gap-4 mb-8">
+                <div className="bg-forest/10 p-3 rounded-full">
+                    <ChatBubbleLeftRightIcon className="w-8 h-8 text-forest" />
+                </div>
+                <div>
+                    <h1 className="text-2xl font-headers text-bark">Control del Agente IA</h1>
+                    <p className="text-gray-500 text-sm">Personaliza el comportamiento y la personalidad de tu asistente virtual.</p>
+                </div>
+            </div>
+
+            <form onSubmit={handleSave} className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 space-y-8">
+
+                {/* Tone Selector */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Tono y Personalidad</label>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {['Asistente Amable', 'Muy Formal', 'Espiritual y Zen', 'Enérgico y Motivador'].map((option) => (
+                            <button
+                                type="button"
+                                key={option}
+                                onClick={() => setTone(option)}
+                                className={`p-4 rounded-xl border-2 text-left transition-all ${tone === option
+                                    ? 'border-forest bg-forest/5 text-forest'
+                                    : 'border-gray-100 hover:border-forest/30 text-gray-600'
+                                    }`}
+                            >
+                                <span className="block font-medium">{option}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="pt-4 border-t border-gray-50">
+                    <button
+                        type="button"
+                        onClick={() => setShowAdvanced(!showAdvanced)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-gray-500 hover:text-forest transition-colors group"
+                    >
+                        <Cog6ToothIcon className={`w-5 h-5 transition-transform duration-500 ${showAdvanced ? 'rotate-90 text-forest' : ''}`} />
+                        <span>Configuración avanzada (Modelos IA)</span>
+                        <svg
+                            className={`w-4 h-4 transition-transform duration-300 ${showAdvanced ? 'rotate-180' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <AnimatePresence>
+                        {showAdvanced && (
+                            <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.4, ease: "easeInOut" }}
+                                className="overflow-hidden"
+                            >
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 pb-4">
+                                    {/* Quiz Model Selector */}
+                                    <div>
+                                        <label className="flex items-center gap-2 text-sm font-bold text-bark mb-4">
+                                            <span className="w-6 h-6 bg-forest/10 rounded-full flex items-center justify-center text-xs">1</span>
+                                            Cerebro del Cuestionario Inicial
+                                        </label>
+                                        <div className="space-y-3">
+                                            {[
+                                                { val: 'groq', label: 'Llama 3.3 70B', cost: 'Gratuito', intel: 'Máxima', desc: 'Rápido y muy inteligente. Recomendado.' },
+                                                { val: 'openai', label: 'GPT-4o-mini', cost: 'De Pago', intel: 'Alta', desc: 'Muy fiable y con buen formato.' },
+                                                { val: 'gemini', label: 'Gemini 1.5 Flash', cost: 'Gratuito', intel: 'Media', desc: 'Buen equilibrio pero menos creativo.' }
+                                            ].map((m) => (
+                                                <button
+                                                    key={m.val}
+                                                    type="button"
+                                                    onClick={() => setQuizModel(m.val)}
+                                                    className={`w-full p-4 rounded-xl border-2 text-left transition-all ${quizModel === m.val
+                                                        ? 'border-forest bg-forest/5 ring-1 ring-forest/20'
+                                                        : 'border-gray-50 hover:border-gray-200 text-gray-600'
+                                                        }`}
+                                                >
+                                                    <div className="flex justify-between items-start mb-1">
+                                                        <span className="font-bold text-sm">{m.label}</span>
+                                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${m.cost === 'Gratuito' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                                                            {m.cost}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-[11px] text-gray-500 mb-2">{m.desc}</p>
+                                                    <div className="flex items-center gap-1">
+                                                        <span className="text-[10px] text-gray-400 uppercase font-bold">Inteligencia:</span>
+                                                        <div className="flex gap-0.5">
+                                                            {[1, 2, 3].map((star) => (
+                                                                <div key={star} className={`w-2 h-2 rounded-full ${m.intel === 'Máxima' || (m.intel === 'Alta' && star <= 2) || (m.intel === 'Media' && star === 1) ? 'bg-forest' : 'bg-gray-200'}`} />
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Chatbot Model Selector */}
+                                    <div>
+                                        <label className="flex items-center gap-2 text-sm font-bold text-bark mb-4">
+                                            <span className="w-6 h-6 bg-forest/10 rounded-full flex items-center justify-center text-xs">2</span>
+                                            Cerebro del Chatbot General
+                                        </label>
+                                        <div className="space-y-3">
+                                            {[
+                                                { val: 'openai', label: 'GPT-4o-mini', cost: 'De Pago', intel: 'Alta', desc: 'Excelente siguiendo reglas. Recomendado.' },
+                                                { val: 'groq', label: 'Llama 3.3 70B', cost: 'Gratuito', intel: 'Máxima', desc: 'Muy potente para conversaciones naturales.' },
+                                                { val: 'gemini', label: 'Gemini 1.5 Flash', cost: 'Gratuito', intel: 'Media', desc: 'Versátil pero a veces más simple.' }
+                                            ].map((m) => (
+                                                <button
+                                                    key={m.val}
+                                                    type="button"
+                                                    onClick={() => setChatbotModel(m.val)}
+                                                    className={`w-full p-4 rounded-xl border-2 text-left transition-all ${chatbotModel === m.val
+                                                        ? 'border-forest bg-forest/5 ring-1 ring-forest/20'
+                                                        : 'border-gray-50 hover:border-gray-200 text-gray-600'
+                                                        }`}
+                                                >
+                                                    <div className="flex justify-between items-start mb-1">
+                                                        <span className="font-bold text-sm">{m.label}</span>
+                                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${m.cost === 'Gratuito' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                                                            {m.cost}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-[11px] text-gray-500 mb-2">{m.desc}</p>
+                                                    <div className="flex items-center gap-1">
+                                                        <span className="text-[10px] text-gray-400 uppercase font-bold">Inteligencia:</span>
+                                                        <div className="flex gap-0.5">
+                                                            {[1, 2, 3].map((star) => (
+                                                                <div key={star} className={`w-2 h-2 rounded-full ${m.intel === 'Máxima' || (m.intel === 'Alta' && star <= 2) || (m.intel === 'Media' && star === 1) ? 'bg-forest' : 'bg-gray-200'}`} />
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Disclaimer */}
+                                    <div className="md:col-span-2 bg-amber-50 p-4 rounded-xl border border-amber-100 flex gap-3">
+                                        <div className="text-amber-500">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                        <p className="text-xs text-amber-800 leading-relaxed">
+                                            <strong>Nota importante:</strong> Esta configuración solo afecta a los modelos que interactúan con los usuarios.
+                                            <strong> NO interfiere</strong> en absoluto con la programación o publicación de artículos y meditaciones automáticas.
+                                        </p>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-gray-50">
+                    <div>
+                        <OptionGroup
+                            label="Longitud de Respuesta"
+                            value={responseLength}
+                            onChange={setResponseLength}
+                            options={[
+                                { val: 'concise', label: 'Breve y Directa' },
+                                { val: 'balanced', label: 'Equilibrada' },
+                                { val: 'detailed', label: 'Explicativa y Detallada' }
+                            ]}
+                        />
+                        <OptionGroup
+                            label="Uso de Emojis"
+                            value={emojiStyle}
+                            onChange={setEmojiStyle}
+                            options={[
+                                { val: 'none', label: 'Sin Emojis' },
+                                { val: 'moderate', label: 'Moderado (Cálido)' },
+                                { val: 'high', label: 'Divertido (Frecuente)' }
+                            ]}
+                        />
+                    </div>
+                    <div>
+                        <MultiSelectOptionGroup />
+                    </div>
+                </div>
+
+                {/* System Instructions */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Instrucciones Específicas</label>
+                    <textarea
+                        rows={4}
+                        value={instructions}
+                        onChange={(e) => setInstructions(e.target.value)}
+                        placeholder="Ej: Recuerda mencionar que hay descuento para estudiantes. No des diagnósticos médicos."
+                        className="w-full p-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest/20 focus:border-forest transition-all"
+                    />
+                </div>
+
+                {/* Status Toggle */}
+                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                    <Cog6ToothIcon className="w-6 h-6 text-gray-400" />
+                    <div className="flex-1">
+                        <span className="block text-sm font-medium text-gray-700">Estado del Agente</span>
+                        <span className="text-xs text-gray-500">Activa o desactiva las respuestas automáticas.</span>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} className="sr-only peer" />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-forest/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-forest"></div>
+                    </label>
+                </div>
+
+                {/* Feedback Message */}
+                {message && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`p-4 rounded-lg text-sm ${message.includes('Error') ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-700'}`}
+                    >
+                        {message}
+                    </motion.div>
+                )}
+
+                {/* Submit */}
+                <div className="flex flex-col sm:flex-row justify-end gap-4">
+                    <button
+                        type="button"
+                        onClick={() => setShowResetModal(true)}
+                        className="order-2 sm:order-1 px-6 py-3 bg-red-50 text-red-600 font-medium rounded-xl hover:bg-red-100 transition-all text-center"
+                    >
+                        Reiniciar Memoria de la IA
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="order-1 sm:order-2 px-6 py-3 bg-forest text-white font-medium rounded-xl hover:bg-matcha hover:scale-105 transition-all shadow-md disabled:opacity-50 disabled:hover:scale-100 text-center"
+                    >
+                        {loading ? 'Guardando...' : 'Guardar Configuración'}
+                    </button>
+                </div>
+
+            </form>
+
+            {/* ARTICULOS Y AUTOMATIZACIÓN (NEW SECTION) */}
+            <div className="mt-12 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="bg-matcha/20 p-2 rounded-lg">
+                        <svg className="w-6 h-6 text-forest" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 2v6h6" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 13H8m8 4H8m0-8h1" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-headers text-bark">Generación de Contenido</h2>
+                        <p className="text-gray-500 text-sm">Dispara la creación de nuevos artículos para el blog.</p>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    {/* Yoga Trigger */}
+                    <div className="p-6 rounded-2xl bg-forest/5 border border-forest/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <span className="block font-bold text-forest mb-1">Artículo de Yoga</span>
+                            <p className="text-xs text-forest/70 max-w-[200px]">Crea un artículo sobre beneficios, posturas o filosofía.</p>
+                        </div>
+                        <button
+                            onClick={() => handleTriggerTask('generate_article', 'yoga')}
+                            disabled={triggerLoading === 'generate_article-yoga'}
+                            className="w-full sm:w-auto px-4 py-2.5 bg-forest text-white text-sm font-bold rounded-xl hover:bg-matcha transition-all shadow-sm disabled:opacity-50"
+                        >
+                            {triggerLoading === 'generate_article-yoga' ? 'Generando...' : 'Generar Ahora'}
+                        </button>
+                    </div>
+
+                    {/* Therapy Trigger */}
+                    <div className="p-6 rounded-2xl bg-bark/5 border border-bark/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <span className="block font-bold text-bark mb-1">Artículo de Terapias</span>
+                            <p className="text-xs text-bark/70 max-w-[200px]">Genera contenido sobre masajes y terapias alternativas.</p>
+                        </div>
+                        <button
+                            onClick={() => handleTriggerTask('generate_article', 'therapy')}
+                            disabled={triggerLoading === 'generate_article-therapy'}
+                            className="w-full sm:w-auto px-4 py-2.5 bg-bark text-white text-sm font-bold rounded-xl hover:bg-bark/80 transition-all shadow-sm disabled:opacity-50"
+                        >
+                            {triggerLoading === 'generate_article-therapy' ? 'Generando...' : 'Generar Ahora'}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Automation Scheduling */}
+                <div className="border-t border-gray-100 pt-8">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Programación Automática</h3>
+                        <span className="text-[10px] bg-matcha/10 text-forest px-2 py-1 rounded-full font-bold">BLOG</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4">
+                        {tasks.map((task: any) => (
+                            <div key={task.id} className="group relative flex flex-col lg:flex-row lg:items-center justify-between p-5 rounded-2xl bg-white border border-gray-100 hover:border-matcha/30 hover:shadow-md transition-all gap-4">
+                                {/* Left side: Info - Fixed width to prevent shifts */}
+                                <div className="flex items-center gap-4 min-w-[240px]">
+                                    <div className={`w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center transition-colors ${task.is_active ? 'bg-forest text-white' : 'bg-gray-100 text-gray-400'}`}>
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <span className={`block font-bold text-bark transition-colors ${task.is_active ? 'text-forest' : ''}`}>{task.name}</span>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <span className={`inline-block w-2 h-2 rounded-full ${task.is_active ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
+                                            <span className="text-[11px] text-gray-500 font-medium whitespace-nowrap">
+                                                {task.last_run
+                                                    ? `Última: ${new Date(task.last_run).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}`
+                                                    : (task.is_active ? 'Programada' : 'Inactiva')}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Right side: Controls - Wrapped in a stable flex container */}
+                                <div className="flex flex-wrap items-center gap-4 md:gap-8 ml-auto">
+                                    {/* Day Picker */}
+                                    <div className="space-y-1.5">
+                                        <span className="block text-[10px] font-bold text-gray-400 uppercase ml-1">Días</span>
+                                        <div className="flex gap-1 p-1 bg-gray-50 rounded-xl border border-gray-100 min-w-[210px] justify-center">
+                                            {['1', '2', '3', '4', '5', '6', '0'].map((d) => {
+                                                const dayLabel = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][parseInt(d)];
+                                                const currentDaysString = pendingChanges[task.id]?.schedule_days ?? task.schedule_days;
+                                                const isActiveDay = currentDaysString?.split(',').includes(d);
+                                                return (
+                                                    <button
+                                                        key={d}
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            let days = currentDaysString?.split(',').filter((x: string) => x) || [];
+                                                            if (days.includes(d)) days = days.filter((x: string) => x !== d);
+                                                            else days.push(d);
+                                                            
+                                                            const updates = { ...(pendingChanges[task.id] || {}), schedule_days: days.join(',') };
+                                                            setPendingChanges(prev => ({ ...prev, [task.id]: updates }));
+                                                        }}
+                                                        className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg text-[10px] sm:text-xs font-bold transition-all transform active:scale-95 ${isActiveDay
+                                                            ? 'bg-forest text-white shadow-sm'
+                                                            : 'bg-white text-gray-400 hover:text-bark hover:bg-gray-50'
+                                                            }`}
+                                                    >
+                                                        {dayLabel}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* Time Picker */}
+                                    <div className="space-y-1.5">
+                                        <span className="block text-[10px] font-bold text-gray-400 uppercase ml-1">Hora</span>
+                                        <input
+                                            type="time"
+                                            value={pendingChanges[task.id]?.schedule_time ?? task.schedule_time}
+                                            onChange={(e) => {
+                                                const updates = { ...(pendingChanges[task.id] || {}), schedule_time: e.target.value };
+                                                setPendingChanges(prev => ({ ...prev, [task.id]: updates }));
+                                            }}
+                                            className={`w-24 px-3 py-2 bg-gray-50 border rounded-xl text-sm font-bold text-bark focus:ring-2 focus:ring-forest/20 focus:border-forest outline-none transition-all cursor-pointer ${pendingChanges[task.id]?.schedule_time !== undefined ? 'border-amber-300 ring-1 ring-amber-100' : 'border-gray-100'}`}
+                                        />
+                                    </div>
+
+                                    {/* Save Button (ONLY if changes pending) */}
+                                    <AnimatePresence>
+                                        {pendingChanges[task.id] && (
+                                            <motion.div
+                                                initial={{ opacity: 0, x: 20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                exit={{ opacity: 0, x: 10 }}
+                                                className="flex flex-col items-center gap-1"
+                                            >
+                                                <span className="text-[10px] font-black text-amber-500 animate-pulse">¡CAMBIOS!</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        handleUpdateTaskSchedule(task, pendingChanges[task.id]).then(() => {
+                                                            setPendingChanges(prev => {
+                                                                const next = { ...prev };
+                                                                delete next[task.id];
+                                                                return next;
+                                                            });
+                                                        });
+                                                    }}
+                                                    className="px-3 py-2 bg-amber-500 text-white rounded-xl text-[10px] font-bold uppercase hover:bg-amber-600 transition-all shadow-sm ring-2 ring-amber-200"
+                                                >
+                                                    Guardar
+                                                </button>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+
+                                    {/* Status Button */}
+                                    <div className="flex flex-col items-center gap-1.5 min-w-[90px]">
+                                        <span className={`text-[10px] font-bold uppercase transition-colors ${task.is_active ? 'text-forest' : 'text-gray-400'}`}>
+                                            {task.is_active ? 'EN MARCHA' : 'PARADO'}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleUpdateTaskSchedule(task, { is_active: !task.is_active })}
+                                            className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm border ${task.is_active
+                                                ? 'bg-forest/10 border-forest text-forest hover:bg-forest hover:text-white'
+                                                : 'bg-gray-100 border-gray-200 text-gray-400 hover:bg-forest/20 hover:text-forest'
+                                                }`}
+                                        >
+                                            {task.is_active ? 'DETENER' : 'ACTIVAR'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* KNOWLEDGE CENTER */}
+            <div className="mt-12 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                        <div>
+                            <h2 className="text-xl font-headers text-bark">Centro de Conocimiento</h2>
+                            <p className="text-gray-500 text-sm">Gestiona la sincronización entre la base de datos y la memoria de la IA.</p>
+                        </div>
+                    </div>
+                    {(ragStatus?.processing_count > 0 || syncLoading !== null) && (
+                        <svg
+                            className="w-5 h-5 text-forest animate-spin self-start sm:self-center"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                        >
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                        </svg>
+                    )}
+                </div>
+
+                {ragStatus ? (
+                    <div className="space-y-6">
+                        {/* Summary Grid */}
+                        {/* Summary Grid */}
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {[
+                                ragStatus.yoga_classes && { id: 'yoga', label: 'Yoga', data: ragStatus.yoga_classes, color: 'matcha' },
+                                ragStatus.massage_types && { id: 'massage', label: 'Masajes', data: ragStatus.massage_types, color: 'matcha' },
+                                ragStatus.therapy_types && { id: 'therapy', label: 'Terapias', data: ragStatus.therapy_types, color: 'matcha' },
+                                ragStatus.articles && { id: 'article', label: 'Blog', data: ragStatus.articles, color: 'matcha' },
+                                ragStatus.meditations && { id: 'meditation', label: 'Meditaciones', data: ragStatus.meditations, color: 'matcha' },
+                                ragStatus.activities && { id: 'activity', label: 'Actividades', data: ragStatus.activities, color: 'matcha' },
+                                ragStatus.promotions && { id: 'promotion', label: 'Promo', data: ragStatus.promotions, color: 'matcha' },
+                                ragStatus.announcements && { id: 'announcement', label: 'Noticias', data: ragStatus.announcements, color: 'matcha' },
+                            ].filter(Boolean).map((item: any) => (
+                                <div key={item.id} className="p-4 rounded-xl bg-gray-50 border border-gray-100">
+                                    <span className="block text-xs font-bold text-gray-400 uppercase mb-1">{item.label}</span>
+                                    <div className="flex items-end justify-between">
+                                        <span className="text-2xl font-bold text-bark">{item.data.vectorized}</span>
+                                        <span className="text-xs text-gray-400">/ {item.data.total}</span>
+                                    </div>
+                                    <div className="mt-2 h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
+                                        <div
+                                            className={`h-full bg-${item.color} transition-all duration-1000`}
+                                            style={{ width: `${item.data.sync_percentage}%` }}
+                                        />
+                                    </div>
+                                    {item.data.needs_reindex > 0 && (
+                                        <button
+                                            onClick={() => handleSync(item.id)}
+                                            disabled={syncLoading !== null}
+                                            className="mt-3 w-full py-1 text-[10px] font-bold bg-white border border-gray-200 rounded hover:border-forest hover:text-forest transition-all disabled:opacity-50"
+                                        >
+                                            {syncLoading === item.id ? 'Sincronizando...' : `Sincronizar ${item.data.needs_reindex}`}
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Control Actions */}
+                        <div className="flex flex-wrap gap-4 pt-4 border-t border-gray-50">
+                            <button
+                                onClick={() => handleSync('all')}
+                                disabled={syncLoading !== null}
+                                className="px-6 py-2 bg-bark text-white rounded-xl text-sm font-medium hover:bg-bark/90 transition-all shadow-sm disabled:opacity-50"
+                            >
+                                {syncLoading === 'all' ? 'Procesando...' : 'Sincronizar Todo lo Pendiente'}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setConfirmAction({
+                                        title: 'Forzar Reindexación',
+                                        message: '¿Estás seguro? Esto enviará TODA la base de datos al sistema de IA de nuevo para procesar todos los vectores desde cero.',
+                                        confirmText: 'Sí, reindexar todo',
+                                        type: 'warning',
+                                        onConfirm: () => {
+                                            handleSync('all', true);
+                                            setConfirmAction(null);
+                                        }
+                                    });
+                                }}
+                                disabled={syncLoading !== null}
+                                className="px-6 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-all disabled:opacity-50"
+                            >
+                                Forzar Reindexación Completa
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="py-8 text-center text-gray-400 italic">
+                        Cargando estado de sincronización...
+                    </div>
+                )}
+
+                {/* Automation Trigger Success Modal */}
+                {showTriggerModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bark/60 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-forest/10 text-center"
+                        >
+                            <div className="w-20 h-20 bg-matcha/20 text-forest rounded-full flex items-center justify-center mx-auto mb-6">
+                                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+
+                            <h2 className="text-2xl font-headers text-bark mb-4">Petición Procesada</h2>
+
+                            <div className="space-y-4 text-gray-600 mb-8">
+                                <p>
+                                    La orden de generación de artículo ha sido enviada con éxito a nuestro agente de IA.
+                                </p>
+                                <div className="bg-gray-50 p-4 rounded-xl text-sm italic">
+                                    "La IA está ahora mismo investigando, redactando y seleccionando imágenes para tu nuevo contenido."
+                                </div>
+                                <p className="text-sm">
+                                    Este proceso suele tardar <strong className="text-bark">entre 2 y 5 minutos</strong>. Puedes seguir trabajando en el dashboard; el artículo aparecerá automáticamente en la sección de <strong className="text-bark">Contenidos</strong> cuando esté listo.
+                                </p>
+                            </div>
+
+                            <button
+                                onClick={() => setShowTriggerModal(false)}
+                                className="w-full py-4 bg-forest text-white rounded-xl font-bold hover:bg-matcha transition-all shadow-lg active:scale-95"
+                            >
+                                Entendido, volveré luego
+                            </button>
+
+                            <button
+                                onClick={() => navigate('/dashboard/content')}
+                                className="mt-4 w-full text-forest text-sm font-medium hover:underline"
+                            >
+                                Ir a la sección de contenidos
+                            </button>
+                        </motion.div>
+                    </div>
+                )}
+            </div>
+
+            {/* Panic Reset Modal */}
+            {showResetModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bark/60 backdrop-blur-sm">
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl border border-red-100"
+                    >
+                        {resetStep === 1 ? (
+                            <>
+                                <h2 className="text-2xl font-headers text-red-600 mb-4">Reiniciar Memoria de IA</h2>
+                                <p className="text-gray-600 mb-6">Esta acción eliminará segmentos del conocimiento de la IA. ¿Qué parte quieres borrar?</p>
+                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-8">
+                                    {[
+                                        { id: 'all', label: 'TODO (Reset Total)', color: 'bg-red-600' },
+                                        { id: 'yoga_class', label: 'Clases Yoga', color: 'bg-forest' },
+                                        { id: 'massage', label: 'Masajes', color: 'bg-matcha' },
+                                        { id: 'therapy', label: 'Terapias', color: 'bg-matcha' },
+                                        { id: 'article', label: 'Artículos', color: 'bg-bark' },
+                                        { id: 'meditation', label: 'Meditación', color: 'bg-matcha' },
+                                        { id: 'activity', label: 'Actividades', color: 'bg-blue-600' },
+                                        { id: 'promotion', label: 'Promociones', color: 'bg-matcha' },
+                                        { id: 'announcement', label: 'Noticias', color: 'bg-matcha' },
+                                    ].map(cat => (
+                                        <button
+                                            key={cat.id}
+                                            onClick={() => { setResetScope(cat.id); setResetStep(2); }}
+                                            className={`p-3 sm:p-4 rounded-xl text-white font-medium text-xs sm:text-sm transition-transform hover:scale-105 ${cat.color} flex items-center justify-center text-center`}
+                                        >
+                                            {cat.label}
+                                        </button>
+                                    ))}
+                                </div>
+                                <button
+                                    onClick={() => setShowResetModal(false)}
+                                    className="w-full text-gray-400 text-sm hover:underline"
+                                >
+                                    Cancelar
+                                </button>
+                            </>
+                        ) : (
+                            <div className="text-center">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+                                <h2 className="text-2xl font-headers text-bark mb-4">¿Estás Complemente Seguro?</h2>
+                                <div className="bg-red-50 p-4 rounded-xl mb-6 text-left">
+                                    <ul className="text-sm text-red-700 space-y-2">
+                                        <li>• La IA olvidará esta información de inmediato.</li>
+                                        <li>• No podrás recuperar los datos vectoriales.</li>
+                                        <li>• Tendrás que volver a guardar los elementos en el dashboard para que la IA los vuelva a aprender.</li>
+                                    </ul>
+                                </div>
+                                <div className="flex flex-col gap-3">
+                                    <button
+                                        onClick={handleResetMemory}
+                                        disabled={resetLoading}
+                                        className="w-full py-4 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-all shadow-lg"
+                                    >
+                                        {resetLoading ? 'Procesando...' : 'SÍ, BORRAR DEFINITIVAMENTE'}
+                                    </button>
+                                    <button
+                                        onClick={() => setResetStep(1)}
+                                        className="w-full py-3 bg-gray-100 text-gray-600 rounded-xl font-medium hover:bg-gray-200 transition-all"
+                                    >
+                                        Volver atrás
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </motion.div>
+                </div>
+            )}
+
+            <ConfirmModal
+                isOpen={!!confirmAction}
+                onClose={() => setConfirmAction(null)}
+                onConfirm={confirmAction?.onConfirm || (() => { })}
+                title={confirmAction?.title || ''}
+                message={confirmAction?.message || ''}
+                confirmText={confirmAction?.confirmText}
+                type={confirmAction?.type}
+            />
+        </div>
+    );
+};
+
+export default AgentControl;

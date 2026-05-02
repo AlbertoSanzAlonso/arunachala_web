@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  # 1. LA MEMORIA (PostgreSQL)
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      # Apuntando a la ubicación local de los datos
+      - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - yoga_network
+    ports:
+      - "5432:5432"
+
+  # 2. EL PANEL VISUAL (NocoDB)
+  nocodb:
+    image: nocodb/nocodb:latest
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      # Conectado a la misma base de datos que la aplicación
+      NC_DB: "pg://postgres:5432?u=${POSTGRES_USER}&p=${POSTGRES_PASSWORD}&d=${POSTGRES_DB}"
+    ports:
+      - "${NOCODB_PORT}:8080"
+    networks:
+      - yoga_network
+
+  # 3. EL CEREBRO (n8n)
+  n8n:
+    image: n8nio/n8n
+    restart: always
+    environment:
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
+      - TZ=${GENERIC_TIMEZONE}
+      - API_BASE_URL=${API_BASE_URL}
+      - QDRANT_URL=${QDRANT_URL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      - NODE_FUNCTION_ALLOW_BUILTIN=crypto,fs,os,path
+      - NODE_FUNCTION_ALLOW_EXTERNAL=*
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "5678:5678"
+    volumes:
+      # Apuntando a la ubicación local de los datos
+      - ./n8n_data:/home/node/.n8n
+    networks:
+      - yoga_network
+
+  # 4. LA MEMORIA (Qdrant - RAG AI)
+  qdrant:
+    image: qdrant/qdrant
+    restart: always
+    ports:
+      - "6333:6333"
+    volumes:
+      - ./qdrant_data:/qdrant/storage
+    networks:
+      - yoga_network
+
+  # 5. CACHÉ (Redis)
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru --save ""
+    ports:
+      - "6379:6379"
+    networks:
+      - yoga_network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+# Red privada para que hablen entre ellos
+networks:
+  yoga_network:
+    driver: bridge
