@@ -312,14 +312,15 @@ async def sitemap(db: Session = Depends(get_db)):
     dynamic_contents = db.query(Content).filter(
         Content.status == "published",
         Content.type.in_(["article", "meditation"]),
+        Content.slug.is_not(None),
         ~Content.slug.contains("sugerencia")
     ).all()
     
     for item in dynamic_contents:
-        # Avoid null updated_at
         lastmod = (item.updated_at or item.created_at or datetime.now()).strftime('%Y-%m-%d')
         path_prefix = "/blog" if item.type == "article" else "/meditaciones"
         
+        # Consistent trailing slash for SEO
         urls.append(f"""  <url>
     <loc>{BASE_URL}{path_prefix}/{item.slug}/</loc>
     <lastmod>{lastmod}</lastmod>
@@ -330,10 +331,13 @@ async def sitemap(db: Session = Depends(get_db)):
     # 3. Get Activities
     activities = db.query(Activity).filter(
         Activity.is_active == True,
+        Activity.slug.is_not(None),
         ~Activity.slug.contains("sugerencia")
     ).all()
+    
     for act in activities:
         lastmod = (act.updated_at or act.created_at or datetime.now()).strftime('%Y-%m-%d')
+        # Trailing slash before query params matches Vercel trailingSlash: true
         urls.append(f"""  <url>
     <loc>{BASE_URL}/actividades/?slug={act.slug}</loc>
     <lastmod>{lastmod}</lastmod>
