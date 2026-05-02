@@ -27,10 +27,6 @@ const BlogDetailPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     
-    // Extract page parameter from URL
-    const searchParams = new URLSearchParams(location.search);
-    const pageParam = searchParams.get('p') || '1';
-    
     const [article, setArticle] = useState<Article | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
