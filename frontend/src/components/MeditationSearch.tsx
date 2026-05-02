@@ -4,7 +4,7 @@ import { Listbox, Transition } from '@headlessui/react';
 import { MagnifyingGlassIcon, CalendarIcon, CheckIcon, XMarkIcon, TagIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL } from 'config';
 
 interface Meditation {
     id: number;
@@ -309,7 +309,7 @@ const MeditationSearch: React.FC<MeditationSearchProps> = ({ meditations, onFilt
 
                     {/* Tags */}
                     <div className="flex-grow pt-4 md:pt-0 md:pl-6 md:border-l border-bark/5">
-                        <label className="block text-xs font-headers uppercase tracking-wider text-bark/40 mb-3 ml-1 flex items-center gap-2">
+                        <label className="text-xs font-headers uppercase tracking-wider text-bark/40 mb-3 ml-1 flex items-center gap-2">
                             <TagIcon className="w-3 h-3" />
                             {t('common.tags', 'Etiquetas')}
                         </label>
