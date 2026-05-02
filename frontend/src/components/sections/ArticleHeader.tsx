@@ -45,14 +45,7 @@ const ArticleHeader: React.FC<ArticleHeaderProps> = ({
                 transition={{ delay: 0.3 }}
                 className="flex items-center justify-between py-6 border-y border-bark/5 mb-12"
             >
-                <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-matcha/20 flex items-center justify-center text-forest font-headers">
-                        A
-                    </div>
-                    <div>
-                        <p className="text-sm font-headers text-forest uppercase tracking-wider">Arunachala Blog</p>
-                    </div>
-                </div>
+                <div></div>
 
                 <button
                     onClick={onShare}

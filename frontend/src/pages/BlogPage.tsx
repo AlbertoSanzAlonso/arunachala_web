@@ -4,14 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import Header from 'components/layout/Header';
 import Footer from 'components/layout/Footer';
-import PageSEO from 'components/ui/PageSEO';
+import PageSEO from 'components/providers/PageSEO';
 import { API_BASE_URL } from 'config';
 import { Article } from 'types/blog';
 
 // Modular components
-import BlogHeader from 'pages/blog/components/BlogHeader';
-import ArticleCard from 'pages/blog/components/ArticleCard';
-import BlogPagination from 'pages/blog/components/BlogPagination';
+import BlogHeader from 'components/sections/BlogHeader';
+import ArticleCard from 'components/sections/ArticleCard';
+import BlogPagination from 'components/sections/BlogPagination';
 
 const BlogPage: React.FC = () => {
     const { t } = useTranslation();

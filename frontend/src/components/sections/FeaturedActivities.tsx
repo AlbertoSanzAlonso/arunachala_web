@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { API_BASE_URL } from '../config';
-import { getTranslated } from '../utils/translate';
+import { API_BASE_URL } from 'config';
+import { getTranslated } from 'utils/translate';
 
 interface Activity {
     id: number;

@@ -6,7 +6,7 @@ import { CalendarIcon, TagIcon } from '@heroicons/react/24/outline';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import BackButton from '../components/ui/BackButton';
-import PageSEO from '../components/ui/PageSEO';
+import PageSEO from '../components/providers/PageSEO';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
 import { getImageUrl } from '../utils/imageUtils';

@@ -2,7 +2,7 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { prepareArticleContent } from '../../../utils/markdownUtils';
+import { prepareArticleContent } from 'utils/markdownUtils';
 
 interface ArticleContentProps {
     body: string;

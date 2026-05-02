@@ -12,8 +12,8 @@ import FadeInSection from '../components/ui/FadeInSection';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
 import { getImageUrl } from '../utils/imageUtils';
-import PageSEO from '../components/ui/PageSEO';
-import BlogSection from '../components/BlogSection';
+import PageSEO from '../components/providers/PageSEO';
+import BlogSection from '../components/sections/BlogSection';
 
 interface Treatment {
     id: number;

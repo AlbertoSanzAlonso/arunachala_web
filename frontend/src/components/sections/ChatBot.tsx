@@ -3,11 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChatBubbleLeftRightIcon, XMarkIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import omSymbol from '../assets/images/om_symbol.png';
-import { API_BASE_URL } from '../config';
+import omSymbol from 'assets/images/om_symbol.png';
+import { API_BASE_URL } from 'config';
 import { useTranslation } from 'react-i18next';
-import { getImageUrl } from '../utils/imageUtils';
-import { useUIStore } from '../store/uiStore';
+import { getImageUrl } from 'utils/imageUtils';
+import { useUIStore } from 'store/uiStore';
 
 interface Message {
     id: number;

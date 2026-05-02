@@ -1,7 +1,7 @@
 import React from 'react';
 import { TagIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
-import { FilterState } from '../BlogSearch';
+import { FilterState } from './index';
 
 interface TagCloudProps {
     filters: FilterState;

@@ -10,13 +10,13 @@ import { Article } from 'types/blog';
 // Components
 import Header from 'components/layout/Header';
 import Footer from 'components/layout/Footer';
-import PageSEO from 'components/ui/PageSEO';
-import ArticleContent from 'pages/blog/components/ArticleContent';
-import RelatedArticles from 'pages/blog/components/RelatedArticles';
-import ArticleLightbox from 'pages/blog/components/ArticleLightbox';
-import FloatingNavigation from 'pages/blog/components/FloatingNavigation';
-import BottomNavigation from 'pages/blog/components/BottomNavigation';
-import ArticleHeader from 'pages/blog/components/ArticleHeader';
+import PageSEO from 'components/providers/PageSEO';
+import ArticleContent from 'components/sections/ArticleContent';
+import RelatedArticles from 'components/sections/RelatedArticles';
+import ArticleLightbox from 'components/sections/ArticleLightbox';
+import FloatingNavigation from 'components/sections/FloatingNavigation';
+import BottomNavigation from 'components/sections/BottomNavigation';
+import ArticleHeader from 'components/sections/ArticleHeader';
 
 const BlogDetailPage: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -159,6 +159,17 @@ const BlogDetailPage: React.FC = () => {
                         onShare={handleShare}
                     />
 
+                    <div className="lg:hidden mb-8">
+                        <BottomNavigation 
+                            prevArticle={prevArticle}
+                            nextArticle={nextArticle}
+                            currentPage={currentPage}
+                            navigate={navigate}
+                            language={i18n.language}
+                            isTop={true}
+                        />
+                    </div>
+
                     {article.thumbnail_url && (
                         <div 
                             className="mb-12 rounded-[2rem] overflow-hidden shadow-xl cursor-zoom-in"
@@ -170,13 +181,15 @@ const BlogDetailPage: React.FC = () => {
 
                     <ArticleContent body={translatedBody} onImageClick={setSelectedImage} />
 
-                    <BottomNavigation 
-                        prevArticle={prevArticle}
-                        nextArticle={nextArticle}
-                        currentPage={currentPage}
-                        navigate={navigate}
-                        language={i18n.language}
-                    />
+                    <div className="hidden lg:block">
+                        <BottomNavigation 
+                            prevArticle={prevArticle}
+                            nextArticle={nextArticle}
+                            currentPage={currentPage}
+                            navigate={navigate}
+                            language={i18n.language}
+                        />
+                    </div>
 
                     <RelatedArticles articles={relatedArticles} />
                 </article>

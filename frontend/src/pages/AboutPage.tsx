@@ -6,9 +6,9 @@ import { AcademicCapIcon, SparklesIcon, HeartIcon } from '@heroicons/react/24/ou
 import Header from 'components/layout/Header';
 import Footer from 'components/layout/Footer';
 import BackButton from 'components/ui/BackButton';
-import PageSEO from 'components/ui/PageSEO';
+import PageSEO from 'components/providers/PageSEO';
 
-import NewsSection from 'components/NewsSection';
+import NewsSection from 'components/sections/NewsSection';
 import { API_BASE_URL } from 'config';
 import { getImageUrl } from 'utils/imageUtils';
 

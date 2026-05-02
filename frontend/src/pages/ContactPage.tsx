@@ -12,7 +12,7 @@ import {
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import BackButton from '../components/ui/BackButton';
-import PageSEO from '../components/ui/PageSEO';
+import PageSEO from '../components/providers/PageSEO';
 
 const ContactPage: React.FC = () => {
     const { t } = useTranslation();

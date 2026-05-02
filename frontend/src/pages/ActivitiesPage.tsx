@@ -7,12 +7,12 @@ import BackButton from 'components/ui/BackButton';
 import { API_BASE_URL } from 'config';
 import { getTranslated } from 'utils/translate';
 import { getImageUrl } from 'utils/imageUtils';
-import PageSEO from 'components/ui/PageSEO';
+import PageSEO from 'components/providers/PageSEO';
 
 // Modular components
-import ActivityCard from './activities/components/ActivityCard';
-import ActivityDetailModal from './activities/components/ActivityDetailModal';
-import GlobalCustomSuggestion from './activities/components/GlobalCustomSuggestion';
+import ActivityCard from 'components/sections/ActivityCard';
+import ActivityDetailModal from 'components/ui/modals/ActivityDetailModal';
+import GlobalCustomSuggestion from 'components/sections/GlobalCustomSuggestion';
 
 export interface Activity {
     id: number;

@@ -3,9 +3,9 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { CalendarIcon, BellIcon, ArrowRightIcon, TagIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
-import { API_BASE_URL } from '../config';
-import { getTranslated } from '../utils/translate';
-import { getImageUrl } from '../utils/imageUtils';
+import { API_BASE_URL } from 'config';
+import { getTranslated } from 'utils/translate';
+import { getImageUrl } from 'utils/imageUtils';
 
 interface NewsItem {
     id: number;

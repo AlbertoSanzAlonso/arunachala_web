@@ -4,7 +4,7 @@ import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import { getTranslated } from 'utils/translate';
 import { Article } from 'types/blog';
-import { FilterState } from '../BlogSearch';
+import { FilterState } from './index';
 
 interface SearchBarProps {
     filters: FilterState;

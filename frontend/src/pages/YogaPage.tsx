@@ -8,13 +8,13 @@ import BackButton from '../components/ui/BackButton';
 import FadeInSection from '../components/ui/FadeInSection';
 
 import { API_BASE_URL } from '../config';
-import BlogSection from '../components/BlogSection';
+import BlogSection from '../components/sections/BlogSection';
 import { getImageUrl } from '../utils/imageUtils';
-import PageSEO from '../components/ui/PageSEO';
+import PageSEO from '../components/providers/PageSEO';
 
 // Lazy load heavy components for performance
-const YogaSchedule = lazy(() => import('../components/YogaSchedule'));
-const ImageSlider = lazy(() => import('../components/ImageSlider'));
+const YogaSchedule = lazy(() => import('../components/sections/YogaSchedule'));
+const ImageSlider = lazy(() => import('../components/sections/ImageSlider'));
 
 const YogaPage: React.FC = () => {
     const { t } = useTranslation();

@@ -1,0 +1,13 @@
+export { default as BlogSection } from './BlogSection';
+export { default as FeaturedActivities } from './FeaturedActivities';
+export { default as InstagramFeed } from './InstagramFeed';
+export { default as NewsSection } from './NewsSection';
+export { default as PromotionsSection } from './PromotionsSection';
+export { default as ReviewsSection } from './ReviewsSection';
+export { default as YogaSchedule } from './YogaSchedule';
+export { default as ChatBot } from './ChatBot';
+export { default as ImageSlider } from './ImageSlider';
+export { default as ActivityCard } from './ActivityCard';
+export { default as ArticleHeader } from './ArticleHeader';
+export { default as BottomNavigation } from './BottomNavigation';
+export { default as FloatingNavigation } from './FloatingNavigation';

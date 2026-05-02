@@ -4,10 +4,10 @@ import { Article } from 'types/blog';
 import { API_BASE_URL } from 'config';
 
 // Subcomponents
-import SearchBar from './blog-search/SearchBar';
-import CategoryTabs from './blog-search/CategoryTabs';
-import DateFilters from './blog-search/DateFilters';
-import TagCloud from './blog-search/TagCloud';
+import SearchBar from './SearchBar';
+import CategoryTabs from './CategoryTabs';
+import DateFilters from './DateFilters';
+import TagCloud from './TagCloud';
 
 export interface FilterState {
     query: string;

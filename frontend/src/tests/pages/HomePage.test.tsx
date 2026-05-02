@@ -30,13 +30,13 @@ jest.mock("../../components/ui/FadeInSection", () => {
 });
 
 // Mock de componentes lazy
-jest.mock("../../components/ImageSlider", () => {
+jest.mock("../../components/sections/ImageSlider", () => {
   return function MockImageSlider() {
     return <div data-testid="image-slider">ImageSlider</div>;
   };
 });
 
-jest.mock("../../components/ReviewsSection", () => {
+jest.mock("../../components/sections/ReviewsSection", () => {
   return function MockReviewsSection() {
     return <div data-testid="reviews-section">ReviewsSection</div>;
   };

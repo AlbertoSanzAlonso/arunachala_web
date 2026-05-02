@@ -6,7 +6,7 @@ import Header from 'components/layout/Header';
 import Footer from 'components/layout/Footer';
 import BackButton from 'components/ui/BackButton';
 import { API_BASE_URL } from 'config';
-import PageSEO from 'components/ui/PageSEO';
+import PageSEO from 'components/providers/PageSEO';
 import { motion, AnimatePresence } from 'framer-motion';
 import MeditationSearch, { FilterState } from 'components/MeditationSearch';
 import { getTranslated } from 'utils/translate';

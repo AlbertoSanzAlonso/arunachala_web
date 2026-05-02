@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { getTranslated } from 'utils/translate';
 import { getImageUrl } from 'utils/imageUtils';
 import ShareButton from 'components/ui/ShareButton';
-import DynamicPoll from './DynamicPoll';
+import DynamicPoll from 'components/sections/DynamicPoll';
 
 interface Activity {
     id: number;

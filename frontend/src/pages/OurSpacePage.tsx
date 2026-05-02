@@ -4,13 +4,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeftIcon, ChevronRightIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
-import InstagramFeed from '../components/InstagramFeed';
+import InstagramFeed from '../components/sections/InstagramFeed';
 import BackButton from '../components/ui/BackButton';
 import illustrativeMap from '../assets/images/mapa_ilustrativo.webp';
 
 import { API_BASE_URL } from '../config';
 import { getImageUrl } from '../utils/imageUtils';
-import PageSEO from '../components/ui/PageSEO';
+import PageSEO from '../components/providers/PageSEO';
 
 interface GalleryImage {
     id: number;

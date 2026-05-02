@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
-import PageSEO from '../components/ui/PageSEO';
+import PageSEO from '../components/providers/PageSEO';
 
 const NotFoundPage: React.FC = () => {
     const location = useLocation();

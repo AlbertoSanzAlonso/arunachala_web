@@ -9,6 +9,7 @@ interface BottomNavigationProps {
     currentPage: number;
     navigate: (path: string) => void;
     language: string;
+    isTop?: boolean;
 }
 
 const BottomNavigation: React.FC<BottomNavigationProps> = ({ 
@@ -16,14 +17,15 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
     nextArticle, 
     currentPage, 
     navigate,
-    language
+    language,
+    isTop = false
 }) => {
     const { t } = useTranslation();
 
     if (!prevArticle && !nextArticle) return null;
 
     return (
-        <nav className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-16 pt-12 border-t border-bark/5">
+        <nav className={`grid grid-cols-1 ${nextArticle && prevArticle ? 'md:grid-cols-2' : 'md:grid-cols-1'} gap-4 ${isTop ? 'mb-8' : 'mt-16 pt-12 border-t border-bark/5'}`}>
             <div className="text-left">
                 {prevArticle && (
                     <button

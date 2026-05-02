@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL } from 'config';
 import { useTranslation } from 'react-i18next';
 import { TicketIcon } from '@heroicons/react/24/outline';
-import { getImageUrl } from '../utils/imageUtils';
+import { getImageUrl } from 'utils/imageUtils';
 
 interface Promotion {
     id: number;

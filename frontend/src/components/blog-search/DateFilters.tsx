@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CalendarIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
-import { FilterState } from '../BlogSearch';
+import { FilterState } from './index';
 
 interface DateFiltersProps {
     filters: FilterState;

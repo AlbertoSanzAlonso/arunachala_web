@@ -11,13 +11,13 @@ import FadeInSection from 'components/ui/FadeInSection';
 import { API_BASE_URL } from 'config';
 import { useTranslation } from 'react-i18next';
 import { getImageUrl } from 'utils/imageUtils';
-import PageSEO from 'components/ui/PageSEO';
+import PageSEO from 'components/providers/PageSEO';
 
 // Lazy load heavy components
-const ImageSlider = lazy(() => import('components/ImageSlider'));
-const ReviewsSection = lazy(() => import('components/ReviewsSection'));
+const ImageSlider = lazy(() => import('components/sections/ImageSlider'));
+const ReviewsSection = lazy(() => import('components/sections/ReviewsSection'));
 const WellnessQuiz = lazy(() => import('components/wellness-quiz/WellnessQuiz'));
-const FeaturedActivities = lazy(() => import('components/FeaturedActivities'));
+const FeaturedActivities = lazy(() => import('components/sections/FeaturedActivities'));
 const NewsletterForm = lazy(() => import('components/NewsletterForm'));
 
 const HomePage: React.FC = () => {

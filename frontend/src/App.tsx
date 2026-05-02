@@ -3,14 +3,14 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import PageLoader from './components/ui/PageLoader';
 import DashboardLayout from './layouts/DashboardLayout';
 import { AuthProvider } from './context/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './components/providers/ProtectedRoute';
 import { AudioProvider } from './context/AudioContext';
 import MeditationsPage from './pages/MeditationsPage';
-import ChatBot from './components/ChatBot';
+import ChatBot from './components/sections/ChatBot';
 import MeditationPlayerModal from './components/ui/modals/MeditationPlayerModal';
-import ScrollToTop from './components/ui/ScrollToTop';
+import ScrollToTop from './components/providers/ScrollToTop';
 import ToastNotification from './components/ui/ToastNotification';
-import LanguageSync from './components/ui/LanguageSync';
+import LanguageSync from './components/providers/LanguageSync';
 import FloatingNav from './components/layout/FloatingNav';
 import { useUIStore } from './store/uiStore';
 
