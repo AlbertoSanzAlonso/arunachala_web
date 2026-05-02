@@ -514,9 +514,8 @@
       "description": "Descobreix articles sobre ioga, meditació, teràpies holístiques i benestar al nostre blog."
     },
     "cta": {
-      "title": "T'ha inspirat aquest article?",
-      "description_yoga": "Vine a practicar amb nosaltres a Aruṇāchala. Un espai de calma al cor de Cornellà.",
-      "description_therapy": "Vine a cuidar-te a Aruṇāchala. El teu refugi de sanació i calma a Cornellà.",
+      "question": "T'ha servit aquest article?",
+      "description": "Si tens algun dubte o vols aprofundir en aquests temes, no dubtis a escriure'ns.",
       "button": "Contacta amb nosaltres"
     }
   },

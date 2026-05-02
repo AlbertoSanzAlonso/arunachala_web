@@ -514,9 +514,8 @@
       "description": "Discover articles about yoga, meditation, holistic therapies and wellness on our blog."
     },
     "cta": {
-      "title": "Did this article inspire you?",
-      "description_yoga": "Come practice with us at Aruṇāchala. A space of calm in the heart of Cornella.",
-      "description_therapy": "Come take care of yourself at Aruṇāchala. Your healing sanctuary in Cornella.",
+      "question": "Was this article helpful?",
+      "description": "If you have any questions or want to delve deeper into these topics, don't hesitate to write to us.",
       "button": "Contact us"
     }
   },
