@@ -2,15 +2,15 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeftIcon, ChevronRightIcon, MapPinIcon } from '@heroicons/react/24/outline';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
 import InstagramFeed from '../components/InstagramFeed';
-import BackButton from '../components/BackButton';
+import BackButton from '../components/ui/BackButton';
 import illustrativeMap from '../assets/images/mapa_ilustrativo.webp';
 
 import { API_BASE_URL } from '../config';
 import { getImageUrl } from '../utils/imageUtils';
-import PageSEO from '../components/PageSEO';
+import PageSEO from '../components/ui/PageSEO';
 
 interface GalleryImage {
     id: number;

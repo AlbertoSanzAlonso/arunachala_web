@@ -3,8 +3,8 @@ import { createPortal } from 'react-dom';
 import { PlusIcon, PencilIcon, TrashIcon, PhotoIcon, TicketIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from '../../config';
 import { getImageUrl } from '../../utils/imageUtils';
-import PageLoader from '../../components/PageLoader';
-import CropModal from '../../components/CropModal';
+import PageLoader from '../../components/ui/PageLoader';
+import CropModal from '../../components/ui/modals/CropModal';
 
 interface Promotion {
     id: number;

@@ -3,9 +3,9 @@ import { useSearchParams } from 'react-router-dom';
 import { PlusIcon, PencilIcon, TrashIcon, PhotoIcon, SparklesIcon, ChatBubbleLeftRightIcon, XMarkIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { Dialog, Transition } from '@headlessui/react';
 import { API_BASE_URL } from '../../config';
-import ToastNotification, { Toast } from '../../components/ToastNotification';
-import PageLoader from '../../components/PageLoader';
-import CropModal from '../../components/CropModal';
+import ToastNotification, { Toast } from '../../components/ui/ToastNotification';
+import PageLoader from '../../components/ui/PageLoader';
+import CropModal from '../../components/ui/modals/CropModal';
 
 interface Activity {
     id: number;

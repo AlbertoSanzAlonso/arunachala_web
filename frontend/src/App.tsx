@@ -1,17 +1,17 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import PageLoader from './components/PageLoader';
+import PageLoader from './components/ui/PageLoader';
 import DashboardLayout from './layouts/DashboardLayout';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AudioProvider } from './context/AudioContext';
 import MeditationsPage from './pages/MeditationsPage';
 import ChatBot from './components/ChatBot';
-import MeditationPlayerModal from './components/MeditationPlayerModal';
-import ScrollToTop from './components/ScrollToTop';
-import ToastNotification from './components/ToastNotification';
-import LanguageSync from './components/LanguageSync';
-import FloatingNav from './components/FloatingNav';
+import MeditationPlayerModal from './components/ui/modals/MeditationPlayerModal';
+import ScrollToTop from './components/ui/ScrollToTop';
+import ToastNotification from './components/ui/ToastNotification';
+import LanguageSync from './components/ui/LanguageSync';
+import FloatingNav from './components/layout/FloatingNav';
 import { useUIStore } from './store/uiStore';
 
 

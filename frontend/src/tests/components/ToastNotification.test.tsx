@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import ToastNotification, {
   Toast,
-} from "../../components/ToastNotification";
+} from "../../components/ui/ToastNotification";
 
 // Mock de framer-motion para evitar dependencias de matchMedia en JSDOM
 jest.mock("framer-motion", () => ({

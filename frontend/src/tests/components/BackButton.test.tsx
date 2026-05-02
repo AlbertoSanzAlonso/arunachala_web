@@ -1,7 +1,7 @@
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
-import BackButton from "../../components/BackButton";
+import BackButton from "../../components/ui/BackButton";
 
 // Mock de react-router-dom
 const mockNavigate = jest.fn();

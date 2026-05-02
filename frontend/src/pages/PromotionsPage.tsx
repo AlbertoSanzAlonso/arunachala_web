@@ -5,9 +5,9 @@ import { API_BASE_URL } from '../config';
 import { useTranslation } from 'react-i18next';
 import { TicketIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { getImageUrl } from '../utils/imageUtils';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import BackButton from '../components/BackButton';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
+import BackButton from '../components/ui/BackButton';
 import { Helmet } from 'react-helmet-async';
 
 interface Promotion {

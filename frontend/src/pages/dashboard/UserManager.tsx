@@ -5,7 +5,7 @@ import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { API_BASE_URL } from '../../config';
 import { getImageUrl } from '../../utils/imageUtils';
 import { useAuth } from '../../context/AuthContext';
-import PageLoader from '../../components/PageLoader';
+import PageLoader from '../../components/ui/PageLoader';
 
 interface User {
     id: number;

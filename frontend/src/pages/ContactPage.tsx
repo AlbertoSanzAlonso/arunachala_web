@@ -9,10 +9,10 @@ import {
     ChatBubbleLeftRightIcon,
     ArrowTopRightOnSquareIcon
 } from '@heroicons/react/24/outline';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import BackButton from '../components/BackButton';
-import PageSEO from '../components/PageSEO';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
+import BackButton from '../components/ui/BackButton';
+import PageSEO from '../components/ui/PageSEO';
 
 const ContactPage: React.FC = () => {
     const { t } = useTranslation();

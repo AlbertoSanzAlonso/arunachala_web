@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import lotusSpinner from '../assets/images/lotus_spinner.webp';
+import lotusSpinner from 'assets/images/lotus_spinner.webp';
 
 const PageLoader: React.FC = () => {
     const { t } = useTranslation();

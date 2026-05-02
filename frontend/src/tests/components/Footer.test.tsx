@@ -1,7 +1,7 @@
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { render, screen } from "@testing-library/react";
-import Footer from "../../components/Footer";
+import Footer from "../../components/layout/Footer";
 
 // Mock sencillo de i18next para no depender de los JSON de traducciones
 jest.mock("react-i18next", () => ({

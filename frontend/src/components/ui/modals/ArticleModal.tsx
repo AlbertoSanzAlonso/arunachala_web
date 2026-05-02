@@ -1,18 +1,18 @@
-import React, { Fragment } from 'react';
-import { Link } from 'react-router-dom';
-import { Dialog, Transition } from '@headlessui/react';
-import { prepareMarkdown, fixMediaUrls, isHtmlContent } from '../utils/markdownUtils';
+import { prepareMarkdown, fixMediaUrls, isHtmlContent } from 'utils/markdownUtils';
 import {
     XMarkIcon,
     CalendarIcon
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
-import { getTranslated } from '../utils/translate';
-import { getImageUrl } from '../utils/imageUtils';
-import ShareButton from './ShareButton';
+import { getTranslated } from 'utils/translate';
+import { getImageUrl } from 'utils/imageUtils';
+import ShareButton from 'components/ui/ShareButton';
 import ReactMarkdown from 'react-markdown';
+import React, { Fragment } from 'react';
+import { Link } from 'react-router-dom';
+import { Dialog, Transition } from '@headlessui/react';
 import remarkGfm from 'remark-gfm';
-import omSymbol from '../assets/images/om_symbol.png';
+import omSymbol from 'assets/images/om_symbol.png';
 
 interface Article {
     id: number;

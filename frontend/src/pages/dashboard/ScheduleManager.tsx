@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { PlusIcon, PencilIcon, TrashIcon, ClockIcon, CalendarIcon, ArrowLeftIcon, EyeIcon } from '@heroicons/react/24/outline';
 import VisualScheduleEditor from './VisualScheduleEditor';
 import { API_BASE_URL } from '../../config';
-import PageLoader from '../../components/PageLoader';
+import PageLoader from '../../components/ui/PageLoader';
 
 interface YogaClassBrief {
     id: number;

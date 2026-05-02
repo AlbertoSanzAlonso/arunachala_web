@@ -4,9 +4,9 @@ import { Transition, Combobox } from '@headlessui/react';
 import { MagnifyingGlassIcon, CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { API_BASE_URL } from '../../config';
 import { getImageUrl } from '../../utils/imageUtils';
-import PageLoader from '../../components/PageLoader';
-import ConfirmModal from '../../components/ConfirmModal';
-import CropModal from '../../components/CropModal';
+import PageLoader from '../../components/ui/PageLoader';
+import ConfirmModal from '../../components/ui/modals/ConfirmModal';
+import CropModal from '../../components/ui/modals/CropModal';
 import MantraControl from '../../components/dashboard/MantraControl';
 import { useTranslation } from 'react-i18next';
 

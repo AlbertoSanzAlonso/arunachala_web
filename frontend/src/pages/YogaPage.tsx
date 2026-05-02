@@ -2,15 +2,15 @@ import React, { useRef, useState, useEffect, Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import BackButton from '../components/BackButton';
-import FadeInSection from '../components/FadeInSection';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
+import BackButton from '../components/ui/BackButton';
+import FadeInSection from '../components/ui/FadeInSection';
 
 import { API_BASE_URL } from '../config';
 import BlogSection from '../components/BlogSection';
 import { getImageUrl } from '../utils/imageUtils';
-import PageSEO from '../components/PageSEO';
+import PageSEO from '../components/ui/PageSEO';
 
 // Lazy load heavy components for performance
 const YogaSchedule = lazy(() => import('../components/YogaSchedule'));

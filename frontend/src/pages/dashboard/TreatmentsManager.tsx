@@ -2,8 +2,8 @@ import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { PlusIcon, PencilIcon, TrashIcon, PhotoIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from '../../config';
-import PageLoader from '../../components/PageLoader';
-import CropModal from '../../components/CropModal';
+import PageLoader from '../../components/ui/PageLoader';
+import CropModal from '../../components/ui/modals/CropModal';
 import 'react-quill/dist/quill.snow.css';
 // Dynamic import to avoid SSR issues
 const ReactQuill = lazy(() => import('react-quill'));

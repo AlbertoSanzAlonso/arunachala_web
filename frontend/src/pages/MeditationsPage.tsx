@@ -2,11 +2,11 @@ import * as React from 'react';
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
-import Header from 'components/Header';
-import Footer from 'components/Footer';
-import BackButton from 'components/BackButton';
+import Header from 'components/layout/Header';
+import Footer from 'components/layout/Footer';
+import BackButton from 'components/ui/BackButton';
 import { API_BASE_URL } from 'config';
-import PageSEO from 'components/PageSEO';
+import PageSEO from 'components/ui/PageSEO';
 import { motion, AnimatePresence } from 'framer-motion';
 import MeditationSearch, { FilterState } from 'components/MeditationSearch';
 import { getTranslated } from 'utils/translate';
@@ -14,7 +14,7 @@ import { useAudio } from 'context/AudioContext';
 import { PlayIcon, PauseIcon, StopIcon } from '@heroicons/react/24/solid';
 import { ShareIcon } from '@heroicons/react/24/outline';
 import { useUIStore } from 'store/uiStore';
-import VolumeControl from 'components/VolumeControl';
+import VolumeControl from 'components/ui/VolumeControl';
 import { getImageUrl } from 'utils/imageUtils';
 
 interface Meditation {

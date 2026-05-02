@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { ShieldCheckIcon, UserIcon, ClipboardDocumentListIcon, KeyIcon, UsersIcon, ClockIcon, AcademicCapIcon, LockClosedIcon, FingerPrintIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import BackButton from '../components/BackButton';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
+import BackButton from '../components/ui/BackButton';
 
 const PrivacyPolicyPage: React.FC = () => {
     const { t } = useTranslation();

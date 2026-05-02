@@ -3,7 +3,7 @@ import Cropper from 'react-easy-crop';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { XMarkIcon, ScissorsIcon } from '@heroicons/react/24/outline';
-import getCroppedImg from '../utils/cropImage';
+import getCroppedImg from 'utils/cropImage';
 
 interface CropModalProps {
     open: boolean;

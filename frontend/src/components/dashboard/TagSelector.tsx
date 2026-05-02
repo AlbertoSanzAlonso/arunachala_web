@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Combobox } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL } from 'config';
 
 interface TagSelectorProps {
     value: string[];

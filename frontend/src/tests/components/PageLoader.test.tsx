@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import PageLoader from "../../components/PageLoader";
+import PageLoader from "../../components/ui/PageLoader";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({

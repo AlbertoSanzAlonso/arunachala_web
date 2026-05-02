@@ -11,19 +11,19 @@ jest.mock("react-i18next", () => ({
   }),
 }));
 
-jest.mock("../../components/Header", () => {
+jest.mock("../../components/layout/Header", () => {
   return function MockHeader() {
     return <div data-testid="header">Header</div>;
   };
 });
 
-jest.mock("../../components/Footer", () => {
+jest.mock("../../components/layout/Footer", () => {
   return function MockFooter() {
     return <div data-testid="footer">Footer</div>;
   };
 });
 
-jest.mock("../../components/FadeInSection", () => {
+jest.mock("../../components/ui/FadeInSection", () => {
   return function MockFadeInSection({ children }: any) {
     return <div>{children}</div>;
   };
@@ -42,7 +42,7 @@ jest.mock("../../components/ReviewsSection", () => {
   };
 });
 
-jest.mock("../../components/WellnessQuiz", () => {
+jest.mock("../../components/wellness-quiz/WellnessQuiz", () => {
   return function MockWellnessQuiz() {
     return <div data-testid="wellness-quiz">WellnessQuiz</div>;
   };

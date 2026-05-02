@@ -2,9 +2,9 @@
 import React, { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { TagSelector } from '../../../../components/TagSelector';
-import RichTextEditor from '../../../../components/RichTextEditor';
-import CropModal from '../../../../components/CropModal';
+import { TagSelector } from '../../../../components/dashboard/TagSelector';
+import RichTextEditor from '../../../../components/dashboard/RichTextEditor';
+import CropModal from '../../../../components/ui/modals/CropModal';
 import { getImageUrl } from '../../../../utils/imageUtils';
 import { API_BASE_URL } from '../../../../config';
 import { Content } from '../types';

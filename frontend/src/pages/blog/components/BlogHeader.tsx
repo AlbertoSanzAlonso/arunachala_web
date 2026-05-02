@@ -2,9 +2,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import BlogSearch, { FilterState } from '../../../components/BlogSearch';
-import { Article } from '../../../types/blog';
-import BackButton from '../../../components/BackButton';
+import BlogSearch, { FilterState } from 'components/BlogSearch';
+import { Article } from 'types/blog';
+import BackButton from 'components/ui/BackButton';
 
 interface BlogHeaderProps {
     filters: FilterState;

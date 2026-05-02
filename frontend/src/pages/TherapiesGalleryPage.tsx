@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import BackButton from '../components/BackButton';
-import FadeInSection from '../components/FadeInSection';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
+import BackButton from '../components/ui/BackButton';
+import FadeInSection from '../components/ui/FadeInSection';
 import { API_BASE_URL } from '../config';
 import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { Helmet } from 'react-helmet-async';

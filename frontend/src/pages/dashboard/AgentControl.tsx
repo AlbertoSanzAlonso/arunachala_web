@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Cog6ToothIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
-import ConfirmModal from '../../components/ConfirmModal';
+import ConfirmModal from '../../components/ui/modals/ConfirmModal';
 
 const AgentControl: React.FC = () => {
     const navigate = useNavigate();

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowPathIcon, CheckCircleIcon, PlusIcon, TrashIcon, BookmarkIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from '../../config';
-import ConfirmModal from '../ConfirmModal';
+import ConfirmModal from 'components/ui/modals/ConfirmModal';
 import { useTranslation } from 'react-i18next';
 
 interface Mantra {

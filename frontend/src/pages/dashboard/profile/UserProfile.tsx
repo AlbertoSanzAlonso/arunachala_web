@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { CameraIcon, ArrowLeftIcon, EyeIcon, EyeSlashIcon, XCircleIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
-import PageLoader from '../../../components/PageLoader';
+import PageLoader from '../../../components/ui/PageLoader';
 import { API_BASE_URL } from '../../../config';
 import { getImageUrl } from '../../../utils/imageUtils';
-import CropModal from '../../../components/CropModal';
+import CropModal from '../../../components/ui/modals/CropModal';
 
 export default function UserProfile() {
     const navigate = useNavigate();

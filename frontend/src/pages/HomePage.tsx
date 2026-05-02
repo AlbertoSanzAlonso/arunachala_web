@@ -5,18 +5,18 @@ import videoBgWebm from 'assets/videos/VIDEOWEB.webm';
 import videoPosterWebp from 'assets/videos/VIDEOWEB_poster.webp';
 import omSymbol from 'assets/images/om_symbol.png';
 import lotusFlower from 'assets/images/lotus_flower.png';
-import Header from 'components/Header';
-import Footer from 'components/Footer';
-import FadeInSection from 'components/FadeInSection';
+import Header from 'components/layout/Header';
+import Footer from 'components/layout/Footer';
+import FadeInSection from 'components/ui/FadeInSection';
 import { API_BASE_URL } from 'config';
 import { useTranslation } from 'react-i18next';
 import { getImageUrl } from 'utils/imageUtils';
-import PageSEO from 'components/PageSEO';
+import PageSEO from 'components/ui/PageSEO';
 
 // Lazy load heavy components
 const ImageSlider = lazy(() => import('components/ImageSlider'));
 const ReviewsSection = lazy(() => import('components/ReviewsSection'));
-const WellnessQuiz = lazy(() => import('components/WellnessQuiz'));
+const WellnessQuiz = lazy(() => import('components/wellness-quiz/WellnessQuiz'));
 const FeaturedActivities = lazy(() => import('components/FeaturedActivities'));
 const NewsletterForm = lazy(() => import('components/NewsletterForm'));
 

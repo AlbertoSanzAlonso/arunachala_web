@@ -2,9 +2,9 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import PageSEO from '../components/PageSEO';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
+import PageSEO from '../components/ui/PageSEO';
 
 const NotFoundPage: React.FC = () => {
     const location = useLocation();

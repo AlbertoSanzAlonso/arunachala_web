@@ -4,8 +4,8 @@ import { Dialog, Transition } from '@headlessui/react';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 import { useToast } from '../../../hooks/useToast';
-import ToastNotification from '../../../components/ToastNotification';
-import PageLoader from '../../../components/PageLoader';
+import ToastNotification from '../../../components/ui/ToastNotification';
+import PageLoader from '../../../components/ui/PageLoader';
 
 import { ITEMS_PER_PAGE } from './types';
 import { ContentHeader } from './components/ContentHeader';

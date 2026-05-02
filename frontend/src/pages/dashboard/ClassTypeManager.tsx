@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PlusIcon, PencilIcon, TrashIcon, TagIcon, CalendarIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from '../../config';
-import PageLoader from '../../components/PageLoader';
+import PageLoader from '../../components/ui/PageLoader';
 import { useToast } from '../../hooks/useToast';
-import ToastNotification from '../../components/ToastNotification';
+import ToastNotification from '../../components/ui/ToastNotification';
 
 interface YogaClass {
     id: number;

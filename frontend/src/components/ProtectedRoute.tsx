@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import PageLoader from './PageLoader';
+import PageLoader from 'components/ui/PageLoader';
 
 export default function ProtectedRoute() {
     const { isAuthenticated, isLoading } = useAuth();

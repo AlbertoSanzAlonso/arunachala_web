@@ -24,19 +24,19 @@ jest.mock("react-helmet-async", () => ({
   Helmet: ({ children }: any) => <div>{children}</div>,
 }));
 
-jest.mock("../../components/Header", () => {
+jest.mock("../../components/layout/Header", () => {
   return function MockHeader() {
     return <div data-testid="header">Header</div>;
   };
 });
 
-jest.mock("../../components/Footer", () => {
+jest.mock("../../components/layout/Footer", () => {
   return function MockFooter() {
     return <div data-testid="footer">Footer</div>;
   };
 });
 
-jest.mock("../../components/BackButton", () => {
+jest.mock("../../components/ui/BackButton", () => {
   return function MockBackButton() {
     return <button>Volver</button>;
   };

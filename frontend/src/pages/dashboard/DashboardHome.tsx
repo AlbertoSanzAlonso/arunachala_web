@@ -17,7 +17,7 @@ import {
 import { Disclosure, Dialog, Transition } from '@headlessui/react';
 import { API_BASE_URL } from '../../config';
 import EmailSubsModal from './EmailSubsModal';
-import ConfirmModal from '../../components/ConfirmModal';
+import ConfirmModal from '../../components/ui/modals/ConfirmModal';
 
 interface ActivityItem {
     id: number;

@@ -2,9 +2,9 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
-import Header from 'components/Header';
-import Footer from 'components/Footer';
-import PageSEO from 'components/PageSEO';
+import Header from 'components/layout/Header';
+import Footer from 'components/layout/Footer';
+import PageSEO from 'components/ui/PageSEO';
 import { API_BASE_URL } from 'config';
 import { Article } from 'types/blog';
 

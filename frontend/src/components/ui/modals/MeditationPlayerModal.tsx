@@ -2,13 +2,13 @@ import React, { Fragment, useRef, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon, PlayCircleIcon, PauseCircleIcon, ForwardIcon, BackwardIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
-import { useAudio } from '../context/AudioContext';
-import { API_BASE_URL } from '../config';
+import { useAudio } from 'context/AudioContext';
+import { API_BASE_URL } from 'config';
 import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
-import { getImageUrl } from '../utils/imageUtils';
+import { getImageUrl } from 'utils/imageUtils';
 
-import VolumeControl from './VolumeControl';
-import ShareButton from './ShareButton';
+import VolumeControl from 'components/ui/VolumeControl';
+import ShareButton from 'components/ui/ShareButton';
 
 const MeditationPlayerModal: React.FC = () => {
     const { t, i18n } = useTranslation();

@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import FadeInSection from "../../components/FadeInSection";
+import FadeInSection from "../../components/ui/FadeInSection";
 
 // Mock de framer-motion para evitar problemas con animaciones en tests
 jest.mock("framer-motion", () => ({
