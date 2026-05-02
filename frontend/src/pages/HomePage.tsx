@@ -1,24 +1,24 @@
 import React, { Suspense, lazy, useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-import videoBgWebm from '../assets/videos/VIDEOWEB.webm';
-import videoPosterWebp from '../assets/videos/VIDEOWEB_poster.webp';
-import omSymbol from '../assets/images/om_symbol.png';
-import lotusFlower from '../assets/images/lotus_flower.png';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import FadeInSection from '../components/FadeInSection';
-import { API_BASE_URL } from '../config';
+import videoBgWebm from 'assets/videos/VIDEOWEB.webm';
+import videoPosterWebp from 'assets/videos/VIDEOWEB_poster.webp';
+import omSymbol from 'assets/images/om_symbol.png';
+import lotusFlower from 'assets/images/lotus_flower.png';
+import Header from 'components/Header';
+import Footer from 'components/Footer';
+import FadeInSection from 'components/FadeInSection';
+import { API_BASE_URL } from 'config';
 import { useTranslation } from 'react-i18next';
-import { getImageUrl } from '../utils/imageUtils';
-import PageSEO from '../components/PageSEO';
+import { getImageUrl } from 'utils/imageUtils';
+import PageSEO from 'components/PageSEO';
 
 // Lazy load heavy components
-const ImageSlider = lazy(() => import('../components/ImageSlider'));
-const ReviewsSection = lazy(() => import('../components/ReviewsSection'));
-const WellnessQuiz = lazy(() => import('../components/WellnessQuiz'));
-const FeaturedActivities = lazy(() => import('../components/FeaturedActivities'));
-const NewsletterForm = lazy(() => import('../components/NewsletterForm'));
+const ImageSlider = lazy(() => import('components/ImageSlider'));
+const ReviewsSection = lazy(() => import('components/ReviewsSection'));
+const WellnessQuiz = lazy(() => import('components/WellnessQuiz'));
+const FeaturedActivities = lazy(() => import('components/FeaturedActivities'));
+const NewsletterForm = lazy(() => import('components/NewsletterForm'));
 
 const HomePage: React.FC = () => {
     const { t, i18n } = useTranslation();

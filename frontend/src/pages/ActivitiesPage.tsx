@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import BackButton from '../components/BackButton';
-import NewsletterForm from '../components/NewsletterForm';
-import { API_BASE_URL } from '../config';
-import { getTranslated } from '../utils/translate';
-import { getImageUrl } from '../utils/imageUtils';
-import PageSEO from '../components/PageSEO';
-import ShareButton from '../components/ShareButton';
+import Header from 'components/Header';
+import Footer from 'components/Footer';
+import BackButton from 'components/BackButton';
+import NewsletterForm from 'components/NewsletterForm';
+import { API_BASE_URL } from 'config';
+import { getTranslated } from 'utils/translate';
+import { getImageUrl } from 'utils/imageUtils';
+import PageSEO from 'components/PageSEO';
+import ShareButton from 'components/ShareButton';
 
 
 interface Activity {

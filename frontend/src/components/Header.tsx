@@ -1,16 +1,16 @@
 import React from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import logo from '../assets/images/logo_transparent_v2.webp';
-import christmasLogo from '../assets/images/arunachala-yoga-navidad-logo.webp';
+import logo from 'assets/images/logo_transparent_v2.webp';
+import christmasLogo from 'assets/images/arunachala-yoga-navidad-logo.webp';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAudio } from '../context/AudioContext';
+import { useAudio } from 'context/AudioContext';
 import { PlayIcon, PauseIcon, SpeakerWaveIcon, SpeakerXMarkIcon, ArrowsPointingOutIcon, ForwardIcon, BackwardIcon, ShareIcon } from '@heroicons/react/24/solid';
-import { API_BASE_URL } from '../config';
-import { isChristmasSeason } from '../utils/dateUtils';
-import { getImageUrl } from '../utils/imageUtils';
-import { useUIStore } from '../store/uiStore';
+import { API_BASE_URL } from 'config';
+import { isChristmasSeason } from 'utils/dateUtils';
+import { getImageUrl } from 'utils/imageUtils';
+import { useUIStore } from 'store/uiStore';
 
 const LANGUAGES = [
     { code: 'es', label: 'ES' },

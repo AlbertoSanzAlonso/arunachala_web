@@ -2,16 +2,16 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import PageSEO from '../components/PageSEO';
-import { API_BASE_URL } from '../config';
-import { Article } from '../types/blog';
+import Header from 'components/Header';
+import Footer from 'components/Footer';
+import PageSEO from 'components/PageSEO';
+import { API_BASE_URL } from 'config';
+import { Article } from 'types/blog';
 
 // Modular components
-import BlogHeader from './blog/components/BlogHeader';
-import ArticleCard from './blog/components/ArticleCard';
-import BlogPagination from './blog/components/BlogPagination';
+import BlogHeader from 'pages/blog/components/BlogHeader';
+import ArticleCard from 'pages/blog/components/ArticleCard';
+import BlogPagination from 'pages/blog/components/BlogPagination';
 
 const BlogPage: React.FC = () => {
     const { t } = useTranslation();

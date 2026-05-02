@@ -3,14 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AcademicCapIcon, SparklesIcon, HeartIcon } from '@heroicons/react/24/outline';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import BackButton from '../components/BackButton';
-import PageSEO from '../components/PageSEO';
+import Header from 'components/Header';
+import Footer from 'components/Footer';
+import BackButton from 'components/BackButton';
+import PageSEO from 'components/PageSEO';
 
-import NewsSection from '../components/NewsSection';
-import { API_BASE_URL } from '../config';
-import { getImageUrl } from '../utils/imageUtils';
+import NewsSection from 'components/NewsSection';
+import { API_BASE_URL } from 'config';
+import { getImageUrl } from 'utils/imageUtils';
 
 const AboutPage: React.FC = () => {
     const { t } = useTranslation();

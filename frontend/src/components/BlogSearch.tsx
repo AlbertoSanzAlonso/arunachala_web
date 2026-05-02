@@ -3,9 +3,9 @@ import { Listbox, Transition } from '@headlessui/react';
 import { MagnifyingGlassIcon, CalendarIcon, CheckIcon, XMarkIcon, TagIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { getTranslated } from '../utils/translate';
-import { Article } from '../types/blog';
-import { API_BASE_URL } from '../config';
+import { getTranslated } from 'utils/translate';
+import { Article } from 'types/blog';
+import { API_BASE_URL } from 'config';
 
 interface BlogSearchProps {
     articles: Article[];
