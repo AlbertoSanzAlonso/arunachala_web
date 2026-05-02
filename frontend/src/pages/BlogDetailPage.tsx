@@ -233,14 +233,38 @@ const BlogDetailPage: React.FC = () => {
                     )}
 
                     {/* Content */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4 }}
-                        className="mb-12"
-                    >
                         <ArticleContent body={translatedBody} onImageClick={handleImageClick} />
                     </motion.div>
+
+                    {/* Blog CTA Section */}
+                    <motion.section
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 }}
+                        className="mb-16 p-8 md:p-12 bg-forest/5 rounded-[2.5rem] border border-forest/10 text-center relative overflow-hidden"
+                    >
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-matcha/10 rounded-full -mr-16 -mt-16 blur-3xl" />
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-forest/10 rounded-full -ml-16 -mb-16 blur-3xl" />
+                        
+                        <div className="relative z-10 space-y-6">
+                            <h3 className="text-3xl md:text-4xl font-headers text-forest">
+                                {t('blog.cta.title')}
+                            </h3>
+                            <p className="text-bark/70 text-lg max-w-2xl mx-auto italic">
+                                {article.category === 'therapy' 
+                                    ? t('blog.cta.description_therapy') 
+                                    : t('blog.cta.description_yoga')}
+                            </p>
+                            <div className="pt-4">
+                                <button
+                                    onClick={() => navigate('/contacto')}
+                                    className="px-10 py-4 bg-forest text-white rounded-full font-headers uppercase tracking-widest text-sm hover:bg-matcha hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
+                                >
+                                    {t('blog.cta.button')}
+                                </button>
+                            </div>
+                        </div>
+                    </motion.section>
 
                     {/* Related */}
                     <RelatedArticles articles={relatedArticles} />
