@@ -10,9 +10,10 @@ import { getTranslated } from '../../../utils/translate';
 interface ArticleCardProps {
     article: Article;
     index: number;
+    currentPage: number;
 }
 
-const ArticleCard: React.FC<ArticleCardProps> = ({ article, index }) => {
+const ArticleCard: React.FC<ArticleCardProps> = ({ article, index, currentPage }) => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
 
@@ -24,7 +25,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, index }) => {
 
     const translatedTitle = getTranslated(article, 'title', i18n.language);
     const translatedExcerpt = getTranslated(article, 'excerpt', i18n.language);
-    const articleUrl = `/blog/${article.slug}`;
+    const articleUrl = `/blog/${article.slug}?p=${currentPage}`;
 
     return (
         <motion.div

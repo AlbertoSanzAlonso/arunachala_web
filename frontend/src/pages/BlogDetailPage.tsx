@@ -1,9 +1,9 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
-import { CalendarIcon, ShareIcon } from '@heroicons/react/24/outline';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CalendarIcon, ShareIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -25,6 +25,11 @@ const BlogDetailPage: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { addToast } = useUIStore();
     const navigate = useNavigate();
+    const location = useLocation();
+    
+    // Extract page parameter from URL
+    const searchParams = new URLSearchParams(location.search);
+    const pageParam = searchParams.get('p') || '1';
     
     const [article, setArticle] = useState<Article | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -32,14 +37,23 @@ const BlogDetailPage: React.FC = () => {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [isZoomed, setIsZoomed] = useState(false);
 
+    const [currentPage, setCurrentPage] = useState(1);
+
     const fetchRelatedArticles = useCallback(async (category: string, currentId: number, tags: string[] = []) => {
         try {
-            // Fetch all published articles to find the best matches
+            // Fetch all published articles to find the best matches and calculate current page
             const response = await fetch(`${API_BASE_URL}/api/content?type=article&status=published`);
             if (response.ok) {
                 const data = await response.json();
                 
-                // Filter out current article and calculate relevance score
+                // 1. Calculate which page this article belongs to (9 items per page)
+                const currentIndex = data.findIndex((a: Article) => a.id === currentId);
+                if (currentIndex !== -1) {
+                    const calculatedPage = Math.floor(currentIndex / 9) + 1;
+                    setCurrentPage(calculatedPage);
+                }
+
+                // 2. Score articles based on matching tags for "Related" section
                 const scored = data
                     .filter((a: Article) => a.id !== currentId)
                     .map((a: Article) => {
@@ -49,15 +63,11 @@ const BlogDetailPage: React.FC = () => {
                             score: matchingTags.length 
                         };
                     })
-                    // Filter: must have matching tags OR be in the same category
                     .filter((item: any) => item.score > 0 || item.article.category === category)
                     .sort((a: any, b: any) => {
-                        // 1. Sort by number of matching tags
                         if (b.score !== a.score) return b.score - a.score;
-                        // 2. Sort by same category
                         if (a.article.category === category && b.article.category !== category) return -1;
                         if (a.article.category !== category && b.article.category === category) return 1;
-                        // 3. Sort by date (newest first)
                         return new Date(b.article.created_at).getTime() - new Date(a.article.created_at).getTime();
                     });
 
@@ -198,10 +208,40 @@ const BlogDetailPage: React.FC = () => {
 
             <Header />
 
+            {/* Floating Navigation Buttons - Desktop only */}
+            <div className="hidden lg:block">
+                <AnimatePresence>
+                    {article.prev_slug && (
+                        <motion.button
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            onClick={() => navigate(`/blog/${article.prev_slug}?p=${currentPage}`)}
+                            className="fixed left-8 top-1/2 -translate-y-1/2 z-40 bg-white/80 backdrop-blur-md p-4 rounded-full shadow-lg border border-forest/10 text-forest hover:bg-forest hover:text-white transition-all group"
+                            title={t('meditations.prev', 'Anterior')}
+                        >
+                            <ChevronLeftIcon className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+                        </motion.button>
+                    )}
+                    {article.next_slug && (
+                        <motion.button
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                            onClick={() => navigate(`/blog/${article.next_slug}?p=${currentPage}`)}
+                            className="fixed right-8 top-1/2 -translate-y-1/2 z-40 bg-white/80 backdrop-blur-md p-4 rounded-full shadow-lg border border-forest/10 text-forest hover:bg-forest hover:text-white transition-all group"
+                            title={t('meditations.next', 'Siguiente')}
+                        >
+                            <ChevronRightIcon className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                        </motion.button>
+                    )}
+                </AnimatePresence>
+            </div>
+
             <main className="flex-grow pt-4 md:pt-16 pb-16">
                 <article className="max-w-4xl mx-auto px-6">
                     <div className="mb-4">
-                        <BackButton to="/blog" label={t('blog.back_to_blog')} />
+                        <BackButton to={`/blog?p=${currentPage}`} label={t('blog.back_to_blog')} />
                     </div>
 
                     <div className="mb-6">

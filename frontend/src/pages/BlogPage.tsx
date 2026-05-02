@@ -1,6 +1,7 @@
 
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageSEO from '../components/PageSEO';
@@ -14,6 +15,7 @@ import BlogPagination from './blog/components/BlogPagination';
 
 const BlogPage: React.FC = () => {
     const { t } = useTranslation();
+    const location = useLocation();
     const [articles, setArticles] = useState<Article[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [filters, setFilters] = useState({
@@ -27,10 +29,25 @@ const BlogPage: React.FC = () => {
     // Pagination
     const ITEMS_PER_PAGE = 9;
     const [currentPage, setCurrentPage] = useState(() => {
-        // Initialize from session storage if available
+        // 1. Try URL parameter first
+        const searchParams = new URLSearchParams(location.search);
+        const p = searchParams.get('p');
+        if (p) return parseInt(p);
+        
+        // 2. Fallback to session storage
         const savedPage = sessionStorage.getItem('blog_current_page');
         return savedPage ? parseInt(savedPage) : 1;
     });
+
+    // Protection against filters resetting page on mount
+    const isFirstRun = useRef(true);
+    useEffect(() => {
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            return;
+        }
+        setCurrentPage(1);
+    }, [filters]);
 
     const fetchArticles = useCallback(async () => {
         setIsLoading(true);
@@ -53,17 +70,19 @@ const BlogPage: React.FC = () => {
             
             // Restore scroll position after data is loaded and rendered
             const savedScroll = sessionStorage.getItem('blog_scroll_pos');
-            if (savedScroll) {
+            const savedPage = sessionStorage.getItem('blog_current_page');
+            
+            if (savedScroll && savedPage) {
                 setTimeout(() => {
                     window.scrollTo({
                         top: parseInt(savedScroll),
                         behavior: 'instant' as any
                     });
-                    // Important: Clear scroll but maybe keep page for next visit? 
-                    // Usually we clear both to avoid weird behavior on new entry
+                    // Only clear after a successful restoration
+                    // We can keep them for a bit or clear them here
                     sessionStorage.removeItem('blog_scroll_pos');
                     sessionStorage.removeItem('blog_current_page');
-                }, 150); // Slightly more delay to ensure layout is ready
+                }, 200); // 200ms to be safe with layout rendering
             }
         };
         
@@ -78,10 +97,7 @@ const BlogPage: React.FC = () => {
         };
     }, [fetchArticles, currentPage]);
 
-    // Reset pagination on filter change
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [filters]);
+
 
     // Filter logic
     const filteredArticles = useMemo(() => {
@@ -145,6 +161,7 @@ const BlogPage: React.FC = () => {
                                                 key={article.id} 
                                                 article={article} 
                                                 index={index} 
+                                                currentPage={currentPage}
                                             />
                                         ))}
                                     </div>
