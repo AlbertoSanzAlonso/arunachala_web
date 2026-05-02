@@ -149,6 +149,28 @@ const BlogDetailPage: React.FC = () => {
                 description={article.seo_description || translatedExcerpt}
                 ogImage={article.thumbnail_url ? getImageUrl(article.thumbnail_url) : undefined}
                 ogType="article"
+                structuredData={{
+                    "@context": "https://schema.org",
+                    "@type": "BlogPosting",
+                    "headline": translatedTitle,
+                    "image": article.thumbnail_url ? getImageUrl(article.thumbnail_url) : "https://www.yogayterapiasarunachala.es/logo_wide.webp",
+                    "datePublished": article.created_at,
+                    "dateModified": article.updated_at || article.created_at,
+                    "author": [{
+                        "@type": "Person",
+                        "name": "Susana Pérez Gil",
+                        "url": "https://www.yogayterapiasarunachala.es/quienes-somos/"
+                    }],
+                    "publisher": {
+                        "@type": "Organization",
+                        "name": "Arunachala Yoga y Terapias",
+                        "logo": {
+                            "@type": "ImageObject",
+                            "url": "https://www.yogayterapiasarunachala.es/logo_transparent.png"
+                        }
+                    },
+                    "description": translatedExcerpt || article.seo_description
+                }}
             />
 
             <Header />

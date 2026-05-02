@@ -695,6 +695,40 @@ const ActivitiesPage: React.FC = () => {
                     ? (getTranslated(selectedActivity, 'description', i18n.language) || '').substring(0, 160)
                     : t('activities.seo.description', 'Descubre nuestras actividades activas, talleres y eventos especiales en Arunachala.')}
                 ogImage={selectedActivity?.image_url ? getImageUrl(selectedActivity.image_url) : undefined}
+                structuredData={selectedActivity ? {
+                    "@context": "https://schema.org",
+                    "@type": "Event",
+                    "name": getTranslated(selectedActivity, 'title', i18n.language),
+                    "description": getTranslated(selectedActivity, 'description', i18n.language),
+                    "image": selectedActivity.image_url ? getImageUrl(selectedActivity.image_url) : "https://www.yogayterapiasarunachala.es/logo_wide.webp",
+                    "startDate": selectedActivity.start_date,
+                    "endDate": selectedActivity.end_date || selectedActivity.start_date,
+                    "eventStatus": "https://schema.org/EventScheduled",
+                    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+                    "location": {
+                        "@type": "Place",
+                        "name": selectedActivity.location || "Arunachala Yoga y Terapias",
+                        "address": {
+                            "@type": "PostalAddress",
+                            "streetAddress": "Pasaje de Mateo Oliva 3, bajos",
+                            "addressLocality": "Cornellà de Llobregat",
+                            "postalCode": "08940",
+                            "addressCountry": "ES"
+                        }
+                    },
+                    "offers": {
+                        "@type": "Offer",
+                        "price": selectedActivity.price ? selectedActivity.price.replace(/[^0-9.]/g, '') : "0",
+                        "priceCurrency": "EUR",
+                        "availability": "https://schema.org/InStock",
+                        "url": `https://www.yogayterapiasarunachala.es/actividades/?slug=${selectedActivity.slug}`
+                    },
+                    "organizer": {
+                        "@type": "Organization",
+                        "name": "Arunachala Yoga y Terapias",
+                        "url": "https://www.yogayterapiasarunachala.es"
+                    }
+                } : undefined}
             />
 
             <Header />
