@@ -44,8 +44,30 @@ const BlogPage: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        fetchArticles();
-        window.scrollTo(0, 0);
+        const loadInitialData = async () => {
+            await fetchArticles();
+            
+            // Restore scroll position after data is loaded and rendered
+            const savedScroll = sessionStorage.getItem('blog_scroll_pos');
+            if (savedScroll) {
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: parseInt(savedScroll),
+                        behavior: 'instant' as any
+                    });
+                    sessionStorage.removeItem('blog_scroll_pos');
+                }, 100);
+            }
+        };
+        
+        loadInitialData();
+
+        // Save scroll position on unmount
+        return () => {
+            if (window.location.pathname.startsWith('/blog/')) {
+                sessionStorage.setItem('blog_scroll_pos', window.scrollY.toString());
+            }
+        };
     }, [fetchArticles]);
 
     // Reset pagination on filter change

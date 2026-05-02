@@ -39,6 +39,8 @@ class ContentResponse(ContentBase):
     created_at: datetime
     updated_at: Optional[datetime]
     author_name: Optional[str] = None
+    prev_slug: Optional[str] = None
+    next_slug: Optional[str] = None
 
     class Config:
         from_attributes = True

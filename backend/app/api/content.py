@@ -167,6 +167,24 @@ def get_content_by_slug(slug: str, db: Session = Depends(get_db)):
     db_content = db.query(Content).filter(Content.slug == slug).first()
     if not db_content: raise HTTPException(status_code=404, detail="Content not found")
     
+    # Calculate Navigation (Prev/Next) within same type and category
+    prev_item = db.query(Content).filter(
+        Content.type == db_content.type,
+        Content.category == db_content.category,
+        Content.status == "published",
+        Content.created_at < db_content.created_at
+    ).order_by(Content.created_at.desc()).first()
+    
+    next_item = db.query(Content).filter(
+        Content.type == db_content.type,
+        Content.category == db_content.category,
+        Content.status == "published",
+        Content.created_at > db_content.created_at
+    ).order_by(Content.created_at.asc()).first()
+    
+    db_content.prev_slug = prev_item.slug if prev_item else None
+    db_content.next_slug = next_item.slug if next_item else None
+
     db_content.view_count = Content.view_count + 1
     db.commit()
     db.refresh(db_content)
@@ -185,6 +203,24 @@ def record_playback(slug: str, data: PlaybackRecord, db: Session = Depends(get_d
 def get_content(content_id: int, db: Session = Depends(get_db)):
     db_content = db.query(Content).filter(Content.id == content_id).first()
     if not db_content: raise HTTPException(status_code=404, detail="Content not found")
+
+    # Calculate Navigation (Prev/Next)
+    prev_item = db.query(Content).filter(
+        Content.type == db_content.type,
+        Content.category == db_content.category,
+        Content.status == "published",
+        Content.created_at < db_content.created_at
+    ).order_by(Content.created_at.desc()).first()
+    
+    next_item = db.query(Content).filter(
+        Content.type == db_content.type,
+        Content.category == db_content.category,
+        Content.status == "published",
+        Content.created_at > db_content.created_at
+    ).order_by(Content.created_at.asc()).first()
+    
+    db_content.prev_slug = prev_item.slug if prev_item else None
+    db_content.next_slug = next_item.slug if next_item else None
 
     db_content.view_count = Content.view_count + 1
     db.commit()

@@ -272,6 +272,44 @@ const BlogDetailPage: React.FC = () => {
                         </div>
                     </motion.section>
 
+                    {/* Navigation between articles */}
+                    {(article.prev_slug || article.next_slug) && (
+                        <nav className="mb-16 grid grid-cols-2 gap-4">
+                            <div className="text-left">
+                                {article.prev_slug && (
+                                    <button
+                                        onClick={() => navigate(`/blog/${article.prev_slug}`)}
+                                        className="group flex flex-col items-start gap-2 p-6 bg-white rounded-3xl border border-bark/5 hover:border-matcha/30 hover:shadow-lg transition-all"
+                                    >
+                                        <span className="text-[10px] font-headers uppercase tracking-widest text-bark/40 group-hover:text-matcha transition-colors">
+                                            ← {t('meditations.prev', 'Anterior')}
+                                        </span>
+                                        <span className="text-forest font-headers text-lg line-clamp-1">
+                                            {/* We don't have the title of prev, but we can just say 'Ver anterior' or similar if needed, 
+                                                but for now just the button with label is fine */}
+                                            {t('common.back', 'Volver')}
+                                        </span>
+                                    </button>
+                                )}
+                            </div>
+                            <div className="text-right flex justify-end">
+                                {article.next_slug && (
+                                    <button
+                                        onClick={() => navigate(`/blog/${article.next_slug}`)}
+                                        className="group flex flex-col items-end gap-2 p-6 bg-white rounded-3xl border border-bark/5 hover:border-matcha/30 hover:shadow-lg transition-all"
+                                    >
+                                        <span className="text-[10px] font-headers uppercase tracking-widest text-bark/40 group-hover:text-matcha transition-colors">
+                                            {t('meditations.next', 'Siguiente')} →
+                                        </span>
+                                        <span className="text-forest font-headers text-lg line-clamp-1">
+                                            {t('common.read_more', 'Leer más')}
+                                        </span>
+                                    </button>
+                                )}
+                            </div>
+                        </nav>
+                    )}
+
                     {/* Related */}
                     <RelatedArticles articles={relatedArticles} />
                 </article>
