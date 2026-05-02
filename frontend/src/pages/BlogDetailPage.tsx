@@ -5,20 +5,20 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CalendarIcon, ShareIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import PageSEO from '../components/PageSEO';
-import BackButton from '../components/BackButton';
-import { API_BASE_URL } from '../config';
-import { getTranslated } from '../utils/translate';
-import { getImageUrl } from '../utils/imageUtils';
-import { useUIStore } from '../store/uiStore';
-import { Article } from '../types/blog';
+import Header from 'components/Header';
+import Footer from 'components/Footer';
+import PageSEO from 'components/PageSEO';
+import BackButton from 'components/BackButton';
+import { API_BASE_URL } from 'config';
+import { getTranslated } from 'utils/translate';
+import { getImageUrl } from 'utils/imageUtils';
+import { useUIStore } from 'store/uiStore';
+import { Article } from 'types/blog';
 
 // Modular components
-import ArticleLightbox from './blog/components/ArticleLightbox';
-import ArticleContent from './blog/components/ArticleContent';
-import RelatedArticles from './blog/components/RelatedArticles';
+import ArticleLightbox from 'pages/blog/components/ArticleLightbox';
+import ArticleContent from 'pages/blog/components/ArticleContent';
+import RelatedArticles from 'pages/blog/components/RelatedArticles';
 
 const BlogDetailPage: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();

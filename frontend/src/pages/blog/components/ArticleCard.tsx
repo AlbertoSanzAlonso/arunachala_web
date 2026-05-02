@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { CalendarIcon, ArrowRightIcon, TagIcon } from '@heroicons/react/24/outline';
-import { Article } from '../../../types/blog';
-import { getImageUrl } from '../../../utils/imageUtils';
-import { getTranslated } from '../../../utils/translate';
+import { Article } from 'types/blog';
+import { getImageUrl } from 'utils/imageUtils';
+import { getTranslated } from 'utils/translate';
 
 interface ArticleCardProps {
     article: Article;
