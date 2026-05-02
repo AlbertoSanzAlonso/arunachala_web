@@ -181,15 +181,6 @@ const BlogDetailPage: React.FC = () => {
 
                     <ArticleContent body={translatedBody} onImageClick={setSelectedImage} />
 
-                    <div className="hidden lg:block">
-                        <BottomNavigation 
-                            prevArticle={prevArticle}
-                            nextArticle={nextArticle}
-                            currentPage={currentPage}
-                            navigate={navigate}
-                            language={i18n.language}
-                        />
-                    </div>
 
                     <RelatedArticles articles={relatedArticles} />
                 </article>
