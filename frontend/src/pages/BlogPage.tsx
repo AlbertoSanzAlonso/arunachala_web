@@ -18,12 +18,20 @@ const BlogPage: React.FC = () => {
     const location = useLocation();
     const [articles, setArticles] = useState<Article[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [filters, setFilters] = useState({
-        query: '',
-        category: 'all',
-        year: 'all',
-        month: 'all',
-        tags: [] as string[]
+    const [filters, setFilters] = useState(() => {
+        const path = location.pathname;
+        let initialCategory = 'all';
+        if (path.includes('/blog/yoga')) initialCategory = 'yoga';
+        else if (path.includes('/blog/therapy')) initialCategory = 'therapy';
+        else if (path.includes('/blog/general')) initialCategory = 'general';
+        
+        return {
+            query: '',
+            category: initialCategory,
+            year: 'all',
+            month: 'all',
+            tags: [] as string[]
+        };
     });
     
     // Pagination
@@ -63,6 +71,19 @@ const BlogPage: React.FC = () => {
             setIsLoading(false);
         }
     }, []);
+
+    // Sync filters with URL path changes
+    useEffect(() => {
+        const path = location.pathname;
+        let newCategory = 'all';
+        if (path.includes('/blog/yoga')) newCategory = 'yoga';
+        else if (path.includes('/blog/therapy')) newCategory = 'therapy';
+        else if (path.includes('/blog/general')) newCategory = 'general';
+        
+        if (newCategory !== filters.category) {
+            setFilters(prev => ({ ...prev, category: newCategory }));
+        }
+    }, [location.pathname]);
 
     useEffect(() => {
         const loadInitialData = async () => {
