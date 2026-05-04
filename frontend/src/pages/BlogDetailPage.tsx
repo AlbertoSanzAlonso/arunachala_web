@@ -158,18 +158,10 @@ const BlogDetailPage: React.FC = () => {
                         title={translatedTitle}
                         currentPage={currentPage}
                         onShare={handleShare}
+                        prevArticle={prevArticle}
+                        navigate={navigate}
+                        language={i18n.language}
                     />
-
-                    <div className="lg:hidden mb-8">
-                        <BottomNavigation 
-                            prevArticle={prevArticle}
-                            nextArticle={null}
-                            currentPage={currentPage}
-                            navigate={navigate}
-                            language={i18n.language}
-                            isTop={true}
-                        />
-                    </div>
 
                     {article.thumbnail_url && (
                         <div 
