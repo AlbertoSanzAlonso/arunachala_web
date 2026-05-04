@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 from app.core.database import get_db
+from app.models.models import Content, Activity
 from app.api.auth import get_current_user
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
@@ -169,3 +170,86 @@ async def get_search_console_stats(
                 "position": 0
             }
         }
+
+@router.get("/sitemap.xml")
+async def sitemap(db: Session = Depends(get_db)):
+    """Generates a dynamic sitemap.xml including static pages, blog posts and meditations."""
+    
+    # Base configuration
+    BASE_URL = "https://www.yogayterapiasarunachala.es"
+    today = datetime.now().strftime('%Y-%m-%d')
+    
+    # 1. Define Static Pages
+    static_pages = [
+        ("/",                           "1.0", "daily"),
+        ("/clases-de-yoga/",            "0.9", "weekly"),
+        ("/terapias-y-masajes/",        "0.9", "weekly"),
+        ("/terapias/masajes/",          "0.8", "monthly"),
+        ("/terapias/terapias-holisticas/", "0.8", "monthly"),
+        ("/actividades/",               "0.9", "daily"),
+        ("/blog/",                      "0.9", "daily"),
+        ("/nuestro-espacio/",           "0.7", "monthly"),
+        ("/meditaciones/",              "0.8", "weekly"),
+        ("/promociones/",               "0.8", "weekly"),
+        ("/quienes-somos/",             "0.7", "monthly"),
+        ("/contacto/",                  "0.6", "monthly"),
+        ("/galeria/clases-de-yoga/",    "0.5", "monthly"),
+        ("/galeria/terapias-y-masajes/", "0.5", "monthly"),
+        ("/aviso-legal/",               "0.1", "yearly"),
+        ("/politica-de-privacidad/",    "0.1", "yearly"),
+    ]
+    
+    urls = []
+    
+    # Add static pages to list
+    for path, priority, changefreq in static_pages:
+        urls.append(f"""  <url>
+    <loc>{BASE_URL}{path}</loc>
+    <lastmod>{today}</lastmod>
+    <changefreq>{changefreq}</changefreq>
+    <priority>{priority}</priority>
+  </url>""")
+    
+    # 2. Get Dynamic Content (Blog & Meditations)
+    dynamic_contents = db.query(Content).filter(
+        Content.status == "published",
+        Content.type.in_(["article", "meditation"]),
+        Content.slug.is_not(None),
+        ~Content.slug.contains("sugerencia")
+    ).all()
+    
+    for item in dynamic_contents:
+        lastmod = (item.updated_at or item.created_at or datetime.now()).strftime('%Y-%m-%d')
+        path_prefix = "/blog" if item.type == "article" else "/meditaciones"
+        
+        # Consistent trailing slash for SEO
+        urls.append(f"""  <url>
+    <loc>{BASE_URL}{path_prefix}/{item.slug}/</loc>
+    <lastmod>{lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>""")
+        
+    # 3. Get Activities
+    activities_list = db.query(Activity).filter(
+        Activity.is_active == True,
+        Activity.slug.is_not(None),
+        ~Activity.slug.contains("sugerencia")
+    ).all()
+    
+    for act in activities_list:
+        lastmod = (act.updated_at or act.created_at or datetime.now()).strftime('%Y-%m-%d')
+        urls.append(f"""  <url>
+    <loc>{BASE_URL}/actividades/?slug={act.slug}</loc>
+    <lastmod>{lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>""")
+
+    # Construct final XML
+    xml_content = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{chr(10).join(urls)}
+</urlset>"""
+
+    return Response(content=xml_content, media_type="application/xml")
