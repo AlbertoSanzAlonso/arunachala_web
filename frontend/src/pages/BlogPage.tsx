@@ -196,12 +196,14 @@ const BlogPage: React.FC = () => {
                                         totalPages={totalPages}
                                         onPageChange={(page) => {
                                             setCurrentPage(page);
-                                            // More reliable scroll calculation
-                                            if (gridRef.current) {
-                                                const yOffset = -120;
-                                                const y = gridRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                                                window.scrollTo({ top: y, behavior: 'smooth' });
-                                            }
+                                            // Ensure DOM update before scroll
+                                            setTimeout(() => {
+                                                if (gridRef.current) {
+                                                    const yOffset = -120;
+                                                    const y = gridRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                                                    window.scrollTo({ top: y, behavior: 'smooth' });
+                                                }
+                                            }, 100);
                                         }}
                                     />
                                 </>
