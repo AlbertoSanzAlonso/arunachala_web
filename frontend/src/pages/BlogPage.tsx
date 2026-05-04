@@ -196,14 +196,17 @@ const BlogPage: React.FC = () => {
                                         totalPages={totalPages}
                                         onPageChange={(page) => {
                                             setCurrentPage(page);
-                                            // Ensure DOM update before scroll
-                                            setTimeout(() => {
-                                                if (gridRef.current) {
-                                                    const yOffset = -120;
-                                                    const y = gridRef.current.offsetTop + yOffset;
-                                                    window.scrollTo({ top: y, behavior: 'smooth' });
-                                                }
-                                            }, 100);
+                                            // 1. Instant jump to avoid being stuck at the bottom
+                                            const grid = gridRef.current;
+                                            if (grid) {
+                                                const targetY = grid.offsetTop - 120;
+                                                window.scrollTo({ top: targetY, behavior: 'auto' });
+                                                
+                                                // 2. Smooth adjustment after a short delay to allow for animations/rendering
+                                                setTimeout(() => {
+                                                    grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                }, 100);
+                                            }
                                         }}
                                     />
                                 </>

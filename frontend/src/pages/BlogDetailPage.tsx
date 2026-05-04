@@ -174,10 +174,8 @@ const BlogDetailPage: React.FC = () => {
 
                     <ArticleContent body={translatedBody} onImageClick={setSelectedImage} />
 
-                    <ArticleCTA />
-
-                    {/* Next Article on Mobile - Moved to bottom */}
-                    <div className="lg:hidden mt-12 mb-8">
+                    {/* Next Article on Mobile - Positioned before CTA */}
+                    <div className="lg:hidden mt-12">
                         <BottomNavigation 
                             prevArticle={null}
                             nextArticle={nextArticle}
@@ -186,6 +184,10 @@ const BlogDetailPage: React.FC = () => {
                             language={i18n.language}
                             isTop={false}
                         />
+                    </div>
+
+                    <div className="mt-12">
+                        <ArticleCTA />
                     </div>
 
                     <RelatedArticles articles={relatedArticles} />
