@@ -22,6 +22,8 @@ class TagOut(TagBase):
     class Config:
         from_attributes = True
 
+import unicodedata
+
 @router.get("", response_model=List[TagOut])
 def get_tags(category: Optional[str] = None, in_use: bool = True, db: Session = Depends(get_db)):
     print(f"🔍 GET /api/tags - category: {category}, in_use: {in_use}")
@@ -43,10 +45,11 @@ def get_tags(category: Optional[str] = None, in_use: bool = True, db: Session = 
     tags = query.all()
     
     # Deduplicate by name in memory to ensure unique labels in frontend
-    # We keep the one that has translations if available
+    # We use NFC normalization to handle visually identical accented characters
     unique_tags = {}
     for t in tags:
-        name_key = t.name.lower().strip()
+        normalized_name = unicodedata.normalize('NFC', t.name)
+        name_key = normalized_name.lower().strip()
         if name_key not in unique_tags:
             unique_tags[name_key] = t
         else:

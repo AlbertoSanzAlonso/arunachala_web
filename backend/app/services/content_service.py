@@ -45,16 +45,18 @@ def process_tags(tags_data: Optional[List[str]]) -> List[str]:
                 processed.append(clean_tag)
     return processed
 
+import unicodedata
+
 def sync_content_tags(db: Session, content: Content, tags_list: List[str], background_tasks: BackgroundTasks = None, content_translations: dict = None):
     """Sync tags between Content and Tag table, ensuring case-insensitivity and preventing duplicates"""
-    # Normalize list
-    tags_list = [t.lower().strip() for t in tags_list if t]
+    # Normalize list with Unicode NFC and lowercase
+    tags_list = [unicodedata.normalize('NFC', t).lower().strip() for t in tags_list if t]
     if not tags_list:
         return
 
     # Find existing tags (case-insensitive)
     existing_tags = db.query(Tag).filter(Tag.name.in_(tags_list)).all()
-    existing_names = {t.name.lower() for t in existing_tags}
+    existing_names = {unicodedata.normalize('NFC', t.name).lower() for t in existing_tags}
     
     new_tags = []
     for name in tags_list:

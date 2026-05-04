@@ -200,7 +200,7 @@ const BlogPage: React.FC = () => {
                                             setTimeout(() => {
                                                 if (gridRef.current) {
                                                     const yOffset = -120;
-                                                    const y = gridRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                                                    const y = gridRef.current.offsetTop + yOffset;
                                                     window.scrollTo({ top: y, behavior: 'smooth' });
                                                 }
                                             }, 100);
