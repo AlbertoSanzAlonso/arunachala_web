@@ -39,10 +39,12 @@ const ArticleHeader: React.FC<ArticleHeaderProps> = ({
                 <div className="lg:hidden mb-6">
                     <button
                         onClick={() => navigate(`/blog/${prevArticle.slug}?p=${currentPage}`)}
-                        className="flex items-center gap-2 text-matcha font-headers text-xs uppercase tracking-widest hover:underline"
+                        className="flex flex-col gap-1 py-3 px-5 bg-white rounded-2xl border border-bark/5 hover:border-matcha/30 hover:shadow-md transition-all w-full text-left"
                     >
-                        <span>← {t('meditations.prev', 'Anterior')}:</span>
-                        <span className="truncate max-w-[200px] normal-case font-body italic opacity-70">
+                        <span className="text-[10px] font-headers uppercase tracking-widest text-bark/40">
+                            ← {t('meditations.prev', 'Anterior')}
+                        </span>
+                        <span className="text-forest font-headers text-sm truncate w-full">
                             {getTranslated(prevArticle, 'title', language)}
                         </span>
                     </button>
