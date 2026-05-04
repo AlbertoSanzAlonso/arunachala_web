@@ -134,9 +134,11 @@ const BlogPage: React.FC = () => {
             const matchesYear = filters.year === 'all' || (date && date.getFullYear().toString() === filters.year);
             const matchesMonth = filters.month === 'all' || (date && date.getMonth().toString() === filters.month);
             
-            // Tags filter
+            // Tags filter (case-insensitive)
             const matchesTags = filters.tags.length === 0 || 
-                filters.tags.every(tag => (article.tags || []).includes(tag));
+                filters.tags.every(tag => 
+                    (article.tags || []).some((t: string) => t.toLowerCase() === tag.toLowerCase())
+                );
 
             return matchesCategory && matchesSearch && matchesYear && matchesMonth && matchesTags;
         });

@@ -26,18 +26,37 @@ class TagOut(TagBase):
 def get_tags(category: Optional[str] = None, in_use: bool = True, db: Session = Depends(get_db)):
     print(f"🔍 GET /api/tags - category: {category}, in_use: {in_use}")
     query = db.query(Tag)
+    
     if category:
         query = query.filter(Tag.category == category)
     
-    # Only tags that are linked to at least one content item
+    # Only tags that are linked to at least one PUBLISHED content item
     if in_use:
-        from app.models.models import content_tags
-        in_use_ids = db.query(content_tags.c.tag_id).distinct()
+        from app.models.models import content_tags, Content
+        # Join with association table and content table to check status
+        in_use_ids = db.query(content_tags.c.tag_id).join(
+            Content, Content.id == content_tags.c.content_id
+        ).filter(Content.status == "published").distinct()
+        
         query = query.filter(Tag.id.in_(in_use_ids))
         
     tags = query.all()
-    print(f"   Returning {len(tags)} tags")
-    return tags
+    
+    # Deduplicate by name in memory to ensure unique labels in frontend
+    # We keep the one that has translations if available
+    unique_tags = {}
+    for t in tags:
+        name_key = t.name.lower().strip()
+        if name_key not in unique_tags:
+            unique_tags[name_key] = t
+        else:
+            # If current one has translations and existing doesn't, swap
+            if t.translations and not unique_tags[name_key].translations:
+                unique_tags[name_key] = t
+                
+    final_tags = list(unique_tags.values())
+    print(f"   Returning {len(final_tags)} unique tags (from {len(tags)} total)")
+    return final_tags
 
 @router.post("", response_model=TagOut)
 def create_tag(tag: TagCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):

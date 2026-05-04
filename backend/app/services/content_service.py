@@ -46,9 +46,15 @@ def process_tags(tags_data: Optional[List[str]]) -> List[str]:
     return processed
 
 def sync_content_tags(db: Session, content: Content, tags_list: List[str], background_tasks: BackgroundTasks = None, content_translations: dict = None):
-    """Sync tags between Content and Tag table, triggering translation if needed"""
-    current_tags = db.query(Tag).filter(Tag.name.in_(tags_list)).all()
-    existing_names = {t.name for t in current_tags}
+    """Sync tags between Content and Tag table, ensuring case-insensitivity and preventing duplicates"""
+    # Normalize list
+    tags_list = [t.lower().strip() for t in tags_list if t]
+    if not tags_list:
+        return
+
+    # Find existing tags (case-insensitive)
+    existing_tags = db.query(Tag).filter(Tag.name.in_(tags_list)).all()
+    existing_names = {t.name.lower() for t in existing_tags}
     
     new_tags = []
     for name in tags_list:
@@ -56,6 +62,7 @@ def sync_content_tags(db: Session, content: Content, tags_list: List[str], backg
             tag_obj = Tag(name=name)
             db.add(tag_obj)
             new_tags.append(tag_obj)
+            existing_names.add(name) # Prevent double creation in same loop
             
     if new_tags and background_tasks:
         db.flush()
@@ -63,22 +70,27 @@ def sync_content_tags(db: Session, content: Content, tags_list: List[str], backg
             background_tasks.add_task(auto_translate_background, SessionLocal, Tag, nt.id, {"name": nt.name})
 
 def cleanup_orphan_tags(db: Session):
-    """Remove tags that are not associated with any content"""
+    """Remove tags that are not associated with any content (case-insensitive)"""
     all_contents = db.query(Content.tags).all()
     used_tags = set()
     for c_tags in all_contents:
-        if c_tags[0]:
-            if isinstance(c_tags[0], list):
-                used_tags.update(c_tags[0])
-            elif isinstance(c_tags[0], str):
+        tags_data = c_tags[0]
+        if tags_data:
+            if isinstance(tags_data, list):
+                used_tags.update([str(t).lower().strip() for t in tags_data if t])
+            elif isinstance(tags_data, str):
                 import json
                 try:
-                    parsed = json.loads(c_tags[0])
-                    if isinstance(parsed, list): used_tags.update(parsed)
+                    parsed = json.loads(tags_data)
+                    if isinstance(parsed, list): 
+                        used_tags.update([str(t).lower().strip() for t in parsed if t])
                 except: pass
     
     if used_tags:
-        db.query(Tag).filter(~Tag.name.in_(list(used_tags))).delete(synchronize_session=False)
+        # Delete tags whose name (normalized) is not in the used_tags set
+        # We use a case-insensitive comparison for the deletion too
+        from sqlalchemy import func
+        db.query(Tag).filter(func.lower(Tag.name).notin_(list(used_tags))).delete(synchronize_session=False)
         db.commit()
 
 async def download_remote_image(image_url: str, slug: str) -> Optional[str]:
