@@ -163,7 +163,7 @@ const BlogDetailPage: React.FC = () => {
                     <div className="lg:hidden mb-8">
                         <BottomNavigation 
                             prevArticle={prevArticle}
-                            nextArticle={nextArticle}
+                            nextArticle={null}
                             currentPage={currentPage}
                             navigate={navigate}
                             language={i18n.language}
@@ -184,6 +184,17 @@ const BlogDetailPage: React.FC = () => {
 
                     <ArticleCTA />
 
+                    {/* Next Article on Mobile - Moved to bottom */}
+                    <div className="lg:hidden mt-12 mb-8">
+                        <BottomNavigation 
+                            prevArticle={null}
+                            nextArticle={nextArticle}
+                            currentPage={currentPage}
+                            navigate={navigate}
+                            language={i18n.language}
+                            isTop={false}
+                        />
+                    </div>
 
                     <RelatedArticles articles={relatedArticles} />
                 </article>

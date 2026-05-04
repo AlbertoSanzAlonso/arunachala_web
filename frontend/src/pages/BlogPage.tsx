@@ -34,7 +34,8 @@ const BlogPage: React.FC = () => {
         };
     });
     
-    // Pagination
+    const gridRef = useRef<HTMLDivElement>(null);
+
     const ITEMS_PER_PAGE = 9;
     const [currentPage, setCurrentPage] = useState(() => {
         // 1. Try URL parameter first
@@ -83,7 +84,7 @@ const BlogPage: React.FC = () => {
         if (newCategory !== filters.category) {
             setFilters(prev => ({ ...prev, category: newCategory }));
         }
-    }, [location.pathname]);
+    }, [location.pathname, filters.category]);
 
     useEffect(() => {
         const loadInitialData = async () => {
@@ -167,7 +168,7 @@ const BlogPage: React.FC = () => {
                 />
 
                 {/* Content Grid */}
-                <section className="max-w-7xl mx-auto px-6 pt-0 pb-20">
+                <section ref={gridRef} className="max-w-7xl mx-auto px-6 pt-0 pb-20 scroll-mt-32">
                     {isLoading ? (
                         <div className="flex justify-center items-center py-20">
                             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-forest"></div>
@@ -193,7 +194,8 @@ const BlogPage: React.FC = () => {
                                         totalPages={totalPages}
                                         onPageChange={(page) => {
                                             setCurrentPage(page);
-                                            window.scrollTo({ top: 400, behavior: 'smooth' });
+                                            // Scroll to the start of the grid instead of hardcoded value
+                                            gridRef.current?.scrollIntoView({ behavior: 'smooth' });
                                         }}
                                     />
                                 </>
