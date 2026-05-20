@@ -13,6 +13,9 @@ const CONTENT_PAYLOAD_KEYS = [
 const isEphemeralUrl = (url?: string | null): boolean =>
     !!url && (url.startsWith('blob:') || url.startsWith('file:'));
 
+const asString = (value: unknown): string | undefined =>
+    typeof value === 'string' ? value : undefined;
+
 /** Solo campos que acepta la API; evita enviar id, slug, author, etc. */
 const buildContentPayload = (formData: Partial<Content>): Record<string, unknown> => {
     const payload: Record<string, unknown> = {};
@@ -45,10 +48,11 @@ export const useContentPersistence = () => {
             let currentFormData = buildContentPayload(formData);
 
             // Miniatura recortada pendiente de subir (blob: solo válido en esta pestaña)
-            if (isEphemeralUrl(currentFormData.thumbnail_url as string | undefined)) {
+            const pendingThumbnailBlob = asString(currentFormData.thumbnail_url);
+            if (isEphemeralUrl(pendingThumbnailBlob)) {
                 setUploading(true);
                 try {
-                    const blobResp = await fetch(currentFormData.thumbnail_url!);
+                    const blobResp = await fetch(pendingThumbnailBlob);
                     if (!blobResp.ok) {
                         throw new Error('blob_fetch_failed');
                     }
@@ -83,7 +87,7 @@ export const useContentPersistence = () => {
                 }
             }
 
-            if (isEphemeralUrl(currentFormData.media_url as string | undefined)) {
+            if (isEphemeralUrl(asString(currentFormData.media_url))) {
                 if (editingContent?.media_url && !isEphemeralUrl(editingContent.media_url)) {
                     currentFormData.media_url = editingContent.media_url;
                 } else {
