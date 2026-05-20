@@ -21,4 +21,4 @@ EXPOSE 8000
 
 # Command to run the application
 # Command to run the application using Gunicorn for production
-CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "--bind", "0.0.0.0:8000", "--timeout", "120"]
+CMD ["gunicorn", "-c", "gunicorn_conf.py", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "--bind", "0.0.0.0:8000", "--timeout", "120"]
