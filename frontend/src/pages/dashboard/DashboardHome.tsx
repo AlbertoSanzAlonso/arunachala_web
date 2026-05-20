@@ -16,6 +16,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { Disclosure, Dialog, Transition } from '@headlessui/react';
 import { API_BASE_URL } from '../../config';
+import { useAuth } from '../../context/AuthContext';
 import EmailSubsModal from './EmailSubsModal';
 import ConfirmModal from '../../components/ui/modals/ConfirmModal';
 
@@ -65,6 +66,7 @@ function formatTimeAgo(timestamp: string): string {
 export default function DashboardHome() {
     const location = useLocation();
     const navigate = useNavigate();
+    const { logout } = useAuth();
     const [notification, setNotification] = useState<{ type: string; message: string } | null>(null);
     const [activities, setActivities] = useState<ActivityItem[]>([]);
     const [suggestions, setSuggestions] = useState<ActivitySuggestion[]>([]);
@@ -111,45 +113,66 @@ export default function DashboardHome() {
 
     const fetchData = useCallback(async () => {
         const token = sessionStorage.getItem('access_token');
+        if (!token) {
+            logout('Sesión no válida. Inicia sesión de nuevo.');
+            navigate('/login', { replace: true });
+            return;
+        }
+
         const headers = { 'Authorization': `Bearer ${token}` };
 
-        // 1. Stats
-        fetch(`${API_BASE_URL}/api/dashboard/stats`, { headers })
-            .then(res => res.json())
-            .then(setStats)
-            .catch(console.error);
+        const handleUnauthorized = (res: Response): boolean => {
+            if (res.status === 401) {
+                logout('Tu sesión ha expirado. Vuelve a iniciar sesión.');
+                navigate('/login', { replace: true });
+                return true;
+            }
+            return false;
+        };
 
-        // 2. Recent Activity
-        fetch(`${API_BASE_URL}/api/dashboard/recent-activity?limit=${activitiesLimit}`, { headers })
-            .then(res => res.json())
-            .then(setActivities)
-            .finally(() => setIsLoading(false));
+        const fetchJson = async <T,>(url: string, fallback: T): Promise<T> => {
+            try {
+                const res = await fetch(url, { headers });
+                if (handleUnauthorized(res)) return fallback;
+                if (!res.ok) return fallback;
+                return await res.json();
+            } catch (e) {
+                console.error(e);
+                return fallback;
+            }
+        };
 
-        // 3. Suggestions (Active Polls)
-        fetch(`${API_BASE_URL}/api/activities`)
-            .then(res => res.json())
-            .then(data => setSuggestions(data.filter((a: any) => a.type === 'sugerencia')))
-            .finally(() => setIsLoadingSuggestions(false));
+        const fetchJsonArray = async (url: string): Promise<any[]> => {
+            const data = await fetchJson(url, [] as any[]);
+            return Array.isArray(data) ? data : [];
+        };
 
-        // 4. General Proposals
-        fetch(`${API_BASE_URL}/api/suggestions/general-proposals`, { headers })
-            .then(res => res.json())
-            .then(setGeneralProposals)
-            .catch(console.error);
+        try {
+            const [statsData, activitiesData, activitiesRaw, proposalsData, rankingsData, subsData] =
+                await Promise.all([
+                    fetchJson(`${API_BASE_URL}/api/dashboard/stats`, null),
+                    fetchJsonArray(`${API_BASE_URL}/api/dashboard/recent-activity?limit=${activitiesLimit}`),
+                    fetch(`${API_BASE_URL}/api/activities`).then(async (res) => {
+                        if (!res.ok) return [];
+                        const data = await res.json();
+                        return Array.isArray(data) ? data : [];
+                    }),
+                    fetchJsonArray(`${API_BASE_URL}/api/suggestions/general-proposals`),
+                    fetchJsonArray(`${API_BASE_URL}/api/content/ranking?limit=${rankingsLimit}`),
+                    fetchJsonArray(`${API_BASE_URL}/api/subscriptions/`),
+                ]);
 
-        // 5. Rankings
-        fetch(`${API_BASE_URL}/api/content/ranking?limit=${rankingsLimit}`)
-            .then(res => res.json())
-            .then(setRankings)
-            .catch(console.error);
-
-
-        // 7. Subscriptions
-        fetch(`${API_BASE_URL}/api/subscriptions/`, { headers })
-            .then(res => res.json())
-            .then(setSubscriptions)
-            .catch(console.error);
-    }, [activitiesLimit, rankingsLimit]);
+            setStats(statsData);
+            setActivities(activitiesData);
+            setSuggestions(activitiesRaw.filter((a: any) => a.type === 'sugerencia'));
+            setGeneralProposals(proposalsData);
+            setRankings(rankingsData);
+            setSubscriptions(subsData);
+        } finally {
+            setIsLoading(false);
+            setIsLoadingSuggestions(false);
+        }
+    }, [activitiesLimit, rankingsLimit, logout, navigate]);
 
     useEffect(() => {
         fetchData();
@@ -217,15 +240,19 @@ export default function DashboardHome() {
     };
 
     const currentLastSubView = new Date(lastSubViewTime).getTime();
-    const newSubscribers = subscriptions.filter(s => {
+    const safeActivities = Array.isArray(activities) ? activities : [];
+    const safeSubscriptions = Array.isArray(subscriptions) ? subscriptions : [];
+    const safeGeneralProposals = Array.isArray(generalProposals) ? generalProposals : [];
+
+    const newSubscribers = safeSubscriptions.filter(s => {
         const subDate = new Date(s.created_at).getTime();
         return !isNaN(subDate) && subDate > currentLastSubView;
     });
     const newSubscribersCount = newSubscribers.length;
 
-    const unreadProposals = generalProposals.filter(p => p.status === 'pending');
+    const unreadProposals = safeGeneralProposals.filter(p => p.status === 'pending');
 
-    const filteredSubscriptions = subscriptions.filter(sub =>
+    const filteredSubscriptions = safeSubscriptions.filter(sub =>
         sub.email.toLowerCase().includes(subscriberSearch.toLowerCase()) ||
         (sub.first_name && sub.first_name.toLowerCase().includes(subscriberSearch.toLowerCase()))
     );
@@ -238,7 +265,7 @@ export default function DashboardHome() {
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
 
-    const newBlogActivities = activities.filter(a =>
+    const newBlogActivities = safeActivities.filter(a =>
         a.type === 'content' &&
         a.action === 'created' &&
         a.title.includes('Artículo') &&
