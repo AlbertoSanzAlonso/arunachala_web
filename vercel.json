@@ -1,0 +1,31 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "create-react-app",
+  "installCommand": "cd frontend && npm ci",
+  "buildCommand": "cd frontend && npm run build",
+  "outputDirectory": "frontend/build",
+  "trailingSlash": true,
+  "redirects": [
+    { "source": "/taller-de-ceramica/", "destination": "/actividades/", "permanent": true },
+    { "source": "/drenaje-linfatico-manual/", "destination": "/terapias-y-masajes/", "permanent": true },
+    { "source": "/yoga-suave/", "destination": "/clases-de-yoga/", "permanent": true },
+    { "source": "/reflexologia-podal/", "destination": "/terapias-y-masajes/", "permanent": true },
+    { "source": "/ubicacion/", "destination": "/contacto/", "permanent": true },
+    { "source": "/taller-cocina-festiva/", "destination": "/actividades/", "permanent": true },
+    { "source": "/conferencias-y-talleres/", "destination": "/actividades/", "permanent": true },
+    { "source": "/horarios/", "destination": "/clases-de-yoga/", "permanent": true },
+    { "source": "/yoga-embarazo/", "destination": "/clases-de-yoga/", "permanent": true },
+    { "source": "/yoga-crianza/", "destination": "/clases-de-yoga/", "permanent": true },
+    { "source": "/masajes-y-terapias/", "destination": "/terapias-y-masajes/", "permanent": true },
+    { "source": "/tecnica-metamorfica/", "destination": "/terapias-y-masajes/", "permanent": true },
+    { "source": "/kirtan-conferencia/", "destination": "/actividades/", "permanent": true },
+    { "source": "/masaje-terapeutico/", "destination": "/terapias-y-masajes/", "permanent": true },
+    { "source": "/circulo-taller-entre-mujeres/", "destination": "/actividades/", "permanent": true }
+  ],
+  "rewrites": [
+    {
+      "source": "/sitemap.xml",
+      "destination": "https://api.yogayterapiasarunachala.es/sitemap.xml"
+    }
+  ]
+}
