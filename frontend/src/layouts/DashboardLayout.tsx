@@ -103,10 +103,10 @@ export default function DashboardLayout() {
                             <div className="fixed inset-0 bg-gray-900/80" />
                         </Transition.Child>
 
-                        <div className="fixed inset-0 flex">
+                        <div className="fixed inset-0 flex items-stretch">
                             <Transition.Child
                                 as="div"
-                                className="relative flex h-full max-w-xs"
+                                className="relative flex h-screen min-h-dvh w-full max-w-xs shrink-0"
                                 enter="transition ease-out duration-500 transform"
                                 enterFrom="-translate-x-full"
                                 enterTo="translate-x-0"
@@ -115,30 +115,20 @@ export default function DashboardLayout() {
                                 leaveTo="-translate-x-full"
                             >
                                 <Dialog.Panel
-                                    className="relative mr-16 flex h-full w-full max-w-xs flex-1"
+                                    className="relative flex h-screen min-h-dvh w-full max-w-xs flex-col bg-white shadow-xl"
                                     onTouchStart={handleTouchStart}
                                     onTouchMove={handleTouchMove}
                                     onTouchEnd={handleTouchEnd}
                                 >
-                                    <Transition.Child
-                                        as="div"
-                                        enter="ease-out duration-500"
-                                        enterFrom="opacity-0"
-                                        enterTo="opacity-100"
-                                        leave="ease-in duration-400"
-                                        leaveFrom="opacity-100"
-                                        leaveTo="opacity-0"
-                                    >
-                                        <div className="absolute left-full top-0 flex w-16 justify-center pt-5">
-                                            <button type="button" className="-m-2.5 p-2.5" onClick={() => setSidebarOpen(false)}>
-                                                <span className="sr-only">Close sidebar</span>
-                                                <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
-                                            </button>
-                                        </div>
-                                    </Transition.Child>
-                                    {/* Sidebar component for mobile */}
-                                    <div className="flex h-full min-h-0 grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
-                                        <div className="flex flex-col shrink-0 items-center mt-6 mb-1">
+                                    <div className="absolute -right-16 top-0 z-10 flex h-16 w-16 items-center justify-center">
+                                        <button type="button" className="-m-2.5 p-2.5" onClick={() => setSidebarOpen(false)}>
+                                            <span className="sr-only">Close sidebar</span>
+                                            <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                                        </button>
+                                    </div>
+                                    {/* Sidebar móvil: fondo blanco a todo el alto de la pantalla */}
+                                    <div className="flex min-h-0 flex-1 flex-col gap-y-5 overflow-y-auto px-6 pb-6 pt-6">
+                                        <div className="flex shrink-0 flex-col items-center mb-1">
                                             <img src={logoIcon} alt="Aruṇāchala Icon" className="h-16 w-auto mb-1 rounded-full" />
                                             <h1 className="text-xl font-bold text-primary-600 tracking-tight font-headers">Aruṇāchala<span className="text-gray-400 font-light text-base">Panel</span></h1>
                                         </div>
