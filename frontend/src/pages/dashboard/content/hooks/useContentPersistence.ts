@@ -49,7 +49,7 @@ export const useContentPersistence = () => {
 
             // Miniatura recortada pendiente de subir (blob: solo válido en esta pestaña)
             const pendingThumbnailBlob = asString(currentFormData.thumbnail_url);
-            if (isEphemeralUrl(pendingThumbnailBlob)) {
+            if (pendingThumbnailBlob && isEphemeralUrl(pendingThumbnailBlob)) {
                 setUploading(true);
                 try {
                     const blobResp = await fetch(pendingThumbnailBlob);
