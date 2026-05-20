@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useAudio } from 'context/AudioContext';
 import { API_BASE_URL } from 'config';
 import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
-import { getImageUrl } from 'utils/imageUtils';
+import { getContentThumbnailSrc, getImageUrl } from 'utils/imageUtils';
 
 import VolumeControl from 'components/ui/VolumeControl';
 import ShareButton from 'components/ui/ShareButton';
@@ -81,10 +81,8 @@ const MeditationPlayerModal: React.FC = () => {
 
     // Artwork: for background music use site logo, for meditations use thumbnail or lotus
     const artworkUrl = isBackgroundMusic
-        ? (siteLogoUrl ? getImageUrl(siteLogoUrl) : '/logo_icon.webp')
-        : playingMeditation.thumbnail_url
-            ? getImageUrl(playingMeditation.thumbnail_url)
-            : '/logo_icon.webp';
+        ? (siteLogoUrl ? getImageUrl(siteLogoUrl) : getImageUrl('/logo_icon.webp'))
+        : getContentThumbnailSrc(playingMeditation.thumbnail_url, 'meditation');
 
     return (
         <Transition appear show={isModalOpen} as={Fragment}>

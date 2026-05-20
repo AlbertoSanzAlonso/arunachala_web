@@ -27,5 +27,19 @@
       "source": "/sitemap.xml",
       "destination": "https://api.yogayterapiasarunachala.es/sitemap.xml"
     }
+  ],
+  "headers": [
+    {
+      "source": "/gallery/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400" }
+      ]
+    },
+    {
+      "source": "/(.*\\.(webp|png|jpg|jpeg|gif|svg|ico))",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400" }
+      ]
+    }
   ]
 }

@@ -15,7 +15,7 @@ import { PlayIcon, PauseIcon, StopIcon } from '@heroicons/react/24/solid';
 import { ShareIcon } from '@heroicons/react/24/outline';
 import { useUIStore } from 'store/uiStore';
 import VolumeControl from 'components/ui/VolumeControl';
-import { getImageUrl } from 'utils/imageUtils';
+import { getContentThumbnailSrc, getImageUrl } from 'utils/imageUtils';
 
 interface Meditation {
     id: number;
@@ -314,20 +314,16 @@ const MeditationsPage: React.FC = () => {
                                                 className="bg-white rounded-3xl shadow-lg overflow-hidden border border-bone hover:shadow-xl transition-all duration-300 group"
                                             >
                                                 <div className="relative h-48 bg-matcha/20 flex items-center justify-center overflow-hidden">
-                                                    {meditation.thumbnail_url ? (
-                                                        <img
-                                                            src={getImageUrl(meditation.thumbnail_url)}
-                                                            alt={displayTitle}
-                                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                            onError={(e) => { e.currentTarget.src = '/logo_icon.webp'; }}
-                                                        />
-                                                    ) : (
-                                                        <img
-                                                            src={'/logo_icon.webp'}
-                                                            alt="Meditation"
-                                                            className="w-full h-full object-contain p-8 opacity-30"
-                                                        />
-                                                    )}
+                                                    <img
+                                                        src={getContentThumbnailSrc(meditation.thumbnail_url, 'meditation')}
+                                                        alt={displayTitle}
+                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                        onError={(e) => {
+                                                            e.currentTarget.onerror = null;
+                                                            e.currentTarget.src = getImageUrl('/logo_icon.webp');
+                                                            e.currentTarget.className = 'w-full h-full object-contain p-8 opacity-30';
+                                                        }}
+                                                    />
 
                                                     <div className="absolute flex gap-3 z-10">
                                                         {playingMeditation?.id === meditation.id ? (
