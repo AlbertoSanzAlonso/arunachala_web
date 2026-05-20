@@ -59,6 +59,8 @@ def hydrate_content(item: Content):
             setattr(item, field, None)
         elif isinstance(val, str) and (val.startswith("blob:") or val.startswith("file:")):
             setattr(item, field, None)
+        elif val == "/static/gallery/articles/meditation_default.webp":
+            setattr(item, field, "/gallery/articles/meditation_default.webp")
     
     return item
 
@@ -254,7 +256,7 @@ async def create_content(content_data: ContentCreate, background_tasks: Backgrou
     content_dict = content_data.model_dump(exclude={'tags', 'author_id'})
     if content_data.type == 'meditation':
         content_dict['category'] = None
-        if not content_dict.get('thumbnail_url'): content_dict['thumbnail_url'] = '/static/gallery/articles/meditation_default.webp'
+        if not content_dict.get('thumbnail_url'): content_dict['thumbnail_url'] = '/gallery/articles/meditation_default.webp'
     elif content_data.type == 'article':
         if content_dict.get('category') not in ['yoga', 'therapy']:
             raise HTTPException(status_code=400, detail="Categoría inválida para artículo")

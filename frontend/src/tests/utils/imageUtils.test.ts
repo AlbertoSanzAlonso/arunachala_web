@@ -5,6 +5,7 @@ import {
 } from '../../utils/imageUtils';
 
 const SUPABASE = 'https://vybpihtssncjalbsnbcr.supabase.co/storage/v1/object/public/arunachala-images';
+const SITE = 'https://www.yogayterapiasarunachala.es';
 
 describe('getImageUrl', () => {
   it('devuelve cadena vacía si url es nula o indefinida', () => {
@@ -22,9 +23,18 @@ describe('getImageUrl', () => {
     expect(getImageUrl('file:///tmp/x.webp')).toBe('');
   });
 
-  it('redirige rutas /static/ al bucket de Supabase', () => {
+  it('sirve meditation_default desde el sitio (public/), no Supabase', () => {
+    expect(getImageUrl('/gallery/articles/meditation_default.webp')).toBe(
+      `${SITE}/gallery/articles/meditation_default.webp`
+    );
     expect(getImageUrl('/static/gallery/articles/meditation_default.webp')).toBe(
-      `${SUPABASE}/gallery/articles/meditation_default.webp`
+      `${SITE}/gallery/articles/meditation_default.webp`
+    );
+  });
+
+  it('redirige otras rutas /static/ al bucket de Supabase', () => {
+    expect(getImageUrl('/static/gallery/articles/om_symbol.webp')).toBe(
+      `${SUPABASE}/gallery/articles/om_symbol.webp`
     );
   });
 
@@ -39,6 +49,7 @@ describe('getContentThumbnailSrc', () => {
   it('usa miniatura por defecto de meditación si no hay url', () => {
     const src = getContentThumbnailSrc(null, 'meditation');
     expect(src).toContain('meditation_default.webp');
+    expect(src).toContain(SITE);
   });
 
   it('preserva blob en sesión para el recorte en dashboard', () => {
