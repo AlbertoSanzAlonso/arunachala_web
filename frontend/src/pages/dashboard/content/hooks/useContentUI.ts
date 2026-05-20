@@ -68,8 +68,17 @@ export const useContentUI = (currentTab: TabType) => {
                 ? content.tags 
                 : (typeof content.tags === 'string' ? JSON.parse(content.tags) : []);
             
+            const thumbnail_url =
+                content.thumbnail_url?.startsWith('blob:') || content.thumbnail_url?.startsWith('file:')
+                    ? ''
+                    : (content.thumbnail_url || '');
+            const media_url =
+                content.media_url?.startsWith('blob:') || content.media_url?.startsWith('file:')
+                    ? ''
+                    : (content.media_url || '');
+
             setEditorSalt(Math.random().toString(36).substring(7));
-            setFormData({ ...content, body, excerpt, tags: normalizedTags, translations: normalizedTranslations });
+            setFormData({ ...content, body, excerpt, tags: normalizedTags, translations: normalizedTranslations, thumbnail_url, media_url });
         } else {
             setEditingContent(null);
             setEditorSalt(Math.random().toString(36).substring(7));

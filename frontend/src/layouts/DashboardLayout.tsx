@@ -106,6 +106,7 @@ export default function DashboardLayout() {
                         <div className="fixed inset-0 flex">
                             <Transition.Child
                                 as="div"
+                                className="relative flex h-full max-w-xs"
                                 enter="transition ease-out duration-500 transform"
                                 enterFrom="-translate-x-full"
                                 enterTo="translate-x-0"
@@ -114,7 +115,7 @@ export default function DashboardLayout() {
                                 leaveTo="-translate-x-full"
                             >
                                 <Dialog.Panel
-                                    className="relative mr-16 flex w-full max-w-xs flex-1"
+                                    className="relative mr-16 flex h-full w-full max-w-xs flex-1"
                                     onTouchStart={handleTouchStart}
                                     onTouchMove={handleTouchMove}
                                     onTouchEnd={handleTouchEnd}
@@ -136,7 +137,7 @@ export default function DashboardLayout() {
                                         </div>
                                     </Transition.Child>
                                     {/* Sidebar component for mobile */}
-                                    <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
+                                    <div className="flex h-full min-h-0 grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
                                         <div className="flex flex-col shrink-0 items-center mt-6 mb-1">
                                             <img src={logoIcon} alt="Aruṇāchala Icon" className="h-16 w-auto mb-1 rounded-full" />
                                             <h1 className="text-xl font-bold text-primary-600 tracking-tight font-headers">Aruṇāchala<span className="text-gray-400 font-light text-base">Panel</span></h1>

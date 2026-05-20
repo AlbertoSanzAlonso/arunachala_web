@@ -52,9 +52,13 @@ def hydrate_content(item: Content):
     elif not item.tags:
         item.tags = []
         
-    # Clean URLs
-    if item.thumbnail_url in ("null", "", "undefined"): item.thumbnail_url = None
-    if item.media_url in ("null", "", "undefined"): item.media_url = None
+    # Clean URLs (blob: URLs are browser-only and must never be persisted/served)
+    for field in ("thumbnail_url", "media_url"):
+        val = getattr(item, field, None)
+        if not val or val in ("null", "", "undefined"):
+            setattr(item, field, None)
+        elif isinstance(val, str) and (val.startswith("blob:") or val.startswith("file:")):
+            setattr(item, field, None)
     
     return item
 
@@ -237,6 +241,15 @@ async def create_content(content_data: ContentCreate, background_tasks: Backgrou
     if content_data.thumbnail_url and content_data.thumbnail_url.startswith('http'):
         local_path = await download_remote_image(content_data.thumbnail_url, slug)
         if local_path: content_data.thumbnail_url = local_path
+
+    if content_data.thumbnail_url and (
+        content_data.thumbnail_url.startswith('blob:') or content_data.thumbnail_url.startswith('file:')
+    ):
+        content_data.thumbnail_url = None
+    if content_data.media_url and (
+        content_data.media_url.startswith('blob:') or content_data.media_url.startswith('file:')
+    ):
+        content_data.media_url = None
     
     content_dict = content_data.model_dump(exclude={'tags', 'author_id'})
     if content_data.type == 'meditation':
@@ -282,6 +295,16 @@ async def update_content(content_id: int, content_data: ContentUpdate, backgroun
     if content_data.thumbnail_url and content_data.thumbnail_url.startswith('http') and content_data.thumbnail_url != db_content.thumbnail_url:
         local_path = await download_remote_image(content_data.thumbnail_url, current_slug)
         if local_path: content_data.thumbnail_url = local_path
+
+    # Reject ephemeral browser URLs accidentally sent from the dashboard
+    if content_data.thumbnail_url and (
+        content_data.thumbnail_url.startswith('blob:') or content_data.thumbnail_url.startswith('file:')
+    ):
+        content_data.thumbnail_url = None
+    if content_data.media_url and (
+        content_data.media_url.startswith('blob:') or content_data.media_url.startswith('file:')
+    ):
+        content_data.media_url = None
 
     content_dict = content_data.model_dump(exclude_unset=True, exclude={'tags'})
     

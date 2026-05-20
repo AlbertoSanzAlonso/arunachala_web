@@ -5,8 +5,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { TagSelector } from '../../../../components/dashboard/TagSelector';
 import RichTextEditor from '../../../../components/dashboard/RichTextEditor';
 import CropModal from '../../../../components/ui/modals/CropModal';
-import { getImageUrl } from '../../../../utils/imageUtils';
-import { API_BASE_URL } from '../../../../config';
+import { getContentThumbnailSrc } from '../../../../utils/imageUtils';
 import { Content } from '../types';
 
 interface ContentModalProps {
@@ -233,16 +232,21 @@ export const ContentModal: React.FC<ContentModalProps> = ({
                                                 (formData.type === 'meditation')) && (
                                                     <div className="mt-2 mb-2 relative group">
                                                         <img
-                                                            src={formData.thumbnail_url
-                                                                ? getImageUrl(formData.thumbnail_url)
-                                                                : (formData.type === 'meditation'
-                                                                    ? getImageUrl('/static/gallery/articles/meditation_default.webp')
-                                                                    : (formData.category === 'yoga' ? getImageUrl('/static/gallery/articles/om_symbol.webp') : getImageUrl('/static/gallery/articles/logo_icon.webp'))
-                                                                )
-                                                            }
+                                                            src={getContentThumbnailSrc(
+                                                                formData.thumbnail_url,
+                                                                formData.type,
+                                                                formData.category
+                                                            )}
                                                             onClick={() => {
                                                                 if (formData.thumbnail_url) {
-                                                                    setImageSrc(getImageUrl(formData.thumbnail_url));
+                                                                    const src = formData.thumbnail_url.startsWith('blob:')
+                                                                        ? formData.thumbnail_url
+                                                                        : getContentThumbnailSrc(
+                                                                            formData.thumbnail_url,
+                                                                            formData.type,
+                                                                            formData.category
+                                                                        );
+                                                                    setImageSrc(src);
                                                                     setIsCropModalOpen(true);
                                                                 }
                                                             }}
@@ -257,9 +261,11 @@ export const ContentModal: React.FC<ContentModalProps> = ({
                                                                     return;
                                                                 }
                                                                 target.setAttribute('data-fallback', 'true');
-                                                                target.src = formData.type === 'meditation'
-                                                                    ? `${API_BASE_URL}/static/gallery/articles/meditation_default.webp`
-                                                                    : (formData.category === 'yoga' ? `${API_BASE_URL}/static/gallery/articles/om_symbol.webp` : `${API_BASE_URL}/static/gallery/articles/logo_icon.webp`);
+                                                                target.src = getContentThumbnailSrc(
+                                                                    null,
+                                                                    formData.type,
+                                                                    formData.category
+                                                                );
                                                                 target.className = "h-32 w-auto object-contain p-4 opacity-30 grayscale rounded-md border border-gray-200";
                                                             }}
                                                         />

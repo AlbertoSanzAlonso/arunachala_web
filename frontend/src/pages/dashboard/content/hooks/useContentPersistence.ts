@@ -5,6 +5,29 @@ import { API_BASE_URL } from '../../../../config';
 import { useToast } from '../../../../hooks/useToast';
 import { Content } from '../types';
 
+const CONTENT_PAYLOAD_KEYS = [
+    'title', 'type', 'category', 'status', 'body', 'excerpt',
+    'thumbnail_url', 'media_url', 'tags', 'author_id', 'translations',
+] as const;
+
+const isEphemeralUrl = (url?: string | null): boolean =>
+    !!url && (url.startsWith('blob:') || url.startsWith('file:'));
+
+/** Solo campos que acepta la API; evita enviar id, slug, author, etc. */
+const buildContentPayload = (formData: Partial<Content>): Partial<Content> => {
+    const payload: Partial<Content> = {};
+    for (const key of CONTENT_PAYLOAD_KEYS) {
+        const value = formData[key];
+        if (value !== undefined) {
+            (payload as Record<string, unknown>)[key] = value;
+        }
+    }
+    if (payload.type === 'meditation') {
+        payload.category = null;
+    }
+    return payload;
+};
+
 export const useContentPersistence = () => {
     const queryClient = useQueryClient();
     const toast = useToast();
@@ -19,13 +42,16 @@ export const useContentPersistence = () => {
         setIsSaving(true);
         try {
             const token = sessionStorage.getItem('access_token');
-            let currentFormData = { ...formData };
+            let currentFormData = buildContentPayload(formData);
 
-            // Handle cropped image upload if needed
-            if (currentFormData.thumbnail_url && currentFormData.thumbnail_url.startsWith('blob:')) {
+            // Miniatura recortada pendiente de subir (blob: solo válido en esta pestaña)
+            if (isEphemeralUrl(currentFormData.thumbnail_url)) {
                 setUploading(true);
                 try {
-                    const blobResp = await fetch(currentFormData.thumbnail_url);
+                    const blobResp = await fetch(currentFormData.thumbnail_url!);
+                    if (!blobResp.ok) {
+                        throw new Error('blob_fetch_failed');
+                    }
                     const blob = await blobResp.blob();
                     const file = new File([blob], 'cropped_image.webp', { type: 'image/webp' });
                     
@@ -39,12 +65,29 @@ export const useContentPersistence = () => {
                         body: uploadFormData
                     });
 
-                    if (uploadResponse.ok) {
-                        const uploadData = await uploadResponse.json();
-                        currentFormData.thumbnail_url = uploadData.url;
+                    if (!uploadResponse.ok) {
+                        toast.error('No se pudo subir la imagen recortada. Vuelve a seleccionarla o guarda sin cambiar la miniatura.');
+                        return;
                     }
+                    const uploadData = await uploadResponse.json();
+                    currentFormData.thumbnail_url = uploadData.url;
+                } catch {
+                    if (editingContent?.thumbnail_url && !isEphemeralUrl(editingContent.thumbnail_url)) {
+                        currentFormData.thumbnail_url = editingContent.thumbnail_url;
+                    } else {
+                        delete currentFormData.thumbnail_url;
+                    }
+                    toast.error('La miniatura recortada ya no está disponible. Se guardará sin cambiar la imagen.');
                 } finally {
                     setUploading(false);
+                }
+            }
+
+            if (isEphemeralUrl(currentFormData.media_url)) {
+                if (editingContent?.media_url && !isEphemeralUrl(editingContent.media_url)) {
+                    currentFormData.media_url = editingContent.media_url;
+                } else {
+                    delete currentFormData.media_url;
                 }
             }
 
