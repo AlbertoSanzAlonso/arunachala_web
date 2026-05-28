@@ -1,4 +1,11 @@
 User-agent: *
 Allow: /
+Disallow: /dashboard/
+Disallow: /login/
+Disallow: /forgot-password/
+Disallow: /reset-password/
+Disallow: /newsletter/
+Disallow: /unsubscribe/
+Disallow: /confirmar-suscripcion/
 
 Sitemap: https://www.yogayterapiasarunachala.es/sitemap.xml

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
+import PageSEO from '../components/providers/PageSEO';
 import { ScaleIcon, ShieldCheckIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
@@ -36,10 +36,10 @@ const LegalNoticePage: React.FC = () => {
 
     return (
         <div className="font-body text-bark min-h-screen flex flex-col relative bg-bone">
-            <Helmet>
-                <title>{t('legal.seo.title')}</title>
-                <meta name="description" content={t('legal.seo.description')} />
-            </Helmet>
+            <PageSEO
+                title={t('legal.seo.title')}
+                description={t('legal.seo.description')}
+            />
 
             <Header />
 

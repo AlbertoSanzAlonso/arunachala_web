@@ -8,7 +8,7 @@ import { getImageUrl } from '../utils/imageUtils';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import BackButton from '../components/ui/BackButton';
-import { Helmet } from 'react-helmet-async';
+import PageSEO from '../components/providers/PageSEO';
 
 interface Promotion {
     id: number;
@@ -46,10 +46,10 @@ const PromotionsPage: React.FC = () => {
 
     return (
         <div className="font-body text-bark min-h-screen flex flex-col bg-bone">
-            <Helmet>
-                <title>{t('promotions.title')} | Arunachala</title>
-                <meta name="description" content={t('promotions.subtitle')} />
-            </Helmet>
+            <PageSEO
+                title={t('promotions.title')}
+                description={t('promotions.subtitle')}
+            />
 
             <Header />
 

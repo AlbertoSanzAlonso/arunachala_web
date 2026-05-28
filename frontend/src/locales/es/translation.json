@@ -6,6 +6,7 @@
       "yoga": "Yoga y Horarios",
       "therapies": "Masaje y terapias",
       "blog": "Blog",
+      "meditations": "Meditaciones",
       "legal": "Aviso Legal",
       "privacy": "Política de Privacidad",
       "instagram": "Síguenos en Instagram",
@@ -19,7 +20,11 @@
       "title": "Galería de Yoga",
       "back": "Volver a Yoga",
       "subtitle": "Nuestros espacios y momentos dedicados a la práctica del Yoga.\nEncuentra la inspiración que necesitas para tu camino.",
-      "empty": "Estamos preparando las imágenes de Yoga para ti."
+      "empty": "Estamos preparando las imágenes de Yoga para ti.",
+      "seo": {
+        "title": "Galería de Yoga en Cornellà",
+        "description": "Fotos de nuestras clases y espacios de yoga en Cornellà de Llobregat. Conoce el ambiente de Aruṇāchala antes de tu primera práctica."
+      }
     },
     "therapies": {
       "title": "Galería de Terapias",
@@ -117,7 +122,11 @@
     "prev": "Anterior",
     "next": "Siguiente",
     "page": "Página",
-    "share_text": "Escucha esta meditación en Aruṇāchala Yoga"
+    "share_text": "Escucha esta meditación en Aruṇāchala Yoga",
+    "seo": {
+      "title": "Meditaciones guiadas en Cornellà",
+      "description": "Meditaciones guiadas y mantras en español de Aruṇāchala Yoga y Terapias en Cornellà. Escucha online para calmar la mente y conectar contigo."
+    }
   },
   "yoga": {
     "title": "YOGA",
@@ -591,9 +600,10 @@
     "intro": "En cumplimiento del Reglamento (UE) 2016/679 del Parlamento Europeo y del Consejo de 27 de abril de 2016 (RGPD) y la Ley Orgánica 3/2018, de 5 de diciembre, de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD), te informamos sobre cómo tratamos tus datos personales.",
     "last_updated": "Última actualización",
     "seo": {
-      "title": "Política de Privacidad | Aruṇāchala Yoga y Terapias",
-      "description": "Política de privacidad y protección de datos personales de Aruṇāchala Yoga y Terapias en Cornellà de Llobregat."
+      "title": "Política de Privacidad",
+      "description": "Política de privacidad RGPD y LOPDGDD de Aruṇāchala Yoga y Terapias en Cornellà: datos que recogemos, finalidad, derechos y contacto del responsable."
     },
+    "related_legal": "Consulta también nuestro aviso legal",
     "sections": {
       "responsible": {
         "title": "1. Responsable del tratamiento",

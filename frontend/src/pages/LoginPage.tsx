@@ -3,6 +3,7 @@ import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { EyeIcon, EyeSlashIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import logoIcon from '../assets/images/logo_icon.webp';
+import PageSEO from '../components/providers/PageSEO';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -35,6 +36,7 @@ export default function LoginPage() {
 
     return (
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-gray-50 h-screen">
+            <PageSEO title="Acceso" description="Acceso al panel de administración." noindex />
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                 <div className="mx-auto h-24 w-24 flex items-center justify-center">
                     <img src={logoIcon} alt="Aruṇāchala Logo" className="h-full w-full object-contain rounded-full" />

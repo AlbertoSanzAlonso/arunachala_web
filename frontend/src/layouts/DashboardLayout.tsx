@@ -23,6 +23,7 @@ import {
     TicketIcon
 } from '@heroicons/react/24/outline';
 import { getImageUrl } from '../utils/imageUtils';
+import PageSEO from '../components/providers/PageSEO';
 
 const navigation = [
     { name: 'Vista General', href: '/dashboard', icon: HomeIcon },
@@ -88,6 +89,7 @@ export default function DashboardLayout() {
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
+            <PageSEO title="Panel de administración" description="Panel interno de Arunachala Yoga y Terapias." noindex />
             <div className="dashboard-scale contents lg:block">
                 <Transition.Root show={sidebarOpen} as={Fragment}>
                     <Dialog as="div" className="relative z-50 lg:hidden" onClose={setSidebarOpen}>

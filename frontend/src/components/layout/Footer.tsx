@@ -61,7 +61,8 @@ const Footer: React.FC = () => {
                         <li><Link to="/" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.home')}</Link></li>
                         <li><Link to="/clases-de-yoga" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.yoga')}</Link></li>
                         <li><Link to="/terapias-y-masajes" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.therapies')}</Link></li>
-                        <li><Link to="/blog" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.blog')}</Link></li>
+                        <li><Link to="/blog/" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.blog')}</Link></li>
+                        <li><Link to="/meditaciones/" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.meditations')}</Link></li>
                     </ul>
                 </div>
 
@@ -69,8 +70,8 @@ const Footer: React.FC = () => {
                 <div className="col-span-1 flex flex-col gap-6 text-center">
                     <h3 className="text-2xl font-headers tracking-widest text-transparent select-none hidden md:block" aria-hidden="true">_</h3>
                     <ul className="flex flex-col gap-3 text-sm text-[#F5F5DC]/80">
-                        <li><Link to="/aviso-legal" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] transition-colors">{t('footer.labels.legal')}</Link></li>
-                        <li><Link to="/politica-de-privacidad" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] transition-colors">{t('footer.labels.privacy')}</Link></li>
+                        <li><Link to="/aviso-legal/" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] transition-colors">{t('footer.labels.legal')}</Link></li>
+                        <li><Link to="/politica-de-privacidad/" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] transition-colors">{t('footer.labels.privacy')}</Link></li>
                     </ul>
                 </div>
 

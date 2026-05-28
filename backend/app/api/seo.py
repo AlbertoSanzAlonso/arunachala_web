@@ -189,14 +189,14 @@ async def sitemap(db: Session = Depends(get_db)):
         ("/actividades/",               "0.9", "daily"),
         ("/blog/",                      "0.9", "daily"),
         ("/nuestro-espacio/",           "0.7", "monthly"),
-        ("/meditaciones/",              "0.8", "weekly"),
+        ("/meditaciones/",              "0.9", "weekly"),
         ("/promociones/",               "0.8", "weekly"),
         ("/quienes-somos/",             "0.7", "monthly"),
         ("/contacto/",                  "0.6", "monthly"),
-        ("/galeria/clases-de-yoga/",    "0.5", "monthly"),
-        ("/galeria/terapias-y-masajes/", "0.5", "monthly"),
-        ("/aviso-legal/",               "0.1", "yearly"),
-        ("/politica-de-privacidad/",    "0.1", "yearly"),
+        ("/galeria/clases-de-yoga/",    "0.7", "weekly"),
+        ("/galeria/terapias-y-masajes/", "0.7", "weekly"),
+        ("/aviso-legal/",               "0.4", "monthly"),
+        ("/politica-de-privacidad/",    "0.4", "monthly"),
     ]
     
     urls = []

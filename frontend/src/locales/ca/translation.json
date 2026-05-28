@@ -6,6 +6,7 @@
       "yoga": "Ioga i Horaris",
       "therapies": "Massatge i teràpies",
       "blog": "Blog",
+      "meditations": "Meditacions",
       "legal": "Avís Legal",
       "privacy": "Política de Privadesa",
       "instagram": "Seguiu-nos a Instagram",
@@ -19,7 +20,11 @@
       "title": "Galeria de Ioga",
       "back": "Tornar a Ioga",
       "subtitle": "Els nostres espais i moments dedicats a la pràctica del Ioga.\nTroba la inspiració que necessites per al teu camí.",
-      "empty": "Estem preparant les imatges de Ioga per a tu."
+      "empty": "Estem preparant les imatges de Ioga per a tu.",
+      "seo": {
+        "title": "Galeria de Ioga a Cornellà",
+        "description": "Fotos de les nostres classes i espais de ioga a Cornellà de Llobregat. Coneix l'ambient d'Aruṇāchala abans de la teva primera pràctica."
+      }
     },
     "therapies": {
       "title": "Galeria de Teràpies",
@@ -117,7 +122,11 @@
     "prev": "Anterior",
     "next": "Següent",
     "page": "Pàgina",
-    "share_text": "Escolta aquesta meditació a Aruṇāchala Yoga"
+    "share_text": "Escolta aquesta meditació a Aruṇāchala Yoga",
+    "seo": {
+      "title": "Meditacions guiades a Cornellà",
+      "description": "Meditacions guiades i mantres en català i castellà d'Aruṇāchala Ioga i Teràpies a Cornellà. Escolta en línia per calmar la ment."
+    }
   },
   "yoga": {
     "title": "IOGA",
@@ -567,9 +576,10 @@
     "intro": "En compliment del Reglament (UE) 2016/679 del Parlament Europeu i del Consell de 27 d'abril de 2016 (RGPD) i la Llei Orgànica 3/2018, de 5 de desembre, de Protecció de Dades Personals i garantia dels drets digitals (LOPDGDD), t'informem sobre com tractem les teves dades personals.",
     "last_updated": "Última actualització",
     "seo": {
-      "title": "Política de Privadesa | Aruṇāchala Ioga i Teràpies",
-      "description": "Política de privadesa i protecció de dades personals d'Aruṇāchala Ioga i Teràpies a Cornellà de Llobregat."
+      "title": "Política de Privadesa",
+      "description": "Política de privadesa RGPD i LOPDGDD d'Aruṇāchala Ioga i Teràpies a Cornellà: dades que recollim, finalitat, drets i contacte del responsable."
     },
+    "related_legal": "Consulta també el nostre avís legal",
     "sections": {
       "responsible": {
         "title": "1. Responsable del tractament",

@@ -7,7 +7,7 @@ import BackButton from '../components/ui/BackButton';
 import FadeInSection from '../components/ui/FadeInSection';
 import { API_BASE_URL } from '../config';
 import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
-import { Helmet } from 'react-helmet-async';
+import PageSEO from '../components/providers/PageSEO';
 import { getImageUrl } from '../utils/imageUtils';
 
 const TherapiesGalleryPage: React.FC = () => {
@@ -81,10 +81,10 @@ const TherapiesGalleryPage: React.FC = () => {
 
     return (
         <div className="font-body text-bark min-h-screen flex flex-col bg-bone">
-            <Helmet>
-                <title>{t('gallery.therapies.title')} | Arunachala</title>
-                <meta name="description" content={t('gallery.therapies.subtitle')} />
-            </Helmet>
+            <PageSEO
+                title={t('gallery.therapies.title')}
+                description={t('gallery.therapies.subtitle')}
+            />
 
             <Header />
 

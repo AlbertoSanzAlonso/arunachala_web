@@ -1,0 +1,139 @@
+[
+  {
+    "path": "/",
+    "title": "Arunachala Yoga y Terapias | Centro de Bienestar en Cornellà",
+    "description": "Centro de Yoga, Terapias y Masajes en Cornellà de Llobregat. Clases de Hatha Yoga, sesiones de Ayurveda y masajes profesionales para el bienestar integral dirigido por Susana Pérez Gil."
+  },
+  {
+    "path": "/clases-de-yoga/",
+    "title": "Clases de Yoga en Barcelona | Aruṇāchala",
+    "description": "Descubre nuestras clases de yoga en Cornellà de Llobregat. Hatha Yoga, Vinyasa y meditación para todos los niveles."
+  },
+  {
+    "path": "/terapias-y-masajes/",
+    "title": "Masaje y Terapias en Cornellà | Aruṇāchala",
+    "description": "Descubre nuestras terapias y masajes en Cornellà de Llobregat. Reiki, Terapia Floral, Masaje Tailandés y más para tu bienestar."
+  },
+  {
+    "path": "/terapias/masajes/",
+    "title": "Nuestros Masajes | Arunachala Yoga y Terapias",
+    "description": "Libera tensiones y recupera la vitalidad de tu cuerpo con nuestros masajes terapéuticos en Cornellà de Llobregat."
+  },
+  {
+    "path": "/terapias/terapias-holisticas/",
+    "title": "Terapias Holísticas | Arunachala Yoga y Terapias",
+    "description": "Acompañamiento en tu proceso de sanación y autoconocimiento con terapias holísticas en Cornellà."
+  },
+  {
+    "path": "/actividades/",
+    "title": "Actividades y Cursos | Aruṇāchala",
+    "description": "Descubre nuestras actividades activas, cursos temporales y eventos especiales en Aruṇāchala."
+  },
+  {
+    "path": "/blog/",
+    "title": "Blog | Aruṇāchala Yoga y Terapias",
+    "description": "Descubre artículos sobre yoga, meditación, terapias holísticas y bienestar en nuestro blog."
+  },
+  {
+    "path": "/blog/yoga/",
+    "title": "Blog de Yoga | Arunachala Yoga y Terapias",
+    "description": "Artículos, consejos y reflexiones sobre la práctica del yoga en Cornellà y bienestar integral."
+  },
+  {
+    "path": "/blog/therapy/",
+    "title": "Blog de Terapias | Arunachala Yoga y Terapias",
+    "description": "Artículos sobre terapias holísticas, masajes y bienestar en nuestro centro de Cornellà."
+  },
+  {
+    "path": "/blog/general/",
+    "title": "Blog de Bienestar | Arunachala Yoga y Terapias",
+    "description": "Artículos generales sobre bienestar, yoga y terapias en Arunachala Cornellà."
+  },
+  {
+    "path": "/nuestro-espacio/",
+    "title": "Nuestro Espacio | Arunachala Yoga y Terapias",
+    "description": "Descubre nuestro centro de yoga y terapias en Cornellà de Llobregat. Un refugio de paz diseñado para tu bienestar."
+  },
+  {
+    "path": "/meditaciones/",
+    "title": "Meditaciones guiadas en Cornellà | Arunachala Yoga y Terapias",
+    "description": "Meditaciones guiadas y mantras en español de Aruṇāchala Yoga y Terapias en Cornellà. Escucha online para calmar la mente y conectar contigo."
+  },
+  {
+    "path": "/promociones/",
+    "title": "Promociones Especiales | Arunachala Yoga y Terapias",
+    "description": "Descubre nuestras oportunidades únicas para profundizar en tu bienestar en Cornellà de Llobregat."
+  },
+  {
+    "path": "/quienes-somos/",
+    "title": "Sobre mí | Susana Pérez Gil y Aruṇāchala Yoga",
+    "description": "Conoce a Susana Pérez Gil, fundadora de Aruṇāchala. Más de 25 años de experiencia en Yoga, masajes y terapias holísticas en Cornellà."
+  },
+  {
+    "path": "/contacto/",
+    "title": "Contacto | Yoga y Terapias Aruṇāchala Cornellà",
+    "description": "Contacta con Aruṇāchala Yoga en Cornellà. Reserva tu clase de yoga o sesión de terapia. Estamos en Pasaje de Mateo Oliva, 3."
+  },
+  {
+    "path": "/galeria/clases-de-yoga/",
+    "title": "Galería de Yoga en Cornellà | Arunachala Yoga y Terapias",
+    "description": "Fotos de nuestras clases y espacios de yoga en Cornellà de Llobregat. Conoce el ambiente de Aruṇāchala antes de tu primera práctica."
+  },
+  {
+    "path": "/galeria/terapias-y-masajes/",
+    "title": "Galería de Terapias | Arunachala Yoga y Terapias",
+    "description": "Imágenes de nuestras sesiones de masajes y terapias holísticas en el centro Arunachala."
+  },
+  {
+    "path": "/aviso-legal/",
+    "title": "Aviso Legal | Aruṇāchala Yoga y Terapias",
+    "description": "Aviso legal y condiciones de uso del sitio web de Aruṇāchala Yoga y Terapias en Cornellà de Llobregat."
+  },
+  {
+    "path": "/politica-de-privacidad/",
+    "title": "Política de Privacidad | Arunachala Yoga y Terapias",
+    "description": "Política de privacidad RGPD y LOPDGDD de Aruṇāchala Yoga y Terapias en Cornellà: datos que recogemos, finalidad, derechos y contacto del responsable."
+  },
+  {
+    "path": "/login/",
+    "title": "Acceso | Arunachala",
+    "description": "Acceso al panel de administración de Arunachala Yoga y Terapias.",
+    "noindex": true
+  },
+  {
+    "path": "/forgot-password/",
+    "title": "Recuperar contraseña | Arunachala",
+    "description": "Recuperación de contraseña del panel de Arunachala.",
+    "noindex": true
+  },
+  {
+    "path": "/reset-password/",
+    "title": "Restablecer contraseña | Arunachala",
+    "description": "Restablecer contraseña del panel de Arunachala.",
+    "noindex": true
+  },
+  {
+    "path": "/dashboard/",
+    "title": "Panel | Arunachala",
+    "description": "Panel de administración de Arunachala Yoga y Terapias.",
+    "noindex": true
+  },
+  {
+    "path": "/newsletter/",
+    "title": "Newsletter | Arunachala",
+    "description": "Suscripción a novedades de Arunachala Yoga y Terapias.",
+    "noindex": true
+  },
+  {
+    "path": "/unsubscribe/",
+    "title": "Cancelar suscripción | Arunachala",
+    "description": "Cancelación de suscripción al newsletter de Arunachala.",
+    "noindex": true
+  },
+  {
+    "path": "/confirmar-suscripcion/",
+    "title": "Confirmar suscripción | Arunachala",
+    "description": "Confirmación de suscripción al newsletter de Arunachala.",
+    "noindex": true
+  }
+]

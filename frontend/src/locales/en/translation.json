@@ -6,6 +6,7 @@
       "yoga": "Yoga & Schedule",
       "therapies": "Massage & Therapies",
       "blog": "Blog",
+      "meditations": "Meditations",
       "legal": "Legal Notice",
       "privacy": "Privacy Policy",
       "instagram": "Follow us on Instagram",
@@ -19,7 +20,11 @@
       "title": "Yoga Gallery",
       "back": "Back to Yoga",
       "subtitle": "Our spaces and moments dedicated to Yoga practice.\nFind the inspiration you need for your path.",
-      "empty": "We are preparing Yoga images for you."
+      "empty": "We are preparing Yoga images for you.",
+      "seo": {
+        "title": "Yoga Gallery in Cornellà",
+        "description": "Photos of our yoga classes and spaces in Cornellà de Llobregat. Discover the Aruṇāchala atmosphere before your first practice."
+      }
     },
     "therapies": {
       "title": "Therapies Gallery",
@@ -117,7 +122,11 @@
     "prev": "Previous",
     "next": "Next",
     "page": "Page",
-    "share_text": "Listen to this meditation at Aruṇāchala Yoga"
+    "share_text": "Listen to this meditation at Aruṇāchala Yoga",
+    "seo": {
+      "title": "Guided meditations in Cornellà",
+      "description": "Guided meditations and mantras from Aruṇāchala Yoga & Therapies in Cornellà de Llobregat. Listen online to calm your mind and reconnect."
+    }
   },
   "yoga": {
     "title": "YOGA",
@@ -567,9 +576,10 @@
     "intro": "In compliance with Regulation (EU) 2016/679 of the European Parliament and of the Council of 27 April 2016 (GDPR) and Organic Law 3/2018, of 5 December, on the Protection of Personal Data and guarantee of digital rights (LOPDGDD), we inform you about how we treat your personal data.",
     "last_updated": "Last updated",
     "seo": {
-      "title": "Privacy Policy | Aruṇāchala Yoga & Therapies",
-      "description": "Privacy policy and protection of personal data of Aruṇāchala Yoga & Therapies in Cornella de Llobregat."
+      "title": "Privacy Policy",
+      "description": "GDPR and LOPDGDD privacy policy for Aruṇāchala Yoga & Therapies in Cornellà: data we collect, purpose, your rights and contact details."
     },
+    "related_legal": "See also our legal notice",
     "sections": {
       "responsible": {
         "title": "1. Data Controller",

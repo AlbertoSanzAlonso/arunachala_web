@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import PageSEO from '../components/providers/PageSEO';
 import { useTranslation } from 'react-i18next';
 import { XMarkIcon, ShareIcon } from '@heroicons/react/24/outline';
 import { useUIStore } from '../store/uiStore';
@@ -117,10 +117,10 @@ const AllMassagesPage: React.FC = () => {
 
     return (
         <div className="font-body text-bark min-h-screen flex flex-col bg-bone">
-            <Helmet>
-                <title>{t('therapies.sections.massages')} | Arunachala</title>
-                <meta name="description" content={t('therapies.sections.massages_sub')} />
-            </Helmet>
+            <PageSEO
+                title={t('therapies.sections.massages')}
+                description={t('therapies.sections.massages_sub')}
+            />
 
             <Header />
 

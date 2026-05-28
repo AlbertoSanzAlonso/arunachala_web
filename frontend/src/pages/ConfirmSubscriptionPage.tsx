@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { API_BASE_URL } from '../config';
+import PageSEO from '../components/providers/PageSEO';
 
 const ConfirmSubscriptionPage: React.FC = () => {
     const { t, i18n } = useTranslation();
@@ -65,6 +66,7 @@ const ConfirmSubscriptionPage: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-sand flex items-center justify-center p-4">
+            <PageSEO title="Confirmar suscripción" description="Confirmación de suscripción al newsletter de Arunachala." noindex />
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

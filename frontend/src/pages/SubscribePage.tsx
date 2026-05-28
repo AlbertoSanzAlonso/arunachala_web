@@ -3,12 +3,14 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import NewsletterForm from '../components/NewsletterForm';
 import { Link } from 'react-router-dom';
+import PageSEO from '../components/providers/PageSEO';
 
 const SubscribePage: React.FC = () => {
     const { t } = useTranslation();
 
     return (
         <div className="min-h-screen bg-sand flex flex-col items-center justify-center p-4 relative overflow-hidden">
+            <PageSEO title="Newsletter" description="Suscripción a novedades de Arunachala Yoga y Terapias." noindex />
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#becf81]/10 rounded-full blur-[100px]" />
                 <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-forest/5 rounded-full blur-[100px]" />

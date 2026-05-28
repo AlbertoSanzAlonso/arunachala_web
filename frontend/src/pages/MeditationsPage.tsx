@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useParams, useNavigate, Link } from 'react-router-dom';
 import Header from 'components/layout/Header';
 import Footer from 'components/layout/Footer';
 import BackButton from 'components/ui/BackButton';
@@ -36,7 +36,18 @@ interface Meditation {
     };
 }
 
+const BASE_URL = 'https://www.yogayterapiasarunachala.es';
+const MEDITATIONS_PATH = '/meditaciones/';
 
+function getMeditationDescription(meditation: Meditation, lang: string, fallback: string): string {
+    const excerpt =
+        getTranslated(meditation, 'excerpt', lang) ||
+        getTranslated(meditation, 'body', lang) ||
+        meditation.excerpt ||
+        meditation.body ||
+        fallback;
+    return String(excerpt).replace(/\s+/g, ' ').trim().slice(0, 160);
+}
 
 const MeditationsPage: React.FC = () => {
     const { t, i18n } = useTranslation();
@@ -148,7 +159,7 @@ const MeditationsPage: React.FC = () => {
             const currentParam = (searchParams.get('play') || routeSlug)?.toLowerCase().trim();
             if (meditation.slug?.toLowerCase().trim() !== currentParam &&
                 meditation.title?.toLowerCase().trim() !== currentParam) {
-                navigate('/meditaciones', { replace: true });
+                navigate('/meditaciones/', { replace: true });
             }
         }
 
@@ -254,11 +265,103 @@ const MeditationsPage: React.FC = () => {
         }
     }, [isLoading, meditations, filteredMeditations, searchParams, routeSlug, handlePlay, itemsPerPage, currentPage, playingMeditation, setModalOpen]);
 
+    const activeMeditation = useMemo(() => {
+        const playParam = (searchParams.get('play') || routeSlug)?.toLowerCase().trim();
+        if (!playParam || meditations.length === 0) return null;
+        return (
+            meditations.find(
+                (m) =>
+                    m.slug?.toLowerCase().trim() === playParam ||
+                    m.title?.toLowerCase().trim() === playParam
+            ) ?? null
+        );
+    }, [routeSlug, searchParams, meditations]);
+
+    const seoTitle = activeMeditation
+        ? getTranslated(activeMeditation, 'title', i18n.language)
+        : t('meditations.seo.title');
+
+    const seoDescription = activeMeditation
+        ? getMeditationDescription(activeMeditation, i18n.language, t('meditations.seo.description'))
+        : t('meditations.seo.description');
+
+    const canonical = activeMeditation?.slug
+        ? `${BASE_URL}/meditaciones/${activeMeditation.slug}/`
+        : `${BASE_URL}${MEDITATIONS_PATH}`;
+
+    const structuredData = useMemo(() => {
+        if (activeMeditation) {
+            const title = getTranslated(activeMeditation, 'title', i18n.language);
+            const description = getMeditationDescription(
+                activeMeditation,
+                i18n.language,
+                t('meditations.seo.description')
+            );
+            const audioUrl = activeMeditation.media_url
+                ? getImageUrl(activeMeditation.media_url)
+                : undefined;
+
+            return {
+                '@context': 'https://schema.org',
+                '@type': 'AudioObject',
+                name: title,
+                description,
+                url: `${BASE_URL}/meditaciones/${activeMeditation.slug}/`,
+                ...(audioUrl ? { contentUrl: audioUrl } : {}),
+                image: getContentThumbnailSrc(activeMeditation.thumbnail_url, 'meditation'),
+                inLanguage: i18n.language.split('-')[0],
+                publisher: {
+                    '@type': 'Organization',
+                    name: 'Arunachala Yoga y Terapias',
+                    url: BASE_URL,
+                },
+            };
+        }
+
+        const collectionPage = {
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            name: t('meditations.title'),
+            description: t('meditations.seo.description'),
+            url: `${BASE_URL}${MEDITATIONS_PATH}`,
+            isPartOf: {
+                '@type': 'WebSite',
+                name: 'Arunachala Yoga y Terapias',
+                url: BASE_URL,
+            },
+        };
+
+        if (meditations.length === 0) {
+            return collectionPage;
+        }
+
+        return [
+            collectionPage,
+            {
+                '@context': 'https://schema.org',
+                '@type': 'ItemList',
+                name: t('meditations.title'),
+                numberOfItems: meditations.length,
+                itemListElement: meditations
+                    .filter((m) => m.slug)
+                    .map((m, index) => ({
+                        '@type': 'ListItem',
+                        position: index + 1,
+                        url: `${BASE_URL}/meditaciones/${m.slug}/`,
+                        name: getTranslated(m, 'title', i18n.language),
+                    })),
+            },
+        ];
+    }, [activeMeditation, meditations, t, i18n.language]);
+
     return (
         <div className="font-body text-bark min-h-screen flex flex-col relative bg-bone">
             <PageSEO
-                title={`${t('menu.meditations')} | Arunachala`}
-                description="Meditaciones guiadas y mantras para tu paz interior."
+                title={seoTitle}
+                description={seoDescription}
+                canonical={canonical}
+                ogType={activeMeditation ? 'music.song' : 'website'}
+                structuredData={structuredData}
             />
 
             <Header />
@@ -397,7 +500,16 @@ const MeditationsPage: React.FC = () => {
                                                     )}
                                                 </div>
                                                 <div className="p-6">
-                                                    <h3 className="text-2xl font-headers text-forest mb-2">{displayTitle}</h3>
+                                                    {meditation.slug ? (
+                                                        <Link
+                                                            to={`/meditaciones/${meditation.slug}/`}
+                                                            className="block text-2xl font-headers text-forest mb-2 hover:text-matcha transition-colors"
+                                                        >
+                                                            {displayTitle}
+                                                        </Link>
+                                                    ) : (
+                                                        <h3 className="text-2xl font-headers text-forest mb-2">{displayTitle}</h3>
+                                                    )}
                                                     <div className="h-20 overflow-y-auto mb-4 pr-2 custom-scrollbar">
                                                         <p className="text-bark/80 text-sm leading-relaxed">{displayExcerpt}</p>
                                                     </div>

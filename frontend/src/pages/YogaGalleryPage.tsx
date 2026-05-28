@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import BackButton from '../components/ui/BackButton';
 import FadeInSection from '../components/ui/FadeInSection';
+import PageSEO from '../components/providers/PageSEO';
 import { API_BASE_URL } from '../config';
 import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { getImageUrl } from '../utils/imageUtils';
+
+const BASE_URL = 'https://www.yogayterapiasarunachala.es';
+const GALLERY_PATH = '/galeria/clases-de-yoga/';
 
 const YogaGalleryPage: React.FC = () => {
     const { t } = useTranslation();
@@ -78,8 +82,48 @@ const YogaGalleryPage: React.FC = () => {
         })
     };
 
+    const structuredData = useMemo(() => {
+        const pageSchema = {
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            name: t('gallery.yoga.title'),
+            description: t('gallery.yoga.seo.description'),
+            url: `${BASE_URL}${GALLERY_PATH}`,
+            isPartOf: {
+                '@type': 'WebSite',
+                name: 'Arunachala Yoga y Terapias',
+                url: BASE_URL,
+            },
+        };
+
+        if (images.length === 0) {
+            return pageSchema;
+        }
+
+        return [
+            pageSchema,
+            {
+                '@context': 'https://schema.org',
+                '@type': 'ImageGallery',
+                name: t('gallery.yoga.title'),
+                description: t('gallery.yoga.subtitle').replace(/\n/g, ' '),
+                image: images.map((image) => ({
+                    '@type': 'ImageObject',
+                    contentUrl: getImageUrl(image.url),
+                    name: image.alt_text || t('gallery.yoga.title'),
+                })),
+            },
+        ];
+    }, [images, t]);
+
     return (
         <div className="font-body text-bark min-h-screen flex flex-col bg-bone">
+            <PageSEO
+                title={t('gallery.yoga.seo.title')}
+                description={t('gallery.yoga.seo.description')}
+                canonical={`${BASE_URL}${GALLERY_PATH}`}
+                structuredData={structuredData}
+            />
             <Header />
 
             <main className="flex-grow pt-10 md:pt-16 pb-16 relative">

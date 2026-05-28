@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { API_BASE_URL } from '../../../../config';
 import { useSearchParams } from 'react-router-dom';
-import { Content } from '../types';
+import { Content, TabType, TABS } from '../types';
 import { useContentFilters } from './useContentFilters';
 import { useContentUI } from './useContentUI';
 import { useContentPersistence } from './useContentPersistence';
@@ -86,7 +86,31 @@ export const useContentLogic = () => {
         }
     }, [persistence, ui]);
 
-    // 5. Auto-open logic from URL
+    // 5. Tab from URL (?tab=meditation, etc.)
+    const tabFromUrl = searchParams.get('tab');
+
+    const setCurrentTab = useCallback((tab: TabType) => {
+        filters.setCurrentTab(tab);
+        setSearchParams(prev => {
+            const next = new URLSearchParams(prev);
+            if (tab === 'all') {
+                next.delete('tab');
+            } else {
+                next.set('tab', tab);
+            }
+            return next;
+        }, { replace: true });
+    }, [filters.setCurrentTab, setSearchParams]);
+
+    useEffect(() => {
+        if (!tabFromUrl) return;
+        const isValidTab = TABS.some(t => t.value === tabFromUrl);
+        if (isValidTab) {
+            filters.setCurrentTab(tabFromUrl as TabType);
+        }
+    }, [tabFromUrl, filters.setCurrentTab]);
+
+    // 6. Auto-open logic from URL
     const initialSlug = searchParams.get('slug');
     const initialEditId = searchParams.get('edit');
 
@@ -107,6 +131,7 @@ export const useContentLogic = () => {
         contents,
         isGlobalLoading,
         ...filters,
+        setCurrentTab,
         ...ui,
         ...persistence,
         

@@ -1,14 +1,46 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
+import PageSEO from '../components/providers/PageSEO';
 import { ShieldCheckIcon, UserIcon, ClipboardDocumentListIcon, KeyIcon, UsersIcon, ClockIcon, AcademicCapIcon, LockClosedIcon, FingerPrintIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import BackButton from '../components/ui/BackButton';
 
+const BASE_URL = 'https://www.yogayterapiasarunachala.es';
+const PRIVACY_PATH = '/politica-de-privacidad/';
+
 const PrivacyPolicyPage: React.FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+
+    const structuredData = useMemo(() => ({
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: t('privacy.title'),
+        description: t('privacy.seo.description'),
+        url: `${BASE_URL}${PRIVACY_PATH}`,
+        inLanguage: i18n.language.split('-')[0],
+        isPartOf: {
+            '@type': 'WebSite',
+            name: 'Arunachala Yoga y Terapias',
+            url: BASE_URL,
+        },
+        about: {
+            '@type': 'Organization',
+            name: 'Aruṇāchala Yoga y Terapias',
+            url: BASE_URL,
+            email: 'yogayterapiasarunachala@gmail.com',
+            telephone: '+34678481971',
+            address: {
+                '@type': 'PostalAddress',
+                streetAddress: 'Pasaje de Mateo Oliva 3, bajos',
+                addressLocality: 'Cornellà de Llobregat',
+                postalCode: '08940',
+                addressCountry: 'ES',
+            },
+        },
+    }), [t, i18n.language]);
 
     const sections = [
         {
@@ -65,10 +97,12 @@ const PrivacyPolicyPage: React.FC = () => {
 
     return (
         <div className="font-body text-bark min-h-screen flex flex-col relative bg-bone">
-            <Helmet>
-                <title>{t('privacy.seo.title')}</title>
-                <meta name="description" content={t('privacy.seo.description')} />
-            </Helmet>
+            <PageSEO
+                title={t('privacy.seo.title')}
+                description={t('privacy.seo.description')}
+                canonical={`${BASE_URL}${PRIVACY_PATH}`}
+                structuredData={structuredData}
+            />
 
             <Header />
 
@@ -149,6 +183,19 @@ const PrivacyPolicyPage: React.FC = () => {
                         >
                             {t('privacy.last_updated')}: {new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}
                         </motion.div>
+
+                        <nav
+                            aria-label={t('privacy.related_legal')}
+                            className="text-center pt-6 border-t border-forest/10"
+                        >
+                            <p className="text-bark/70 text-sm mb-3">{t('privacy.related_legal')}</p>
+                            <Link
+                                to="/aviso-legal/"
+                                className="text-forest font-headers tracking-wide hover:text-matcha transition-colors underline underline-offset-4"
+                            >
+                                {t('footer.labels.legal')}
+                            </Link>
+                        </nav>
                     </div>
                 </div>
             </main>
