@@ -26,6 +26,7 @@ export const useContentLogic = () => {
 
     // 2. Specialized Hooks
     const filters = useContentFilters(contents);
+    const setFilterTab = filters.setCurrentTab;
     const ui = useContentUI(filters.currentTab);
     const { handleOpenModal } = ui;
     const persistence = useContentPersistence();
@@ -90,7 +91,7 @@ export const useContentLogic = () => {
     const tabFromUrl = searchParams.get('tab');
 
     const setCurrentTab = useCallback((tab: TabType) => {
-        filters.setCurrentTab(tab);
+        setFilterTab(tab);
         setSearchParams(prev => {
             const next = new URLSearchParams(prev);
             if (tab === 'all') {
@@ -100,15 +101,15 @@ export const useContentLogic = () => {
             }
             return next;
         }, { replace: true });
-    }, [filters.setCurrentTab, setSearchParams]);
+    }, [setFilterTab, setSearchParams]);
 
     useEffect(() => {
         if (!tabFromUrl) return;
         const isValidTab = TABS.some(t => t.value === tabFromUrl);
         if (isValidTab) {
-            filters.setCurrentTab(tabFromUrl as TabType);
+            setFilterTab(tabFromUrl as TabType);
         }
-    }, [tabFromUrl, filters.setCurrentTab]);
+    }, [tabFromUrl, setFilterTab]);
 
     // 6. Auto-open logic from URL
     const initialSlug = searchParams.get('slug');

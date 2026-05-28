@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect, Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
@@ -23,7 +22,6 @@ const YogaPage: React.FC = () => {
     const galleryRef = useRef<HTMLDivElement>(null);
     const weekendRef = useRef<HTMLDivElement>(null);
     const blogRef = useRef<HTMLDivElement>(null);
-    const navigate = useNavigate();
     const [galleryImages, setGalleryImages] = useState<string[]>([]);
 
     const [customHero, setCustomHero] = useState<string | null>(null);
