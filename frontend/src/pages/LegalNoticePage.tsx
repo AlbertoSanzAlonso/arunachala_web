@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import PageSEO from '../components/providers/PageSEO';
@@ -7,8 +8,21 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import BackButton from '../components/ui/BackButton';
 
+const BASE_URL = 'https://www.yogayterapiasarunachala.es';
+const LEGAL_PATH = '/aviso-legal/';
+
 const LegalNoticePage: React.FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+
+    const structuredData = useMemo(() => ({
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: t('legal.title'),
+        description: t('legal.seo.description'),
+        url: `${BASE_URL}${LEGAL_PATH}`,
+        inLanguage: i18n.language.split('-')[0],
+        isPartOf: { '@type': 'WebSite', name: 'Arunachala Yoga y Terapias', url: BASE_URL },
+    }), [t, i18n.language]);
 
     const sections = [
         {
@@ -39,6 +53,8 @@ const LegalNoticePage: React.FC = () => {
             <PageSEO
                 title={t('legal.seo.title')}
                 description={t('legal.seo.description')}
+                canonical={`${BASE_URL}${LEGAL_PATH}`}
+                structuredData={structuredData}
             />
 
             <Header />
@@ -187,6 +203,19 @@ const LegalNoticePage: React.FC = () => {
                         >
                             {t('legal.last_updated')}: {new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}
                         </motion.div>
+
+                        <nav
+                            aria-label={t('legal.related_privacy')}
+                            className="text-center pt-6 border-t border-forest/10"
+                        >
+                            <p className="text-bark/70 text-sm mb-3">{t('legal.related_privacy')}</p>
+                            <Link
+                                to="/politica-de-privacidad/"
+                                className="text-forest font-headers tracking-wide hover:text-matcha transition-colors underline underline-offset-4"
+                            >
+                                {t('footer.labels.privacy')}
+                            </Link>
+                        </nav>
                     </div>
                 </div>
             </main>

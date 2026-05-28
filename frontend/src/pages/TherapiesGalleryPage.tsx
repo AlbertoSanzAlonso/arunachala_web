@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import Header from '../components/layout/Header';
@@ -9,6 +9,9 @@ import { API_BASE_URL } from '../config';
 import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import PageSEO from '../components/providers/PageSEO';
 import { getImageUrl } from '../utils/imageUtils';
+
+const BASE_URL = 'https://www.yogayterapiasarunachala.es';
+const GALLERY_PATH = '/galeria/terapias-y-masajes/';
 
 const TherapiesGalleryPage: React.FC = () => {
     const { t } = useTranslation();
@@ -79,11 +82,41 @@ const TherapiesGalleryPage: React.FC = () => {
         })
     };
 
+    const structuredData = useMemo(() => {
+        const pageSchema = {
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            name: t('gallery.therapies.title'),
+            description: t('gallery.therapies.seo.description'),
+            url: `${BASE_URL}${GALLERY_PATH}`,
+            isPartOf: { '@type': 'WebSite', name: 'Arunachala Yoga y Terapias', url: BASE_URL },
+        };
+
+        if (images.length === 0) return pageSchema;
+
+        return [
+            pageSchema,
+            {
+                '@context': 'https://schema.org',
+                '@type': 'ImageGallery',
+                name: t('gallery.therapies.title'),
+                description: t('gallery.therapies.subtitle').replace(/\n/g, ' '),
+                image: images.map((image) => ({
+                    '@type': 'ImageObject',
+                    contentUrl: getImageUrl(image.url),
+                    name: image.alt_text?.trim() || t('gallery.therapies.title'),
+                })),
+            },
+        ];
+    }, [images, t]);
+
     return (
         <div className="font-body text-bark min-h-screen flex flex-col bg-bone">
             <PageSEO
-                title={t('gallery.therapies.title')}
-                description={t('gallery.therapies.subtitle')}
+                title={t('gallery.therapies.seo.title')}
+                description={t('gallery.therapies.seo.description')}
+                canonical={`${BASE_URL}${GALLERY_PATH}`}
+                structuredData={structuredData}
             />
 
             <Header />
@@ -92,7 +125,7 @@ const TherapiesGalleryPage: React.FC = () => {
                 <div className="max-w-7xl mx-auto px-4 md:px-8 relative w-full">
                     {/* Back Button matching Blog styles */}
                     <div className="mb-4 md:mb-0 md:absolute md:top-0 md:left-8 z-20">
-                        <BackButton to="/terapias-y-masajes" label={t('gallery.therapies.back')} />
+                        <BackButton to="/terapias-y-masajes/" label={t('gallery.therapies.back')} />
                     </div>
 
                     <div className="text-center mb-16">
@@ -124,9 +157,10 @@ const TherapiesGalleryPage: React.FC = () => {
                                     >
                                         <img
                                             src={getImageUrl(image.url)}
-                                            alt={image.alt_text || t('gallery.therapies.title')}
+                                            alt={image.alt_text?.trim() || t('gallery.therapies.title')}
                                             className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                                             loading="lazy"
+                                            decoding="async"
                                         />
                                         <div className="absolute inset-0 bg-forest/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                                             <div className="p-3 bg-white/20 backdrop-blur-md rounded-full border border-white/30 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">

@@ -4,6 +4,8 @@
 (function () {
   var path = window.location.pathname;
   if (path !== '/' && !path.endsWith('/')) path += '/';
+  var search = window.location.search || '';
+  var fullPath = path + search;
 
   function apply(route) {
     if (!route) return;
@@ -52,7 +54,7 @@
   fetch('/seo-routes.json')
     .then(function (r) { return r.ok ? r.json() : []; })
     .then(function (routes) {
-      var match = routes.find(function (r) { return r.path === path; });
+      var match = routes.find(function (r) { return r.path === fullPath || r.path === path; });
       apply(match);
     })
     .catch(function () { /* silencioso */ });

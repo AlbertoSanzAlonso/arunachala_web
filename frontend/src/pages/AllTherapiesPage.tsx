@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import PageSEO from '../components/providers/PageSEO';
 import { useTranslation } from 'react-i18next';
 import { XMarkIcon, ShareIcon } from '@heroicons/react/24/outline';
@@ -25,7 +25,30 @@ interface Treatment {
     translations?: any;
 }
 
+const BASE_URL = 'https://www.yogayterapiasarunachala.es';
+const HOLISTIC_PATH = '/terapias/terapias-holisticas/';
 
+const normalizeTreatmentSlug = (str: string) =>
+    str
+        .toLowerCase()
+        .trim()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, '-');
+
+function getTreatmentDescription(
+    treatment: Treatment,
+    lang: string,
+    fallback: string
+): string {
+    const raw =
+        getTranslated(treatment, 'excerpt', lang) ||
+        getTranslated(treatment, 'description', lang) ||
+        treatment.excerpt ||
+        treatment.description ||
+        fallback;
+    return String(raw).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
+}
 
 const AllTherapiesPage: React.FC = () => {
     const { t, i18n } = useTranslation();
@@ -62,13 +85,8 @@ const AllTherapiesPage: React.FC = () => {
         if (!loading && therapies.length > 0) {
             const itemParam = searchParams.get('item')?.toLowerCase().trim();
             if (itemParam) {
-                const normalize = (str: string) =>
-                    str.toLowerCase().trim()
-                        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove accents
-                        .replace(/\s+/g, '-');
-
                 const treatment = therapies.find(t =>
-                    normalize(t.name) === itemParam ||
+                    normalizeTreatmentSlug(t.name) === itemParam ||
                     String(t.id) === itemParam
                 );
                 if (treatment) {
@@ -92,12 +110,7 @@ const AllTherapiesPage: React.FC = () => {
 
     const handleShare = async (e: React.MouseEvent, treatment: Treatment) => {
         e.stopPropagation();
-        const normalize = (str: string) =>
-            str.toLowerCase().trim()
-                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                .replace(/\s+/g, '-');
-
-        const shareUrl = `${window.location.origin}/terapias/terapias-holisticas?item=${normalize(treatment.name)}`;
+        const shareUrl = `${window.location.origin}${HOLISTIC_PATH}?item=${normalizeTreatmentSlug(treatment.name)}`;
         const title = getTranslated(treatment, 'name', i18n.language);
 
         if (navigator.share) {
@@ -121,11 +134,91 @@ const AllTherapiesPage: React.FC = () => {
         }
     };
 
+    const activeTreatment = useMemo(() => {
+        const itemParam = searchParams.get('item')?.toLowerCase().trim();
+        if (!itemParam || therapies.length === 0) return null;
+        return (
+            therapies.find(
+                (tr) =>
+                    normalizeTreatmentSlug(tr.name) === itemParam || String(tr.id) === itemParam
+            ) ?? null
+        );
+    }, [searchParams, therapies]);
+
+    const seoTitle = activeTreatment
+        ? getTranslated(activeTreatment, 'name', i18n.language)
+        : t('therapies.holistic_page.seo.title');
+
+    const seoDescription = activeTreatment
+        ? getTreatmentDescription(activeTreatment, i18n.language, t('therapies.holistic_page.seo.description'))
+        : t('therapies.holistic_page.seo.description');
+
+    const canonical = activeTreatment
+        ? `${BASE_URL}${HOLISTIC_PATH}?item=${normalizeTreatmentSlug(activeTreatment.name)}`
+        : `${BASE_URL}${HOLISTIC_PATH}`;
+
+    const structuredData = useMemo(() => {
+        const provider = {
+            '@type': 'HealthAndBeautyBusiness',
+            name: 'Arunachala Yoga y Terapias',
+            url: BASE_URL,
+        };
+
+        if (activeTreatment) {
+            return {
+                '@context': 'https://schema.org',
+                '@type': 'Service',
+                name: getTranslated(activeTreatment, 'name', i18n.language),
+                description: getTreatmentDescription(
+                    activeTreatment,
+                    i18n.language,
+                    t('therapies.holistic_page.seo.description')
+                ),
+                url: `${BASE_URL}${HOLISTIC_PATH}?item=${normalizeTreatmentSlug(activeTreatment.name)}`,
+                provider,
+                ...(activeTreatment.price ? { offers: { '@type': 'Offer', price: activeTreatment.price, priceCurrency: 'EUR' } } : {}),
+                ...(activeTreatment.duration_min > 0 ? { duration: `PT${activeTreatment.duration_min}M` } : {}),
+            };
+        }
+
+        const collectionPage = {
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            name: t('therapies.sections.therapies'),
+            description: t('therapies.holistic_page.seo.description'),
+            url: `${BASE_URL}${HOLISTIC_PATH}`,
+        };
+
+        if (therapies.length === 0) return collectionPage;
+
+        return [
+            collectionPage,
+            {
+                '@context': 'https://schema.org',
+                '@type': 'ItemList',
+                name: t('therapies.sections.therapies'),
+                numberOfItems: therapies.length,
+                itemListElement: therapies.map((therapy, index) => ({
+                    '@type': 'ListItem',
+                    position: index + 1,
+                    url: `${BASE_URL}${HOLISTIC_PATH}?item=${normalizeTreatmentSlug(therapy.name)}`,
+                    item: {
+                        '@type': 'Service',
+                        name: getTranslated(therapy, 'name', i18n.language),
+                        provider,
+                    },
+                })),
+            },
+        ];
+    }, [activeTreatment, therapies, t, i18n.language]);
+
     return (
         <div className="font-body text-bark min-h-screen flex flex-col bg-white">
             <PageSEO
-                title={t('therapies.sections.therapies')}
-                description={t('therapies.sections.therapies_sub')}
+                title={seoTitle}
+                description={seoDescription}
+                canonical={canonical}
+                structuredData={structuredData}
             />
 
             <Header />
@@ -261,13 +354,19 @@ const AllTherapiesPage: React.FC = () => {
                 <div className="max-w-7xl mx-auto px-8 relative">
                     {/* Back Button */}
                     <div className="mb-4 md:mb-0 md:absolute md:top-0 md:left-2 z-20">
-                        <BackButton to="/terapias-y-masajes" label={t('blog.back_to_therapies', 'Volver a Terapias')} className="text-forest hover:text-matcha mb-0" />
+                        <BackButton to="/terapias-y-masajes/" label={t('blog.back_to_therapies', 'Volver a Terapias')} className="text-forest hover:text-matcha mb-0" />
                     </div>
 
                     {/* Header Title Section */}
                     <FadeInSection className="text-center mb-16 pt-0">
                         <h1 className="text-4xl md:text-6xl font-headers text-forest mb-4">{t('therapies.sections.therapies')}</h1>
                         <p className="text-bark/70 text-lg md:text-xl max-w-2xl mx-auto">{t('therapies.sections.therapies_sub')}</p>
+                        <p className="text-bark/60 text-sm mt-6">
+                            {t('therapies.holistic_page.related_massages')}{' '}
+                            <Link to="/terapias/masajes/" className="text-forest font-semibold hover:text-matcha underline underline-offset-4">
+                                {t('therapies.sections.massages')}
+                            </Link>
+                        </p>
                     </FadeInSection>
 
                     {/* Therapies Grid */}
@@ -295,6 +394,8 @@ const AllTherapiesPage: React.FC = () => {
                                                     src={getImageUrl(therapy.image_url)}
                                                     alt={getTranslated(therapy, 'name', i18n.language)}
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                                    loading="lazy"
+                                                    decoding="async"
                                                     onError={(e) => {
                                                         const target = e.currentTarget;
                                                         if (target.src !== '/logo_icon.webp') {
@@ -309,7 +410,13 @@ const AllTherapiesPage: React.FC = () => {
                                             )}
                                         </div>
 
-                                        <h3 className="text-2xl font-headers text-forest mb-4 relative z-10">{getTranslated(therapy, 'name', i18n.language)}</h3>
+                                        <a
+                                            href={`${HOLISTIC_PATH}?item=${normalizeTreatmentSlug(therapy.name)}`}
+                                            className="block text-2xl font-headers text-forest mb-4 relative z-10 hover:text-matcha transition-colors"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            {getTranslated(therapy, 'name', i18n.language)}
+                                        </a>
                                         <p className="text-bark/80 mb-4 leading-relaxed line-clamp-3 relative z-10">{getTranslated(therapy, 'excerpt', i18n.language) || getTranslated(therapy, 'description', i18n.language)}</p>
 
                                         <div className="flex justify-between items-center mt-6 border-t border-forest/5 pt-4 relative z-10">

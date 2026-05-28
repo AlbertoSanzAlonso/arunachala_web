@@ -1,6 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { XMarkIcon, ShareIcon, CalendarDaysIcon, ClockIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { useUIStore } from '../store/uiStore';
@@ -25,6 +25,17 @@ interface Treatment {
     image_url: string | null;
     translations?: any;
 }
+
+const BASE_URL = 'https://www.yogayterapiasarunachala.es';
+const THERAPIES_PATH = '/terapias-y-masajes/';
+
+const normalizeTreatmentSlug = (str: string) =>
+    str
+        .toLowerCase()
+        .trim()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, '-');
 
 const TherapiesPage: React.FC = () => {
     const { t, i18n } = useTranslation();
@@ -96,13 +107,8 @@ const TherapiesPage: React.FC = () => {
 
     const handleShare = async (e: React.MouseEvent, treatment: Treatment) => {
         e.stopPropagation();
-        const normalize = (str: string) =>
-            str.toLowerCase().trim()
-                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                .replace(/\s+/g, '-');
-
         const category = therapies.some(t => t.id === treatment.id) ? 'terapias-holisticas' : 'masajes';
-        const shareUrl = `${window.location.origin}/terapias/${category}?item=${normalize(treatment.name)}`;
+        const shareUrl = `${window.location.origin}/terapias/${category}/?item=${normalizeTreatmentSlug(treatment.name)}`;
         const title = getTranslated(treatment, 'name', i18n.language);
 
         if (navigator.share) {
@@ -126,11 +132,73 @@ const TherapiesPage: React.FC = () => {
         }
     };
 
+    const structuredData = useMemo(() => {
+        const provider = {
+            '@type': 'HealthAndBeautyBusiness',
+            name: 'Arunachala Yoga y Terapias',
+            url: BASE_URL,
+        };
+
+        const webPage = {
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            name: t('therapies.title'),
+            description: t('therapies.seo.description'),
+            url: `${BASE_URL}${THERAPIES_PATH}`,
+            about: provider,
+        };
+
+        const subPages = [
+            { name: t('therapies.sections.massages'), url: `${BASE_URL}/terapias/masajes/` },
+            { name: t('therapies.sections.therapies'), url: `${BASE_URL}/terapias/terapias-holisticas/` },
+            { name: t('therapies.landing.view_gallery'), url: `${BASE_URL}/galeria/terapias-y-masajes/` },
+        ];
+
+        const services = [
+            ...massages.map((m) => ({
+                '@type': 'Service',
+                name: getTranslated(m, 'name', i18n.language),
+                url: `${BASE_URL}/terapias/masajes/?item=${normalizeTreatmentSlug(m.name)}`,
+                provider,
+            })),
+            ...therapies.map((thr) => ({
+                '@type': 'Service',
+                name: getTranslated(thr, 'name', i18n.language),
+                url: `${BASE_URL}/terapias/terapias-holisticas/?item=${normalizeTreatmentSlug(thr.name)}`,
+                provider,
+            })),
+        ];
+
+        return [
+            webPage,
+            {
+                '@context': 'https://schema.org',
+                '@type': 'ItemList',
+                name: t('therapies.title'),
+                itemListElement: [
+                    ...subPages.map((page, index) => ({
+                        '@type': 'ListItem',
+                        position: index + 1,
+                        name: page.name,
+                        url: page.url,
+                    })),
+                    ...services.map((service, index) => ({
+                        '@type': 'ListItem',
+                        position: subPages.length + index + 1,
+                        item: service,
+                    })),
+                ],
+            },
+        ];
+    }, [massages, therapies, t, i18n.language]);
+
     return (
         <div id="therapies-scroll-container" ref={containerRef} className="font-body text-bark h-screen overflow-y-auto flex flex-col relative scroll-smooth">
             <PageSEO
                 title={t('therapies.seo.title')}
                 description={t('therapies.seo.description')}
+                canonical={`${BASE_URL}${THERAPIES_PATH}`}
+                structuredData={structuredData}
             />
 
             <Header />
@@ -330,6 +398,11 @@ const TherapiesPage: React.FC = () => {
                         <div className="text-center mb-16 px-6">
                             <h2 className="text-4xl md:text-5xl font-headers text-forest mb-4 uppercase tracking-wider">{t('therapies.sections.massages')}</h2>
                             <p className="text-bark/70 text-xl font-light">{t('therapies.sections.massages_sub')}</p>
+                            <p className="mt-4">
+                                <Link to="/terapias/masajes/" className="text-forest font-semibold hover:text-matcha underline underline-offset-4 text-sm md:text-base">
+                                    {t('therapies.landing.view_massages')} →
+                                </Link>
+                            </p>
                         </div>
 
                         {massages.length > 0 ? (
@@ -372,6 +445,8 @@ const TherapiesPage: React.FC = () => {
                                                         src={getImageUrl(msg.image_url)}
                                                         alt={getTranslated(msg, 'name', i18n.language)}
                                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                                        loading="lazy"
+                                                        decoding="async"
                                                         onError={(e) => {
                                                             const target = e.currentTarget;
                                                             if (target.src !== '/logo_icon.webp') {
@@ -384,7 +459,13 @@ const TherapiesPage: React.FC = () => {
                                                     <img src={'/logo_icon.webp'} alt="Detalle" className="w-24 h-24 object-contain opacity-20 group-hover:scale-110 transition-transform duration-500" />
                                                 )}
                                             </div>
-                                            <h3 className="text-2xl font-headers text-forest mb-4 uppercase relative z-10">{getTranslated(msg, 'name', i18n.language)}</h3>
+                                            <a
+                                                href={`/terapias/masajes/?item=${normalizeTreatmentSlug(msg.name)}`}
+                                                className="block text-2xl font-headers text-forest mb-4 uppercase relative z-10 hover:text-matcha transition-colors"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                {getTranslated(msg, 'name', i18n.language)}
+                                            </a>
                                             <p className="text-bark/80 mb-4 leading-relaxed line-clamp-3 relative z-10">{getTranslated(msg, 'excerpt', i18n.language) || getTranslated(msg, 'description', i18n.language)}</p>
 
                                             <div className="flex justify-between items-center mt-6 border-t border-forest/5 pt-4 relative z-10">
@@ -414,12 +495,12 @@ const TherapiesPage: React.FC = () => {
 
                         {massages.length > 3 && (
                             <div className="text-center mt-12">
-                                <button
-                                    onClick={() => navigate('/terapias/masajes')}
-                                    className="px-8 py-4 bg-forest hover:bg-matcha text-white font-headers tracking-wide rounded-full transition-all duration-300 shadow-lg hover:shadow-xl uppercase text-lg"
+                                <a
+                                    href="/terapias/masajes/"
+                                    className="inline-block px-8 py-4 bg-forest hover:bg-matcha text-white font-headers tracking-wide rounded-full transition-all duration-300 shadow-lg hover:shadow-xl uppercase text-lg"
                                 >
                                     {t('common.view_all')}
-                                </button>
+                                </a>
                             </div>
                         )}
                     </FadeInSection>
@@ -430,6 +511,14 @@ const TherapiesPage: React.FC = () => {
                         <div className="text-center mb-16 px-6">
                             <h2 className="text-4xl md:text-5xl font-headers text-forest mb-4 uppercase tracking-wider">{t('therapies.sections.therapies')}</h2>
                             <p className="text-bark/70 text-xl font-light">{t('therapies.sections.therapies_sub')}</p>
+                            <p className="mt-4 flex flex-wrap justify-center gap-x-6 gap-y-2">
+                                <Link to="/terapias/terapias-holisticas/" className="text-forest font-semibold hover:text-matcha underline underline-offset-4 text-sm md:text-base">
+                                    {t('therapies.landing.view_holistic')} →
+                                </Link>
+                                <Link to="/galeria/terapias-y-masajes/" className="text-forest font-semibold hover:text-matcha underline underline-offset-4 text-sm md:text-base">
+                                    {t('therapies.landing.view_gallery')} →
+                                </Link>
+                            </p>
                         </div>
 
                         {therapies.length > 0 ? (
@@ -472,6 +561,8 @@ const TherapiesPage: React.FC = () => {
                                                         src={getImageUrl(thr.image_url)}
                                                         alt={getTranslated(thr, 'name', i18n.language)}
                                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                                        loading="lazy"
+                                                        decoding="async"
                                                         onError={(e) => {
                                                             const target = e.currentTarget;
                                                             if (target.src !== '/logo_icon.webp') {
@@ -484,7 +575,13 @@ const TherapiesPage: React.FC = () => {
                                                     <img src={'/logo_icon.webp'} alt="Detalle" className="w-24 h-24 object-contain opacity-20 group-hover:scale-110 transition-transform duration-500" />
                                                 )}
                                             </div>
-                                            <h3 className="text-2xl font-headers text-forest mb-4 uppercase relative z-10">{getTranslated(thr, 'name', i18n.language)}</h3>
+                                            <a
+                                                href={`/terapias/terapias-holisticas/?item=${normalizeTreatmentSlug(thr.name)}`}
+                                                className="block text-2xl font-headers text-forest mb-4 uppercase relative z-10 hover:text-matcha transition-colors"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                {getTranslated(thr, 'name', i18n.language)}
+                                            </a>
                                             <p className="text-bark/80 mb-4 leading-relaxed line-clamp-3 relative z-10">{getTranslated(thr, 'excerpt', i18n.language) || getTranslated(thr, 'description', i18n.language)}</p>
 
                                             <div className="flex justify-between items-center mt-6 border-t border-forest/5 pt-4 relative z-10">
@@ -514,12 +611,12 @@ const TherapiesPage: React.FC = () => {
 
                         {therapies.length > 3 && (
                             <div className="text-center mt-12">
-                                <button
-                                    onClick={() => navigate('/terapias/terapias-holisticas')}
-                                    className="px-8 py-4 bg-forest hover:bg-matcha text-white font-headers tracking-wide rounded-full transition-all duration-300 shadow-lg hover:shadow-xl uppercase text-lg"
+                                <a
+                                    href="/terapias/terapias-holisticas/"
+                                    className="inline-block px-8 py-4 bg-forest hover:bg-matcha text-white font-headers tracking-wide rounded-full transition-all duration-300 shadow-lg hover:shadow-xl uppercase text-lg"
                                 >
                                     {t('common.view_all')}
-                                </button>
+                                </a>
                             </div>
                         )}
                     </FadeInSection>
@@ -547,7 +644,7 @@ const TherapiesPage: React.FC = () => {
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
-                                    onClick={() => navigate('/contacto')}
+                                    onClick={() => navigate('/contacto/')}
                                     className="px-10 py-5 bg-matcha hover:bg-bone hover:text-forest text-forest font-bold rounded-full transition-all duration-300 shadow-xl flex items-center gap-3 uppercase tracking-widest"
                                 >
                                     {t('therapies.appointment.cta')}

@@ -75,7 +75,7 @@ function routeToDir(routePath) {
   return path.join(BUILD_DIR, ...segments);
 }
 
-async function fetchDynamicRoutes() {
+async function fetchContentRoutes() {
   const routes = [];
   try {
     const res = await fetch(`${API_URL}/api/content?status=published`);
@@ -97,9 +97,38 @@ async function fetchDynamicRoutes() {
         description: excerpt.slice(0, 160),
       });
     }
-    console.log(`prerender-meta: ${routes.length} rutas dinámicas (blog/meditaciones)`);
+    console.log(`prerender-meta: ${routes.length} rutas (blog/meditaciones)`);
   } catch (err) {
-    console.warn(`prerender-meta: sin rutas dinámicas (${err.message})`);
+    console.warn(`prerender-meta: sin rutas blog/meditaciones (${err.message})`);
+  }
+  return routes;
+}
+
+/** Rutas con query (?slug=) solo para seo-routes.json / seo-bootstrap (sin HTML propio). */
+async function fetchActivityMetaRoutes() {
+  const routes = [];
+  try {
+    const res = await fetch(`${API_URL}/api/activities`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const activities = await res.json();
+
+    for (const act of activities) {
+      if (!act.slug || String(act.slug).includes('sugerencia') || act.is_active === false) continue;
+      const title = act.title || 'Actividad';
+      const description = (
+        (act.description && String(act.description).replace(/<[^>]+>/g, ' ').trim()) ||
+        `Actividad de bienestar en Arunachala Yoga y Terapias, Cornellà.`
+      ).slice(0, 160);
+
+      routes.push({
+        path: `/actividades/?slug=${act.slug}`,
+        title: `${title} | Arunachala Yoga y Terapias`,
+        description,
+      });
+    }
+    console.log(`prerender-meta: ${routes.length} meta rutas (actividades con slug)`);
+  } catch (err) {
+    console.warn(`prerender-meta: sin meta actividades (${err.message})`);
   }
   return routes;
 }
@@ -112,13 +141,15 @@ async function main() {
 
   const template = fs.readFileSync(INDEX_PATH, 'utf8');
   const staticRoutes = JSON.parse(fs.readFileSync(STATIC_ROUTES_PATH, 'utf8'));
-  const dynamicRoutes = await fetchDynamicRoutes();
-  const allRoutes = [...staticRoutes, ...dynamicRoutes];
+  const contentRoutes = await fetchContentRoutes();
+  const activityMetaRoutes = await fetchActivityMetaRoutes();
+  const htmlRoutes = [...staticRoutes, ...contentRoutes];
+  const allRoutes = [...htmlRoutes, ...activityMetaRoutes];
 
   const seen = new Set();
   let written = 0;
 
-  for (const route of allRoutes) {
+  for (const route of htmlRoutes) {
     if (seen.has(route.path)) continue;
     seen.add(route.path);
 
@@ -135,7 +166,7 @@ async function main() {
     'utf8'
   );
 
-  console.log(`prerender-meta: ${written} archivos index.html generados`);
+  console.log(`prerender-meta: ${written} archivos index.html, ${allRoutes.length} entradas en seo-routes.json`);
 }
 
 main().catch((err) => {

@@ -7,6 +7,7 @@
       "therapies": "Massatge i teràpies",
       "blog": "Blog",
       "meditations": "Meditacions",
+      "space": "El Nostre Espai",
       "legal": "Avís Legal",
       "privacy": "Política de Privadesa",
       "instagram": "Seguiu-nos a Instagram",
@@ -30,15 +31,24 @@
       "title": "Galeria de Teràpies",
       "back": "Tornar a Teràpies",
       "subtitle": "Un cop d'ull al nostre espai de sanació i benestar.",
-      "empty": "Properament fotos del centre..."
+      "empty": "Properament fotos del centre...",
+      "seo": {
+        "title": "Galeria de teràpies a Cornellà",
+        "description": "Imatges de l'espai de massatges i teràpies holístiques a Aruṇāchala Cornellà: ambient, cabines i sessions de benestar."
+      }
     }
   },
   "therapies": {
     "title": "MASSATGE I TERÀPIES",
     "subtitle": "Un espai per al retrobament amb tu mateix a través de la cura corporal i emocional.",
     "seo": {
-      "title": "Massatges i Teràpies a Cornellà | Aruṇāchala",
-      "description": "Descobreix les nostres teràpies i massatges a Cornellà de Llobregat. Reiki, Teràpia Floral, Massatge Tailandès i més per al teu benestar."
+      "title": "Massatge i Teràpies a Cornellà",
+      "description": "Centre de massatges i teràpies holístiques a Cornellà de Llobregat: massatge tailandès, reiki, teràpia floral i més amb Susana Pérez Gil a Aruṇāchala."
+    },
+    "landing": {
+      "view_massages": "Veure tots els massatges",
+      "view_holistic": "Veure teràpies holístiques",
+      "view_gallery": "Galeria de teràpies"
     },
     "buttons": {
       "massages": "Massatges",
@@ -76,6 +86,20 @@
       "subtitle": "Atenció personalitzada amb cita prèvia",
       "description": "Les nostres sessions de massatge i teràpies holístiques es programen de forma individualitzada. En treballar amb cita prèvia, ens assegurem de dedicar-te el temps i l'espai que mereixes per al teu benestar integral.",
       "cta": "Contactar per reservar"
+    },
+    "massages_page": {
+      "seo": {
+        "title": "Massatges terapèutics a Cornellà",
+        "description": "Massatges terapèutics, tailandès, esportiu i relaxant a Aruṇāchala Cornellà. Allibera tensions i recupera vitalitat amb Susana Pérez Gil."
+      },
+      "related_holistic": "Veure també les nostres teràpies holístiques"
+    },
+    "holistic_page": {
+      "seo": {
+        "title": "Teràpies holístiques a Cornellà",
+        "description": "Reiki, tècnica metamòrfica, teràpia floral i més a Aruṇāchala Cornellà. Acompanyament en el teu procés de sanació i autoconeixement."
+      },
+      "related_massages": "Veure també els nostres massatges"
     }
   },
   "welcome": "Benvingut a Aruṇāchala",
@@ -106,7 +130,11 @@
     "label": "Ofertes Exclusives",
     "code": "CODI:",
     "about_section_title": "Les Nostres Promocions",
-    "contact_cta": "Tens dubtes sobre alguna promoció? Contacta'ns!"
+    "contact_cta": "Tens dubtes sobre alguna promoció? Contacta'ns!",
+    "seo": {
+      "title": "Promocions de ioga i teràpies",
+      "description": "Ofertes i promocions del centre Aruṇāchala a Cornellà: classes de ioga, massatges i teràpies holístiques amb condicions especials."
+    }
   },
   "meditations": {
     "title": "Meditacions",
@@ -330,8 +358,8 @@
     "title": "Les Nostres Activitats",
     "subtitle": "Cursos temporals, tallers intensius i esdeveniments especials dissenyats per al teu creixement.",
     "seo": {
-      "title": "Activitats i Cursos | Aruṇāchala",
-      "description": "Descobreix les nostres activitats actives, cursos temporals i esdeveniments especials a Aruṇāchala."
+      "title": "Activitats i cursos a Cornellà",
+      "description": "Tallers, cursos, retirs i esdeveniments de ioga i benestar a Aruṇāchala Cornellà. Consulta dates, preus i reserva la teva plaça."
     },
     "share_text": "Mira aquesta activitat a Aruṇāchala Yoga",
     "types": {
@@ -429,7 +457,14 @@
       "metro_details": "Metro: Línia 5 (Cornellà Centre)"
     },
     "illustrative_map_label": "Mapa de referència",
-    "open_gps": "Obrir en GPS"
+    "open_gps": "Obrir en GPS",
+    "seo": {
+      "title": "El nostre espai de ioga a Cornellà",
+      "description": "Visita el centre Aruṇāchala a Cornellà de Llobregat: sala de ioga lluminosa, ambient tranquil i com arribar en metro, bus o tramvia.",
+      "main_image_alt": "Sala principal del centre de ioga i teràpies Aruṇāchala a Cornellà",
+      "map_alt": "Mapa il·lustratiu de la ubicació del centre Aruṇāchala a Cornellà de Llobregat"
+    },
+    "related_contact": "Vols visitar-nos? Contacta amb nosaltres"
   },
   "about": {
     "title": "Qui Soc?",
@@ -533,9 +568,10 @@
     "subtitle": "Informació legal i condicions d'ús del lloc web",
     "last_updated": "Última actualització",
     "seo": {
-      "title": "Avís Legal | Aruṇāchala Ioga i Teràpies",
+      "title": "Avís Legal",
       "description": "Avís legal i condicions d'ús del lloc web d'Aruṇāchala Ioga i Teràpies a Cornellà de Llobregat."
     },
+    "related_privacy": "Consulta també la nostra política de privadesa",
     "sections": {
       "identification": {
         "title": "Identificació",

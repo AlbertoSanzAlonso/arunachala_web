@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeftIcon, ChevronRightIcon, MapPinIcon } from '@heroicons/react/24/outline';
@@ -18,6 +19,9 @@ interface GalleryImage {
     alt_text: string;
 }
 
+const BASE_URL = 'https://www.yogayterapiasarunachala.es';
+const SPACE_PATH = '/nuestro-espacio/';
+
 const OurSpacePage: React.FC = () => {
     const { t } = useTranslation();
     const [mainImage, setMainImage] = useState<GalleryImage | null>(null);
@@ -33,7 +37,7 @@ const OurSpacePage: React.FC = () => {
                 if (configRes.ok) {
                     const configData = await configRes.json();
                     if (configData.value) {
-                        setMainImage({ id: 0, url: configData.value, alt_text: 'Nuestro Espacio' });
+                        setMainImage({ id: 0, url: configData.value, alt_text: '' });
                     }
                 }
 
@@ -85,11 +89,68 @@ const OurSpacePage: React.FC = () => {
         }
     };
 
+    const mainImageAlt = mainImage?.alt_text?.trim() || t('space.seo.main_image_alt');
+
+    const structuredData = useMemo(() => {
+        const yogaStudio = {
+            '@context': 'https://schema.org',
+            '@type': 'YogaStudio',
+            name: 'Arunachala Yoga y Terapias',
+            url: BASE_URL,
+            image: `${BASE_URL}/logo_wide.webp`,
+            telephone: '+34678481971',
+            address: {
+                '@type': 'PostalAddress',
+                streetAddress: 'Pasaje de Mateo Oliva 3, bajos',
+                addressLocality: 'Cornellà de Llobregat',
+                postalCode: '08940',
+                addressRegion: 'Barcelona',
+                addressCountry: 'ES',
+            },
+            geo: {
+                '@type': 'GeoCoordinates',
+                latitude: 41.3533,
+                longitude: 2.0728,
+            },
+            description: t('space.seo.description'),
+        };
+
+        const webPage = {
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            name: t('space.title'),
+            description: t('space.seo.description'),
+            url: `${BASE_URL}${SPACE_PATH}`,
+            about: yogaStudio,
+        };
+
+        if (sliderImages.length === 0) {
+            return [webPage, yogaStudio];
+        }
+
+        return [
+            webPage,
+            yogaStudio,
+            {
+                '@context': 'https://schema.org',
+                '@type': 'ImageGallery',
+                name: t('space.title'),
+                image: sliderImages.map((image) => ({
+                    '@type': 'ImageObject',
+                    contentUrl: getImageUrl(image.url),
+                    name: image.alt_text?.trim() || t('space.seo.main_image_alt'),
+                })),
+            },
+        ];
+    }, [sliderImages, t]);
+
     return (
         <div className="font-body text-bark min-h-screen flex flex-col relative">
             <PageSEO
-                title={`${t('space.title', 'Nuestro Espacio')} | Arunachala`}
-                description="Descubre nuestro centro de yoga y terapias en Cornellá de Llobregat. Un refugio de paz diseñado para tu bienestar."
+                title={t('space.seo.title')}
+                description={t('space.seo.description')}
+                canonical={`${BASE_URL}${SPACE_PATH}`}
+                structuredData={structuredData}
             />
             <Header />
 
@@ -134,6 +195,12 @@ const OurSpacePage: React.FC = () => {
                                 <MapPinIcon className="w-6 h-6 group-hover:scale-110 transition-transform" />
                                 <span>{t('contact_page.info.address', 'Yoga y Terapias Arunachala - Pasaje de Mateo Oliva, 3, 08940 Cornellá de Llobregat')}</span>
                             </a>
+                            <p className="pt-4 text-bark/70 text-sm">
+                                {t('space.related_contact')}{' '}
+                                <Link to="/contacto/" className="text-forest font-semibold hover:text-matcha underline underline-offset-4">
+                                    {t('menu.contact')}
+                                </Link>
+                            </p>
                         </motion.div>
 
                         {/* Main Image (Fixed) */}
@@ -150,8 +217,10 @@ const OurSpacePage: React.FC = () => {
                             ) : mainImage ? (
                                 <img
                                     src={getImageUrl(mainImage.url)}
-                                    alt={mainImage.alt_text}
+                                    alt={mainImageAlt}
                                     className="w-full h-full object-cover"
+                                    loading="eager"
+                                    fetchPriority="high"
                                 />
                             ) : (
                                 <div className="w-full h-full bg-gray-50" />
@@ -183,8 +252,10 @@ const OurSpacePage: React.FC = () => {
                                     >
                                         <img
                                             src={getImageUrl(sliderImages[currentIndex].url)}
-                                            alt={sliderImages[currentIndex].alt_text}
+                                            alt={sliderImages[currentIndex].alt_text?.trim() || t('space.seo.main_image_alt')}
                                             className="w-full h-full object-cover"
+                                            loading="lazy"
+                                            decoding="async"
                                         />
                                     </motion.div>
                                 </AnimatePresence>
@@ -253,8 +324,10 @@ const OurSpacePage: React.FC = () => {
                             >
                                 <img
                                     src={illustrativeMap}
-                                    alt="Mapa ilustrativo"
+                                    alt={t('space.seo.map_alt')}
                                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                    loading="lazy"
+                                    decoding="async"
                                 />
                                 <div className="absolute inset-x-0 bottom-0 bg-bark/60 backdrop-blur-sm p-3 text-white text-center font-headers text-sm uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
                                     {t('space.illustrative_map_label', 'Mapa de referencia')}
@@ -348,7 +421,7 @@ const OurSpacePage: React.FC = () => {
                             </button>
                             <img
                                 src={illustrativeMap}
-                                alt="Mapa ilustrativo ampliado"
+                                alt={t('space.seo.map_alt')}
                                 className="w-full h-auto max-h-[85vh] object-contain"
                             />
                             <div className="p-6 bg-forest text-white text-center font-headers text-lg tracking-widest uppercase">

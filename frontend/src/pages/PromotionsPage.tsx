@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
@@ -19,6 +19,9 @@ interface Promotion {
     image_url?: string;
     translations?: any;
 }
+
+const BASE_URL = 'https://www.yogayterapiasarunachala.es';
+const PROMOTIONS_PATH = '/promociones/';
 
 const PromotionsPage: React.FC = () => {
     const [promotions, setPromotions] = useState<Promotion[]>([]);
@@ -44,11 +47,40 @@ const PromotionsPage: React.FC = () => {
         fetchPromotions();
     }, []);
 
+    const structuredData = useMemo(() => {
+        const webPage = {
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            name: t('promotions.title'),
+            description: t('promotions.seo.description'),
+            url: `${BASE_URL}${PROMOTIONS_PATH}`,
+        };
+
+        if (promotions.length === 0) return webPage;
+
+        return [
+            webPage,
+            {
+                '@context': 'https://schema.org',
+                '@type': 'ItemList',
+                name: t('promotions.title'),
+                numberOfItems: promotions.length,
+                itemListElement: promotions.map((promo, index) => ({
+                    '@type': 'ListItem',
+                    position: index + 1,
+                    name: promo.translations?.[currentLang]?.title || promo.title,
+                })),
+            },
+        ];
+    }, [promotions, t, currentLang]);
+
     return (
         <div className="font-body text-bark min-h-screen flex flex-col bg-bone">
             <PageSEO
-                title={t('promotions.title')}
-                description={t('promotions.subtitle')}
+                title={t('promotions.seo.title')}
+                description={t('promotions.seo.description')}
+                canonical={`${BASE_URL}${PROMOTIONS_PATH}`}
+                structuredData={structuredData}
             />
 
             <Header />

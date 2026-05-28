@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import Header from 'components/layout/Header';
@@ -38,8 +39,12 @@ export interface UserSuggestion {
     created_at: string;
 }
 
+const BASE_URL = 'https://www.yogayterapiasarunachala.es';
+const ACTIVITIES_PATH = '/actividades/';
+
 const ActivitiesPage: React.FC = () => {
     const { t, i18n } = useTranslation();
+    const [searchParams] = useSearchParams();
     const [activities, setActivities] = useState<Activity[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
@@ -64,22 +69,29 @@ const ActivitiesPage: React.FC = () => {
         fetchData();
     }, []);
 
+    const activeActivity = useMemo(() => {
+        const activityId = searchParams.get('activity');
+        const activitySlug = searchParams.get('slug');
+        if (activities.length === 0) return null;
+        if (activityId) {
+            return activities.find((a) => a.id === parseInt(activityId, 10)) ?? null;
+        }
+        if (activitySlug) {
+            return (
+                activities.find(
+                    (a) => a.slug === activitySlug || (a as Activity).activity_data?.slug === activitySlug
+                ) ?? null
+            );
+        }
+        return null;
+    }, [activities, searchParams]);
+
     // Handle deep linking for activity detail
     useEffect(() => {
-        if (activities.length > 0) {
-            const params = new URLSearchParams(window.location.search);
-            const activityId = params.get('activity');
-            const activitySlug = params.get('slug');
-
-            if (activityId) {
-                const activity = activities.find(a => a.id === parseInt(activityId));
-                if (activity) setSelectedActivity(activity);
-            } else if (activitySlug) {
-                const activity = activities.find(a => a.slug === activitySlug || (a as any).activity_data?.slug === activitySlug);
-                if (activity) setSelectedActivity(activity);
-            }
+        if (activeActivity) {
+            setSelectedActivity(activeActivity);
         }
-    }, [activities]);
+    }, [activeActivity]);
 
     const renderActivitySection = (title: string, types: string[], emptyMsg: string) => {
         const filtered = activities.filter(a => types.includes(a.type));
@@ -104,16 +116,69 @@ const ActivitiesPage: React.FC = () => {
         );
     };
 
+    const seoTitle = activeActivity
+        ? getTranslated(activeActivity, 'title', i18n.language)
+        : t('activities.seo.title');
+
+    const seoDescription = activeActivity
+        ? String(getTranslated(activeActivity, 'description', i18n.language) || t('activities.seo.description'))
+              .replace(/<[^>]+>/g, ' ')
+              .replace(/\s+/g, ' ')
+              .trim()
+              .slice(0, 160)
+        : t('activities.seo.description');
+
+    const canonical = activeActivity?.slug
+        ? `${BASE_URL}${ACTIVITIES_PATH}?slug=${activeActivity.slug}`
+        : `${BASE_URL}${ACTIVITIES_PATH}`;
+
+    const structuredData = useMemo(() => {
+        if (activeActivity) {
+            return {
+                '@context': 'https://schema.org',
+                '@type': 'Event',
+                name: getTranslated(activeActivity, 'title', i18n.language),
+                description: seoDescription,
+                url: `${BASE_URL}${ACTIVITIES_PATH}?slug=${activeActivity.slug}`,
+                location: activeActivity.location
+                    ? { '@type': 'Place', name: activeActivity.location }
+                    : undefined,
+                organizer: {
+                    '@type': 'Organization',
+                    name: 'Arunachala Yoga y Terapias',
+                    url: BASE_URL,
+                },
+            };
+        }
+
+        const listable = activities.filter((a) => a.slug && a.type !== 'sugerencia');
+        return {
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            name: t('activities.title'),
+            description: t('activities.seo.description'),
+            url: `${BASE_URL}${ACTIVITIES_PATH}`,
+            mainEntity: {
+                '@type': 'ItemList',
+                numberOfItems: listable.length,
+                itemListElement: listable.map((act, index) => ({
+                    '@type': 'ListItem',
+                    position: index + 1,
+                    url: `${BASE_URL}${ACTIVITIES_PATH}?slug=${act.slug}`,
+                    name: getTranslated(act, 'title', i18n.language),
+                })),
+            },
+        };
+    }, [activeActivity, activities, t, i18n.language, seoDescription]);
+
     return (
         <div className="font-body text-bark min-h-screen flex flex-col relative">
             <PageSEO
-                title={selectedActivity 
-                    ? `${getTranslated(selectedActivity, 'title', i18n.language)} | ${t('activities.title')}`
-                    : t('activities.seo.title', 'Actividades y Eventos | Arunachala')}
-                description={selectedActivity 
-                    ? (getTranslated(selectedActivity, 'description', i18n.language) || '').substring(0, 160)
-                    : t('activities.seo.description')}
-                ogImage={selectedActivity?.image_url ? getImageUrl(selectedActivity.image_url) : undefined}
+                title={seoTitle}
+                description={seoDescription}
+                canonical={canonical}
+                ogImage={activeActivity?.image_url ? getImageUrl(activeActivity.image_url) : undefined}
+                structuredData={structuredData}
             />
 
             <Header />

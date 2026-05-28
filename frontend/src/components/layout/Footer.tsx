@@ -60,9 +60,10 @@ const Footer: React.FC = () => {
                     <ul className="flex flex-col gap-3 text-sm text-[#F5F5DC]/80">
                         <li><Link to="/" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.home')}</Link></li>
                         <li><Link to="/clases-de-yoga" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.yoga')}</Link></li>
-                        <li><Link to="/terapias-y-masajes" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.therapies')}</Link></li>
+                        <li><Link to="/terapias-y-masajes/" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.therapies')}</Link></li>
                         <li><Link to="/blog/" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.blog')}</Link></li>
                         <li><Link to="/meditaciones/" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.meditations')}</Link></li>
+                        <li><Link to="/nuestro-espacio/" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.space')}</Link></li>
                     </ul>
                 </div>
 
