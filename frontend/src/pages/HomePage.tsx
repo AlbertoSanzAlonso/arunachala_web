@@ -71,6 +71,12 @@ const HomePage: React.FC = () => {
         "@type": "YogaStudio",
         "name": "Arunachala Yoga y Terapias",
         "image": "https://www.yogayterapiasarunachala.es/logo_wide.webp",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.yogayterapiasarunachala.es/favicon-96x96.png",
+            "width": 96,
+            "height": 96
+        },
         "@id": "https://www.yogayterapiasarunachala.es",
         "url": "https://www.yogayterapiasarunachala.es",
         "telephone": "+34678481971",
