@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext';
 import PageSEO from '../components/providers/PageSEO';
 import { EyeIcon, EyeSlashIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import logoIcon from '../assets/images/logo_icon.webp';
-import PageSEO from '../components/providers/PageSEO';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
