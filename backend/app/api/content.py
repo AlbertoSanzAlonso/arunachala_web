@@ -12,6 +12,7 @@ from app.core.database import get_db, SessionLocal
 from app.models.models import Content, User, Tag, DashboardActivity
 from app.api.auth import get_current_user
 from app.core.webhooks import notify_n8n_content_change
+from app.services.search_indexing import notify_search_engines_by_id, notify_url_deleted
 from app.core.translation_utils import auto_translate_background
 from app.core.image_utils import delete_file, save_image_from_bytes, save_upload_file
 
@@ -277,6 +278,10 @@ async def create_content(content_data: ContentCreate, background_tasks: Backgrou
     
     if db_content.status == "published":
         background_tasks.add_task(notify_n8n_content_change, db_content.id, db_content.type, "create", db=None)
+        if db_content.type in ("article", "meditation"):
+            background_tasks.add_task(
+                notify_search_engines_by_id, db_content.id, "publish"
+            )
     
     if not content_data.translations and background_tasks:
         fields = {k: v for k, v in {"title": content_data.title, "body": content_data.body, "excerpt": content_data.excerpt, "tags": processed_tags}.items() if v}
@@ -339,6 +344,11 @@ async def update_content(content_id: int, content_data: ContentUpdate, backgroun
     
     if db_content.status == "published":
         background_tasks.add_task(notify_n8n_content_change, db_content.id, db_content.type, "update", db=None)
+        if db_content.type in ("article", "meditation"):
+            seo_action = "publish" if original_status != "published" else "update"
+            background_tasks.add_task(
+                notify_search_engines_by_id, db_content.id, seo_action
+            )
     
     # Re-translation logic: only if main text fields actually changed AND user didn't provide manual translations
     # We strip whitespace and normalize for comparison to avoid redundant AI calls
@@ -376,6 +386,10 @@ async def delete_content(content_id: int, background_tasks: BackgroundTasks, db:
     db_content = db.query(Content).filter(Content.id == content_id).first()
     if not db_content: raise HTTPException(status_code=404, detail="Content not found")
     
+    from app.services.html_prerender import content_public_url
+
+    deleted_url = content_public_url(db_content) if db_content.status == "published" else None
+
     background_tasks.add_task(notify_n8n_content_change, db_content.id, db_content.type, "delete", db=None, entity=db_content)
     db.add(DashboardActivity(type='content', action='deleted', title=db_content.title, entity_id=content_id))
     
@@ -385,4 +399,8 @@ async def delete_content(content_id: int, background_tasks: BackgroundTasks, db:
     db.delete(db_content)
     db.commit()
     cleanup_orphan_tags(db)
+
+    if deleted_url:
+        background_tasks.add_task(notify_url_deleted, deleted_url)
+
     return {"message": "Content deleted successfully"}

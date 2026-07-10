@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShareIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +14,6 @@ interface ArticleHeaderProps {
     currentPage: number;
     onShare: () => void;
     prevArticle?: Article | null;
-    navigate?: (path: string) => void;
     language?: string;
 }
 
@@ -23,7 +23,6 @@ const ArticleHeader: React.FC<ArticleHeaderProps> = ({
     currentPage, 
     onShare,
     prevArticle,
-    navigate,
     language
 }) => {
     const { t } = useTranslation();
@@ -35,10 +34,10 @@ const ArticleHeader: React.FC<ArticleHeaderProps> = ({
             </div>
 
             {/* Previous Article Button for Mobile */}
-            {prevArticle && navigate && language && (
+            {prevArticle && language && (
                 <div className="lg:hidden mb-6">
-                    <button
-                        onClick={() => navigate(`/blog/${prevArticle.slug}?p=${currentPage}`)}
+                    <Link
+                        to={`/blog/${prevArticle.slug}?p=${currentPage}`}
                         className="flex flex-col gap-1 py-3 px-5 bg-white rounded-2xl border border-bark/5 hover:border-matcha/30 hover:shadow-md transition-all w-full text-left"
                     >
                         <span className="text-[10px] font-headers uppercase tracking-widest text-bark/40">
@@ -47,7 +46,7 @@ const ArticleHeader: React.FC<ArticleHeaderProps> = ({
                         <span className="text-forest font-headers text-sm truncate w-full">
                             {getTranslated(prevArticle, 'title', language)}
                         </span>
-                    </button>
+                    </Link>
                 </div>
             )}
 

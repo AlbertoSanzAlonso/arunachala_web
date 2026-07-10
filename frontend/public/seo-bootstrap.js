@@ -1,5 +1,5 @@
 /**
- * Aplica meta tags en el HTML antes de que React hidrate (fallback si no hay carpeta pregenerada).
+ * Aplica meta tags en el HTML antes de que React hidrate.
  */
 (function () {
   var path = window.location.pathname;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { CalendarIcon, TagIcon } from '@heroicons/react/24/outline';
@@ -26,7 +26,6 @@ interface Article {
 const BlogCategoryPage: React.FC = () => {
     const { category } = useParams<{ category: string }>();
     const { t, i18n } = useTranslation();
-    const navigate = useNavigate();
     const [articles, setArticles] = useState<Article[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -147,9 +146,9 @@ const BlogCategoryPage: React.FC = () => {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.1 }}
-                                    onClick={() => navigate(`/blog/${article.slug}`)}
-                                    className="bg-white rounded-[2rem] overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                                    className="bg-white rounded-[2rem] overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group"
                                 >
+                                    <Link to={`/blog/${article.slug}`} className="block h-full">
                                     {/* Thumbnail */}
                                     <div className="h-48 bg-forest/10 overflow-hidden relative">
                                         {article.thumbnail_url && !article.thumbnail_url.includes('om_symbol.webp') && !article.thumbnail_url.includes('logo_icon.webp') ? (
@@ -222,6 +221,7 @@ const BlogCategoryPage: React.FC = () => {
                                             </div>
                                         )}
                                     </div>
+                                    </Link>
                                 </motion.article>
                             ))}
                         </div>

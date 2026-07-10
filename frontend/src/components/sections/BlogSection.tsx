@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { CalendarIcon, ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
@@ -42,7 +42,6 @@ const BlogSection: React.FC<BlogSectionProps> = ({
     isSlider = true
 }) => {
     const { t, i18n } = useTranslation();
-    const navigate = useNavigate();
     const [articles, setArticles] = useState<Article[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const scrollRef = React.useRef<HTMLDivElement>(null);
@@ -78,12 +77,6 @@ const BlogSection: React.FC<BlogSectionProps> = ({
         fetchArticles();
     }, [fetchArticles]);
 
-
-    const handleArticleClick = (article: Article) => {
-        if (article.slug) {
-            navigate(`/blog/${article.slug}`);
-        }
-    };
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -200,9 +193,9 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                         whileInView={{ opacity: 1, scale: 1 }}
                                         viewport={{ once: true }}
                                         transition={{ delay: index * 0.1 }}
-                                        onClick={() => handleArticleClick(article)}
-                                        className={`flex-none w-[80vw] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] bg-white rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 cursor-pointer group snap-center snap-always`}
+                                        className={`flex-none w-[80vw] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] bg-white rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 group snap-center snap-always`}
                                     >
+                                        <Link to={`/blog/${article.slug}`} className="block h-full">
                                         <div className="h-56 bg-forest/10 overflow-hidden relative">
                                             {article.thumbnail_url && !article.thumbnail_url.includes('om_symbol.webp') && !article.thumbnail_url.includes('logo_icon.webp') ? (
                                                 <img
@@ -282,6 +275,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                                 );
                                             })()}
                                         </div>
+                                        </Link>
                                     </motion.article>
                                 ))}
                             </div>
@@ -296,13 +290,13 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                         viewport={{ once: true }}
                         className="text-center mt-12"
                     >
-                        <button
-                            onClick={() => navigate(viewAllUrl || (category ? `/blog/${category}` : '/blog'))}
+                        <Link
+                            to={viewAllUrl || (category ? `/blog/${category}` : '/blog')}
                             className="inline-flex items-center gap-3 px-8 py-4 bg-forest text-white rounded-full font-headers text-lg tracking-widest uppercase hover:bg-matcha transition-all duration-300 shadow-lg hover:shadow-xl group"
                         >
                             {t('blog.view_all', 'Ver Todos los Artículos')}
                             <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                        </button>
+                        </Link>
                     </motion.div>
                 )}
             </div>

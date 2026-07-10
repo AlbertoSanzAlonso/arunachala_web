@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { CalendarIcon, BellIcon, ArrowRightIcon, TagIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from 'config';
 import { getTranslated } from 'utils/translate';
@@ -23,7 +23,6 @@ interface NewsItem {
 
 const NewsSection: React.FC = () => {
     const { t, i18n } = useTranslation();
-    const navigate = useNavigate();
     const [news, setNews] = useState<NewsItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -54,12 +53,6 @@ const NewsSection: React.FC = () => {
         };
         fetchNews();
     }, []); // Empty dependency array means this runs once on mount
-
-    const handleNewsClick = (item: NewsItem) => {
-        if (item.slug) {
-            navigate(`/blog/${item.slug}`);
-        }
-    };
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -109,13 +102,13 @@ const NewsSection: React.FC = () => {
                     </div>
 
                     {news.length > 0 && (
-                        <button
-                            onClick={() => navigate('/blog')}
+                        <Link
+                            to="/blog"
                             className="hidden md:flex items-center gap-2 text-matcha hover:text-forest transition-colors font-headers tracking-widest uppercase text-sm border-b border-matcha/30 hover:border-forest pb-1"
                         >
                             <span>{t('common.view_all_news', 'Ver todas las noticias')}</span>
                             <ArrowRightIcon className="w-4 h-4" />
-                        </button>
+                        </Link>
                     )}
                 </div>
 
@@ -161,9 +154,9 @@ const NewsSection: React.FC = () => {
                                         whileInView={{ opacity: 1, scale: 1 }}
                                         viewport={{ once: true }}
                                         transition={{ delay: idx * 0.1 }}
-                                        onClick={() => handleNewsClick(item)}
-                                        className="flex-none w-[80vw] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer group flex flex-col h-full border border-white snap-center snap-always"
+                                        className="flex-none w-[80vw] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group flex flex-col h-full border border-white snap-center snap-always"
                                     >
+                                        <Link to={`/blog/${item.slug}`} className="block h-full flex-col">
                                         <div className="h-48 bg-forest/5 overflow-hidden relative">
                                             {item.thumbnail_url ? (
                                                 <img
@@ -208,6 +201,7 @@ const NewsSection: React.FC = () => {
                                                 <ArrowRightIcon className="w-3.5 h-3.5" />
                                             </div>
                                         </div>
+                                        </Link>
                                     </motion.article>
                                 ))}
                             </div>
@@ -216,12 +210,12 @@ const NewsSection: React.FC = () => {
                 )}
 
                 <div className="mt-12 text-center md:hidden">
-                    <button
-                        onClick={() => navigate('/blog')}
-                        className="px-8 py-3 bg-white border border-matcha/30 text-matcha rounded-full font-headers tracking-widest uppercase text-sm hover:bg-matcha hover:text-white transition-all duration-300 shadow-sm"
+                    <Link
+                        to="/blog"
+                        className="inline-block px-8 py-3 bg-white border border-matcha/30 text-matcha rounded-full font-headers tracking-widest uppercase text-sm hover:bg-matcha hover:text-white transition-all duration-300 shadow-sm"
                     >
                         {t('common.view_all_news', 'Ver todas las noticias')}
-                    </button>
+                    </Link>
                 </div>
             </div>
 

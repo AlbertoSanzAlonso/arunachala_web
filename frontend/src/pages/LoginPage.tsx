@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import PageSEO from '../components/providers/PageSEO';
 import { EyeIcon, EyeSlashIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import logoIcon from '../assets/images/logo_icon.webp';
 import PageSEO from '../components/providers/PageSEO';
@@ -35,6 +36,8 @@ export default function LoginPage() {
     };
 
     return (
+        <>
+            <PageSEO title="Iniciar sesión" description="Acceso al panel de administración de Arunachala Yoga y Terapias." noindex />
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-gray-50 h-screen">
             <PageSEO title="Acceso" description="Acceso al panel de administración." noindex />
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -139,6 +142,7 @@ export default function LoginPage() {
                     </a>
                 </p>
             </div>
-        </div >
+        </div>
+        </>
     );
 }

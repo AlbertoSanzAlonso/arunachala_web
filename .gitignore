@@ -68,9 +68,13 @@ frontend/src/assets/videos/VIDEOWEB_hero.mp4
 
 # --- ANTIGUO ---
 Analisis competencia/
-scripts/
+/scripts/
 web/assets/palettes/
 web/prototypes/
+
+# SEO assets generados en build (se crean con npm run generate-seo)
+frontend/public/seo-routes.json
+frontend/public/sitemap-links.html
 
 # --- IDE CONFIGURACION ---
 .vscode/settings.json

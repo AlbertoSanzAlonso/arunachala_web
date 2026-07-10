@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { TagIcon } from '@heroicons/react/24/outline';
@@ -14,7 +14,6 @@ interface RelatedArticlesProps {
 
 const RelatedArticles: React.FC<RelatedArticlesProps> = ({ articles }) => {
     const { t, i18n } = useTranslation();
-    const navigate = useNavigate();
 
     if (articles.length === 0) return null;
 
@@ -30,10 +29,10 @@ const RelatedArticles: React.FC<RelatedArticlesProps> = ({ articles }) => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {articles.map((related) => (
-                    <div
+                    <Link
                         key={related.id}
-                        onClick={() => navigate(`/blog/${related.slug}`)}
-                        className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                        to={`/blog/${related.slug}`}
+                        className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group block"
                     >
                         <div className="h-32 bg-forest/10 overflow-hidden relative">
                             {related.thumbnail_url && !related.thumbnail_url.includes('om_symbol.webp') && !related.thumbnail_url.includes('logo_icon.webp') ? (
@@ -79,7 +78,7 @@ const RelatedArticles: React.FC<RelatedArticlesProps> = ({ articles }) => {
                                 {getTranslated(related, 'title', i18n.language)}
                             </h3>
                         </div>
-                    </div>
+                    </Link>
                 ))}
             </div>
         </motion.div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { CalendarIcon, ArrowRightIcon, TagIcon } from '@heroicons/react/24/outline';
@@ -15,7 +15,6 @@ interface ArticleCardProps {
 
 const ArticleCard: React.FC<ArticleCardProps> = ({ article, index, currentPage }) => {
     const { t, i18n } = useTranslation();
-    const navigate = useNavigate();
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString(i18n.language, {
@@ -35,10 +34,10 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, index, currentPage }
             className="bg-white rounded-[2rem] overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-500 group flex flex-col h-full border border-bark/5"
         >
             {/* Image Container - Now navigates to article */}
-            <div 
-                className="relative h-64 overflow-hidden bg-[#5c6b3c] cursor-pointer group" 
+            <Link
+                to={articleUrl}
+                className="relative h-64 overflow-hidden bg-[#5c6b3c] cursor-pointer group block"
                 style={{ transform: 'translateZ(0)' }}
-                onClick={() => navigate(articleUrl)}
             >
                 {article.thumbnail_url && !article.thumbnail_url.includes('om_symbol.webp') && !article.thumbnail_url.includes('logo_icon.webp') ? (
                     <img
@@ -94,7 +93,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, index, currentPage }
                         {t(`blog.categories.${article.category}`, article.category)}
                     </span>
                 </div>
-            </div>
+            </Link>
 
             {/* Content */}
             <div className="p-8 flex flex-col flex-grow">
@@ -103,27 +102,27 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, index, currentPage }
                     <span>{formatDate(article.created_at)}</span>
                 </div>
 
-                <h3 
-                    className="text-2xl font-headers text-forest mb-4 line-clamp-2 leading-tight group-hover:text-matcha transition-colors cursor-pointer"
-                    onClick={() => navigate(articleUrl)}
+                <Link
+                    to={articleUrl}
+                    className="text-2xl font-headers text-forest mb-4 line-clamp-2 leading-tight group-hover:text-matcha transition-colors block"
                 >
                     {translatedTitle}
-                </h3>
+                </Link>
 
                 <p className="text-bark/70 text-sm mb-8 line-clamp-3 leading-relaxed flex-grow">
                     {translatedExcerpt}
                 </p>
 
-                <button
-                    onClick={() => navigate(articleUrl)}
-                    className="flex items-center gap-2 text-forest font-headers uppercase tracking-widest text-sm group/btn self-start cursor-pointer"
+                <Link
+                    to={articleUrl}
+                    className="flex items-center gap-2 text-forest font-headers uppercase tracking-widest text-sm group/btn self-start"
                 >
                     <span className="relative">
                         {t('blog.read_more')}
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-matcha transition-all duration-300 group-hover/btn:w-full"></span>
                     </span>
                     <ArrowRightIcon className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-2 text-matcha" />
-                </button>
+                </Link>
             </div>
         </motion.div>
     );

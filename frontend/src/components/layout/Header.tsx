@@ -2,7 +2,7 @@ import React from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import logo from 'assets/images/logo_transparent_v2.webp';
 import christmasLogo from 'assets/images/arunachala-yoga-navidad-logo.webp';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAudio } from 'context/AudioContext';
@@ -23,7 +23,6 @@ const Header: React.FC = () => {
     const [hasPromotions, setHasPromotions] = React.useState(false);
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const [showVolume, setShowVolume] = React.useState(false);
-    const navigate = useNavigate();
     const { t, i18n } = useTranslation();
     const { addToast } = useUIStore();
 
@@ -76,27 +75,25 @@ const Header: React.FC = () => {
         fetchPromotions();
     }, []);
 
-    const handleNavigation = (path: string) => {
-        setIsMenuOpen(false);
+    const scrollToTop = () => {
         const homeContainer = document.getElementById('home-scroll-container');
-
-        if (window.location.pathname === path) {
-            if (homeContainer) {
-                homeContainer.scrollTo({ top: 0, behavior: 'smooth' });
-            } else {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
+        if (homeContainer) {
+            homeContainer.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
-            navigate(path);
-            // Delay slightly to let the new DOM render before scrolling its specific container
-            setTimeout(() => {
-                const newHomeContainer = document.getElementById('home-scroll-container');
-                if (newHomeContainer) {
-                    newHomeContainer.scrollTo(0, 0);
-                } else {
-                    window.scrollTo(0, 0);
-                }
-            }, 0);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
+    const handleNavLinkClick = (path: string) => (e: React.MouseEvent) => {
+        const normalizedPath = path.endsWith('/') ? path : `${path}/`;
+        const currentPath = window.location.pathname.endsWith('/') ? window.location.pathname : `${window.location.pathname}/`;
+
+        if (currentPath === normalizedPath || (path === '/' && currentPath === '/')) {
+            e.preventDefault();
+            setIsMenuOpen(false);
+            scrollToTop();
+        } else {
+            setIsMenuOpen(false);
         }
     };
 
@@ -146,12 +143,13 @@ const Header: React.FC = () => {
         <>
             <header className="sticky top-0 w-full z-50 p-2 lg:py-4 lg:px-8 flex justify-between items-center bg-[#5c6b3c] shadow-md transition-colors duration-300">
                 {/* Logo Section */}
-                <div
+                <Link
+                    to="/"
+                    onClick={handleNavLinkClick('/')}
                     className={`cursor-pointer flex-shrink-0 flex items-center justify-center h-12 w-12 md:h-16 md:w-16 lg:h-[70px] lg:w-[70px] rounded-full border border-[#F5F5DC] transition-transform duration-300 hover:scale-110 shadow-sm ${isChristmas
                         ? 'bg-[#F5F5DC] p-1 md:p-1' // Use same beige as before
                         : 'bg-[#F5F5DC] p-1.5 md:p-1.5'
                         }`}
-                    onClick={() => handleNavigation('/')}
                 >
                     <img
                         src={isChristmas ? christmasLogo : (logoUrl || logo)}
@@ -163,7 +161,7 @@ const Header: React.FC = () => {
                             }
                         }}
                     />
-                </div>
+                </Link>
 
                 {/* Right Side Controls */}
                 <div className="flex items-center gap-2 sm:gap-4 md:gap-6 min-w-0 flex-1 justify-end">
@@ -369,22 +367,23 @@ const Header: React.FC = () => {
                 className={`fixed top-0 right-0 h-full w-full md:w-96 z-40 bg-[#5c6b3c]/95 backdrop-blur-md shadow-2xl transform transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col items-center justify-center`}
             >
                 <nav className={`flex flex-col gap-8 text-center ${hasPromotions ? 'mt-24' : ''}`}>
-                    <button onClick={() => handleNavigation('/quienes-somos')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.about')}</button>
-                    <button onClick={() => handleNavigation('/blog')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">Blog</button>
-                    <button onClick={() => handleNavigation('/meditaciones')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.meditations')}</button>
-                    <button onClick={() => handleNavigation('/actividades')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.activities')}</button>
-                    <button onClick={() => handleNavigation('/nuestro-espacio')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.space', 'Nuestro Espacio')}</button>
-                    <button onClick={() => handleNavigation('/contacto')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.contact')}</button>
+                    <Link to="/quienes-somos" onClick={handleNavLinkClick('/quienes-somos')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.about')}</Link>
+                    <Link to="/blog" onClick={handleNavLinkClick('/blog')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">Blog</Link>
+                    <Link to="/meditaciones" onClick={handleNavLinkClick('/meditaciones')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.meditations')}</Link>
+                    <Link to="/actividades" onClick={handleNavLinkClick('/actividades')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.activities')}</Link>
+                    <Link to="/nuestro-espacio" onClick={handleNavLinkClick('/nuestro-espacio')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.space', 'Nuestro Espacio')}</Link>
+                    <Link to="/contacto" onClick={handleNavLinkClick('/contacto')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.contact')}</Link>
 
                     {/* Added Promociones apartada y en color marrón - Only if active promotions exist */}
                     {hasPromotions && (
                         <div className="mt-0 pt-5 border-t border-[#F5F5DC]/10 flex flex-col items-center">
-                            <button
-                                onClick={() => handleNavigation('/promociones')}
+                            <Link
+                                to="/promociones"
+                                onClick={handleNavLinkClick('/promociones')}
                                 className="text-white bg-bark/40 hover:bg-bark px-8 py-3 rounded-full font-headers text-4xl hover:text-bone transition-all hover:scale-105 transform duration-300 uppercase border border-white/20"
                             >
                                 {t('menu.promotions', 'Promociones')}
-                            </button>
+                            </Link>
                         </div>
                     )}
                 </nav>

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Response, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.models import Content, Activity
@@ -197,6 +197,7 @@ async def sitemap(db: Session = Depends(get_db)):
         ("/galeria/terapias-y-masajes/", "0.7", "weekly"),
         ("/aviso-legal/",               "0.4", "monthly"),
         ("/politica-de-privacidad/",    "0.4", "monthly"),
+        ("/sitemap-links.html",        "0.3", "weekly"),
     ]
     
     urls = []
@@ -253,3 +254,28 @@ async def sitemap(db: Session = Depends(get_db)):
 </urlset>"""
 
     return Response(content=xml_content, media_type="application/xml")
+
+
+@router.get("/html")
+async def prerender_html_for_bots(
+    path: str = Query(..., description="Ruta pública, p.ej. /blog/mi-articulo/"),
+    db: Session = Depends(get_db),
+):
+    """
+    Prerender dinámico: devuelve HTML con el texto del artículo en tiempo real.
+    Usado por el middleware de Vercel cuando detecta un bot (Googlebot, etc.).
+    """
+    from app.services.html_prerender import render_full_page
+
+    if not path.startswith("/"):
+        path = f"/{path}"
+
+    html_content = render_full_page(path, db)
+    if not html_content:
+        raise HTTPException(status_code=404, detail="Ruta no encontrada o sin contenido publicado")
+
+    return Response(
+        content=html_content,
+        media_type="text/html; charset=utf-8",
+        headers={"Cache-Control": "public, max-age=300"},
+    )

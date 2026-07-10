@@ -18,6 +18,7 @@ const ImageSlider = lazy(() => import('components/sections/ImageSlider'));
 const ReviewsSection = lazy(() => import('components/sections/ReviewsSection'));
 const WellnessQuiz = lazy(() => import('components/wellness-quiz/WellnessQuiz'));
 const FeaturedActivities = lazy(() => import('components/sections/FeaturedActivities'));
+const BlogSection = lazy(() => import('components/sections/BlogSection'));
 const NewsletterForm = lazy(() => import('components/NewsletterForm'));
 
 const HomePage: React.FC = () => {
@@ -192,6 +193,15 @@ const HomePage: React.FC = () => {
                     <Suspense fallback={<div className="h-32 flex items-center justify-center">{t('home.loading.activities', 'Cargando actividades...')}</div>}>
                         <FadeInSection delay={0.1}>
                             <FeaturedActivities />
+                        </FadeInSection>
+                    </Suspense>
+                </section>
+
+                {/* Latest Blog Articles — crawlable links for Google */}
+                <section className="scroll-mt-24">
+                    <Suspense fallback={<div className="h-64 flex items-center justify-center">{t('home.loading.blog', 'Cargando artículos...')}</div>}>
+                        <FadeInSection delay={0.15}>
+                            <BlogSection limit={4} isSlider={false} showViewAll={true} />
                         </FadeInSection>
                     </Suspense>
                 </section>

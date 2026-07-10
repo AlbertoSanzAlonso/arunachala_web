@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
@@ -61,18 +61,18 @@ const NotFoundPage: React.FC = () => {
                         </p>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
-                            <button
-                                onClick={() => navigate('/')}
-                                className="px-8 py-4 bg-forest text-white rounded-full font-headers tracking-widest hover:bg-matcha transition-all shadow-lg hover:shadow-xl uppercase"
+                            <Link
+                                to="/"
+                                className="px-8 py-4 bg-forest text-white rounded-full font-headers tracking-widest hover:bg-matcha transition-all shadow-lg hover:shadow-xl uppercase text-center"
                             >
                                 Regresar al Inicio
-                            </button>
-                            <button
-                                onClick={() => navigate('/clases-de-yoga')}
-                                className="px-8 py-4 border-2 border-forest text-forest rounded-full font-headers tracking-widest hover:bg-forest hover:text-white transition-all uppercase"
+                            </Link>
+                            <Link
+                                to="/clases-de-yoga"
+                                className="px-8 py-4 border-2 border-forest text-forest rounded-full font-headers tracking-widest hover:bg-forest hover:text-white transition-all uppercase text-center"
                             >
                                 Clases de Yoga
-                            </button>
+                            </Link>
                         </div>
                     </motion.div>
                 </div>

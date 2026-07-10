@@ -88,6 +88,8 @@ export default function DashboardLayout() {
     };
 
     return (
+        <>
+            <PageSEO title="Panel de administración" description="Panel de administración de Arunachala Yoga y Terapias." noindex />
         <div className="min-h-screen bg-gray-50 flex flex-col">
             <PageSEO title="Panel de administración" description="Panel interno de Arunachala Yoga y Terapias." noindex />
             <div className="dashboard-scale contents lg:block">
@@ -423,5 +425,6 @@ export default function DashboardLayout() {
                 </Dialog>
             </Transition.Root>
         </div>
+        </>
     );
 }

@@ -19,6 +19,8 @@ import BottomNavigation from 'components/sections/BottomNavigation';
 import ArticleHeader from 'components/sections/ArticleHeader';
 import ArticleCTA from 'components/sections/ArticleCTA';
 
+const BASE_URL = 'https://www.yogayterapiasarunachala.es';
+
 const BlogDetailPage: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
     const { t, i18n } = useTranslation();
@@ -132,13 +134,42 @@ const BlogDetailPage: React.FC = () => {
 
     const translatedTitle = getTranslated(article, 'title', i18n.language);
     const translatedBody = getTranslated(article, 'body', i18n.language);
+    const translatedExcerpt = getTranslated(article, 'excerpt', i18n.language);
+
+    const blogPostingSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: translatedTitle,
+        description: translatedExcerpt,
+        image: article.thumbnail_url ? getImageUrl(article.thumbnail_url) : `${BASE_URL}/logo_wide.webp`,
+        datePublished: article.created_at,
+        dateModified: article.updated_at || article.created_at,
+        author: {
+            '@type': 'Person',
+            name: 'Susana Pérez Gil',
+        },
+        publisher: {
+            '@type': 'Organization',
+            name: 'Arunachala Yoga y Terapias',
+            logo: {
+                '@type': 'ImageObject',
+                url: `${BASE_URL}/logo_wide.webp`,
+            },
+        },
+        mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': `https://www.yogayterapiasarunachala.es/blog/${article.slug}/`,
+        },
+    };
 
     return (
         <div className="font-body text-bark min-h-screen bg-bone selection:bg-matcha/30">
             <PageSEO 
                 title={`${translatedTitle} | Arunachala Yoga`}
-                description={getTranslated(article, 'excerpt', i18n.language)}
+                description={translatedExcerpt}
                 ogImage={article.thumbnail_url ? getImageUrl(article.thumbnail_url) : undefined}
+                ogType="article"
+                structuredData={blogPostingSchema}
             />
             
             <Header />
@@ -147,7 +178,6 @@ const BlogDetailPage: React.FC = () => {
                 prevArticle={prevArticle}
                 nextArticle={nextArticle}
                 currentPage={currentPage}
-                navigate={navigate}
                 language={i18n.language}
             />
 
@@ -159,7 +189,6 @@ const BlogDetailPage: React.FC = () => {
                         currentPage={currentPage}
                         onShare={handleShare}
                         prevArticle={prevArticle}
-                        navigate={navigate}
                         language={i18n.language}
                     />
 
@@ -180,7 +209,6 @@ const BlogDetailPage: React.FC = () => {
                             prevArticle={null}
                             nextArticle={nextArticle}
                             currentPage={currentPage}
-                            navigate={navigate}
                             language={i18n.language}
                             isTop={false}
                         />
