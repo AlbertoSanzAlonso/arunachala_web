@@ -179,6 +179,14 @@ const ActivitiesPage: React.FC = () => {
                 canonical={canonical}
                 ogImage={activeActivity?.image_url ? getImageUrl(activeActivity.image_url) : undefined}
                 structuredData={structuredData}
+                breadcrumbCurrent={
+                    activeActivity?.slug
+                        ? {
+                              name: getTranslated(activeActivity, 'title', i18n.language),
+                              path: `${ACTIVITIES_PATH}?slug=${activeActivity.slug}`,
+                          }
+                        : undefined
+                }
             />
 
             <Header />

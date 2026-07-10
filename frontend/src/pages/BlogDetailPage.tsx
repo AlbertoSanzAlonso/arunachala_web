@@ -170,6 +170,10 @@ const BlogDetailPage: React.FC = () => {
                 ogImage={article.thumbnail_url ? getImageUrl(article.thumbnail_url) : undefined}
                 ogType="article"
                 structuredData={blogPostingSchema}
+                breadcrumbCurrent={{
+                    name: translatedTitle,
+                    path: `/blog/${article.slug}/`,
+                }}
             />
             
             <Header />

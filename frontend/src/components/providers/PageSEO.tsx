@@ -1,6 +1,12 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
+import {
+    BreadcrumbItem,
+    buildBreadcrumbSchema,
+    mergeStructuredDataWithBreadcrumbs,
+    resolveBreadcrumbs,
+} from '../../utils/seoBreadcrumbs';
 
 interface PageSEOProps {
     title?: string;
@@ -9,6 +15,8 @@ interface PageSEOProps {
     ogImage?: string;
     ogType?: string;
     structuredData?: object | object[];
+    breadcrumbs?: BreadcrumbItem[];
+    breadcrumbCurrent?: BreadcrumbItem;
     noindex?: boolean;
 }
 
@@ -21,6 +29,8 @@ const PageSEO: React.FC<PageSEOProps> = ({
     ogImage = `${BASE_URL}/logo_wide.webp`,
     ogType = 'website',
     structuredData,
+    breadcrumbs,
+    breadcrumbCurrent,
     noindex = false
 }) => {
     const { i18n, t } = useTranslation();
@@ -60,6 +70,12 @@ const PageSEO: React.FC<PageSEOProps> = ({
         ? `${title} | Arunachala Yoga y Terapias`
         : t('seo.default_title', 'Arunachala Yoga y Terapias | Centro de Bienestar en Cornellà');
 
+    const breadcrumbItems = !noindex
+        ? (breadcrumbs ?? resolveBreadcrumbs(currentPath, breadcrumbCurrent))
+        : null;
+    const breadcrumbSchema = breadcrumbItems ? buildBreadcrumbSchema(breadcrumbItems) : null;
+    const allStructuredData = mergeStructuredDataWithBreadcrumbs(structuredData, breadcrumbSchema);
+
     return (
         <Helmet htmlAttributes={{ lang: i18n.language.split('-')[0] }}>
             {/* Standard metadata tags */}
@@ -97,16 +113,16 @@ const PageSEO: React.FC<PageSEOProps> = ({
             <meta name="twitter:image" content={ogImage} />
 
             {/* Unified Structured Data */}
-            {structuredData && (
-                Array.isArray(structuredData) ? (
-                    structuredData.map((data, idx) => (
+            {allStructuredData && (
+                Array.isArray(allStructuredData) ? (
+                    allStructuredData.map((data, idx) => (
                         <script key={idx} type="application/ld+json">
                             {JSON.stringify(data)}
                         </script>
                     ))
                 ) : (
                     <script type="application/ld+json">
-                        {JSON.stringify(structuredData)}
+                        {JSON.stringify(allStructuredData)}
                     </script>
                 )
             )}

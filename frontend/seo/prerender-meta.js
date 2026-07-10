@@ -4,6 +4,7 @@
  */
 const fs = require('fs');
 const path = require('path');
+const { buildBreadcrumbSchema, resolveBreadcrumbs } = require('./breadcrumbs');
 
 const BASE_URL = 'https://www.yogayterapiasarunachala.es';
 const BUILD_DIR = path.join(__dirname, '../build');
@@ -17,6 +18,22 @@ function escapeHtml(str) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+function breadcrumbCurrentFromRoute(route) {
+  const pathOnly = route.path.split('?')[0];
+  const name = route.title.replace(' | Arunachala Yoga y Terapias', '').trim();
+  if (!name || pathOnly === '/') return null;
+
+  if (route.path.includes('?slug=')) {
+    return { name, path: route.path };
+  }
+
+  if (/^\/(blog|meditaciones)\/[^/]+\/$/.test(pathOnly)) {
+    return { name, path: pathOnly };
+  }
+
+  return null;
 }
 
 function injectMeta(html, route) {
@@ -64,6 +81,17 @@ function injectMeta(html, route) {
     out = out.replace(/<link rel="canonical" href="[^"]*"\s*\/?>/, canonicalTag);
   } else {
     out = out.replace('</head>', `    ${canonicalTag}\n</head>`);
+  }
+
+  if (!route.noindex) {
+    const pathOnly = route.path.split('?')[0];
+    const current = breadcrumbCurrentFromRoute(route);
+    const items = resolveBreadcrumbs(pathOnly, current);
+    if (items) {
+      const schema = buildBreadcrumbSchema(items);
+      const script = `<script type="application/ld+json">${JSON.stringify(schema)}</script>`;
+      out = out.replace('</head>', `    ${script}\n</head>`);
+    }
   }
 
   return out;

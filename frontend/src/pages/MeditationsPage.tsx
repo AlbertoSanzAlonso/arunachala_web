@@ -362,6 +362,14 @@ const MeditationsPage: React.FC = () => {
                 canonical={canonical}
                 ogType={activeMeditation ? 'music.song' : 'website'}
                 structuredData={structuredData}
+                breadcrumbCurrent={
+                    activeMeditation?.slug
+                        ? {
+                              name: getTranslated(activeMeditation, 'title', i18n.language),
+                              path: `/meditaciones/${activeMeditation.slug}/`,
+                          }
+                        : undefined
+                }
             />
 
             <Header />
