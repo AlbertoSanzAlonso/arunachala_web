@@ -15,7 +15,17 @@
     { "source": "/tecnica-metamorfica/", "destination": "/terapias-y-masajes/", "permanent": true },
     { "source": "/kirtan-conferencia/", "destination": "/actividades/", "permanent": true },
     { "source": "/masaje-terapeutico/", "destination": "/terapias-y-masajes/", "permanent": true },
-    { "source": "/circulo-taller-entre-mujeres/", "destination": "/actividades/", "permanent": true }
+    { "source": "/circulo-taller-entre-mujeres/", "destination": "/actividades/", "permanent": true },
+    { "source": "/pilates-aereo/", "destination": "/actividades/", "permanent": true },
+    { "source": "/kundalini-yoga/", "destination": "/clases-de-yoga/", "permanent": true },
+    { "source": "/quiromasaje/", "destination": "/terapias-y-masajes/", "permanent": true },
+    { "source": "/que-es-el-yoga/", "destination": "/clases-de-yoga/", "permanent": true },
+    { "source": "/masaje-especial-arunachala/", "destination": "/terapias-y-masajes/", "permanent": true },
+    { "source": "/wp-admin/:path*", "destination": "/", "permanent": true },
+    { "source": "/wp-content/:path*", "destination": "/", "permanent": true },
+    { "source": "/wp-includes/:path*", "destination": "/", "permanent": true },
+    { "source": "/wp-login.php", "destination": "/", "permanent": true },
+    { "source": "/:path*", "has": [{ "type": "query", "key": "share" }], "destination": "/:path*", "permanent": true }
   ],
   "rewrites": [
     {

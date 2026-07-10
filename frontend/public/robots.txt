@@ -7,5 +7,9 @@ Disallow: /reset-password/
 Disallow: /newsletter/
 Disallow: /unsubscribe/
 Disallow: /confirmar-suscripcion/
+Disallow: /wp-admin/
+Disallow: /wp-content/
+Disallow: /wp-includes/
+Disallow: /wp-login.php
 
 Sitemap: https://www.yogayterapiasarunachala.es/sitemap.xml
