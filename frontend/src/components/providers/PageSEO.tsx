@@ -28,10 +28,10 @@ const PageSEO: React.FC<PageSEOProps> = ({
     // SSR Fallback para el pathname
     const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
     const currentSearch = typeof window !== 'undefined' ? window.location.search : '';
-    
-    // Obtener parámetros importantes para el canonical (como slug o activity)
     const searchParams = new URLSearchParams(currentSearch);
-    const importantParams = ['slug', 'activity', 'lng'];
+    
+    // Parámetros que forman parte de la URL canónica (no incluir lng: va en hreflang)
+    const importantParams = ['slug', 'activity'];
     const canonicalParams = new URLSearchParams();
     
     importantParams.forEach(param => {
@@ -43,6 +43,17 @@ const PageSEO: React.FC<PageSEOProps> = ({
     const queryString = canonicalParams.toString();
     const normalizedPath = currentPath === '/' ? '/' : (currentPath.endsWith('/') ? currentPath : `${currentPath}/`);
     const resolvedCanonical = canonical || `${BASE_URL}${normalizedPath}${queryString ? `?${queryString}` : ''}`;
+
+    const languageAlternateUrl = (lang: string) => {
+        const url = new URL(resolvedCanonical);
+        if (lang === 'es') {
+            url.searchParams.delete('lng');
+        } else {
+            url.searchParams.set('lng', lang);
+        }
+        const qs = url.searchParams.toString();
+        return `${url.origin}${url.pathname}${qs ? `?${qs}` : ''}`;
+    };
 
     // Lógica de título simplificada con 'Cornellà' estándar (acento grave)
     const siteTitle = title 
@@ -58,10 +69,9 @@ const PageSEO: React.FC<PageSEOProps> = ({
             <link rel="canonical" href={resolvedCanonical} />
 
             {/* Language alternates for Multilingual SEO */}
-            {/* Solo incluimos alternativas si tienen su parámetro de idioma para que Google no las vea como duplicados exactos */}
-            <link rel="alternate" hrefLang="es" href={resolvedCanonical} />
-            <link rel="alternate" hrefLang="ca" href={`${resolvedCanonical}?lng=ca`} />
-            <link rel="alternate" hrefLang="en" href={`${resolvedCanonical}?lng=en`} />
+            <link rel="alternate" hrefLang="es" href={languageAlternateUrl('es')} />
+            <link rel="alternate" hrefLang="ca" href={languageAlternateUrl('ca')} />
+            <link rel="alternate" hrefLang="en" href={languageAlternateUrl('en')} />
             <link rel="alternate" hrefLang="x-default" href={resolvedCanonical} />
             
             {/* Robots control */}
