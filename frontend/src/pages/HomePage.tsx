@@ -185,7 +185,7 @@ const HomePage: React.FC = () => {
             <main className="bg-bone relative z-10">
                 {/* Wellness Quiz Section - Snap Start to align with Hero Border */}
                 <section className="scroll-mt-24 pt-12">
-                    <Suspense fallback={<div className="h-64 flex items-center justify-center">{t('home.loading.experience')}</div>}>
+                    <Suspense fallback={<div className="h-64 animate-pulse bg-bone" aria-hidden="true" />}>
                         <FadeInSection>
                             <WellnessQuiz />
                         </FadeInSection>
@@ -194,7 +194,7 @@ const HomePage: React.FC = () => {
 
                 {/* Featured Activities Section */}
                 <section className="scroll-mt-24">
-                    <Suspense fallback={<div className="h-32 flex items-center justify-center">{t('home.loading.activities', 'Cargando actividades...')}</div>}>
+                    <Suspense fallback={<div className="h-32 animate-pulse bg-bone" aria-hidden="true" />}>
                         <FadeInSection delay={0.1}>
                             <FeaturedActivities />
                         </FadeInSection>
@@ -203,9 +203,9 @@ const HomePage: React.FC = () => {
 
                 {/* Latest Blog Articles — crawlable links for Google */}
                 <section className="scroll-mt-24">
-                    <Suspense fallback={<div className="h-64 flex items-center justify-center">{t('home.loading.blog', 'Cargando artículos...')}</div>}>
+                    <Suspense fallback={<div className="h-64 animate-pulse bg-bone" aria-hidden="true" />}>
                         <FadeInSection delay={0.15}>
-                            <BlogSection limit={4} isSlider={false} showViewAll={true} />
+                            <BlogSection limit={3} isSlider={false} showViewAll={true} />
                         </FadeInSection>
                     </Suspense>
                 </section>
@@ -213,7 +213,7 @@ const HomePage: React.FC = () => {
                 {/* Gallery Slider - Snap Center */}
                 {galleryImages.length > 0 && (
                     <section className="w-full max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-12">
-                        <Suspense fallback={<div className="h-96 flex items-center justify-center">{t('home.loading.gallery')}</div>}>
+                        <Suspense fallback={<div className="h-96 animate-pulse bg-bone" aria-hidden="true" />}>
                             <FadeInSection delay={0.2}>
                                 <ImageSlider images={galleryImages} />
                             </FadeInSection>
@@ -223,7 +223,7 @@ const HomePage: React.FC = () => {
 
                 {/* Reviews Section - Snap Start to ensure title visibility */}
                 <section className="w-full max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-12 scroll-mt-24">
-                    <Suspense fallback={<div className="h-64 flex items-center justify-center">{t('home.loading.reviews')}</div>}>
+                    <Suspense fallback={<div className="h-64 animate-pulse bg-bone" aria-hidden="true" />}>
                         <FadeInSection delay={0.3}>
                             <ReviewsSection />
                         </FadeInSection>
@@ -234,7 +234,7 @@ const HomePage: React.FC = () => {
 
                 {/* Newsletter Subscription Section */}
                 <section className="w-full max-w-4xl mx-auto px-4 md:px-8 mb-24">
-                    <Suspense fallback={<div className="h-64 flex items-center justify-center">{t('common.loading')}</div>}>
+                    <Suspense fallback={<div className="h-64 animate-pulse bg-bone" aria-hidden="true" />}>
                         <FadeInSection delay={0.4}>
                             <NewsletterForm />
                         </FadeInSection>

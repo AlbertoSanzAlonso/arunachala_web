@@ -9,10 +9,10 @@ jest.mock("react-i18next", () => ({
 }));
 
 describe("PageLoader", () => {
-  it("muestra el texto de loading", () => {
+  it("muestra un indicador de carga accesible", () => {
     render(<PageLoader />);
-    // El componente usa t('common.loading'), nuestro mock devuelve la key
-    expect(screen.getByText("common.loading")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveAttribute("aria-label", "common.loading");
+    expect(screen.getByText("common.loading")).toHaveClass("sr-only");
   });
 });
 

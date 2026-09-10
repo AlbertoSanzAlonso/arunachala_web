@@ -97,9 +97,7 @@ const YogaPage: React.FC = () => {
 
 
     const SectionLoader = () => (
-        <div className="w-full h-96 flex items-center justify-center bg-bone/20 rounded-xl animate-pulse">
-            <div className="text-forest/40 font-headers text-xl">{t('home.loading.experience')}</div>
-        </div>
+        <div className="w-full h-96 bg-bone/20 rounded-xl animate-pulse" aria-hidden="true" />
     );
 
     return (
@@ -219,7 +217,7 @@ const YogaPage: React.FC = () => {
                 <section ref={blogRef} className="scroll-mt-24">
                     <BlogSection
                         category="yoga"
-                        limit={6}
+                        limit={3}
                         showViewAll={true}
                         viewAllUrl="/blog/yoga"
                         title={t('yoga.blog.title', 'Blog de Yoga')}

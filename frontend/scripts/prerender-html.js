@@ -118,7 +118,7 @@ function buildArticleLinks(articles, limit = 8) {
 }
 
 function buildHomeExtras(articles) {
-  const latest = articles.slice(0, 4);
+  const latest = articles.slice(0, 3);
   const cards = latest
     .map(
       (a) => `
@@ -205,10 +205,11 @@ function buildStaticPage(route) {
 }
 
 function injectRoot(html, innerHtml) {
+  const wrapped = `<div class="seo-prerender">${innerHtml}</div>`;
   if (html.includes('<div id="root"></div>')) {
-    return html.replace('<div id="root"></div>', `<div id="root">${innerHtml}</div>`);
+    return html.replace('<div id="root"></div>', `<div id="root">${wrapped}</div>`);
   }
-  return html.replace(/<div id="root">[\s\S]*?<\/div>/, `<div id="root">${innerHtml}</div>`);
+  return html.replace(/<div id="root">[\s\S]*?<\/div>/, `<div id="root">${wrapped}</div>`);
 }
 
 async function fetchJson(url) {
