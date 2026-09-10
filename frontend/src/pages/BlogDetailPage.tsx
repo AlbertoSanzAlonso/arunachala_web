@@ -38,7 +38,7 @@ const BlogDetailPage: React.FC = () => {
 
     const fetchRelatedArticles = useCallback(async (category: string, currentId: number, tags: string[] = []) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/content?type=article&status=published`);
+            const response = await fetch(`${API_BASE_URL}/api/content?type=article&status=published&category=${encodeURIComponent(category)}&limit=40`);
             if (response.ok) {
                 const data = await response.json();
                 

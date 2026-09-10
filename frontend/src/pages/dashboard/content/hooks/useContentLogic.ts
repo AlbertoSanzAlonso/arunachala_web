@@ -16,7 +16,7 @@ export const useContentLogic = () => {
         queryKey: ['contents'],
         queryFn: async () => {
             const token = sessionStorage.getItem('access_token');
-            const response = await fetch(`${API_BASE_URL}/api/content`, {
+            const response = await fetch(`${API_BASE_URL}/api/content?full=true`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!response.ok) throw new Error('Error fetching contents');

@@ -59,8 +59,6 @@ const HomePage: React.FC = () => {
 
         fetchMantra();
         fetchGallery();
-        const interval = setInterval(fetchGallery, 5000);
-        return () => clearInterval(interval);
     }, []);
 
 

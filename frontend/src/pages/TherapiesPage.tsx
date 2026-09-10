@@ -664,8 +664,8 @@ const TherapiesPage: React.FC = () => {
                         limit={6}
                         showViewAll={true}
                         viewAllUrl="/blog/therapy"
-                        title={t('therapies.blog.title', 'Blog de Terapias')}
-                        subtitle={t('therapies.blog.subtitle', 'Artículos sobre terapias holísticas, masajes y bienestar')}
+                        title={t('therapies.sections.blog', 'Blog de Bienestar')}
+                        subtitle={t('therapies.sections.blog_sub', 'Lecturas para nutrir tu alma y equilibrar tu vida.')}
                     />
                 </section>
             </main >

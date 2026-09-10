@@ -18,7 +18,7 @@ from app.core.image_utils import delete_file, save_image_from_bytes, save_upload
 
 # Import modularized schemas and services
 from app.schemas.content import (
-    ContentCreate, ContentUpdate, ContentResponse, 
+    ContentCreate, ContentUpdate, ContentResponse,
     PlaybackRecord, GenerateImageRequest
 )
 from app.services.content_service import (
@@ -38,6 +38,57 @@ def is_translations_empty(translations):
                 if val and (isinstance(val, str) and val.strip() or isinstance(val, list) and len(val) > 0):
                     return False
     return True
+
+_SUMMARY_TRANSLATION_KEYS = ("title", "excerpt", "tags")
+
+
+def slim_translations(translations):
+    """Keep only list-card fields from translations (drop body/content/seo blobs)."""
+    if not translations or not isinstance(translations, dict):
+        return translations
+    slim = {}
+    for lang, data in translations.items():
+        if isinstance(data, dict):
+            slim[lang] = {
+                k: data[k]
+                for k in _SUMMARY_TRANSLATION_KEYS
+                if k in data and data[k] is not None
+            }
+        else:
+            slim[lang] = data
+    return slim
+
+
+def serialize_content(item: Content, *, slim: bool = False) -> ContentResponse:
+    """Build API payload without mutating ORM fields (avoids accidental empty-body commits)."""
+    hydrate_content(item)
+    author_name = None
+    if getattr(item, "author", None) is not None:
+        author_name = item.author.first_name or item.author.email
+
+    return ContentResponse(
+        id=item.id,
+        title=item.title,
+        type=item.type,
+        category=item.category,
+        body="" if slim else (item.body or ""),
+        excerpt=item.excerpt,
+        status=item.status,
+        thumbnail_url=item.thumbnail_url,
+        media_url=item.media_url,
+        tags=item.tags or [],
+        author_id=item.author_id,
+        translations=slim_translations(item.translations) if slim else item.translations,
+        slug=item.slug,
+        view_count=item.view_count or 0,
+        play_time_seconds=item.play_time_seconds or 0,
+        created_at=item.created_at,
+        updated_at=item.updated_at,
+        author_name=author_name,
+        prev_slug=getattr(item, "prev_slug", None),
+        next_slug=getattr(item, "next_slug", None),
+    )
+
 
 def hydrate_content(item: Content):
     """Helper to ensure tags are lists and URLs are clean before returning to frontend"""
@@ -136,6 +187,8 @@ def get_contents(
     category: Optional[str] = None,
     status: Optional[str] = None,
     author_id: Optional[int] = Query(None, description="Filter by author ID"),
+    limit: Optional[int] = Query(None, ge=1, le=500, description="Max items to return"),
+    full: bool = Query(False, description="Include full body and translation payloads"),
     db: Session = Depends(get_db)
 ):
     try:
@@ -146,8 +199,13 @@ def get_contents(
         if status: query = query.filter(Content.status == status)
         if author_id is not None: query = query.filter(Content.author_id == author_id)
             
-        results = query.order_by(Content.created_at.desc()).all()
-        return [hydrate_content(item) for item in results]
+        query = query.order_by(Content.created_at.desc())
+        if limit is not None:
+            query = query.limit(limit)
+
+        results = query.all()
+        # Default to slim list payloads (~MB → KB) unless dashboard asks for full=true
+        return [serialize_content(item, slim=not full) for item in results]
     except Exception as e:
         print(f"🔥 ERROR in get_contents: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error al recuperar contenido: {str(e)}")
@@ -164,7 +222,7 @@ def get_content_ranking(
         if content_type: query = query.filter(Content.type == content_type)
         if category: query = query.filter(Content.category == category)
         results = query.order_by(Content.view_count.desc()).limit(limit).all()
-        return [hydrate_content(item) for item in results]
+        return [serialize_content(item, slim=True) for item in results]
     except Exception as e:
         print(f"🔥 ERROR in get_content_ranking: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -193,7 +251,7 @@ def get_content_by_slug(slug: str, db: Session = Depends(get_db)):
     db_content.view_count = Content.view_count + 1
     db.commit()
     db.refresh(db_content)
-    return hydrate_content(db_content)
+    return serialize_content(db_content)
 
 @router.post("/slug/{slug}/playback")
 def record_playback(slug: str, data: PlaybackRecord, db: Session = Depends(get_db)):
@@ -228,7 +286,7 @@ def get_content(content_id: int, db: Session = Depends(get_db)):
     db_content.view_count = Content.view_count + 1
     db.commit()
     db.refresh(db_content)
-    return hydrate_content(db_content)
+    return serialize_content(db_content)
 
 @router.post("", response_model=ContentResponse)
 async def create_content(content_data: ContentCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
@@ -287,7 +345,7 @@ async def create_content(content_data: ContentCreate, background_tasks: Backgrou
         fields = {k: v for k, v in {"title": content_data.title, "body": content_data.body, "excerpt": content_data.excerpt, "tags": processed_tags}.items() if v}
         background_tasks.add_task(auto_translate_background, SessionLocal, Content, db_content.id, fields)
         
-    return hydrate_content(db_content)
+    return serialize_content(db_content)
 
 @router.put("/{content_id}", response_model=ContentResponse)
 async def update_content(content_id: int, content_data: ContentUpdate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
@@ -379,7 +437,7 @@ async def update_content(content_id: int, content_data: ContentUpdate, backgroun
     elif manual_trans_change:
         print(f"✍️ Manual translations provided for content #{content_id}, skipping AI.")
         
-    return hydrate_content(db_content)
+    return serialize_content(db_content)
 
 @router.delete("/{content_id}")
 async def delete_content(content_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):

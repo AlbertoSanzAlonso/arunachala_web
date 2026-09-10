@@ -50,7 +50,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
 
     const fetchArticles = useCallback(async () => {
         try {
-            let url = `${API_BASE_URL}/api/content?type=article&status=published`;
+            let url = `${API_BASE_URL}/api/content?type=article&status=published&limit=${limit}`;
             if (category) {
                 url += `&category=${category}`;
             }
@@ -158,13 +158,13 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                     </div>
                 ) : (
                     <div className="relative group/slider">
-                        <div className="relative flex items-center">
+                        <div className="relative w-full min-w-0">
                             {isSlider && articles.length > 1 && (
                                 <>
                                     <button
                                         onClick={() => scroll('left')}
                                         disabled={!canScrollLeft}
-                                        className={`absolute left-0 z-20 p-3 rounded-full bg-white/90 shadow-xl border border-forest/10 -translate-x-1/2 hidden md:flex items-center justify-center transition-all duration-300 hover:bg-forest hover:text-white disabled:opacity-0 disabled:pointer-events-none group-hover/slider:translate-x-0 ${!canScrollLeft ? 'opacity-0' : 'opacity-100'}`}
+                                        className={`absolute left-0 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/90 shadow-xl border border-forest/10 -translate-x-1/2 hidden md:flex items-center justify-center transition-all duration-300 hover:bg-forest hover:text-white disabled:opacity-0 disabled:pointer-events-none group-hover/slider:translate-x-0 ${!canScrollLeft ? 'opacity-0' : 'opacity-100'}`}
                                         aria-label={t('meditations.prev', 'Anterior')}
                                     >
                                         <ChevronLeftIcon className="w-6 h-6" />
@@ -172,7 +172,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                     <button
                                         onClick={() => scroll('right')}
                                         disabled={!canScrollRight}
-                                        className={`absolute right-0 z-20 p-3 rounded-full bg-white/90 shadow-xl border border-forest/10 translate-x-1/2 hidden md:flex items-center justify-center transition-all duration-300 hover:bg-forest hover:text-white disabled:opacity-0 disabled:pointer-events-none group-hover/slider:translate-x-0 ${!canScrollRight ? 'opacity-0' : 'opacity-100'}`}
+                                        className={`absolute right-0 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/90 shadow-xl border border-forest/10 translate-x-1/2 hidden md:flex items-center justify-center transition-all duration-300 hover:bg-forest hover:text-white disabled:opacity-0 disabled:pointer-events-none group-hover/slider:translate-x-0 ${!canScrollRight ? 'opacity-0' : 'opacity-100'}`}
                                         aria-label={t('meditations.next', 'Siguiente')}
                                     >
                                         <ChevronRightIcon className="w-6 h-6" />
@@ -183,8 +183,12 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                             <div
                                 ref={scrollRef}
                                 onScroll={handleScroll}
-                                className={`flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-8 pt-4 px-[10vw] md:px-1 w-full ${isSlider ? '' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}
-                                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                                className={
+                                    isSlider
+                                        ? 'flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-8 pt-4 px-[10vw] md:px-1 w-full min-w-0'
+                                        : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pb-8 pt-4 px-6 md:px-1 w-full'
+                                }
+                                style={isSlider ? { scrollbarWidth: 'none', msOverflowStyle: 'none' } : undefined}
                             >
                                 {articles.map((article, index) => (
                                     <motion.article
@@ -193,7 +197,10 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                         whileInView={{ opacity: 1, scale: 1 }}
                                         viewport={{ once: true }}
                                         transition={{ delay: index * 0.1 }}
-                                        className={`flex-none w-[80vw] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] bg-white rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 group snap-center snap-always`}
+                                        className={`${isSlider
+                                            ? 'flex-none w-[min(85vw,22rem)] md:w-[min(45vw,24rem)] lg:w-[min(32vw,26rem)] snap-center snap-always'
+                                            : 'w-full'
+                                            } bg-white rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 group`}
                                     >
                                         <Link to={`/blog/${article.slug}`} className="block h-full">
                                         <div className="h-56 bg-forest/10 overflow-hidden relative">

@@ -45,6 +45,30 @@ class ContentResponse(ContentBase):
     class Config:
         from_attributes = True
 
+
+class ContentListItem(BaseModel):
+    """Lightweight list payload: no HTML body / heavy translation fields."""
+    id: int
+    title: str
+    type: str
+    category: Optional[str] = None
+    excerpt: Optional[str] = None
+    status: str
+    thumbnail_url: Optional[str] = None
+    media_url: Optional[str] = None
+    tags: List[str] = []
+    author_id: Optional[int] = None
+    translations: Optional[Dict[str, Any]] = None
+    slug: str
+    view_count: int = 0
+    play_time_seconds: int = 0
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    author_name: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
 class PlaybackRecord(BaseModel):
     play_time_seconds: int
 
