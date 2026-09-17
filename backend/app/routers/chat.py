@@ -672,7 +672,7 @@ CONVERSACIÓN:
 
                 elif used_provider == "groq":
                     stream = groq_client.chat.completions.create(
-                        model="llama-3.3-70b-versatile",
+                        model="openai/gpt-oss-120b",
                         messages=api_messages,
                         temperature=0.7,
                         stream=True
@@ -705,7 +705,7 @@ CONVERSACIÓN:
 
             if used_provider == "groq":
                 completion = groq_client.chat.completions.create(
-                    model="llama-3.3-70b-versatile",
+                    model="openai/gpt-oss-120b",
                     messages=api_messages,
                     temperature=0.7
                 )

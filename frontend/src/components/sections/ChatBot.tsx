@@ -207,40 +207,12 @@ const ChatBot: React.FC = () => {
             ));
 
         } catch (error) {
-            console.warn("Backend Chat failed, falling back to Puter.js:", error);
-
-            try {
-                // FALLBACK TO PUTER.JS
-                const puterModule = await import('@heyputer/puter.js');
-                const puter = puterModule.default || puterModule;
-                
-                const puterResponse = await puter.ai.chat(userText, {
-                    model: 'gpt-4o-mini',
-                    stream: true
-                });
-
-                let accumulatedText = "";
-                // Puter.js stream is an async generator
-                for await (const part of (puterResponse as any)) {
-                    if (part?.text) {
-                        accumulatedText += part.text;
-                        const textToUpdate = accumulatedText;
-                        setMessages(prev => prev.map(m =>
-                            m.id === botMsgId ? { ...m, text: textToUpdate } : m
-                        ));
-                    }
-                }
-
-                setMessages(prev => prev.map(m =>
-                    m.id === botMsgId ? { ...m, isStreaming: false, text: accumulatedText || "Lo siento, ha habido un problema. 🙏" } : m
-                ));
-
-            } catch (puterError) {
-                console.error("Puter Error:", puterError);
-                setMessages(prev => prev.map(m =>
-                    m.id === botMsgId ? { ...m, isStreaming: false, text: "Disculpa, he tenido un problema técnico persistente. ¿Podrías intentarlo más tarde? 🙏" } : m
-                ));
-            }
+            console.error("Backend Chat failed:", error);
+            setMessages(prev => prev.map(m =>
+                m.id === botMsgId
+                    ? { ...m, isStreaming: false, text: "Disculpa, he tenido un problema técnico. ¿Podrías intentarlo más tarde? 🙏" }
+                    : m
+            ));
         } finally {
             setIsTyping(false);
         }
