@@ -1,38 +1,46 @@
 
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Header from 'components/layout/Header';
 import Footer from 'components/layout/Footer';
 import PageSEO from 'components/providers/PageSEO';
 import { API_BASE_URL } from 'config';
 import { Article } from 'types/blog';
+import { FilterState } from 'components/blog-search';
 
 // Modular components
 import BlogHeader from 'components/sections/BlogHeader';
 import ArticleCard from 'components/sections/ArticleCard';
 import BlogPagination from 'components/sections/BlogPagination';
 
+const CATEGORY_PATHS: Record<string, string> = {
+    all: '/blog',
+    yoga: '/blog/yoga',
+    therapy: '/blog/therapy',
+    general: '/blog/general',
+};
+
+const getCategoryFromPath = (pathname: string): string => {
+    if (pathname === '/blog/yoga' || pathname.startsWith('/blog/yoga/')) return 'yoga';
+    if (pathname === '/blog/therapy' || pathname.startsWith('/blog/therapy/')) return 'therapy';
+    if (pathname === '/blog/general' || pathname.startsWith('/blog/general/')) return 'general';
+    return 'all';
+};
+
 const BlogPage: React.FC = () => {
     const { t } = useTranslation();
     const location = useLocation();
+    const navigate = useNavigate();
     const [articles, setArticles] = useState<Article[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [filters, setFilters] = useState(() => {
-        const path = location.pathname;
-        let initialCategory = 'all';
-        if (path.includes('/blog/yoga')) initialCategory = 'yoga';
-        else if (path.includes('/blog/therapy')) initialCategory = 'therapy';
-        else if (path.includes('/blog/general')) initialCategory = 'general';
-        
-        return {
-            query: '',
-            category: initialCategory,
-            year: 'all',
-            month: 'all',
-            tags: [] as string[]
-        };
-    });
+    const [filters, setFilters] = useState<FilterState>(() => ({
+        query: '',
+        category: getCategoryFromPath(location.pathname),
+        year: 'all',
+        month: 'all',
+        tags: []
+    }));
     
     const gridRef = useRef<HTMLDivElement>(null);
 
@@ -73,18 +81,24 @@ const BlogPage: React.FC = () => {
         }
     }, []);
 
-    // Sync filters with URL path changes
+    // Sync category filter when navigating between /blog, /blog/yoga, etc.
     useEffect(() => {
-        const path = location.pathname;
-        let newCategory = 'all';
-        if (path.includes('/blog/yoga')) newCategory = 'yoga';
-        else if (path.includes('/blog/therapy')) newCategory = 'therapy';
-        else if (path.includes('/blog/general')) newCategory = 'general';
-        
-        if (newCategory !== filters.category) {
-            setFilters(prev => ({ ...prev, category: newCategory }));
+        const newCategory = getCategoryFromPath(location.pathname);
+        setFilters(prev => (
+            prev.category === newCategory ? prev : { ...prev, category: newCategory }
+        ));
+    }, [location.pathname]);
+
+    const handleFilterChange = useCallback((newFilters: FilterState) => {
+        setFilters(newFilters);
+
+        if (newFilters.category !== filters.category) {
+            const targetPath = CATEGORY_PATHS[newFilters.category] || '/blog';
+            if (location.pathname !== targetPath) {
+                navigate(targetPath);
+            }
         }
-    }, [location.pathname, filters.category]);
+    }, [filters.category, location.pathname, navigate]);
 
     useEffect(() => {
         const loadInitialData = async () => {
@@ -165,7 +179,7 @@ const BlogPage: React.FC = () => {
                 {/* Hero */}
                 <BlogHeader 
                     filters={filters}
-                    onFilterChange={setFilters}
+                    onFilterChange={handleFilterChange}
                     articles={articles}
                 />
 
@@ -220,7 +234,7 @@ const BlogPage: React.FC = () => {
                                         {t('blog.try_other_filters', 'Prueba con otros términos de búsqueda o categorías.')}
                                     </p>
                                     <button 
-                                        onClick={() => setFilters({
+                                        onClick={() => handleFilterChange({
                                             query: '',
                                             category: 'all',
                                             year: 'all',
