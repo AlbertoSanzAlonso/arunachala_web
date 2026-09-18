@@ -204,7 +204,8 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                         const audio = audioRef.current;
                         if (audio) {
                             const url = targetMeditation.media_url || '';
-                            const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
+                            const fullUrl = getImageUrl(url);
+                            if (!fullUrl) return;
                             audio.src = fullUrl;
                             audio.preload = 'auto';
                             audio.volume = 0.05;
@@ -308,7 +309,8 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             audio.pause();
 
             const url = meditation.media_url || '';
-            const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
+            const fullUrl = getImageUrl(url);
+            if (!fullUrl) return;
 
             audio.src = fullUrl;
             audio.volume = volume;
