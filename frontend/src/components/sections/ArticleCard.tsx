@@ -2,11 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { CalendarIcon, ArrowRightIcon, TagIcon } from '@heroicons/react/24/outline';
+import { CalendarIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import { Article } from 'types/blog';
 import { getImageUrl } from 'utils/imageUtils';
 import { getTranslated } from 'utils/translate';
 import { getContentDetailPath } from 'utils/contentPaths';
+import omSymbol from 'assets/images/om_symbol.png';
 
 interface ArticleCardProps {
     article: Article;
@@ -34,6 +35,16 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
     const translatedTitle = getTranslated(article, 'title', i18n.language);
     const translatedExcerpt = getTranslated(article, 'excerpt', i18n.language);
     const articleUrl = getContentDetailPath(contentType, article.slug, currentPage);
+    const isYogaWatermark =
+        article.category === 'yoga' || Boolean(article.thumbnail_url?.includes('om_symbol.webp'));
+    const watermarkSrc = isYogaWatermark ? omSymbol : '/logo_icon.webp';
+    const watermarkAlt = isYogaWatermark ? 'Yoga' : 'Terapia';
+    const resolvedThumb =
+        article.thumbnail_url &&
+        !article.thumbnail_url.includes('om_symbol.webp') &&
+        !article.thumbnail_url.includes('logo_icon.webp')
+            ? getImageUrl(article.thumbnail_url)
+            : '';
 
     return (
         <motion.div
@@ -47,51 +58,31 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
                 className="relative h-64 overflow-hidden bg-[#5c6b3c] cursor-pointer group block"
                 style={{ transform: 'translateZ(0)' }}
             >
-                {article.thumbnail_url && !article.thumbnail_url.includes('om_symbol.webp') && !article.thumbnail_url.includes('logo_icon.webp') ? (
+                {resolvedThumb ? (
                     <img
-                        src={getImageUrl(article.thumbnail_url)}
+                        src={resolvedThumb}
                         alt={translatedTitle}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         onError={(e) => {
                             const target = e.currentTarget;
                             if (target.getAttribute('data-fallback')) {
                                 target.style.display = 'none';
-                                const parent = target.parentElement;
-                                if (parent) {
-                                    const fileName = article.thumbnail_url?.split('/').pop() || 'Imagen';
-                                    const errDiv = document.createElement('div');
-                                    errDiv.className = "absolute inset-0 flex items-center justify-center p-4 text-center text-xs text-bark/30 italic break-all";
-                                    errDiv.innerText = fileName;
-                                    parent.appendChild(errDiv);
-                                }
                                 return;
                             }
                             target.setAttribute('data-fallback', 'true');
-                            target.src = article.category === 'yoga'
-                                ? getImageUrl('/static/gallery/articles/om_symbol.webp')
-                                : getImageUrl('/static/gallery/articles/logo_icon.webp');
-                            target.className = "w-24 h-24 object-contain opacity-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-500";
+                            target.src = watermarkSrc;
+                            target.alt = watermarkAlt;
+                            target.className = "w-24 h-24 object-contain opacity-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-500 group-hover:scale-110";
                         }}
                     />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                        {(article.category === 'yoga' || (article.thumbnail_url && article.thumbnail_url.includes('om_symbol.webp'))) ? (
-                            <motion.img
-                                src={getImageUrl('/static/gallery/articles/om_symbol.webp')}
-                                alt="Yoga"
-                                whileHover={{ scale: 1.1 }}
-                                className="w-24 h-24 object-contain opacity-20 will-change-transform"
-                            />
-                        ) : (article.category === 'therapy' || (article.thumbnail_url && article.thumbnail_url.includes('logo_icon.webp'))) ? (
-                            <motion.img
-                                src={getImageUrl('/static/gallery/articles/logo_icon.webp')}
-                                alt="Terapia"
-                                whileHover={{ scale: 1.1 }}
-                                className="w-24 h-24 object-contain opacity-20 will-change-transform"
-                            />
-                        ) : (
-                            <TagIcon className="w-12 h-12 text-forest/20" />
-                        )}
+                        <motion.img
+                            src={watermarkSrc}
+                            alt={watermarkAlt}
+                            whileHover={{ scale: 1.1 }}
+                            className="w-24 h-24 object-contain opacity-20 will-change-transform"
+                        />
                     </div>
                 )}
 

@@ -99,7 +99,11 @@ const BlogSection: React.FC<BlogSectionProps> = ({
     const scroll = (direction: 'left' | 'right') => {
         if (scrollRef.current) {
             const { scrollLeft, clientWidth } = scrollRef.current;
-            const scrollAmount = clientWidth * 0.8;
+            const card = scrollRef.current.querySelector('article');
+            const gap = window.matchMedia('(min-width: 768px)').matches ? 24 : 16;
+            const scrollAmount = card
+                ? card.getBoundingClientRect().width + gap
+                : clientWidth * 0.8;
             const target = direction === 'left' ? scrollLeft - scrollAmount : scrollLeft + scrollAmount;
             scrollRef.current.scrollTo({ left: target, behavior: 'smooth' });
         }
@@ -185,7 +189,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                 onScroll={handleScroll}
                                 className={
                                     isSlider
-                                        ? 'flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-8 pt-4 px-[10vw] md:px-1 w-full min-w-0'
+                                        ? 'flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-8 pt-4 px-[10vw] md:px-0 w-full min-w-0'
                                         : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pb-8 pt-4 px-6 md:px-1 w-full'
                                 }
                                 style={isSlider ? { scrollbarWidth: 'none', msOverflowStyle: 'none' } : undefined}
@@ -198,7 +202,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                         viewport={{ once: true }}
                                         transition={{ delay: index * 0.1 }}
                                         className={`${isSlider
-                                            ? 'flex-none w-[min(85vw,22rem)] md:w-[min(45vw,24rem)] lg:w-[min(32vw,26rem)] snap-center snap-always'
+                                            ? 'flex-none w-[min(85vw,22rem)] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] snap-center md:snap-start snap-always'
                                             : 'w-full'
                                             } bg-white rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 group`}
                                     >

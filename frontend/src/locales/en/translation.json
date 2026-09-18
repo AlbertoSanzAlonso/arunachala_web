@@ -687,5 +687,20 @@
     "reviews_google_count": "reviews on Google",
     "reviews_verified": "Verified Customer",
     "reviews_share": "Your opinion matters, share it with us"
+  },
+  "comments": {
+    "title": "Comments",
+    "subtitle": "Share your thoughts. Your comment will be published after a brief review.",
+    "loading": "Loading comments...",
+    "empty": "No comments yet. Be the first to write one.",
+    "name_label": "Your name",
+    "name_placeholder": "How you'd like to sign",
+    "body_label": "Your comment",
+    "body_placeholder": "Write what you'd like to share...",
+    "submit": "Send comment",
+    "thanks_title": "Comment received",
+    "thanks_desc": "Thank you. We'll review it and publish it shortly.",
+    "write_another": "Write another comment",
+    "error": "Could not send the comment. Please try again."
   }
 }

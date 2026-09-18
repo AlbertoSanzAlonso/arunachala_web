@@ -19,7 +19,7 @@ from app.api import (
     reviews, auth, gallery, schedules, yoga_classes, treatments, 
     content, activities, upload, dashboard, rag, legacy, tags, 
     automation, suggestions, site_config, subscriptions, promotions, 
-    announcements, seo, mantras, debug
+    announcements, seo, mantras, debug, comments
 )
 from app.routers import chat
 
@@ -98,6 +98,7 @@ app.include_router(tags.router, prefix="/api/tags", tags=["tags"])
 app.include_router(seo.router)
 app.include_router(mantras.router, prefix="/api/mantras", tags=["mantras"])
 app.include_router(debug.router, prefix="/api/debug", tags=["debug"])
+app.include_router(comments.router)
 
 # Static Files
 static_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static")

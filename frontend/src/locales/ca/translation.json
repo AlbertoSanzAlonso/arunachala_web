@@ -687,5 +687,20 @@
     "reviews_google_count": "ressenyes a Google",
     "reviews_verified": "Client verificat",
     "reviews_share": "Ens importa la teva opinió, comparteix-la"
+  },
+  "comments": {
+    "title": "Comentaris",
+    "subtitle": "Comparteix la teva reflexió. El teu comentari es publicarà després d'una breu revisió.",
+    "loading": "Carregant comentaris...",
+    "empty": "Encara no hi ha comentaris. Sigues la primera persona a escriure'n un.",
+    "name_label": "El teu nom",
+    "name_placeholder": "Com vols firmar",
+    "body_label": "El teu comentari",
+    "body_placeholder": "Escriu aquí el que t'agradaria compartir...",
+    "submit": "Enviar comentari",
+    "thanks_title": "Comentari rebut",
+    "thanks_desc": "Gràcies. El revisarem i el publicarem aviat.",
+    "write_another": "Escriure un altre comentari",
+    "error": "No s'ha pogut enviar el comentari. Torna-ho a provar."
   }
 }

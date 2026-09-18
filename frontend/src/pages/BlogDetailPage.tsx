@@ -18,6 +18,7 @@ import FloatingNavigation from 'components/sections/FloatingNavigation';
 import BottomNavigation from 'components/sections/BottomNavigation';
 import ArticleHeader from 'components/sections/ArticleHeader';
 import ArticleCTA from 'components/sections/ArticleCTA';
+import ContentComments from 'components/sections/ContentComments';
 
 const BASE_URL = 'https://www.yogayterapiasarunachala.es';
 
@@ -244,6 +245,8 @@ const BlogDetailPage: React.FC = () => {
                     )}
 
                     <ArticleContent body={translatedBody} onImageClick={setSelectedImage} />
+
+                    <ContentComments contentId={article.id} />
 
                     <div className="lg:hidden mt-12">
                         <BottomNavigation

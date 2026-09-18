@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { CalendarIcon, TagIcon } from '@heroicons/react/24/outline';
+import { CalendarIcon } from '@heroicons/react/24/outline';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import BackButton from '../components/ui/BackButton';
@@ -10,6 +10,7 @@ import PageSEO from '../components/providers/PageSEO';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
 import { getImageUrl } from '../utils/imageUtils';
+import omSymbol from '../assets/images/om_symbol.png';
 
 interface Article {
     id: number;
@@ -140,7 +141,19 @@ const BlogCategoryPage: React.FC = () => {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {articles.map((article, index) => (
+                            {articles.map((article, index) => {
+                                const isYogaWatermark =
+                                    article.category === 'yoga' || Boolean(article.thumbnail_url?.includes('om_symbol.webp'));
+                                const watermarkSrc = isYogaWatermark ? omSymbol : '/logo_icon.webp';
+                                const watermarkAlt = isYogaWatermark ? 'Yoga' : 'Terapia';
+                                const resolvedThumb =
+                                    article.thumbnail_url &&
+                                    !article.thumbnail_url.includes('om_symbol.webp') &&
+                                    !article.thumbnail_url.includes('logo_icon.webp')
+                                        ? getImageUrl(article.thumbnail_url)
+                                        : '';
+
+                                return (
                                 <motion.article
                                     key={article.id}
                                     initial={{ opacity: 0, y: 20 }}
@@ -151,41 +164,30 @@ const BlogCategoryPage: React.FC = () => {
                                     <Link to={`/blog/${article.slug}`} className="block h-full">
                                     {/* Thumbnail */}
                                     <div className="h-48 bg-forest/10 overflow-hidden relative">
-                                        {article.thumbnail_url && !article.thumbnail_url.includes('om_symbol.webp') && !article.thumbnail_url.includes('logo_icon.webp') ? (
+                                        {resolvedThumb ? (
                                             <img
-                                                src={getImageUrl(article.thumbnail_url)}
+                                                src={resolvedThumb}
                                                 alt={getTranslated(article, 'title', i18n.language)}
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                                 onError={(e) => {
                                                     const target = e.currentTarget;
                                                     if (target.getAttribute('data-fallback')) {
                                                         target.style.display = 'none';
-                                                        const parent = target.parentElement;
-                                                        if (parent) {
-                                                            const fileName = article.thumbnail_url?.split('/').pop() || 'Imagen';
-                                                            const errDiv = document.createElement('div');
-                                                            errDiv.className = "absolute inset-0 flex items-center justify-center p-4 text-center text-[10px] text-bark/30 italic break-all";
-                                                            errDiv.innerText = fileName;
-                                                            parent.appendChild(errDiv);
-                                                        }
                                                         return;
                                                     }
                                                     target.setAttribute('data-fallback', 'true');
-                                                    target.src = article.category === 'yoga'
-                                                        ? getImageUrl('/static/gallery/articles/om_symbol.webp')
-                                                        : getImageUrl('/static/gallery/articles/logo_icon.webp');
+                                                    target.src = watermarkSrc;
+                                                    target.alt = watermarkAlt;
                                                     target.className = "w-24 h-24 object-contain opacity-30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:scale-110 transition-transform duration-500";
                                                 }}
                                             />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center">
-                                                {(article.category === 'yoga' || (article.thumbnail_url && article.thumbnail_url.includes('om_symbol.webp'))) ? (
-                                                    <img src={getImageUrl('/static/gallery/articles/om_symbol.webp')} alt="Yoga" className="w-24 h-24 object-contain opacity-30 group-hover:scale-110 transition-transform duration-500" />
-                                                ) : (article.category === 'therapy' || (article.thumbnail_url && article.thumbnail_url.includes('logo_icon.webp'))) ? (
-                                                    <img src={getImageUrl('/static/gallery/articles/logo_icon.webp')} alt="Terapia" className="w-24 h-24 object-contain opacity-30 group-hover:scale-110 transition-transform duration-500" />
-                                                ) : (
-                                                    <TagIcon className="w-16 h-16 text-forest/30" />
-                                                )}
+                                                <img
+                                                    src={watermarkSrc}
+                                                    alt={watermarkAlt}
+                                                    className="w-24 h-24 object-contain opacity-30 group-hover:scale-110 transition-transform duration-500"
+                                                />
                                             </div>
                                         )}
                                     </div>
@@ -223,7 +225,8 @@ const BlogCategoryPage: React.FC = () => {
                                     </div>
                                     </Link>
                                 </motion.article>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>

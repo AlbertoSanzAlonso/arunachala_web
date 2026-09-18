@@ -711,5 +711,20 @@
     "reviews_google_count": "reseñas en Google",
     "reviews_verified": "Cliente verificado",
     "reviews_share": "Nos importa tu opinión, compártela"
+  },
+  "comments": {
+    "title": "Comentarios",
+    "subtitle": "Comparte tu reflexión. Tu comentario se publicará tras una breve revisión.",
+    "loading": "Cargando comentarios...",
+    "empty": "Todavía no hay comentarios. Sé la primera persona en escribir.",
+    "name_label": "Tu nombre",
+    "name_placeholder": "Cómo quieres firmar",
+    "body_label": "Tu comentario",
+    "body_placeholder": "Escribe aquí lo que te gustaría compartir...",
+    "submit": "Enviar comentario",
+    "thanks_title": "Comentario recibido",
+    "thanks_desc": "Gracias. Lo revisaremos y lo publicaremos en breve.",
+    "write_another": "Escribir otro comentario",
+    "error": "No se pudo enviar el comentario. Inténtalo de nuevo."
   }
 }
