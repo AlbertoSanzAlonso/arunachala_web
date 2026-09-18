@@ -248,9 +248,20 @@ def main() -> int:
                 failed += 1
                 print(f"  ❌ {object_path}: {e}")
 
+    print(f"\nResumen: refs={len(refs)} fallos_download={failed}")
+
+    if failed and not args.dry_run and not args.skip_download:
+        print(
+            f"\n🛑 Abortando update de BD: {failed} descargas fallidas. "
+            "Las URLs en Postgres NO se modifican.\n"
+            "Si ya corriste una migración que sí reescribió la BD, usa:\n"
+            "  python3 scripts/rollback_static_urls_to_supabase.py"
+        )
+        return 2
+
     print(f"\n📝 Actualizando base de datos ({'dry-run' if args.dry_run else 'apply'})...")
     updated = update_database(engine, url_mapping, dry_run=args.dry_run)
-    print(f"\nResumen: refs={len(refs)} db_updates={updated} fallos_download={failed}")
+    print(f"Resumen final: refs={len(refs)} db_updates={updated} fallos_download={failed}")
 
     if failed:
         print(
