@@ -59,8 +59,9 @@ services:
       - arunachala_net
 
   # Bucket S3-compatible (MinIO) — nuevas subidas de imagen/audio
+  # Nota: minio/minio ya no está en Docker Hub; usar Quay.
   minio:
-    image: minio/minio:latest
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
     restart: unless-stopped
     command: server /data --console-address ":9001"
     environment:
