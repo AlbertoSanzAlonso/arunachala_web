@@ -141,7 +141,7 @@ const Header: React.FC = () => {
 
     return (
         <>
-            <header className="sticky top-0 w-full z-50 p-2 short:py-1 short:px-3 lg:py-4 lg:px-8 flex justify-between items-center bg-[#5c6b3c] shadow-md transition-colors duration-300">
+            <header className="sticky top-0 w-full z-50 px-2 py-3 short:py-2.5 short:px-3 lg:py-4 lg:px-8 flex justify-between items-center bg-[#5c6b3c] shadow-md transition-colors duration-300">
                 {/* Logo Section */}
                 <Link
                     to="/"
