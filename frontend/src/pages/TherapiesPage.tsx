@@ -661,7 +661,7 @@ const TherapiesPage: React.FC = () => {
                 <section ref={blogRef} className="scroll-mt-24">
                     <BlogSection
                         category="therapy"
-                        limit={3}
+                        limit={12}
                         showViewAll={true}
                         viewAllUrl="/blog/therapy"
                         title={t('therapies.sections.blog', 'Blog de Bienestar')}

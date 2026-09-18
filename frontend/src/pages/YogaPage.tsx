@@ -217,7 +217,7 @@ const YogaPage: React.FC = () => {
                 <section ref={blogRef} className="scroll-mt-24">
                     <BlogSection
                         category="yoga"
-                        limit={3}
+                        limit={12}
                         showViewAll={true}
                         viewAllUrl="/blog/yoga"
                         title={t('yoga.blog.title', 'Blog de Yoga')}

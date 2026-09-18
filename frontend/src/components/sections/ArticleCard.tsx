@@ -55,7 +55,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
         >
             <Link
                 to={articleUrl}
-                className="relative h-64 overflow-hidden bg-[#5c6b3c] cursor-pointer group block"
+                className="relative h-64 overflow-hidden bg-forest/10 cursor-pointer group block"
                 style={{ transform: 'translateZ(0)' }}
             >
                 {resolvedThumb ? (
@@ -72,7 +72,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
                             target.setAttribute('data-fallback', 'true');
                             target.src = watermarkSrc;
                             target.alt = watermarkAlt;
-                            target.className = "w-24 h-24 object-contain opacity-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-500 group-hover:scale-110";
+                            target.className = "w-24 h-24 object-contain opacity-30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-500 group-hover:scale-110";
                         }}
                     />
                 ) : (
@@ -81,7 +81,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
                             src={watermarkSrc}
                             alt={watermarkAlt}
                             whileHover={{ scale: 1.1 }}
-                            className="w-24 h-24 object-contain opacity-20 will-change-transform"
+                            className="w-24 h-24 object-contain opacity-30 will-change-transform"
                         />
                     </div>
                 )}
