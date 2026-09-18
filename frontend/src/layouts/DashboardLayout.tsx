@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import logoIcon from '../assets/images/logo_icon.webp';
 import logoWide from '../assets/images/logo_wide.webp';
 import { Link, Outlet, useLocation } from 'react-router-dom';
@@ -17,6 +17,7 @@ import {
     HeartIcon,
     ArrowRightOnRectangleIcon,
     ChatBubbleLeftRightIcon,
+    ChatBubbleLeftEllipsisIcon,
     GlobeAltIcon,
     SparklesIcon,
     PaintBrushIcon,
@@ -24,12 +25,14 @@ import {
 } from '@heroicons/react/24/outline';
 import { getImageUrl } from '../utils/imageUtils';
 import PageSEO from '../components/providers/PageSEO';
+import { API_BASE_URL } from '../config';
 
 const navigation = [
     { name: 'Vista General', href: '/dashboard', icon: HomeIcon },
     { name: 'Personalizar', href: '/dashboard/customize', icon: PaintBrushIcon },
     { name: 'Galería', href: '/dashboard/gallery', icon: PhotoIcon },
     { name: 'Contenido', href: '/dashboard/content', icon: DocumentTextIcon },
+    { name: 'Comentarios', href: '/dashboard/comments', icon: ChatBubbleLeftEllipsisIcon },
     { name: 'Tratamientos', href: '/dashboard/treatments', icon: HeartIcon },
     { name: 'Horarios', href: '/dashboard/schedule', icon: CalendarIcon },
     { name: 'Actividades', href: '/dashboard/activities', icon: SparklesIcon },
@@ -49,6 +52,7 @@ export default function DashboardLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [touchStart, setTouchStart] = useState<number | null>(null);
     const [touchEnd, setTouchEnd] = useState<number | null>(null);
+    const [pendingComments, setPendingComments] = useState(0);
 
     const handleTouchStart = (e: React.TouchEvent) => {
         setTouchEnd(null);
@@ -69,6 +73,28 @@ export default function DashboardLayout() {
     };
     const location = useLocation();
     const { user: userProfile, logout, showSessionWarning, extendSession, remainingTime } = useAuth();
+
+    useEffect(() => {
+        const fetchPending = async () => {
+            const token = sessionStorage.getItem('access_token');
+            if (!token) return;
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/comments/pending-count`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setPendingComments(data.count || 0);
+                }
+            } catch {
+                // ignore badge errors
+            }
+        };
+        fetchPending();
+        const onChanged = () => fetchPending();
+        window.addEventListener('comments:pending-changed', onChanged);
+        return () => window.removeEventListener('comments:pending-changed', onChanged);
+    }, [location.pathname]);
 
     // Format remaining time (MM:SS)
     const formatTime = (seconds: number) => {
@@ -159,7 +185,12 @@ export default function DashboardLayout() {
                                                                         )}
                                                                         aria-hidden="true"
                                                                     />
-                                                                    {item.name}
+                                                                    <span className="flex-1">{item.name}</span>
+                                                                    {item.href === '/dashboard/comments' && pendingComments > 0 && (
+                                                                        <span className="ml-auto inline-flex items-center justify-center rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold text-white">
+                                                                            {pendingComments}
+                                                                        </span>
+                                                                    )}
                                                                 </Link>
                                                             </li>
                                                         ))}
@@ -203,7 +234,12 @@ export default function DashboardLayout() {
                                                         )}
                                                         aria-hidden="true"
                                                     />
-                                                    {item.name}
+                                                    <span className="flex-1">{item.name}</span>
+                                                    {item.href === '/dashboard/comments' && pendingComments > 0 && (
+                                                        <span className="ml-auto inline-flex items-center justify-center rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold text-white">
+                                                            {pendingComments}
+                                                        </span>
+                                                    )}
                                                 </Link>
                                             </li>
                                         ))}

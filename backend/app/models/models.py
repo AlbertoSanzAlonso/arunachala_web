@@ -100,7 +100,7 @@ class ContentComment(Base):
     content_id = Column(Integer, ForeignKey("contents.id", ondelete="CASCADE"), index=True, nullable=False)
     author_name = Column(String(80), nullable=False)
     body = Column(Text, nullable=False)
-    status = Column(String, index=True, default=CommentStatus.PENDING)
+    status = Column(String, index=True, default="pending")
     ip_address = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
 

@@ -48,6 +48,7 @@ const AgentControl = lazy(() => import('./pages/dashboard/AgentControl'));
 const ActivityManager = lazy(() => import('./pages/dashboard/ActivityManager'));
 const PromotionManager = lazy(() => import('./pages/dashboard/PromotionManager'));
 const SiteCustomization = lazy(() => import('./pages/dashboard/SiteCustomization'));
+const CommentsManager = lazy(() => import('./pages/dashboard/CommentsManager'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const LegalNoticePage = lazy(() => import('./pages/LegalNoticePage'));
@@ -125,6 +126,7 @@ const AppContent = () => {
                         <Route index element={<DashboardHome />} />
                         <Route path="gallery" element={<GalleryManager />} />
                         <Route path="content" element={<ContentManager />} />
+                        <Route path="comments" element={<CommentsManager />} />
                         <Route path="schedule" element={<ScheduleManager />} />
                         <Route path="seo" element={<SeoStats />} />
                         <Route path="profile" element={<UserProfile />} />

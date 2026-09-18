@@ -35,6 +35,7 @@ const BlogDetailPage: React.FC = () => {
     const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [isZoomed, setIsZoomed] = useState(false);
+    const [thumbnailFailed, setThumbnailFailed] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [prevArticle, setPrevArticle] = useState<Article | null>(null);
     const [nextArticle, setNextArticle] = useState<Article | null>(null);
@@ -104,6 +105,7 @@ const BlogDetailPage: React.FC = () => {
                 }
 
                 setArticle(data);
+                setThumbnailFailed(false);
                 fetchRelatedContent(contentType, data.category, data.id, data.tags || []);
             } else {
                 navigate(isNewsRoute ? '/noticias' : '/blog');
@@ -167,6 +169,13 @@ const BlogDetailPage: React.FC = () => {
     const translatedTitle = getTranslated(article, 'title', i18n.language);
     const translatedBody = getTranslated(article, 'body', i18n.language);
     const translatedExcerpt = getTranslated(article, 'excerpt', i18n.language);
+    const thumbnailSrc =
+        article.thumbnail_url &&
+        !article.thumbnail_url.includes('om_symbol.webp') &&
+        !article.thumbnail_url.includes('logo_icon.webp')
+            ? getImageUrl(article.thumbnail_url)
+            : '';
+    const showThumbnail = Boolean(thumbnailSrc) && !thumbnailFailed;
 
     const structuredData = {
         '@context': 'https://schema.org',
@@ -235,12 +244,17 @@ const BlogDetailPage: React.FC = () => {
                             : t('blog.back_to_blog')}
                     />
 
-                    {article.thumbnail_url && (
+                    {showThumbnail && (
                         <div
                             className="mb-12 rounded-[2rem] overflow-hidden shadow-xl cursor-zoom-in"
-                            onClick={() => setSelectedImage(getImageUrl(article.thumbnail_url!))}
+                            onClick={() => setSelectedImage(thumbnailSrc)}
                         >
-                            <img src={getImageUrl(article.thumbnail_url)} alt={translatedTitle} className="w-full h-auto" />
+                            <img
+                                src={thumbnailSrc}
+                                alt={translatedTitle}
+                                className="w-full h-auto"
+                                onError={() => setThumbnailFailed(true)}
+                            />
                         </div>
                     )}
 

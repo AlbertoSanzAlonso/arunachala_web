@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 
 from app.core.database import get_db
-from app.models.models import Content, ContentComment, CommentStatus, ContentStatus
+from app.models.models import Content, ContentComment, User
 from app.schemas.comments import (
     CommentCreate,
     CommentResponse,
@@ -11,9 +11,10 @@ from app.schemas.comments import (
     CommentStatusUpdate,
 )
 from app.api.auth import get_current_admin_user
-from app.models.models import User
 
 router = APIRouter(tags=["comments"])
+
+VALID_STATUSES = ("pending", "approved", "rejected")
 
 
 def _client_ip(request: Request) -> str:
@@ -27,7 +28,7 @@ def _get_published_content(content_id: int, db: Session) -> Content:
     content = db.query(Content).filter(Content.id == content_id).first()
     if not content:
         raise HTTPException(status_code=404, detail="Contenido no encontrado")
-    if content.status != ContentStatus.PUBLISHED:
+    if content.status != "published":
         raise HTTPException(status_code=404, detail="Contenido no encontrado")
     return content
 
@@ -40,7 +41,7 @@ def list_public_comments(content_id: int, db: Session = Depends(get_db)):
         db.query(ContentComment)
         .filter(
             ContentComment.content_id == content_id,
-            ContentComment.status == CommentStatus.APPROVED,
+            ContentComment.status == "approved",
         )
         .order_by(ContentComment.created_at.asc())
         .all()
@@ -65,7 +66,7 @@ def create_comment(
         content_id=content_id,
         author_name=payload.author_name,
         body=payload.body,
-        status=CommentStatus.PENDING,
+        status="pending",
         ip_address=_client_ip(request),
     )
     db.add(comment)
@@ -87,11 +88,7 @@ def list_admin_comments(
         .order_by(ContentComment.created_at.desc())
     )
     if status_filter:
-        if status_filter not in (
-            CommentStatus.PENDING,
-            CommentStatus.APPROVED,
-            CommentStatus.REJECTED,
-        ):
+        if status_filter not in VALID_STATUSES:
             raise HTTPException(status_code=400, detail="Estado inválido")
         query = query.filter(ContentComment.status == status_filter)
 
@@ -120,7 +117,7 @@ def pending_comments_count(
     """Admin: count of pending comments for sidebar badge."""
     count = (
         db.query(ContentComment)
-        .filter(ContentComment.status == CommentStatus.PENDING)
+        .filter(ContentComment.status == "pending")
         .count()
     )
     return {"count": count}
