@@ -8,6 +8,7 @@ import { getImageUrl } from 'utils/imageUtils';
 import { getTranslated } from 'utils/translate';
 import { getContentDetailPath } from 'utils/contentPaths';
 import omSymbol from 'assets/images/om_symbol.png';
+import lotusFlower from 'assets/images/lotus_flower.png';
 
 interface ArticleCardProps {
     article: Article;
@@ -37,12 +38,13 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
     const articleUrl = getContentDetailPath(contentType, article.slug, currentPage);
     const isYogaWatermark =
         article.category === 'yoga' || Boolean(article.thumbnail_url?.includes('om_symbol.webp'));
-    const watermarkSrc = isYogaWatermark ? omSymbol : '/logo_icon.webp';
+    const watermarkSrc = isYogaWatermark ? omSymbol : lotusFlower;
     const watermarkAlt = isYogaWatermark ? 'Yoga' : 'Terapia';
     const resolvedThumb =
         article.thumbnail_url &&
         !article.thumbnail_url.includes('om_symbol.webp') &&
-        !article.thumbnail_url.includes('logo_icon.webp')
+        !article.thumbnail_url.includes('logo_icon.webp') &&
+        !article.thumbnail_url.includes('lotus_flower')
             ? getImageUrl(article.thumbnail_url)
             : '';
 

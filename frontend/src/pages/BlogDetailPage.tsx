@@ -172,7 +172,8 @@ const BlogDetailPage: React.FC = () => {
     const thumbnailSrc =
         article.thumbnail_url &&
         !article.thumbnail_url.includes('om_symbol.webp') &&
-        !article.thumbnail_url.includes('logo_icon.webp')
+        !article.thumbnail_url.includes('logo_icon.webp') &&
+        !article.thumbnail_url.includes('lotus_flower')
             ? getImageUrl(article.thumbnail_url)
             : '';
     const showThumbnail = Boolean(thumbnailSrc) && !thumbnailFailed;

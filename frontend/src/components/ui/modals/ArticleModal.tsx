@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 import { Dialog, Transition } from '@headlessui/react';
 import remarkGfm from 'remark-gfm';
 import omSymbol from 'assets/images/om_symbol.png';
+import lotusFlower from 'assets/images/lotus_flower.png';
 
 interface Article {
     id: number;
@@ -162,7 +163,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
 
                                 {/* Header Image */}
                                 <div className="h-64 md:h-80 bg-forest/10 relative overflow-hidden">
-                                    {article.thumbnail_url && !article.thumbnail_url.includes('om_symbol.webp') && !article.thumbnail_url.includes('logo_icon.webp') ? (
+                                    {article.thumbnail_url && !article.thumbnail_url.includes('om_symbol.webp') && !article.thumbnail_url.includes('logo_icon.webp') && !article.thumbnail_url.includes('lotus_flower') ? (
                                         <img
                                             src={getImageUrl(article.thumbnail_url)}
                                             alt={translatedTitle}
@@ -171,18 +172,10 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
                                                 const target = e.currentTarget;
                                                 if (target.getAttribute('data-fallback')) {
                                                     target.style.display = 'none';
-                                                    const parent = target.parentElement;
-                                                    if (parent) {
-                                                        const fileName = article.thumbnail_url?.split('/').pop() || 'Imagen';
-                                                        const errDiv = document.createElement('div');
-                                                        errDiv.className = "w-full h-full flex items-center justify-center p-8 text-center text-sm text-white/50 italic break-all px-20";
-                                                        errDiv.innerText = fileName;
-                                                        parent.appendChild(errDiv);
-                                                    }
                                                     return;
                                                 }
                                                 target.setAttribute('data-fallback', 'true');
-                                                target.src = article.category === 'yoga' ? omSymbol : '/logo_icon.webp';
+                                                target.src = article.category === 'yoga' ? omSymbol : lotusFlower;
                                                 target.className = "w-48 h-48 object-contain opacity-30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2";
                                             }}
                                         />
@@ -191,7 +184,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
                                             {article.category === 'yoga' ? (
                                                 <img src={omSymbol} alt="Yoga" className="w-48 h-48 object-contain opacity-30" />
                                             ) : (
-                                                <img src={'/logo_icon.webp'} alt="Terapia" className="w-48 h-48 object-contain opacity-30" />
+                                                <img src={lotusFlower} alt="Terapia" className="w-48 h-48 object-contain opacity-30" />
                                             )}
                                         </div>
                                     )}

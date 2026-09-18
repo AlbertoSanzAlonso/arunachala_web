@@ -8,6 +8,7 @@ import { getTranslated } from 'utils/translate';
 import { getImageUrl } from 'utils/imageUtils';
 
 import omSymbol from 'assets/images/om_symbol.png';
+import lotusFlower from 'assets/images/lotus_flower.png';
 
 interface Article {
     id: number;
@@ -208,7 +209,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                     >
                                         <Link to={`/blog/${article.slug}`} className="block h-full">
                                         <div className="h-56 bg-forest/10 overflow-hidden relative">
-                                            {article.thumbnail_url && !article.thumbnail_url.includes('om_symbol.webp') && !article.thumbnail_url.includes('logo_icon.webp') ? (
+                                            {article.thumbnail_url && !article.thumbnail_url.includes('om_symbol.webp') && !article.thumbnail_url.includes('logo_icon.webp') && !article.thumbnail_url.includes('lotus_flower') ? (
                                                 <img
                                                     src={getImageUrl(article.thumbnail_url)}
                                                     alt={getTranslated(article, 'title', i18n.language)}
@@ -217,18 +218,10 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                                         const target = e.currentTarget;
                                                         if (target.getAttribute('data-fallback')) {
                                                             target.style.display = 'none';
-                                                            const parent = target.parentElement;
-                                                            if (parent) {
-                                                                const fileName = article.thumbnail_url?.split('/').pop() || 'Imagen';
-                                                                const errDiv = document.createElement('div');
-                                                                errDiv.className = "absolute inset-0 flex items-center justify-center p-4 text-center text-[10px] text-bark/30 italic break-all";
-                                                                errDiv.innerText = fileName;
-                                                                parent.appendChild(errDiv);
-                                                            }
                                                             return;
                                                         }
                                                         target.setAttribute('data-fallback', 'true');
-                                                        target.src = article.category === 'yoga' ? omSymbol : '/logo_icon.webp';
+                                                        target.src = article.category === 'yoga' ? omSymbol : lotusFlower;
                                                         target.className = "w-24 h-24 object-contain opacity-30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:scale-110 transition-transform duration-500";
                                                     }}
                                                 />
@@ -237,7 +230,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                                     {article.category === 'yoga' ? (
                                                         <img src={omSymbol} alt="Yoga" className="w-24 h-24 object-contain opacity-30 group-hover:scale-110 transition-transform duration-500" />
                                                     ) : (
-                                                        <img src={'/logo_icon.webp'} alt="Terapia" className="w-24 h-24 object-contain opacity-30 group-hover:scale-110 transition-transform duration-500" />
+                                                        <img src={lotusFlower} alt="Terapia" className="w-24 h-24 object-contain opacity-30 group-hover:scale-110 transition-transform duration-500" />
                                                     )}
                                                 </div>
                                             )}
