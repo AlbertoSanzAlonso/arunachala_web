@@ -4,7 +4,7 @@ Plataforma web para el estudio de yoga Arunachala con sistema de reservas, conte
 
 ## 🏗️ Arquitectura
 
-- **Backend**: FastAPI (Hetzner VPS) + Supabase (PostgreSQL)
+- **Backend**: FastAPI (Hetzner VPS) + Postgres local + MinIO
 - **Frontend**: React + TypeScript (Vercel)
 - **Automatización**: n8n + AI (Hetzner VPS)
 - **Base de Datos Vectorial**: Qdrant (Hetzner VPS)

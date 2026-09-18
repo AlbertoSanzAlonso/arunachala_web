@@ -3,8 +3,7 @@ Almacenamiento de objetos unificado.
 
 STORAGE_TYPE:
   - local  → disco /app/static (volumen Coolify)
-  - s3     → MinIO / S3 compatible (bucket en Coolify)
-  - supabase → legado (evitar en producción)
+  - s3     → MinIO / S3 compatible
 """
 from __future__ import annotations
 

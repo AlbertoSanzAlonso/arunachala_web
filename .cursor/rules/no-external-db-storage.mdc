@@ -1,0 +1,27 @@
+---
+description: Stack de datos y storage sin proveedores cloud de BD/storage externos
+alwaysApply: true
+---
+
+# Infra de datos (Arunachala)
+
+## Fuente de verdad
+
+- **Postgres**: contenedor `arunachala-postgres` en el VPS (red `coolify`).
+  `DATABASE_URL=postgresql://arunachala:...@arunachala-postgres:5432/arunachala_web`
+- **Media**: MinIO (`arunachala-minio`) con `STORAGE_TYPE=s3`.
+  Variables: `S3_ENDPOINT_URL`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_BUCKET`, `S3_PUBLIC_URL`.
+- `STORAGE_TYPE` solo admite `local` o `s3`. No añadir otros backends.
+
+## Prohibido
+
+- No reintroducir clientes, SDKs, env vars ni docs de proveedores cloud de BD/storage
+  que ya se abandonaron (p. ej. paquetes `supabase`, `SUPABASE_*`, `STORAGE_TYPE=supabase`).
+- No apuntar `DATABASE_URL` a poolers externos; usar Postgres local del VPS.
+- No crear scripts de migración hacia esos proveedores; solo desde/hacia VPS + MinIO.
+
+## Coolify
+
+- Quitar del Environment cualquier `SUPABASE_URL` / `SUPABASE_KEY` residual.
+- MinIO y Postgres pueden existir como contenedores Docker fuera del menú Coolify;
+  basta con que estén en la red `coolify` y las env del API apunten a ellos.

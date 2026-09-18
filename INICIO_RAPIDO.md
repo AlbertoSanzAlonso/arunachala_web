@@ -19,7 +19,7 @@ Una vez iniciado, podrás acceder a:
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:8000
 - **API Docs (Swagger)**: http://localhost:8000/docs
-- **Base de Datos**: Gestionada en Supabase Dashboard
+- **Base de Datos**: Postgres en el VPS (`arunachala-postgres`)
 
 ### Detener los Servicios
 

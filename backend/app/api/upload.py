@@ -68,33 +68,6 @@ async def upload_audio(
                 os.remove(temp_path)
             return {"url": url}
 
-        if STORAGE_TYPE == "supabase":
-            from app.core.image_utils import supabase_client
-            if not supabase_client:
-                raise HTTPException(status_code=500, detail="Supabase client not initialized. Check SUPABASE_URL and SUPABASE_KEY.")
-
-            try:
-                bucket_name = "arunachala-images"
-                file_path = f"audio/{final_filename}"
-
-                supabase_client.storage.from_(bucket_name).upload(
-                    file=audio_bytes,
-                    path=file_path,
-                    file_options={"content-type": "audio/mpeg"}
-                )
-
-                public_url = supabase_client.storage.from_(bucket_name).get_public_url(file_path)
-                if public_url.endswith('?'):
-                    public_url = public_url[:-1]
-
-                if os.path.exists(temp_path):
-                    os.remove(temp_path)
-
-                return {"url": public_url}
-            except Exception as supabase_err:
-                print(f"🔥 Supabase Upload Error: {supabase_err}")
-                raise HTTPException(status_code=500, detail=f"Error uploading to Supabase: {str(supabase_err)}")
-
         with open(final_path, "wb") as f:
             f.write(audio_bytes)
 
@@ -171,31 +144,6 @@ async def upload_image(
                 content_type="image/webp",
             )
             return {"url": url}
-
-        if STORAGE_TYPE == "supabase":
-            from app.core.image_utils import supabase_client
-            if not supabase_client:
-                raise HTTPException(status_code=500, detail="Supabase client not initialized")
-
-            try:
-                bucket_name = "arunachala-images"
-                file_path = f"{folder}/{final_filename}"
-
-                supabase_client.storage.from_(bucket_name).upload(
-                    file=img_bytes,
-                    path=file_path,
-                    file_options={"content-type": "image/webp"}
-                )
-
-                public_url = supabase_client.storage.from_(bucket_name).get_public_url(file_path)
-                if public_url.endswith('?'):
-                    public_url = public_url[:-1]
-
-                return {"url": public_url}
-
-            except Exception as supabase_err:
-                print(f"🔥 Supabase Image Upload Error: {supabase_err}")
-                raise HTTPException(status_code=500, detail=f"Error uploading image to Supabase: {str(supabase_err)}")
 
         with open(final_path, "wb") as f:
             f.write(img_bytes)

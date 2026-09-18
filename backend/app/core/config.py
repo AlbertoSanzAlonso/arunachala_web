@@ -37,7 +37,7 @@ class Settings(BaseSettings):
             return [origin.strip().strip('"').strip("'") for origin in v_stripped.split(',')]
         return v
     
-    # Storage: local | s3 (MinIO en Coolify) | supabase (legado)
+    # Storage: local | s3 (MinIO)
     STORAGE_TYPE: str = "local"
     S3_ENDPOINT_URL: Optional[str] = None
     S3_ACCESS_KEY: Optional[str] = None

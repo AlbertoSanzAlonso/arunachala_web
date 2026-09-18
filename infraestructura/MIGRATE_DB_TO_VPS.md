@@ -1,71 +1,28 @@
-# Migrar base de datos: Supabase → Postgres del VPS
+# Postgres en el VPS (estado actual)
 
-Supabase usa **Postgres 17**. En el VPS, `infraestructura-postgres-1` es
-**Postgres 15** (n8n) — no sirve para el dump ni para restaurar.
+La app usa **`arunachala-postgres`** (Postgres 17) en la red `coolify`.
 
-El script crea **`arunachala-postgres`** (Postgres 17) en la red `coolify`,
-con la BD `arunachala_web`, sin tocar n8n.
+```
+DATABASE_URL=postgresql://arunachala:PASSWORD@arunachala-postgres:5432/arunachala_web
+```
 
-## Resumen
+No uses el Postgres 15 de n8n (`infraestructura-postgres-1`).
 
-| Antes | Después |
-|--------|---------|
-| `DATABASE_URL` → pooler Supabase | `DATABASE_URL` → `arunachala-postgres:5432` |
-| Storage sigue en Supabase (roto) | Media: MinIO / local (otro tema) |
-
-## 0. Preparación
-
-1. Mantenimiento corto (cutover 1–5 min).
-2. **Direct connection** de Supabase (`db.xxxxx.supabase.co:5432`).
-   Codifica `!` en la password como `%21`.
-3. No uses el pooler (`:6543` / `pooler.supabase.com`).
-
-## 1. Dump + restore
+## Re-dump desde un remoto (opcional)
 
 ```bash
-cd /ruta/al/repo/infraestructura
-chmod +x migrate_db_supabase_to_local.sh
-
-export SUPABASE_DB_URL='postgresql://postgres:PASS%21@db.REF.supabase.co:5432/postgres?sslmode=require'
-
-./migrate_db_supabase_to_local.sh
+export REMOTE_DB_URL='postgresql://user:PASS%21@host:5432/postgres?sslmode=require'
+./migrate_db_to_local.sh
 ```
 
-El script:
-
-1. Crea/arranca `arunachala-postgres` (imagen `postgres:17`) si no existe.
-2. Hace `pg_dump` con cliente 17 (evita el error de version mismatch).
-3. Restaura en `arunachala_web`.
-
-Deberías ver tablas (`contents`, `gallery`, …) y `COUNT(*)` de contents > 0.
-
-## 2. Cutover en Coolify
-
-API → Environment → **Production**:
-
-```
-DATABASE_URL=postgresql://arunachala:arunachala1234@arunachala-postgres:5432/arunachala_web
-```
-
-(ajusta password si la cambiaste)
-
-→ **Save + Redeploy**
-
-## 3. Comprobar
+O con dump ya hecho:
 
 ```bash
-curl -sS 'https://api.yogayterapiasarunachala.es/api/content?type=article&status=published&limit=1' | head -c 400
+export DUMP_FILE=/tmp/archivo.dump
+export SKIP_DUMP=1
+./migrate_db_to_local.sh
 ```
 
-Login al dashboard, listar contenidos.
+## Rollback
 
-## 4. Rollback
-
-Vuelve el `DATABASE_URL` de Supabase (pooler) en Coolify y Redeploy.
-
-## Notas
-
-- **n8n** sigue en `infraestructura-postgres-1` (PG15); no lo toques.
-- Solo se migra el schema `public` (sin `auth`/`storage` de Supabase).
-- Cambia `arunachala1234` en producción cuando puedas.
-- Media (MinIO) es un paso aparte.
+Restaura un dump anterior en `arunachala-postgres` o cambia `DATABASE_URL` a un backup conocido.

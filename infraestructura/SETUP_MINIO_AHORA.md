@@ -88,8 +88,7 @@ curl -I https://media.yogayterapiasarunachala.es/minio/health/live
 Sube una imagen en el dashboard: la URL debe ser tipo  
 `https://media.yogayterapiasarunachala.es/arunachala-media/gallery/...`
 
-## Importante sobre lo antiguo
+## Media antigua
 
-- MinIO **no trae** las fotos de Supabase.
-- Si la BD quedó en `/static/...` vacío, haz el **rollback** (script Python que te pasamos) **antes** o las miniaturas seguirán rotas.
-- Cuando Supabase deje de dar 402, se puede migrar lo viejo a MinIO/local.
+Las URLs antiguas en BD pueden apuntar a storage externo o `/static/` vacío.
+Las **nuevas** subidas van a MinIO. Para lo viejo: re-subir o copiar objetos al bucket a mano.

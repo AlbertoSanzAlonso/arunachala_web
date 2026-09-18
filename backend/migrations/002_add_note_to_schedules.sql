@@ -1,5 +1,5 @@
 -- Migration 002: Add note and translations columns to schedules table
--- Run this in Supabase SQL Editor
+-- Run this against the app Postgres (arunachala_web)
 
 ALTER TABLE schedules
     ADD COLUMN IF NOT EXISTS note VARCHAR(500) DEFAULT NULL,

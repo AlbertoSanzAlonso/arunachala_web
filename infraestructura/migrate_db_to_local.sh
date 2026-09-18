@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
-# Migra Postgres de Supabase (PG17) → Postgres 17 en el VPS.
+# Dump/restore Postgres remoto → Postgres 17 en el VPS (arunachala-postgres).
 #
 # Uso:
-#   export SUPABASE_DB_URL='postgresql://postgres:PASS%21@db.REF.supabase.co:5432/postgres?sslmode=require'
-#   ./migrate_db_supabase_to_local.sh
+#   export REMOTE_DB_URL='postgresql://user:PASS%21@host:5432/postgres?sslmode=require'
+#   ./migrate_db_to_local.sh
 #
-# Reutilizar dump ya hecho:
-#   export DUMP_FILE=/tmp/arunachala_supabase_XXXX.dump
+# Reutilizar dump:
+#   export DUMP_FILE=/tmp/arunachala_XXXX.dump
 #   export SKIP_DUMP=1
-#   ./migrate_db_supabase_to_local.sh
+#   ./migrate_db_to_local.sh
 #
 # Crea `arunachala-postgres` (PG17). NO usa infraestructura-postgres-1 (n8n / PG15).
 
 set -euo pipefail
 
-DUMP_FILE="${DUMP_FILE:-/tmp/arunachala_supabase_$(date +%Y%m%d_%H%M%S).dump}"
+DUMP_FILE="${DUMP_FILE:-/tmp/arunachala_pg_$(date +%Y%m%d_%H%M%S).dump}"
 SKIP_DUMP="${SKIP_DUMP:-0}"
 LOCAL_PG_CONTAINER="${LOCAL_PG_CONTAINER:-arunachala-postgres}"
 LOCAL_DB_NAME="${LOCAL_DB_NAME:-arunachala_web}"
@@ -22,20 +22,20 @@ LOCAL_DB_USER="${LOCAL_DB_USER:-arunachala}"
 LOCAL_DB_PASSWORD="${LOCAL_DB_PASSWORD:-arunachala1234}"
 PG_IMAGE="${PG_IMAGE:-postgres:17}"
 COOLIFY_NETWORK="${COOLIFY_NETWORK:-coolify}"
+REMOTE_DB_URL="${REMOTE_DB_URL:-}"
 
-# El dump de Supabase PG17 no se puede restaurar en el Postgres 15 de n8n
 if [[ "$LOCAL_PG_CONTAINER" == "infraestructura-postgres-1" ]]; then
   echo "⚠️  LOCAL_PG_CONTAINER era infraestructura-postgres-1 (PG15/n8n)."
   echo "   Forzando arunachala-postgres (PG17)."
   LOCAL_PG_CONTAINER=arunachala-postgres
 fi
 
-if [[ "$SKIP_DUMP" != "1" && -z "${SUPABASE_DB_URL:-}" ]]; then
-  echo "❌ Define SUPABASE_DB_URL (Direct :5432). Codifica ! como %21"
+if [[ "$SKIP_DUMP" != "1" && -z "$REMOTE_DB_URL" ]]; then
+  echo "❌ Define REMOTE_DB_URL (directo :5432). Codifica ! como %21"
   exit 1
 fi
 
-if [[ -n "${SUPABASE_DB_URL:-}" && "$SUPABASE_DB_URL" == *":6543"* ]]; then
+if [[ -n "$REMOTE_DB_URL" && "$REMOTE_DB_URL" == *":6543"* ]]; then
   echo "⚠️  Puerto 6543 (transaction pooler) no sirve para pg_dump. Usa :5432."
   exit 1
 fi
@@ -87,11 +87,11 @@ if [[ "$SKIP_DUMP" == "1" ]]; then
   fi
   ls -lh "$DUMP_FILE"
 else
-  echo "=== 2) Dump Supabase con $PG_IMAGE → $DUMP_FILE ==="
+  echo "=== 2) Dump remoto con $PG_IMAGE → $DUMP_FILE ==="
   docker run --rm --network host \
     -v /tmp:/tmp \
     "$PG_IMAGE" \
-    pg_dump "$SUPABASE_DB_URL" \
+    pg_dump "$REMOTE_DB_URL" \
       --format=custom \
       --no-owner \
       --no-acl \

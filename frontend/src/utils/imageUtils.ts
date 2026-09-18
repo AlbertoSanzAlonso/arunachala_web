@@ -1,7 +1,5 @@
 import { API_BASE_URL } from '../config';
 
-const SUPABASE_BUCKET_PREFIX =
-    'https://vybpihtssncjalbsnbcr.supabase.co/storage/v1/object/public/arunachala-images/';
 const PRODUCTION_SITE = 'https://www.yogayterapiasarunachala.es';
 
 /** Rutas servidas desde frontend/public (Vercel), no desde la API. */
@@ -47,32 +45,29 @@ const resolveSitePublicAsset = (path: string): string => {
     return `${getSiteOrigin()}${normalized}`;
 };
 
-/** Media migrada a disco local en la API: /static/... */
+/** Media en disco/API: /static/... */
 const resolveApiStatic = (pathOnly: string): string =>
     `${getApiOrigin()}/static/${pathOnly.replace(/^\//, '')}`;
 
 /**
- * Extrae el path del objeto si la URL es del bucket antiguo de Supabase.
+ * Path de objeto si la URL es de un storage público legado
+ * (.../storage/v1/object/public/<bucket>/...).
  */
-const supabaseObjectPath = (url: string): string | null => {
-    const markers = [
-        SUPABASE_BUCKET_PREFIX,
-        '/storage/v1/object/public/arunachala-images/',
-    ];
-    for (const marker of markers) {
-        const idx = url.indexOf(marker);
-        if (idx !== -1) {
-            return url.slice(idx + marker.length).split('?')[0];
-        }
-    }
-    return null;
+const legacyPublicObjectPath = (url: string): string | null => {
+    const marker = '/storage/v1/object/public/';
+    const idx = url.indexOf(marker);
+    if (idx === -1) return null;
+    const after = url.slice(idx + marker.length);
+    const slash = after.indexOf('/');
+    if (slash === -1) return null;
+    return after.slice(slash + 1).split('?')[0];
 };
 
 /**
  * Returns a full URL for an image/audio asset.
  * - blob:/file: → '' (invalid cross-session; use UI fallback)
- * - URLs del bucket Supabase (legado) → API /static/...
- * - data: u otras http(s) → as-is
+ * - URLs http de storage legado → API /static/...
+ * - data: u otras http(s) → as-is (incl. MinIO / media.*)
  * - /gallery/... o /logo_icon.webp → sitio (Vercel public/)
  * - /static/... → API (disco local), salvo assets solo en el sitio
  * - other relative → API_BASE_URL
@@ -82,12 +77,12 @@ export const getImageUrl = (url: string | null | undefined): string => {
     const trimmed = url.trim();
     if (!trimmed || isEphemeralUrl(trimmed)) return '';
 
-    const fromSupabase = supabaseObjectPath(trimmed);
-    if (fromSupabase) {
-        if (STATIC_ON_SITE_ONLY.has(fromSupabase)) {
-            return resolveSitePublicAsset(`/gallery/articles/${fromSupabase.split('/').pop()}`);
+    const fromLegacy = legacyPublicObjectPath(trimmed);
+    if (fromLegacy) {
+        if (STATIC_ON_SITE_ONLY.has(fromLegacy)) {
+            return resolveSitePublicAsset(`/gallery/articles/${fromLegacy.split('/').pop()}`);
         }
-        return resolveApiStatic(fromSupabase);
+        return resolveApiStatic(fromLegacy);
     }
 
     if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) {

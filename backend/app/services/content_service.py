@@ -96,7 +96,7 @@ def cleanup_orphan_tags(db: Session):
         db.commit()
 
 async def download_remote_image(image_url: str, slug: str) -> Optional[str]:
-    """Download a remote image and save it locally/Supabase"""
+    """Download a remote image and save it locally or to S3/MinIO"""
     try:
         async with httpx.AsyncClient(follow_redirects=True) as client:
             response = await client.get(image_url, timeout=30.0)
