@@ -16,6 +16,7 @@ interface BlogHeaderProps {
     backLabel?: string;
     backTo?: string;
     searchPlaceholder?: string;
+    contentType?: string;
 }
 
 const BlogHeader: React.FC<BlogHeaderProps> = ({
@@ -28,6 +29,7 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({
     backLabel,
     backTo,
     searchPlaceholder,
+    contentType,
 }) => {
     const { t } = useTranslation();
 
@@ -68,6 +70,7 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({
                         onFilterChange={onFilterChange}
                         hideCategoryTabs={hideCategoryTabs}
                         searchPlaceholder={searchPlaceholder}
+                        contentType={contentType}
                     />
                 </div>
             </div>

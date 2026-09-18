@@ -25,21 +25,30 @@ class TagOut(TagBase):
 import unicodedata
 
 @router.get("", response_model=List[TagOut])
-def get_tags(category: Optional[str] = None, in_use: bool = True, db: Session = Depends(get_db)):
-    print(f"🔍 GET /api/tags - category: {category}, in_use: {in_use}")
+def get_tags(
+    category: Optional[str] = None,
+    content_type: Optional[str] = None,
+    in_use: bool = True,
+    db: Session = Depends(get_db),
+):
+    print(f"🔍 GET /api/tags - category: {category}, content_type: {content_type}, in_use: {in_use}")
     query = db.query(Tag)
     
     if category:
         query = query.filter(Tag.category == category)
     
     # Only tags that are linked to at least one PUBLISHED content item
-    if in_use:
+    if in_use or content_type:
         from app.models.models import content_tags, Content
         # Join with association table and content table to check status
-        in_use_ids = db.query(content_tags.c.tag_id).join(
+        in_use_query = db.query(content_tags.c.tag_id).join(
             Content, Content.id == content_tags.c.content_id
-        ).filter(Content.status == "published").distinct()
-        
+        ).filter(Content.status == "published")
+
+        if content_type:
+            in_use_query = in_use_query.filter(Content.type == content_type)
+
+        in_use_ids = in_use_query.distinct()
         query = query.filter(Tag.id.in_(in_use_ids))
         
     tags = query.all()

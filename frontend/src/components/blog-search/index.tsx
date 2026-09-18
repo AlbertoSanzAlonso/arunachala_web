@@ -24,20 +24,32 @@ interface BlogSearchProps {
     filters: FilterState;
     hideCategoryTabs?: boolean;
     searchPlaceholder?: string;
+    /** Solo etiquetas usadas por este tipo de contenido (p. ej. announcement en noticias) */
+    contentType?: string;
 }
 
-const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, filters, hideCategoryTabs = false, searchPlaceholder }) => {
+const BlogSearch: React.FC<BlogSearchProps> = ({
+    articles,
+    onFilterChange,
+    filters,
+    hideCategoryTabs = false,
+    searchPlaceholder,
+    contentType,
+}) => {
     const { t, i18n } = useTranslation();
     const [allTags, setAllTags] = useState<any[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
     useEffect(() => {
-        const categoryParam = filters.category !== 'all' ? `&category=${filters.category}` : '';
-        fetch(`${API_BASE_URL}/api/tags?in_use=true${categoryParam}`)
+        const categoryParam = !contentType && filters.category !== 'all'
+            ? `&category=${filters.category}`
+            : '';
+        const typeParam = contentType ? `&content_type=${encodeURIComponent(contentType)}` : '';
+        fetch(`${API_BASE_URL}/api/tags?in_use=true${categoryParam}${typeParam}`)
             .then(res => res.ok ? res.json() : [])
             .then(data => setAllTags(data))
             .catch(err => console.error("Failed to fetch tags for search", err));
-    }, [i18n.language, filters.category]);
+    }, [i18n.language, filters.category, contentType]);
 
     const years = useMemo(() => {
         if (!articles || !Array.isArray(articles)) return ['all'];
@@ -76,9 +88,22 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, filte
         return label.charAt(0).toUpperCase() + label.slice(1);
     };
 
+    const articleTagNames = useMemo(() => {
+        const names = new Set<string>();
+        (articles || []).forEach(a => {
+            (a.tags || []).forEach((tag: string) => names.add(tag.toLowerCase()));
+        });
+        return names;
+    }, [articles]);
+
     const availableTags = useMemo(() => {
         const currentLang = i18n.language.split('-')[0];
-        return allTags.map(tag => {
+        // En noticias (u otros scopes), solo etiquetas presentes en los ítems listados
+        const source = contentType
+            ? allTags.filter((tag: { name: string }) => articleTagNames.has(tag.name.toLowerCase()))
+            : allTags;
+
+        return source.map((tag: { name: string; translations?: Record<string, any> }) => {
             let label = tag.name;
             let translationValue = tag.translations && tag.translations[currentLang];
             if (typeof translationValue === 'object' && translationValue !== null && translationValue.name) {
@@ -88,7 +113,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, filte
             }
             return { name: tag.name, label };
         }).sort((a, b) => a.label.localeCompare(b.label));
-    }, [allTags, i18n.language]);
+    }, [allTags, i18n.language, contentType, articleTagNames]);
 
     return (
         <div className="w-full max-w-5xl mx-auto">

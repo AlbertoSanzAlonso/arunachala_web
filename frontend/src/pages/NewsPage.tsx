@@ -137,6 +137,7 @@ const NewsPage: React.FC = () => {
                     backTo="/quienes-somos"
                     backLabel={t('news.back_to_about', 'Volver a Quiénes somos')}
                     searchPlaceholder={t('news.search_placeholder', 'Buscar noticias...')}
+                    contentType="announcement"
                 />
 
                 <section ref={gridRef} className="max-w-7xl mx-auto px-6 pt-0 pb-20 scroll-mt-32">
