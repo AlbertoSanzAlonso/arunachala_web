@@ -42,35 +42,16 @@ if ! docker ps --format '{{.Names}}' | grep -qx "$LOCAL_PG_CONTAINER"; then
 fi
 
 echo "=== 2) Dump desde Supabase → $DUMP_FILE ==="
-# Usamos la imagen postgres:15 para tener pg_dump compatible
-docker run --rm \
-  -e PGPASSWORD \
+# --network host: evita fallos IPv6 "Network is unreachable" en algunos VPS
+docker run --rm --network host \
   -v /tmp:/tmp \
   postgres:15 \
   pg_dump "$SUPABASE_DB_URL" \
     --format=custom \
     --no-owner \
     --no-acl \
-    --exclude-schema=supabase_migrations \
-    --exclude-schema=auth \
-    --exclude-schema=storage \
-    --exclude-schema=realtime \
-    --exclude-schema=extensions \
-    --exclude-schema=graphql \
-    --exclude-schema=graphql_public \
-    --exclude-schema=pgsodium \
-    --exclude-schema=vault \
-    --exclude-schema=supabase_functions \
+    --schema=public \
     -f "$DUMP_FILE"
-
-# Si el dump vacío falló por schemas, reintentar solo public
-if [[ ! -s "$DUMP_FILE" ]]; then
-  echo "⚠️  Dump vacío/fallido; reintento solo schema public..."
-  docker run --rm -v /tmp:/tmp postgres:15 \
-    pg_dump "$SUPABASE_DB_URL" \
-      --format=custom --no-owner --no-acl --schema=public \
-      -f "$DUMP_FILE"
-fi
 
 ls -lh "$DUMP_FILE"
 
