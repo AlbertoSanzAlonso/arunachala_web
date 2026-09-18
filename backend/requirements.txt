@@ -70,6 +70,7 @@ groq==1.0.0
 google-generativeai==0.8.6
 apscheduler==3.11.2
 supabase>=2.3.4
+boto3>=1.34.0
 unidecode
 pydub
 aiofiles

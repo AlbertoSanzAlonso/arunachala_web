@@ -5,3 +5,8 @@ api.yogayterapiasarunachala.es {
 n8n.yogayterapiasarunachala.es {
     reverse_proxy n8n:5678
 }
+
+# Bucket público MinIO (path-style: /arunachala-media/...)
+media.yogayterapiasarunachala.es {
+    reverse_proxy minio:9000
+}

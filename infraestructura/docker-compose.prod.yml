@@ -39,15 +39,35 @@ services:
     environment:
       - DATABASE_URL=postgresql://arunachala:arunachala1234@postgres:5432/arunachala_db
       - REDIS_URL=redis://redis:6379/0
-      - STORAGE_TYPE=local
+      - STORAGE_TYPE=s3
+      - S3_ENDPOINT_URL=http://minio:9000
+      - S3_ACCESS_KEY=${MINIO_ROOT_USER:-arunachala}
+      - S3_SECRET_KEY=${MINIO_ROOT_PASSWORD:-arunachala_minio_change_me}
+      - S3_BUCKET=arunachala-media
+      - S3_PUBLIC_URL=${S3_PUBLIC_URL:-https://media.yogayterapiasarunachala.es}
     volumes:
-      # Persistencia de imágenes/audio migrados desde Supabase
+      # Fallback / legado local (migración Supabase)
       - backend_static:/app/static
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+      minio:
+        condition: service_started
+    networks:
+      - arunachala_net
+
+  # Bucket S3-compatible (MinIO) — nuevas subidas de imagen/audio
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-arunachala}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-arunachala_minio_change_me}
+    volumes:
+      - minio_data:/data
     networks:
       - arunachala_net
 
@@ -103,6 +123,7 @@ volumes:
   qdrant_data:
   postgres_data:
   backend_static:
+  minio_data:
 
 
 networks:

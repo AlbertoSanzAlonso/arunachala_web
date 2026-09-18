@@ -37,9 +37,14 @@ class Settings(BaseSettings):
             return [origin.strip().strip('"').strip("'") for origin in v_stripped.split(',')]
         return v
     
-    # Storage Configuration (local vs cloudinary)
-
-    
+    # Storage: local | s3 (MinIO en Coolify) | supabase (legado)
+    STORAGE_TYPE: str = "local"
+    S3_ENDPOINT_URL: Optional[str] = None
+    S3_ACCESS_KEY: Optional[str] = None
+    S3_SECRET_KEY: Optional[str] = None
+    S3_BUCKET: str = "arunachala-media"
+    S3_PUBLIC_URL: Optional[str] = None
+    S3_REGION: str = "us-east-1"
 
 
     # Frontend
