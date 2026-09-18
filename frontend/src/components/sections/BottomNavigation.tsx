@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Article } from 'types/blog';
 import { getTranslated } from 'utils/translate';
 import { useTranslation } from 'react-i18next';
+import { getContentDetailPath } from 'utils/contentPaths';
 
 interface BottomNavigationProps {
     prevArticle: Article | null;
@@ -10,14 +11,16 @@ interface BottomNavigationProps {
     currentPage: number;
     language: string;
     isTop?: boolean;
+    contentType?: 'article' | 'announcement';
 }
 
-const BottomNavigation: React.FC<BottomNavigationProps> = ({ 
-    prevArticle, 
-    nextArticle, 
-    currentPage, 
+const BottomNavigation: React.FC<BottomNavigationProps> = ({
+    prevArticle,
+    nextArticle,
+    currentPage,
     language,
-    isTop = false
+    isTop = false,
+    contentType = 'article',
 }) => {
     const { t } = useTranslation();
 
@@ -28,7 +31,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
             <div className="text-left">
                 {prevArticle && (
                     <Link
-                        to={`/blog/${prevArticle.slug}?p=${currentPage}`}
+                        to={getContentDetailPath(contentType, prevArticle.slug, currentPage)}
                         className="group flex flex-col items-start gap-2 p-6 bg-white rounded-3xl border border-bark/5 hover:border-matcha/30 hover:shadow-lg transition-all w-full h-full text-left"
                     >
                         <span className="text-[10px] font-headers uppercase tracking-widest text-bark/40 group-hover:text-matcha transition-colors">
@@ -43,7 +46,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
             <div className="text-right flex justify-end">
                 {nextArticle && (
                     <Link
-                        to={`/blog/${nextArticle.slug}?p=${currentPage}`}
+                        to={getContentDetailPath(contentType, nextArticle.slug, currentPage)}
                         className="group flex flex-col items-end gap-2 p-6 bg-white rounded-3xl border border-bark/5 hover:border-matcha/30 hover:shadow-lg transition-all w-full h-full text-right"
                     >
                         <span className="text-[10px] font-headers uppercase tracking-widest text-bark/40 group-hover:text-matcha transition-colors">

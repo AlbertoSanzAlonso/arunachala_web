@@ -4,7 +4,8 @@ export interface Article {
     slug: string;
     excerpt: string;
     body?: string;
-    category: string;
+    type?: 'article' | 'meditation' | 'announcement' | string;
+    category: string | null;
     thumbnail_url: string | null;
     tags: string[];
     created_at: string;

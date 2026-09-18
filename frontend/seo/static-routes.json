@@ -29,10 +29,15 @@
     "title": "Actividades y cursos en Cornellà | Arunachala Yoga y Terapias",
     "description": "Talleres, cursos, retiros y eventos de yoga y bienestar en Aruṇāchala Cornellà. Consulta fechas, precios y reserva tu plaza."
   },
-  {
+    {
     "path": "/blog/",
     "title": "Blog | Aruṇāchala Yoga y Terapias",
     "description": "Descubre artículos sobre yoga, meditación, terapias holísticas y bienestar en nuestro blog."
+  },
+  {
+    "path": "/noticias/",
+    "title": "Noticias | Aruṇāchala Yoga y Terapias",
+    "description": "Noticias y avisos del centro Aruṇāchala Yoga y Terapias en Cornellà."
   },
   {
     "path": "/blog/yoga/",

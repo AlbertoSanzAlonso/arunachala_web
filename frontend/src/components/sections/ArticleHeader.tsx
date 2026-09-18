@@ -7,37 +7,48 @@ import BackButton from 'components/ui/BackButton';
 
 import { Article } from 'types/blog';
 import { getTranslated } from 'utils/translate';
+import { getContentDetailPath } from 'utils/contentPaths';
 
 interface ArticleHeaderProps {
-    category: string;
+    category?: string | null;
     title: string;
     currentPage: number;
     onShare: () => void;
     prevArticle?: Article | null;
     language?: string;
+    backTo?: string;
+    backLabel?: string;
+    showCategory?: boolean;
+    contentType?: 'article' | 'announcement';
 }
 
-const ArticleHeader: React.FC<ArticleHeaderProps> = ({ 
-    category, 
-    title, 
-    currentPage, 
+const ArticleHeader: React.FC<ArticleHeaderProps> = ({
+    category,
+    title,
+    currentPage,
     onShare,
     prevArticle,
-    language
+    language,
+    backTo,
+    backLabel,
+    showCategory = true,
+    contentType = 'article',
 }) => {
     const { t } = useTranslation();
 
     return (
         <>
             <div className="mb-4">
-                <BackButton to={`/blog?p=${currentPage}`} label={t('blog.back_to_blog')} />
+                <BackButton
+                    to={backTo || `/blog?p=${currentPage}`}
+                    label={backLabel || t('blog.back_to_blog')}
+                />
             </div>
 
-            {/* Previous Article Button for Mobile */}
             {prevArticle && language && (
                 <div className="lg:hidden mb-6">
                     <Link
-                        to={`/blog/${prevArticle.slug}?p=${currentPage}`}
+                        to={getContentDetailPath(contentType, prevArticle.slug, currentPage)}
                         className="flex flex-col gap-1 py-3 px-5 bg-white rounded-2xl border border-bark/5 hover:border-matcha/30 hover:shadow-md transition-all w-full text-left"
                     >
                         <span className="text-[10px] font-headers uppercase tracking-widest text-bark/40">
@@ -51,10 +62,18 @@ const ArticleHeader: React.FC<ArticleHeaderProps> = ({
             )}
 
             <div className="mb-6 flex items-center justify-between">
-                <span className="inline-block bg-forest text-white px-4 py-2 rounded-full text-sm font-headers tracking-wider">
-                    {t(`blog.categories.${category}`, category)}
-                </span>
-                
+                {showCategory && category ? (
+                    <span className="inline-block bg-forest text-white px-4 py-2 rounded-full text-sm font-headers tracking-wider">
+                        {t(`blog.categories.${category}`, category)}
+                    </span>
+                ) : contentType === 'announcement' ? (
+                    <span className="inline-block bg-forest text-white px-4 py-2 rounded-full text-sm font-headers tracking-wider">
+                        {t('news.badge', 'Noticia')}
+                    </span>
+                ) : (
+                    <span />
+                )}
+
                 <button
                     onClick={onShare}
                     className="flex items-center gap-2 px-4 py-2 rounded-full border border-forest/20 text-forest hover:bg-forest hover:text-white transition-all text-sm font-medium"

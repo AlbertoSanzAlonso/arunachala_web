@@ -20,6 +20,7 @@ const HomePage = lazy(() => import('./pages/HomePage'));
 const YogaPage = lazy(() => import('./pages/YogaPage'));
 const TherapiesPage = lazy(() => import('./pages/TherapiesPage'));
 const BlogPage = lazy(() => import('./pages/BlogPage'));
+const NewsPage = lazy(() => import('./pages/NewsPage'));
 const BlogDetailPage = lazy(() => import('./pages/BlogDetailPage'));
 const YogaGalleryPage = lazy(() => import('./pages/YogaGalleryPage'));
 const TherapiesGalleryPage = lazy(() => import('./pages/TherapiesGalleryPage'));
@@ -93,6 +94,8 @@ const AppContent = () => {
                 <Route path="/blog/therapy" element={<BlogPage />} />
                 <Route path="/blog/general" element={<BlogPage />} />
                 <Route path="/blog/:slug" element={<BlogDetailPage />} />
+                <Route path="/noticias" element={<NewsPage />} />
+                <Route path="/noticias/:slug" element={<BlogDetailPage />} />
                 <Route path="/galeria/clases-de-yoga" element={<YogaGalleryPage />} />
                 <Route path="/galeria/terapias-y-masajes" element={<TherapiesGalleryPage />} />
                 <Route path="/actividades" element={<ActivitiesPage />} />

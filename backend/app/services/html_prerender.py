@@ -82,6 +82,8 @@ def content_public_path(item: Content) -> Optional[str]:
         return f"/blog/{item.slug}/"
     if item.type == "meditation":
         return f"/meditaciones/{item.slug}/"
+    if item.type == "announcement":
+        return f"/noticias/{item.slug}/"
     return None
 
 
@@ -134,6 +136,51 @@ def build_meditation_html(item: Content) -> str:
     </main>"""
 
 
+def build_news_index_html(news: list[Content]) -> str:
+    cards = "".join(
+        f"""
+        <article>
+          <h2><a href="/noticias/{a.slug}/">{_escape(a.title)}</a></h2>
+          <p>{_escape(a.excerpt or '')}</p>
+        </article>"""
+        for a in news
+        if a.slug
+    )
+    return f"""
+    <main>
+      <h1>Noticias | Arunachala Yoga y Terapias</h1>
+      <p>Noticias y avisos del centro Aruṇāchala.</p>
+      {cards}
+    </main>"""
+
+
+def build_news_html(item: Content, related: list[Content]) -> str:
+    body = render_body(item.body)
+    excerpt = _escape(item.excerpt)
+    related_items = [
+        f'<li><a href="/noticias/{a.slug}/">{_escape(a.title)}</a></li>'
+        for a in related
+        if a.slug and a.slug != item.slug
+    ][:6]
+    related_links = "\n          ".join(related_items)
+    return f"""
+    <main class="font-body text-bark min-h-screen bg-bone">
+      <article class="max-w-4xl mx-auto px-6 py-16">
+        <nav><a href="/noticias/">← Volver a noticias</a> · <a href="/">Inicio</a></nav>
+        <p class="text-sm uppercase tracking-widest text-forest/60 mt-6">Noticia</p>
+        <h1 class="text-4xl font-serif text-forest mt-4 mb-6">{_escape(item.title)}</h1>
+        {f'<p class="text-lg text-bark/80 mb-8">{excerpt}</p>' if excerpt else ''}
+        <div class="prose max-w-none">{body}</div>
+      </article>
+      <nav aria-label="Más noticias" class="max-w-4xl mx-auto px-6 pb-16">
+        <h2 class="text-xl font-serif text-forest mb-4">Otras noticias</h2>
+        <ul>
+          {related_links}
+        </ul>
+      </nav>
+    </main>"""
+
+
 def build_blog_index_html(articles: list[Content]) -> str:
     cards = "".join(
         f"""
@@ -170,6 +217,37 @@ def render_page_html(path: str, db: Session) -> Optional[str]:
 
     if normalized == "/blog/":
         return build_blog_index_html(articles)
+
+    news_items = (
+        db.query(Content)
+        .filter(
+            Content.type == "announcement",
+            Content.status == "published",
+            Content.slug.is_not(None),
+            ~Content.slug.contains("sugerencia"),
+        )
+        .order_by(Content.created_at.desc())
+        .all()
+    )
+
+    if normalized == "/noticias/":
+        return build_news_index_html(news_items)
+
+    news_match = re.match(r"^/noticias/([^/]+)/$", normalized)
+    if news_match:
+        slug = news_match.group(1)
+        item = (
+            db.query(Content)
+            .filter(
+                Content.slug == slug,
+                Content.type == "announcement",
+                Content.status == "published",
+            )
+            .first()
+        )
+        if not item:
+            return None
+        return build_news_html(item, news_items)
 
     blog_match = re.match(r"^/blog/([^/]+)/$", normalized)
     if blog_match:
@@ -277,6 +355,51 @@ def render_full_page(path: str, db: Session) -> Optional[str]:
             .all()
         )
         inner = build_article_html(item, articles)
+        title = f"{item.title} | Arunachala Yoga y Terapias"
+        description = (item.seo_description or item.excerpt or item.title or "")[:160]
+        return wrap_full_html(title, description, canonical, inner)
+
+    if normalized == "/noticias/":
+        news_items = (
+            db.query(Content)
+            .filter(
+                Content.type == "announcement",
+                Content.status == "published",
+                Content.slug.is_not(None),
+            )
+            .order_by(Content.created_at.desc())
+            .all()
+        )
+        inner = build_news_index_html(news_items)
+        title = "Noticias | Arunachala Yoga y Terapias"
+        description = "Noticias y avisos del centro Aruṇāchala Yoga y Terapias en Cornellà."
+        return wrap_full_html(title, description, canonical, inner)
+
+    news_match = re.match(r"^/noticias/([^/]+)/$", normalized)
+    if news_match:
+        slug = news_match.group(1)
+        item = (
+            db.query(Content)
+            .filter(
+                Content.slug == slug,
+                Content.type == "announcement",
+                Content.status == "published",
+            )
+            .first()
+        )
+        if not item:
+            return None
+        news_items = (
+            db.query(Content)
+            .filter(
+                Content.type == "announcement",
+                Content.status == "published",
+                Content.slug.is_not(None),
+            )
+            .order_by(Content.created_at.desc())
+            .all()
+        )
+        inner = build_news_html(item, news_items)
         title = f"{item.title} | Arunachala Yoga y Terapias"
         description = (item.seo_description or item.excerpt or item.title or "")[:160]
         return wrap_full_html(title, description, canonical, inner)

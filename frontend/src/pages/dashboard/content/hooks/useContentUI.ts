@@ -82,10 +82,15 @@ export const useContentUI = (currentTab: TabType) => {
         } else {
             setEditingContent(null);
             setEditorSalt(Math.random().toString(36).substring(7));
+            const newType = currentTab === 'meditation'
+                ? 'meditation'
+                : (currentTab === 'announcement' ? 'announcement' : 'article');
             setFormData({
                 title: '',
-                type: currentTab === 'meditation' ? 'meditation' : (currentTab === 'announcement' ? 'announcement' : 'article'),
-                category: currentTab === 'yoga_article' ? 'yoga' : (currentTab === 'therapy_article' ? 'therapy' : 'yoga'),
+                type: newType,
+                category: newType === 'article'
+                    ? (currentTab === 'therapy_article' ? 'therapy' : 'yoga')
+                    : undefined,
                 status: 'draft',
                 body: '',
                 excerpt: '',

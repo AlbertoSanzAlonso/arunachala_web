@@ -502,6 +502,19 @@
       "follow": "Seguir a @yogayterapiasarunachala"
     }
   },
+  "news": {
+    "title": "Notícies",
+    "subtitle": "Segueix de prop el nostre camí",
+    "badge": "Notícia",
+    "back_to_news": "Tornar a Notícies",
+    "back_to_about": "Tornar a Qui som",
+    "related": "Altres notícies",
+    "no_results": "No s'han trobat notícies",
+    "try_other_filters": "Prova amb altres termes de cerca.",
+    "seo_title": "Notícies | Arunachala Ioga i Teràpies",
+    "seo_description": "Notícies i avisos del centre Aruṇāchala Ioga i Teràpies a Cornellà.",
+    "search_placeholder": "Cercar notícies..."
+  },
   "contact_page": {
     "title": "Contacte",
     "subtitle": "Tens algun dubte? Som aquí per ajudar-te",

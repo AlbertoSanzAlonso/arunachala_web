@@ -10,12 +10,24 @@ interface BlogHeaderProps {
     filters: FilterState;
     onFilterChange: (filters: FilterState) => void;
     articles: Article[];
+    title?: string;
+    subtitle?: string;
+    hideCategoryTabs?: boolean;
+    backLabel?: string;
+    backTo?: string;
+    searchPlaceholder?: string;
 }
 
 const BlogHeader: React.FC<BlogHeaderProps> = ({
     filters,
     onFilterChange,
-    articles
+    articles,
+    title,
+    subtitle,
+    hideCategoryTabs = false,
+    backLabel,
+    backTo,
+    searchPlaceholder,
 }) => {
     const { t } = useTranslation();
 
@@ -27,7 +39,11 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({
 
             {/* Back Button */}
             <div className="absolute top-8 left-0 z-20 w-full md:w-auto">
-                <BackButton className="text-forest hover:text-matcha transition-colors" label={t('common.back_home')} />
+                <BackButton
+                    className="text-forest hover:text-matcha transition-colors"
+                    label={backLabel || t('common.back_home')}
+                    to={backTo}
+                />
             </div>
 
             <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 max-w-7xl mx-auto w-full py-8">
@@ -37,10 +53,10 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({
                     transition={{ duration: 0.8 }}
                 >
                     <h1 className="text-5xl md:text-8xl font-headers text-forest mb-6 tracking-wide uppercase drop-shadow-sm">
-                        {t('blog.title', 'Blog y Novedades')}
+                        {title || t('blog.title', 'Blog')}
                     </h1>
                     <p className="text-lg md:text-2xl text-bark/70 mb-12 max-w-2xl font-light leading-relaxed mx-auto">
-                        {t('blog.subtitle', 'Explora artículos sobre yoga, bienestar y el camino hacia una vida consciente.')}
+                        {subtitle || t('blog.subtitle', 'Explora artículos sobre yoga, bienestar y el camino hacia una vida consciente.')}
                     </p>
                 </motion.div>
 
@@ -50,6 +66,8 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({
                         articles={articles}
                         filters={filters}
                         onFilterChange={onFilterChange}
+                        hideCategoryTabs={hideCategoryTabs}
+                        searchPlaceholder={searchPlaceholder}
                     />
                 </div>
             </div>

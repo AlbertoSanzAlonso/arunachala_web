@@ -502,6 +502,19 @@
       "follow": "Follow @yogayterapiasarunachala"
     }
   },
+  "news": {
+    "title": "News",
+    "subtitle": "Follow our path closely",
+    "badge": "News",
+    "back_to_news": "Back to News",
+    "back_to_about": "Back to About",
+    "related": "Other news",
+    "no_results": "No news found",
+    "try_other_filters": "Try different search terms.",
+    "seo_title": "News | Arunachala Yoga and Therapies",
+    "seo_description": "News and announcements from Aruṇāchala Yoga and Therapies in Cornellà.",
+    "search_placeholder": "Search news..."
+  },
   "contact_page": {
     "title": "Contact",
     "subtitle": "Have any questions? We are here to help you",

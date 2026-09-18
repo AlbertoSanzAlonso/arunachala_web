@@ -24,6 +24,7 @@ const STATIC_BREADCRUMBS: Record<string, BreadcrumbItem[]> = {
     '/blog/yoga/': [HOME, { name: 'Blog', path: '/blog/' }, { name: 'Yoga', path: '/blog/yoga/' }],
     '/blog/therapy/': [HOME, { name: 'Blog', path: '/blog/' }, { name: 'Terapias', path: '/blog/therapy/' }],
     '/blog/general/': [HOME, { name: 'Blog', path: '/blog/' }, { name: 'General', path: '/blog/general/' }],
+    '/noticias/': [HOME, { name: 'Noticias', path: '/noticias/' }],
     '/galeria/clases-de-yoga/': [
         HOME,
         { name: 'Clases de Yoga', path: '/clases-de-yoga/' },
@@ -85,6 +86,19 @@ export function resolveBreadcrumbs(
             ...base,
             {
                 name: blogMatch[1].replace(/-/g, ' '),
+                path,
+            },
+        ];
+    }
+
+    const newsMatch = path.match(/^\/noticias\/([^/]+)\/$/);
+    if (newsMatch) {
+        const base = STATIC_BREADCRUMBS['/noticias/'];
+        if (current) return [...base, current];
+        return [
+            ...base,
+            {
+                name: newsMatch[1].replace(/-/g, ' '),
                 path,
             },
         ];

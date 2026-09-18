@@ -130,7 +130,16 @@ export const ContentModal: React.FC<ContentModalProps> = ({
                                             <label className="block text-sm font-medium text-gray-700">Tipo</label>
                                             <select
                                                 value={formData.type}
-                                                onChange={e => setFormData({ ...formData, type: e.target.value as any })}
+                                                onChange={e => {
+                                                    const newType = e.target.value as Content['type'];
+                                                    setFormData({
+                                                        ...formData,
+                                                        type: newType,
+                                                        category: newType === 'article'
+                                                            ? (formData.category === 'therapy' ? 'therapy' : 'yoga')
+                                                            : undefined,
+                                                    });
+                                                }}
                                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-forest focus:ring-forest sm:text-sm p-2 border"
                                             >
                                                 <option value="article">Artículo</option>

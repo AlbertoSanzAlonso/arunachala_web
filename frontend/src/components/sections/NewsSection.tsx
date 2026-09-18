@@ -103,7 +103,7 @@ const NewsSection: React.FC = () => {
 
                     {news.length > 0 && (
                         <Link
-                            to="/blog"
+                            to="/noticias"
                             className="hidden md:flex items-center gap-2 text-matcha hover:text-forest transition-colors font-headers tracking-widest uppercase text-sm border-b border-matcha/30 hover:border-forest pb-1"
                         >
                             <span>{t('common.view_all_news', 'Ver todas las noticias')}</span>
@@ -156,7 +156,7 @@ const NewsSection: React.FC = () => {
                                         transition={{ delay: idx * 0.1 }}
                                         className="flex-none w-[80vw] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group flex flex-col h-full border border-white snap-center snap-always"
                                     >
-                                        <Link to={`/blog/${item.slug}`} className="block h-full flex-col">
+                                        <Link to={`/noticias/${item.slug}`} className="block h-full flex-col">
                                         <div className="h-48 bg-forest/5 overflow-hidden relative">
                                             {item.thumbnail_url ? (
                                                 <img
@@ -211,7 +211,7 @@ const NewsSection: React.FC = () => {
 
                 <div className="mt-12 text-center md:hidden">
                     <Link
-                        to="/blog"
+                        to="/noticias"
                         className="inline-block px-8 py-3 bg-white border border-matcha/30 text-matcha rounded-full font-headers tracking-widest uppercase text-sm hover:bg-matcha hover:text-white transition-all duration-300 shadow-sm"
                     >
                         {t('common.view_all_news', 'Ver todas las noticias')}

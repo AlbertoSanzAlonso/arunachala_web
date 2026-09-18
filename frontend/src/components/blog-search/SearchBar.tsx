@@ -12,6 +12,7 @@ interface SearchBarProps {
     articles: Article[];
     showSuggestions: boolean;
     setShowSuggestions: (show: boolean) => void;
+    placeholder?: string;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ 
@@ -19,7 +20,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
     onFilterChange, 
     articles, 
     showSuggestions, 
-    setShowSuggestions 
+    setShowSuggestions,
+    placeholder,
 }) => {
     const { t, i18n } = useTranslation();
 
@@ -49,7 +51,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                         }
                     }}
                     className="w-full pl-12 pr-10 py-4 bg-white border border-bark/10 rounded-2xl text-bark focus:ring-2 focus:ring-forest/20 focus:border-forest/30 transition-all outline-none shadow-sm text-lg placeholder:text-bark/30"
-                    placeholder={t('blog.search.placeholder', 'Buscar artículos...')}
+                    placeholder={placeholder || t('blog.search.placeholder', 'Buscar artículos...')}
                     autoComplete="off"
                 />
                 {filters.query && (

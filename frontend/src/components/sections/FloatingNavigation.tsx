@@ -4,19 +4,22 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { Article } from 'types/blog';
 import { getTranslated } from 'utils/translate';
+import { getContentDetailPath } from 'utils/contentPaths';
 
 interface FloatingNavigationProps {
     prevArticle: Article | null;
     nextArticle: Article | null;
     currentPage: number;
     language: string;
+    contentType?: 'article' | 'announcement';
 }
 
-const FloatingNavigation: React.FC<FloatingNavigationProps> = ({ 
-    prevArticle, 
-    nextArticle, 
-    currentPage, 
-    language
+const FloatingNavigation: React.FC<FloatingNavigationProps> = ({
+    prevArticle,
+    nextArticle,
+    currentPage,
+    language,
+    contentType = 'article',
 }) => {
     const [hovered, setHovered] = React.useState<'prev' | 'next' | null>(null);
 
@@ -24,7 +27,7 @@ const FloatingNavigation: React.FC<FloatingNavigationProps> = ({
         <div className="hidden lg:block">
             <AnimatePresence>
                 {prevArticle && (
-                    <div 
+                    <div
                         className="fixed left-8 top-1/2 -translate-y-1/2 z-50 flex items-center gap-4"
                         onMouseEnter={() => setHovered('prev')}
                         onMouseLeave={() => setHovered(null)}
@@ -35,7 +38,7 @@ const FloatingNavigation: React.FC<FloatingNavigationProps> = ({
                             exit={{ opacity: 0, x: -20 }}
                         >
                             <Link
-                                to={`/blog/${prevArticle.slug}?p=${currentPage}`}
+                                to={getContentDetailPath(contentType, prevArticle.slug, currentPage)}
                                 className="bg-white/90 backdrop-blur-md p-5 rounded-full shadow-2xl border border-forest/20 text-forest hover:bg-forest hover:text-white transition-all group shrink-0 block"
                             >
                                 <ChevronLeftIcon className="w-8 h-8 group-hover:-translate-x-1 transition-transform" />
@@ -60,7 +63,7 @@ const FloatingNavigation: React.FC<FloatingNavigationProps> = ({
                 )}
 
                 {nextArticle && (
-                    <div 
+                    <div
                         className="fixed right-8 top-1/2 -translate-y-1/2 z-50 flex items-center flex-row-reverse gap-4"
                         onMouseEnter={() => setHovered('next')}
                         onMouseLeave={() => setHovered(null)}
@@ -71,7 +74,7 @@ const FloatingNavigation: React.FC<FloatingNavigationProps> = ({
                             exit={{ opacity: 0, x: 20 }}
                         >
                             <Link
-                                to={`/blog/${nextArticle.slug}?p=${currentPage}`}
+                                to={getContentDetailPath(contentType, nextArticle.slug, currentPage)}
                                 className="bg-white/90 backdrop-blur-md p-5 rounded-full shadow-2xl border border-forest/20 text-forest hover:bg-forest hover:text-white transition-all group shrink-0 block"
                             >
                                 <ChevronRightIcon className="w-8 h-8 group-hover:translate-x-1 transition-transform" />

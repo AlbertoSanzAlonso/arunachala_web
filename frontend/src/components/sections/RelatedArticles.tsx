@@ -10,10 +10,17 @@ import { Article } from 'types/blog';
 
 interface RelatedArticlesProps {
     articles: Article[];
+    contentType?: 'article' | 'announcement';
+    title?: string;
 }
 
-const RelatedArticles: React.FC<RelatedArticlesProps> = ({ articles }) => {
+const RelatedArticles: React.FC<RelatedArticlesProps> = ({
+    articles,
+    contentType = 'article',
+    title,
+}) => {
     const { t, i18n } = useTranslation();
+    const basePath = contentType === 'announcement' ? '/noticias' : '/blog';
 
     if (articles.length === 0) return null;
 
@@ -25,13 +32,13 @@ const RelatedArticles: React.FC<RelatedArticlesProps> = ({ articles }) => {
             className="mt-16 pt-12 border-t border-bark/10"
         >
             <h2 className="text-3xl font-headers text-forest mb-8 uppercase tracking-wider">
-                {t('blog.related_articles', 'Artículos Relacionados')}
+                {title || t('blog.related_articles', 'Artículos Relacionados')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {articles.map((related) => (
                     <Link
                         key={related.id}
-                        to={`/blog/${related.slug}`}
+                        to={`${basePath}/${related.slug}`}
                         className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group block"
                     >
                         <div className="h-32 bg-forest/10 overflow-hidden relative">

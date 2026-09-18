@@ -316,6 +316,8 @@ async def create_content(content_data: ContentCreate, background_tasks: Backgrou
     if content_data.type == 'meditation':
         content_dict['category'] = None
         if not content_dict.get('thumbnail_url'): content_dict['thumbnail_url'] = '/gallery/articles/meditation_default.webp'
+    elif content_data.type == 'announcement':
+        content_dict['category'] = None
     elif content_data.type == 'article':
         if content_dict.get('category') not in ['yoga', 'therapy']:
             raise HTTPException(status_code=400, detail="Categoría inválida para artículo")
@@ -390,6 +392,11 @@ async def update_content(content_id: int, content_data: ContentUpdate, backgroun
     }
 
     for key, value in content_dict.items(): setattr(db_content, key, value)
+
+    # Noticias y meditaciones no pertenecen a categorías de blog (yoga/therapy)
+    effective_type = content_dict.get('type', db_content.type)
+    if effective_type in ('announcement', 'meditation'):
+        db_content.category = None
     
     if content_data.tags is not None:
         processed_tags = process_tags(content_data.tags)

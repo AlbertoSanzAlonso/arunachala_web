@@ -89,7 +89,13 @@ export const ContentTable: React.FC<ContentTableProps> = ({
                                     <TrashIcon className="h-4 w-4" /> Borrar
                                 </button>
                                 <a
-                                    href={item.type === 'meditation' ? `/meditaciones/${item.slug}` : `/blog/${item.slug}`}
+                                    href={
+                                        item.type === 'meditation'
+                                            ? `/meditaciones/${item.slug}`
+                                            : item.type === 'announcement'
+                                              ? `/noticias/${item.slug}`
+                                              : `/blog/${item.slug}`
+                                    }
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-500 rounded-xl text-xs font-bold hover:bg-blue-100 transition-all"
@@ -180,7 +186,13 @@ export const ContentTable: React.FC<ContentTableProps> = ({
                                                             <TrashIcon className="h-5 w-5" />
                                                         </button>
                                                         <a
-                                                            href={item.type === 'meditation' ? `/meditaciones/${item.slug}` : `/blog/${item.slug}`}
+                                                            href={
+                                                                item.type === 'meditation'
+                                                                    ? `/meditaciones/${item.slug}`
+                                                                    : item.type === 'announcement'
+                                                                      ? `/noticias/${item.slug}`
+                                                                      : `/blog/${item.slug}`
+                                                            }
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-all"

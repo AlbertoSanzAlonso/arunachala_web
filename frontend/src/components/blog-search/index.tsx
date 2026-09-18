@@ -22,9 +22,11 @@ interface BlogSearchProps {
     onFilterChange: (filters: FilterState) => void;
     initialCategory?: string;
     filters: FilterState;
+    hideCategoryTabs?: boolean;
+    searchPlaceholder?: string;
 }
 
-const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, filters }) => {
+const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, filters, hideCategoryTabs = false, searchPlaceholder }) => {
     const { t, i18n } = useTranslation();
     const [allTags, setAllTags] = useState<any[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -93,15 +95,18 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ articles, onFilterChange, filte
             <div className="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-xl border border-white/50 p-6 md:p-8">
                 
                 {/* Top Row: Search & Category Tabs */}
-                <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between mb-8">
+                <div className={`flex flex-col md:flex-row gap-6 items-start md:items-center ${hideCategoryTabs ? '' : 'justify-between'} mb-8`}>
                     <SearchBar 
                         filters={filters} 
                         onFilterChange={onFilterChange} 
                         articles={articles} 
                         showSuggestions={showSuggestions} 
-                        setShowSuggestions={setShowSuggestions} 
+                        setShowSuggestions={setShowSuggestions}
+                        placeholder={searchPlaceholder}
                     />
-                    <CategoryTabs filters={filters} onFilterChange={onFilterChange} />
+                    {!hideCategoryTabs && (
+                        <CategoryTabs filters={filters} onFilterChange={onFilterChange} />
+                    )}
                 </div>
 
                 {/* Filters Row */}

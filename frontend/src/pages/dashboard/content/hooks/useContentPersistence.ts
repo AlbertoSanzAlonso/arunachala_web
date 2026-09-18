@@ -25,7 +25,7 @@ const buildContentPayload = (formData: Partial<Content>): Record<string, unknown
             payload[key] = value;
         }
     }
-    if (payload.type === 'meditation') {
+    if (payload.type === 'meditation' || payload.type === 'announcement') {
         payload.category = null;
     }
     return payload;

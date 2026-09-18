@@ -6,14 +6,23 @@ import { CalendarIcon, ArrowRightIcon, TagIcon } from '@heroicons/react/24/outli
 import { Article } from 'types/blog';
 import { getImageUrl } from 'utils/imageUtils';
 import { getTranslated } from 'utils/translate';
+import { getContentDetailPath } from 'utils/contentPaths';
 
 interface ArticleCardProps {
     article: Article;
     index: number;
     currentPage: number;
+    contentType?: 'article' | 'announcement';
+    showCategory?: boolean;
 }
 
-const ArticleCard: React.FC<ArticleCardProps> = ({ article, index, currentPage }) => {
+const ArticleCard: React.FC<ArticleCardProps> = ({
+    article,
+    index,
+    currentPage,
+    contentType = 'article',
+    showCategory = true,
+}) => {
     const { t, i18n } = useTranslation();
 
     const formatDate = (dateString: string) => {
@@ -24,7 +33,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, index, currentPage }
 
     const translatedTitle = getTranslated(article, 'title', i18n.language);
     const translatedExcerpt = getTranslated(article, 'excerpt', i18n.language);
-    const articleUrl = `/blog/${article.slug}?p=${currentPage}`;
+    const articleUrl = getContentDetailPath(contentType, article.slug, currentPage);
 
     return (
         <motion.div
@@ -33,7 +42,6 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, index, currentPage }
             transition={{ delay: index * 0.1 }}
             className="bg-white rounded-[2rem] overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-500 group flex flex-col h-full border border-bark/5"
         >
-            {/* Image Container - Now navigates to article */}
             <Link
                 to={articleUrl}
                 className="relative h-64 overflow-hidden bg-[#5c6b3c] cursor-pointer group block"
@@ -59,7 +67,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, index, currentPage }
                                 return;
                             }
                             target.setAttribute('data-fallback', 'true');
-                            target.src = article.category === 'yoga' 
+                            target.src = article.category === 'yoga'
                                 ? getImageUrl('/static/gallery/articles/om_symbol.webp')
                                 : getImageUrl('/static/gallery/articles/logo_icon.webp');
                             target.className = "w-24 h-24 object-contain opacity-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-500";
@@ -68,34 +76,34 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, index, currentPage }
                 ) : (
                     <div className="w-full h-full flex items-center justify-center">
                         {(article.category === 'yoga' || (article.thumbnail_url && article.thumbnail_url.includes('om_symbol.webp'))) ? (
-                            <motion.img 
-                                src={getImageUrl('/static/gallery/articles/om_symbol.webp')} 
-                                alt="Yoga" 
+                            <motion.img
+                                src={getImageUrl('/static/gallery/articles/om_symbol.webp')}
+                                alt="Yoga"
                                 whileHover={{ scale: 1.1 }}
-                                className="w-24 h-24 object-contain opacity-20 will-change-transform" 
+                                className="w-24 h-24 object-contain opacity-20 will-change-transform"
                             />
                         ) : (article.category === 'therapy' || (article.thumbnail_url && article.thumbnail_url.includes('logo_icon.webp'))) ? (
-                            <motion.img 
-                                src={getImageUrl('/static/gallery/articles/logo_icon.webp')} 
-                                alt="Terapia" 
+                            <motion.img
+                                src={getImageUrl('/static/gallery/articles/logo_icon.webp')}
+                                alt="Terapia"
                                 whileHover={{ scale: 1.1 }}
-                                className="w-24 h-24 object-contain opacity-20 will-change-transform" 
+                                className="w-24 h-24 object-contain opacity-20 will-change-transform"
                             />
                         ) : (
                             <TagIcon className="w-12 h-12 text-forest/20" />
                         )}
                     </div>
                 )}
-                
-                {/* Category Badge */}
-                <div className="absolute top-4 left-4">
-                    <span className="bg-white/90 backdrop-blur-sm text-forest px-4 py-1.5 rounded-full text-xs font-headers tracking-widest uppercase shadow-sm">
-                        {t(`blog.categories.${article.category}`, article.category)}
-                    </span>
-                </div>
+
+                {showCategory && article.category && (
+                    <div className="absolute top-4 left-4">
+                        <span className="bg-white/90 backdrop-blur-sm text-forest px-4 py-1.5 rounded-full text-xs font-headers tracking-widest uppercase shadow-sm">
+                            {t(`blog.categories.${article.category}`, article.category)}
+                        </span>
+                    </div>
+                )}
             </Link>
 
-            {/* Content */}
             <div className="p-8 flex flex-col flex-grow">
                 <div className="flex items-center gap-2 text-bark/40 text-xs mb-4 font-headers uppercase tracking-widest">
                     <CalendarIcon className="w-4 h-4" />

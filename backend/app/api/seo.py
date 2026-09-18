@@ -188,6 +188,7 @@ async def sitemap(db: Session = Depends(get_db)):
         ("/terapias/terapias-holisticas/", "0.9", "weekly"),
         ("/actividades/",               "0.9", "daily"),
         ("/blog/",                      "0.9", "daily"),
+        ("/noticias/",                  "0.8", "daily"),
         ("/nuestro-espacio/",           "0.8", "weekly"),
         ("/meditaciones/",              "0.9", "weekly"),
         ("/promociones/",               "0.8", "weekly"),
@@ -211,17 +212,22 @@ async def sitemap(db: Session = Depends(get_db)):
     <priority>{priority}</priority>
   </url>""")
     
-    # 2. Get Dynamic Content (Blog & Meditations)
+    # 2. Get Dynamic Content (Blog, News & Meditations)
     dynamic_contents = db.query(Content).filter(
         Content.status == "published",
-        Content.type.in_(["article", "meditation"]),
+        Content.type.in_(["article", "meditation", "announcement"]),
         Content.slug.is_not(None),
         ~Content.slug.contains("sugerencia")
     ).all()
     
     for item in dynamic_contents:
         lastmod = (item.updated_at or item.created_at or datetime.now()).strftime('%Y-%m-%d')
-        path_prefix = "/blog" if item.type == "article" else "/meditaciones"
+        if item.type == "article":
+            path_prefix = "/blog"
+        elif item.type == "announcement":
+            path_prefix = "/noticias"
+        else:
+            path_prefix = "/meditaciones"
         
         # Consistent trailing slash for SEO
         urls.append(f"""  <url>

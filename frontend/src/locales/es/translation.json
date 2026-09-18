@@ -503,6 +503,19 @@
       "subtitle": "Sigue de cerca nuestro camino"
     }
   },
+  "news": {
+    "title": "Noticias",
+    "subtitle": "Sigue de cerca nuestro camino",
+    "badge": "Noticia",
+    "back_to_news": "Volver a Noticias",
+    "back_to_about": "Volver a Quiénes somos",
+    "related": "Otras noticias",
+    "no_results": "No se han encontrado noticias",
+    "try_other_filters": "Prueba con otros términos de búsqueda.",
+    "seo_title": "Noticias | Arunachala Yoga y Terapias",
+    "seo_description": "Noticias y avisos del centro Aruṇāchala Yoga y Terapias en Cornellà.",
+    "search_placeholder": "Buscar noticias..."
+  },
   "contact_page": {
     "title": "Contacto",
     "subtitle": "¿Tienes alguna duda? Estamos aquí para ayudarte",

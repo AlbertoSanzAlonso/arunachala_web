@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { API_BASE_URL } from 'config';
 import { getTranslated } from 'utils/translate';
 import { getImageUrl } from 'utils/imageUtils';
 import { useUIStore } from 'store/uiStore';
 import { Article } from 'types/blog';
+import { getContentDetailPath, getContentListPath } from 'utils/contentPaths';
 
-// Components
 import Header from 'components/layout/Header';
 import Footer from 'components/layout/Footer';
 import PageSEO from 'components/providers/PageSEO';
@@ -26,7 +26,9 @@ const BlogDetailPage: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { addToast } = useUIStore();
     const navigate = useNavigate();
-    
+    const location = useLocation();
+    const isNewsRoute = location.pathname.startsWith('/noticias');
+
     const [article, setArticle] = useState<Article | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
@@ -36,12 +38,22 @@ const BlogDetailPage: React.FC = () => {
     const [prevArticle, setPrevArticle] = useState<Article | null>(null);
     const [nextArticle, setNextArticle] = useState<Article | null>(null);
 
-    const fetchRelatedArticles = useCallback(async (category: string, currentId: number, tags: string[] = []) => {
+    const fetchRelatedContent = useCallback(async (
+        contentType: 'article' | 'announcement',
+        category: string | null | undefined,
+        currentId: number,
+        tags: string[] = []
+    ) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/content?type=article&status=published&category=${encodeURIComponent(category)}&limit=40`);
+            const categoryParam = contentType === 'article' && category
+                ? `&category=${encodeURIComponent(category)}`
+                : '';
+            const response = await fetch(
+                `${API_BASE_URL}/api/content?type=${contentType}&status=published${categoryParam}&limit=40`
+            );
             if (response.ok) {
                 const data = await response.json();
-                
+
                 const currentIndex = data.findIndex((a: Article) => a.id === currentId);
                 if (currentIndex !== -1) {
                     setCurrentPage(Math.floor(currentIndex / 9) + 1);
@@ -52,19 +64,23 @@ const BlogDetailPage: React.FC = () => {
                 const scored = data
                     .filter((a: Article) => a.id !== currentId)
                     .map((a: Article) => {
-                        const matchingTags = (a.tags || []).filter(t => tags.includes(t));
+                        const matchingTags = (a.tags || []).filter(tag => tags.includes(tag));
                         return { article: a, score: matchingTags.length };
                     })
-                    .filter((item: any) => item.score > 0 || item.article.category === category)
-                    .sort((a: any, b: any) => {
+                    .filter((item: { article: Article; score: number }) =>
+                        item.score > 0 ||
+                        contentType === 'announcement' ||
+                        (category && item.article.category === category)
+                    )
+                    .sort((a: { article: Article; score: number }, b: { article: Article; score: number }) => {
                         if (b.score !== a.score) return b.score - a.score;
                         return new Date(b.article.created_at).getTime() - new Date(a.article.created_at).getTime();
                     });
 
-                setRelatedArticles(scored.slice(0, 3).map((s: any) => s.article));
+                setRelatedArticles(scored.slice(0, 3).map((s: { article: Article }) => s.article));
             }
         } catch (error) {
-            console.error('Error fetching related articles:', error);
+            console.error('Error fetching related content:', error);
         }
     }, []);
 
@@ -74,18 +90,30 @@ const BlogDetailPage: React.FC = () => {
             const response = await fetch(`${API_BASE_URL}/api/content/slug/${slug}`);
             if (response.ok) {
                 const data = await response.json();
+                const contentType = data.type === 'announcement' ? 'announcement' : 'article';
+
+                // Keep blog and news URLs separated
+                if (contentType === 'announcement' && !isNewsRoute) {
+                    navigate(`/noticias/${data.slug}${location.search}`, { replace: true });
+                    return;
+                }
+                if (contentType === 'article' && isNewsRoute) {
+                    navigate(`/blog/${data.slug}${location.search}`, { replace: true });
+                    return;
+                }
+
                 setArticle(data);
-                fetchRelatedArticles(data.category, data.id, data.tags || []);
+                fetchRelatedContent(contentType, data.category, data.id, data.tags || []);
             } else {
-                navigate('/blog');
+                navigate(isNewsRoute ? '/noticias' : '/blog');
             }
         } catch (error) {
             console.error('Error fetching article:', error);
-            navigate('/blog');
+            navigate(isNewsRoute ? '/noticias' : '/blog');
         } finally {
             setIsLoading(false);
         }
-    }, [slug, navigate, fetchRelatedArticles]);
+    }, [slug, navigate, fetchRelatedContent, isNewsRoute, location.search]);
 
     useEffect(() => {
         if (slug) fetchArticle();
@@ -112,14 +140,12 @@ const BlogDetailPage: React.FC = () => {
         }
     };
 
-    // Close lightbox on escape key
     useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') setSelectedImage(null); };
         window.addEventListener('keydown', handleEsc);
         return () => window.removeEventListener('keydown', handleEsc);
     }, []);
 
-    // Prevent scroll when lightbox is open
     useEffect(() => {
         document.body.style.overflow = selectedImage ? 'hidden' : 'unset';
     }, [selectedImage]);
@@ -132,13 +158,18 @@ const BlogDetailPage: React.FC = () => {
         );
     }
 
+    const isAnnouncement = article.type === 'announcement';
+    const contentType = isAnnouncement ? 'announcement' : 'article';
+    const listPath = getContentListPath(contentType);
+    const detailPath = getContentDetailPath(contentType, article.slug);
+
     const translatedTitle = getTranslated(article, 'title', i18n.language);
     const translatedBody = getTranslated(article, 'body', i18n.language);
     const translatedExcerpt = getTranslated(article, 'excerpt', i18n.language);
 
-    const blogPostingSchema = {
+    const structuredData = {
         '@context': 'https://schema.org',
-        '@type': 'BlogPosting',
+        '@type': isAnnouncement ? 'NewsArticle' : 'BlogPosting',
         headline: translatedTitle,
         description: translatedExcerpt,
         image: article.thumbnail_url ? getImageUrl(article.thumbnail_url) : `${BASE_URL}/logo_wide.webp`,
@@ -158,46 +189,53 @@ const BlogDetailPage: React.FC = () => {
         },
         mainEntityOfPage: {
             '@type': 'WebPage',
-            '@id': `https://www.yogayterapiasarunachala.es/blog/${article.slug}/`,
+            '@id': `https://www.yogayterapiasarunachala.es${detailPath}/`,
         },
     };
 
     return (
         <div className="font-body text-bark min-h-screen bg-bone selection:bg-matcha/30">
-            <PageSEO 
+            <PageSEO
                 title={`${translatedTitle} | Arunachala Yoga`}
                 description={translatedExcerpt}
                 ogImage={article.thumbnail_url ? getImageUrl(article.thumbnail_url) : undefined}
                 ogType="article"
-                structuredData={blogPostingSchema}
+                structuredData={structuredData}
                 breadcrumbCurrent={{
                     name: translatedTitle,
-                    path: `/blog/${article.slug}/`,
+                    path: `${detailPath}/`,
                 }}
             />
-            
+
             <Header />
 
-            <FloatingNavigation 
+            <FloatingNavigation
                 prevArticle={prevArticle}
                 nextArticle={nextArticle}
                 currentPage={currentPage}
                 language={i18n.language}
+                contentType={contentType}
             />
 
             <main className="flex-grow pt-4 md:pt-16 pb-16">
                 <article className="max-w-4xl mx-auto px-6">
-                    <ArticleHeader 
+                    <ArticleHeader
                         category={article.category}
                         title={translatedTitle}
                         currentPage={currentPage}
                         onShare={handleShare}
                         prevArticle={prevArticle}
                         language={i18n.language}
+                        contentType={contentType}
+                        showCategory={!isAnnouncement}
+                        backTo={`${listPath}?p=${currentPage}`}
+                        backLabel={isAnnouncement
+                            ? t('news.back_to_news', 'Volver a Noticias')
+                            : t('blog.back_to_blog')}
                     />
 
                     {article.thumbnail_url && (
-                        <div 
+                        <div
                             className="mb-12 rounded-[2rem] overflow-hidden shadow-xl cursor-zoom-in"
                             onClick={() => setSelectedImage(getImageUrl(article.thumbnail_url!))}
                         >
@@ -207,14 +245,14 @@ const BlogDetailPage: React.FC = () => {
 
                     <ArticleContent body={translatedBody} onImageClick={setSelectedImage} />
 
-                    {/* Next Article on Mobile - Positioned before CTA */}
                     <div className="lg:hidden mt-12">
-                        <BottomNavigation 
+                        <BottomNavigation
                             prevArticle={null}
                             nextArticle={nextArticle}
                             currentPage={currentPage}
                             language={i18n.language}
                             isTop={false}
+                            contentType={contentType}
                         />
                     </div>
 
@@ -222,13 +260,19 @@ const BlogDetailPage: React.FC = () => {
                         <ArticleCTA />
                     </div>
 
-                    <RelatedArticles articles={relatedArticles} />
+                    <RelatedArticles
+                        articles={relatedArticles}
+                        contentType={contentType}
+                        title={isAnnouncement
+                            ? t('news.related', 'Otras noticias')
+                            : undefined}
+                    />
                 </article>
             </main>
 
             <Footer />
 
-            <ArticleLightbox 
+            <ArticleLightbox
                 selectedImage={selectedImage}
                 isZoomed={isZoomed}
                 onClose={() => setSelectedImage(null)}

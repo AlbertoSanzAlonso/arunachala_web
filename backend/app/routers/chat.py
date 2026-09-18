@@ -217,7 +217,7 @@ def get_inventory_summary(db: Session, lang: str = "es"):
                 elif entity_type == 'meditation':
                      url = f"/meditaciones/{slug}"
                 elif entity_type == 'announcement':
-                     url = "/#noticias" 
+                     url = f"/noticias/{slug}" 
                 elif Model == Promotion:
                      url = "/" 
                 elif Model == Activity:
@@ -563,8 +563,9 @@ REGLAS CRÍTICAS:
 2. NUNCA inventes URLs. Usa SOLO las que ves en el inventario.
 3. SI ES YOGA -> IMPORTANTE: La URL SIEMPRE es /clases-de-yoga (sin nada más).
 4. SI ES BLOG -> /blog/slug-real
-5. SI ES TERAPIA -> /terapias/terapias-holisticas?item=slug-real (USA 'item' no 'slug')
-6. SI ES MASAJE -> /terapias/masajes?item=slug-real (USA 'item' no 'slug')
+5. SI ES NOTICIA -> /noticias/slug-real
+6. SI ES TERAPIA -> /terapias/terapias-holisticas?item=slug-real (USA 'item' no 'slug')
+7. SI ES MASAJE -> /terapias/masajes?item=slug-real (USA 'item' no 'slug')
 
 IDIOMA: Responde íntegramente en {target_lang}. NUNCA mezcles idiomas ni menciones nombres en español si estás en inglés/catalán. TRADUCE TODO.
 
@@ -598,6 +599,7 @@ REGLAS DE URLS:
  - Masajes: /terapias/masajes?item=SLUG (USA el parámetro ?item=...)
  - Terapias Holísticas: /terapias/terapias-holisticas?item=SLUG (USA el parámetro ?item=...)
  - Blog/Artículos: /blog/SLUG
+ - Noticias: /noticias/SLUG
  - Meditación: /meditaciones/SLUG
  - Actividades/Eventos: /actividades?activity=ID
 
