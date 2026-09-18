@@ -141,14 +141,14 @@ const Header: React.FC = () => {
 
     return (
         <>
-            <header className="sticky top-0 w-full z-50 p-2 lg:py-4 lg:px-8 flex justify-between items-center bg-[#5c6b3c] shadow-md transition-colors duration-300">
+            <header className="sticky top-0 w-full z-50 p-2 short:py-1 short:px-3 lg:py-4 lg:px-8 flex justify-between items-center bg-[#5c6b3c] shadow-md transition-colors duration-300">
                 {/* Logo Section */}
                 <Link
                     to="/"
                     onClick={handleNavLinkClick('/')}
-                    className={`cursor-pointer flex-shrink-0 flex items-center justify-center h-12 w-12 md:h-16 md:w-16 lg:h-[70px] lg:w-[70px] rounded-full border border-[#F5F5DC] transition-transform duration-300 hover:scale-110 shadow-sm ${isChristmas
-                        ? 'bg-[#F5F5DC] p-1 md:p-1' // Use same beige as before
-                        : 'bg-[#F5F5DC] p-1.5 md:p-1.5'
+                    className={`cursor-pointer flex-shrink-0 flex items-center justify-center h-12 w-12 short:h-9 short:w-9 md:h-16 md:w-16 short:md:h-11 short:md:w-11 lg:h-[70px] lg:w-[70px] short:lg:h-12 short:lg:w-12 rounded-full border border-[#F5F5DC] transition-transform duration-300 hover:scale-110 shadow-sm ${isChristmas
+                        ? 'bg-[#F5F5DC] p-1 md:p-1 short:p-0.5' // Use same beige as before
+                        : 'bg-[#F5F5DC] p-1.5 md:p-1.5 short:p-1'
                         }`}
                 >
                     <img
@@ -324,14 +324,14 @@ const Header: React.FC = () => {
                     </AnimatePresence>
 
                     {/* Language Switcher Mini */}
-                    <div className="notranslate flex items-center bg-[#4a5730]/50 backdrop-blur-sm rounded-full p-1 border border-[#F5F5DC]/20 z-50 overflow-hidden relative">
+                    <div className="notranslate flex items-center bg-[#4a5730]/50 backdrop-blur-sm rounded-full p-1 short:p-0.5 border border-[#F5F5DC]/20 z-50 overflow-hidden relative">
                         {LANGUAGES.map((lang) => {
                             const isActive = i18n.language.startsWith(lang.code);
                             return (
                                 <button
                                     key={lang.code}
                                     onClick={() => changeLanguage(lang.code)}
-                                    className={`relative z-10 w-8 h-8 flex items-center justify-center text-xs font-bold tracking-wide transition-colors duration-300 ${isActive ? 'text-[#5c6b3c]' : 'text-[#F5F5DC] hover:text-white'
+                                    className={`relative z-10 w-8 h-8 short:w-7 short:h-7 flex items-center justify-center text-xs short:text-[10px] font-bold tracking-wide transition-colors duration-300 ${isActive ? 'text-[#5c6b3c]' : 'text-[#F5F5DC] hover:text-white'
                                         }`}
                                 >
                                     {isActive && (
@@ -349,14 +349,14 @@ const Header: React.FC = () => {
 
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className="relative z-50 text-[#F5F5DC] hover:text-[#becf81] transition-colors p-2"
+                        className="relative z-50 text-[#F5F5DC] hover:text-[#becf81] transition-colors p-2 short:p-1"
                         aria-label="Toggle Menu"
                     >
                         <div className={`transition-transform duration-300 ease-in-out ${isMenuOpen ? 'rotate-180' : 'rotate-0'}`}>
                             {isMenuOpen ? (
-                                <XMarkIcon className="h-10 w-10 md:h-12 md:w-12" />
+                                <XMarkIcon className="h-10 w-10 short:h-8 short:w-8 md:h-12 md:w-12 short:md:h-9 short:md:w-9" />
                             ) : (
-                                <Bars3Icon className="h-10 w-10 md:h-12 md:w-12" />
+                                <Bars3Icon className="h-10 w-10 short:h-8 short:w-8 md:h-12 md:w-12 short:md:h-9 short:md:w-9" />
                             )}
                         </div>
                     </button>
@@ -364,23 +364,23 @@ const Header: React.FC = () => {
             </header>
 
             <div
-                className={`fixed top-0 right-0 h-full w-full md:w-96 z-40 bg-[#5c6b3c]/95 backdrop-blur-md shadow-2xl transform transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col items-center justify-center`}
+                className={`fixed top-0 right-0 h-full w-full md:w-96 z-40 bg-[#5c6b3c]/95 backdrop-blur-md shadow-2xl transform transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col items-center justify-center short:justify-start short:pt-20 short:overflow-y-auto`}
             >
-                <nav className={`flex flex-col gap-8 text-center ${hasPromotions ? 'mt-24' : ''}`}>
-                    <Link to="/quienes-somos" onClick={handleNavLinkClick('/quienes-somos')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.about')}</Link>
-                    <Link to="/blog" onClick={handleNavLinkClick('/blog')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">Blog</Link>
-                    <Link to="/meditaciones" onClick={handleNavLinkClick('/meditaciones')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.meditations')}</Link>
-                    <Link to="/actividades" onClick={handleNavLinkClick('/actividades')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.activities')}</Link>
-                    <Link to="/nuestro-espacio" onClick={handleNavLinkClick('/nuestro-espacio')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.space', 'Nuestro Espacio')}</Link>
-                    <Link to="/contacto" onClick={handleNavLinkClick('/contacto')} className="text-[#F5F5DC] font-headers text-4xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.contact')}</Link>
+                <nav className={`flex flex-col gap-8 short:gap-3.5 text-center ${hasPromotions ? 'mt-24 short:mt-4' : 'short:mt-2'}`}>
+                    <Link to="/quienes-somos" onClick={handleNavLinkClick('/quienes-somos')} className="text-[#F5F5DC] font-headers text-4xl short:text-2xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.about')}</Link>
+                    <Link to="/blog" onClick={handleNavLinkClick('/blog')} className="text-[#F5F5DC] font-headers text-4xl short:text-2xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">Blog</Link>
+                    <Link to="/meditaciones" onClick={handleNavLinkClick('/meditaciones')} className="text-[#F5F5DC] font-headers text-4xl short:text-2xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.meditations')}</Link>
+                    <Link to="/actividades" onClick={handleNavLinkClick('/actividades')} className="text-[#F5F5DC] font-headers text-4xl short:text-2xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.activities')}</Link>
+                    <Link to="/nuestro-espacio" onClick={handleNavLinkClick('/nuestro-espacio')} className="text-[#F5F5DC] font-headers text-4xl short:text-2xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.space', 'Nuestro Espacio')}</Link>
+                    <Link to="/contacto" onClick={handleNavLinkClick('/contacto')} className="text-[#F5F5DC] font-headers text-4xl short:text-2xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.contact')}</Link>
 
                     {/* Added Promociones apartada y en color marrón - Only if active promotions exist */}
                     {hasPromotions && (
-                        <div className="mt-0 pt-5 border-t border-[#F5F5DC]/10 flex flex-col items-center">
+                        <div className="mt-0 pt-5 short:pt-3 border-t border-[#F5F5DC]/10 flex flex-col items-center">
                             <Link
                                 to="/promociones"
                                 onClick={handleNavLinkClick('/promociones')}
-                                className="text-white bg-bark/40 hover:bg-bark px-8 py-3 rounded-full font-headers text-4xl hover:text-bone transition-all hover:scale-105 transform duration-300 uppercase border border-white/20"
+                                className="text-white bg-bark/40 hover:bg-bark px-8 py-3 short:px-5 short:py-2 rounded-full font-headers text-4xl short:text-2xl hover:text-bone transition-all hover:scale-105 transform duration-300 uppercase border border-white/20"
                             >
                                 {t('menu.promotions', 'Promociones')}
                             </Link>

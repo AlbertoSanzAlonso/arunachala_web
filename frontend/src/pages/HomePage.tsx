@@ -116,7 +116,7 @@ const HomePage: React.FC = () => {
             <Header />
 
             {/* Hero Section with Video */}
-            <section className="relative min-h-[75vh] md:min-h-[90vh] w-full overflow-hidden flex flex-col items-center justify-start md:justify-center pt-6 md:pt-16" role="banner">
+            <section className="relative min-h-[75vh] short:min-h-[calc(100vh-3.5rem)] md:min-h-[90vh] short:md:min-h-[calc(100vh-3.5rem)] w-full overflow-hidden flex flex-col items-center justify-start md:justify-center short:md:justify-start pt-6 short:pt-8 md:pt-16 short:md:pt-10" role="banner">
                 <h1 className="sr-only">Arunachala Yoga y Terapias</h1>
                 <video
                     className="absolute top-0 left-0 w-full h-full object-cover opacity-85"
@@ -133,28 +133,28 @@ const HomePage: React.FC = () => {
                 <div className="absolute top-0 left-0 w-full h-full bg-black/50"></div>
 
                 {/* Main Content Container */}
-                <div className="relative z-10 flex flex-col items-center w-full max-w-4xl px-4 gap-6 md:gap-10 pb-32 md:pb-0 md:-translate-y-16">
+                <div className="relative z-10 flex flex-col items-center w-full max-w-4xl px-4 gap-6 short:gap-4 md:gap-10 short:md:gap-5 pb-32 short:pb-12 md:pb-0 md:-translate-y-16 short:md:translate-y-0">
 
                     {/* Navigation Buttons */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-12 w-full text-center">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 short:gap-3 md:gap-12 short:md:gap-6 w-full text-center">
                         <Link
                             to="/clases-de-yoga"
-                            className="group cursor-pointer p-6 md:p-8 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-bone/50"
+                            className="group cursor-pointer p-6 short:p-3 md:p-8 short:md:p-4 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-bone/50"
                         >
-                            <img src={omSymbol} alt="" aria-hidden="true" className="h-14 md:h-20 w-auto mb-3 md:mb-4 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
-                            <h2 className="text-3xl md:text-5xl font-headers text-bone mb-2 md:mb-4 group-hover:scale-110 transition-transform duration-500 uppercase">{t('hero.yoga.title')}</h2>
-                            <p className="text-bone/80 text-base md:text-lg opacity-80 group-hover:opacity-100 transition-opacity duration-500">
+                            <img src={omSymbol} alt="" aria-hidden="true" className="h-14 short:h-8 md:h-20 short:md:h-10 w-auto mb-3 short:mb-1.5 md:mb-4 short:md:mb-2 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
+                            <h2 className="text-3xl short:text-xl md:text-5xl short:md:text-2xl font-headers text-bone mb-2 short:mb-1 md:mb-4 short:md:mb-1.5 group-hover:scale-110 transition-transform duration-500 uppercase">{t('hero.yoga.title')}</h2>
+                            <p className="text-bone/80 text-base short:text-sm md:text-lg short:md:text-sm opacity-80 group-hover:opacity-100 transition-opacity duration-500">
                                 {t('hero.yoga.subtitle')}
                             </p>
                         </Link>
 
                         <Link
                             to="/terapias-y-masajes/"
-                            className="group cursor-pointer p-6 md:p-8 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-bone/50"
+                            className="group cursor-pointer p-6 short:p-3 md:p-8 short:md:p-4 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-bone/50"
                         >
-                            <img src={lotusFlower} alt="" aria-hidden="true" className="h-14 md:h-20 w-auto mb-3 md:mb-4 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
-                            <h2 className="text-3xl md:text-5xl font-headers text-bone mb-2 md:mb-4 group-hover:scale-110 transition-transform duration-500 uppercase">{t('hero.therapies.title')}</h2>
-                            <p className="text-bone/80 text-base md:text-lg opacity-80 group-hover:opacity-100 transition-opacity duration-500">
+                            <img src={lotusFlower} alt="" aria-hidden="true" className="h-14 short:h-8 md:h-20 short:md:h-10 w-auto mb-3 short:mb-1.5 md:mb-4 short:md:mb-2 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
+                            <h2 className="text-3xl short:text-xl md:text-5xl short:md:text-2xl font-headers text-bone mb-2 short:mb-1 md:mb-4 short:md:mb-1.5 group-hover:scale-110 transition-transform duration-500 uppercase">{t('hero.therapies.title')}</h2>
+                            <p className="text-bone/80 text-base short:text-sm md:text-lg short:md:text-sm opacity-80 group-hover:opacity-100 transition-opacity duration-500">
                                 {t('hero.therapies.subtitle')}
                             </p>
                         </Link>
@@ -162,12 +162,12 @@ const HomePage: React.FC = () => {
 
                     {/* Mantra of the Day Section */}
                     {dailyMantra && (
-                        <div className="text-center animate-fade-in max-w-2xl px-6 py-6 rounded-2xl bg-black/10 backdrop-blur-sm border border-bone/10 shadow-2xl hover:bg-black/20 transition-all duration-700">
-                            <p className="text-xs md:text-sm uppercase tracking-[0.4em] text-bone/60 mb-4 font-light">{t('home.mantra_title')}</p>
-                            <h3 className="text-2xl md:text-4xl font-serif italic text-bone mb-3 leading-relaxed drop-shadow-md">
+                        <div className="text-center animate-fade-in max-w-2xl px-6 short:px-4 py-6 short:py-3 rounded-2xl bg-black/10 backdrop-blur-sm border border-bone/10 shadow-2xl hover:bg-black/20 transition-all duration-700">
+                            <p className="text-xs md:text-sm uppercase tracking-[0.4em] text-bone/60 mb-4 short:mb-2 font-light">{t('home.mantra_title')}</p>
+                            <h3 className="text-2xl short:text-lg md:text-4xl short:md:text-xl font-serif italic text-bone mb-3 short:mb-1.5 leading-relaxed drop-shadow-md">
                                 "{dailyMantra.text_sanskrit}"
                             </h3>
-                            <p className="text-bone/70 text-sm md:text-base font-light italic">
+                            <p className="text-bone/70 text-sm short:text-xs md:text-base short:md:text-sm font-light italic">
                                 — {
                                     (i18n.language !== 'es' &&
                                     dailyMantra.translations &&

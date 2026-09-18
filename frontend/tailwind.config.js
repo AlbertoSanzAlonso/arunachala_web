@@ -8,6 +8,10 @@ module.exports = {
     ],
     theme: {
         extend: {
+            screens: {
+                // Viewports bajos (laptops, ventanas reducidas ~600px de alto)
+                short: { raw: '(max-height: 700px)' },
+            },
             colors: {
                 forest: '#2F4F4F',
                 bone: '#F5F5DC',
