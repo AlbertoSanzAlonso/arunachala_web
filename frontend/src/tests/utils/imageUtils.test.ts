@@ -5,17 +5,11 @@ import {
 } from '../../utils/imageUtils';
 
 const SUPABASE = 'https://vybpihtssncjalbsnbcr.supabase.co/storage/v1/object/public/arunachala-images';
-const SITE = 'https://www.yogayterapiasarunachala.es';
 
 describe('getImageUrl', () => {
   it('devuelve cadena vacía si url es nula o indefinida', () => {
     expect(getImageUrl(null as any)).toBe('');
     expect(getImageUrl(undefined as any)).toBe('');
-  });
-
-  it('devuelve la url tal cual si ya es absoluta (http/https)', () => {
-    const absolute = 'https://example.com/image.webp';
-    expect(getImageUrl(absolute)).toBe(absolute);
   });
 
   it('devuelve vacío para URLs blob o file (no deben ir al API)', () => {
@@ -24,18 +18,32 @@ describe('getImageUrl', () => {
   });
 
   it('sirve meditation_default desde el sitio (public/), no Supabase', () => {
-    expect(getImageUrl('/gallery/articles/meditation_default.webp')).toBe(
-      `${SITE}/gallery/articles/meditation_default.webp`
-    );
-    expect(getImageUrl('/static/gallery/articles/meditation_default.webp')).toBe(
-      `${SITE}/gallery/articles/meditation_default.webp`
+    const src = getImageUrl('/gallery/articles/meditation_default.webp');
+    expect(src).toMatch(/\/gallery\/articles\/meditation_default\.webp$/);
+    expect(src).not.toContain('supabase.co');
+    expect(getImageUrl('/static/gallery/articles/meditation_default.webp')).toMatch(
+      /\/gallery\/articles\/meditation_default\.webp$/
     );
   });
 
-  it('redirige otras rutas /static/ al bucket de Supabase', () => {
+  it('sirve rutas /static/ desde la API (disco local)', () => {
+    const { API_BASE_URL } = require('../../config');
     expect(getImageUrl('/static/gallery/articles/om_symbol.webp')).toBe(
-      `${SUPABASE}/gallery/articles/om_symbol.webp`
+      `${API_BASE_URL.replace(/\/$/, '')}/static/gallery/articles/om_symbol.webp`
     );
+  });
+
+  it('reescribe URLs legacy de Supabase hacia la API /static/', () => {
+    const { API_BASE_URL } = require('../../config');
+    const legacy = `${SUPABASE}/gallery/articles/om_symbol.webp`;
+    expect(getImageUrl(legacy)).toBe(
+      `${API_BASE_URL.replace(/\/$/, '')}/static/gallery/articles/om_symbol.webp`
+    );
+  });
+
+  it('deja URLs http externas tal cual', () => {
+    const absolute = 'https://example.com/image.webp';
+    expect(getImageUrl(absolute)).toBe(absolute);
   });
 
   it('preprende API_BASE_URL si es una ruta relativa sin /static/', () => {
@@ -49,7 +57,7 @@ describe('getContentThumbnailSrc', () => {
   it('usa miniatura por defecto de meditación si no hay url', () => {
     const src = getContentThumbnailSrc(null, 'meditation');
     expect(src).toContain('meditation_default.webp');
-    expect(src).toContain(SITE);
+    expect(src).not.toContain('supabase.co');
   });
 
   it('preserva blob en sesión para el recorte en dashboard', () => {

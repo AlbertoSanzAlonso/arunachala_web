@@ -1,15 +1,16 @@
 import { API_BASE_URL } from '../config';
 
-const SUPABASE_BUCKET_URL = 'https://vybpihtssncjalbsnbcr.supabase.co/storage/v1/object/public/arunachala-images';
+const SUPABASE_BUCKET_PREFIX =
+    'https://vybpihtssncjalbsnbcr.supabase.co/storage/v1/object/public/arunachala-images/';
 const PRODUCTION_SITE = 'https://www.yogayterapiasarunachala.es';
 
-/** Rutas servidas desde frontend/public (Vercel), no desde Supabase ni API. */
+/** Rutas servidas desde frontend/public (Vercel), no desde la API. */
 const SITE_PUBLIC_ASSETS: Record<string, string> = {
     '/logo_icon.webp': '/logo_icon.webp',
     '/gallery/articles/meditation_default.webp': '/gallery/articles/meditation_default.webp',
 };
 
-/** Rutas /static/ que deben resolverse en el sitio (no están en Supabase). */
+/** Rutas /static/ que deben resolverse en el sitio (no están en el volumen de la API). */
 const STATIC_ON_SITE_ONLY = new Set([
     'gallery/articles/meditation_default.webp',
 ]);
@@ -33,6 +34,8 @@ const getSiteOrigin = (): string => {
     return PRODUCTION_SITE;
 };
 
+const getApiOrigin = (): string => API_BASE_URL.replace(/\/$/, '');
+
 const isEphemeralUrl = (url: string): boolean =>
     url.startsWith('blob:') || url.startsWith('file:');
 
@@ -44,18 +47,48 @@ const resolveSitePublicAsset = (path: string): string => {
     return `${getSiteOrigin()}${normalized}`;
 };
 
+/** Media migrada a disco local en la API: /static/... */
+const resolveApiStatic = (pathOnly: string): string =>
+    `${getApiOrigin()}/static/${pathOnly.replace(/^\//, '')}`;
+
 /**
- * Returns a full URL for an image.
+ * Extrae el path del objeto si la URL es del bucket antiguo de Supabase.
+ */
+const supabaseObjectPath = (url: string): string | null => {
+    const markers = [
+        SUPABASE_BUCKET_PREFIX,
+        '/storage/v1/object/public/arunachala-images/',
+    ];
+    for (const marker of markers) {
+        const idx = url.indexOf(marker);
+        if (idx !== -1) {
+            return url.slice(idx + marker.length).split('?')[0];
+        }
+    }
+    return null;
+};
+
+/**
+ * Returns a full URL for an image/audio asset.
  * - blob:/file: → '' (invalid cross-session; use UI fallback)
- * - http(s)/data: → as-is
+ * - URLs del bucket Supabase (legado) → API /static/...
+ * - data: u otras http(s) → as-is
  * - /gallery/... o /logo_icon.webp → sitio (Vercel public/)
- * - /static/... → Supabase, salvo assets solo en el sitio
+ * - /static/... → API (disco local), salvo assets solo en el sitio
  * - other relative → API_BASE_URL
  */
 export const getImageUrl = (url: string | null | undefined): string => {
     if (!url) return '';
     const trimmed = url.trim();
     if (!trimmed || isEphemeralUrl(trimmed)) return '';
+
+    const fromSupabase = supabaseObjectPath(trimmed);
+    if (fromSupabase) {
+        if (STATIC_ON_SITE_ONLY.has(fromSupabase)) {
+            return resolveSitePublicAsset(`/gallery/articles/${fromSupabase.split('/').pop()}`);
+        }
+        return resolveApiStatic(fromSupabase);
+    }
 
     if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) {
         return trimmed;
@@ -74,15 +107,15 @@ export const getImageUrl = (url: string | null | undefined): string => {
         if (STATIC_ON_SITE_ONLY.has(pathOnly)) {
             return resolveSitePublicAsset(`/gallery/articles/${pathOnly.split('/').pop()}`);
         }
-        return `${SUPABASE_BUCKET_URL}/${pathOnly}`;
+        return resolveApiStatic(pathOnly);
     }
 
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(trimmed.split('/').pop() || '');
     if (isUuid && !trimmed.includes('/')) {
-        return `${SUPABASE_BUCKET_URL}/${trimmed}`;
+        return resolveApiStatic(trimmed);
     }
 
-    return `${API_BASE_URL.replace(/\/$/, '')}/${trimmed.replace(/^\//, '')}`;
+    return `${getApiOrigin()}/${trimmed.replace(/^\//, '')}`;
 };
 
 /** Preview URL for dashboard content modal (supports in-session blob crops). */

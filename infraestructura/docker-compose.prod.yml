@@ -39,6 +39,10 @@ services:
     environment:
       - DATABASE_URL=postgresql://arunachala:arunachala1234@postgres:5432/arunachala_db
       - REDIS_URL=redis://redis:6379/0
+      - STORAGE_TYPE=local
+    volumes:
+      # Persistencia de imágenes/audio migrados desde Supabase
+      - backend_static:/app/static
     depends_on:
       postgres:
         condition: service_healthy
@@ -98,6 +102,7 @@ volumes:
   n8n_data:
   qdrant_data:
   postgres_data:
+  backend_static:
 
 
 networks:
