@@ -1,51 +1,67 @@
 #!/usr/bin/env bash
-# Migra Postgres de Supabase → Postgres del VPS (Coolify / docker).
+# Migra Postgres de Supabase (PG17) → Postgres 17 en el VPS.
 #
-# Uso (en el VPS, como root):
-#   export SUPABASE_DB_URL='postgresql://postgres.REF:PASS@db.REF.supabase.co:5432/postgres'
-#   # Opcional: URL destino (por defecto crea arunachala_web en el postgres local)
-#   export LOCAL_DB_URL='postgresql://arunachala:PASS@infraestructura-postgres-1:5432/arunachala_web'
+# Uso:
+#   export SUPABASE_DB_URL='postgresql://postgres:PASS%21@db.REF.supabase.co:5432/postgres?sslmode=require'
 #   ./migrate_db_supabase_to_local.sh
 #
-# Importante:
-#   - Usa conexión DIRECTA de Supabase (puerto 5432 / host db.xxx.supabase.co),
-#     NO el pooler :6543 (pg_dump falla o queda incompleto).
-#   - NO restaura sobre la misma BD que usa n8n si ya hay datos ahí.
-#     Por defecto crea/usa la BD `arunachala_web`.
+# Si no existe el contenedor destino, se crea `arunachala-postgres` (Postgres 17)
+# en la red coolify, SIN tocar infraestructura-postgres-1 (n8n).
 
 set -euo pipefail
 
 DUMP_FILE="${DUMP_FILE:-/tmp/arunachala_supabase_$(date +%Y%m%d_%H%M%S).dump}"
-LOCAL_PG_CONTAINER="${LOCAL_PG_CONTAINER:-infraestructura-postgres-1}"
+LOCAL_PG_CONTAINER="${LOCAL_PG_CONTAINER:-arunachala-postgres}"
 LOCAL_DB_NAME="${LOCAL_DB_NAME:-arunachala_web}"
 LOCAL_DB_USER="${LOCAL_DB_USER:-arunachala}"
 LOCAL_DB_PASSWORD="${LOCAL_DB_PASSWORD:-arunachala1234}"
+PG_IMAGE="${PG_IMAGE:-postgres:17}"
+COOLIFY_NETWORK="${COOLIFY_NETWORK:-coolify}"
 
 if [[ -z "${SUPABASE_DB_URL:-}" ]]; then
-  echo "❌ Define SUPABASE_DB_URL (conexión directa :5432, no pooler :6543)"
-  echo "   En Supabase → Project Settings → Database → Connection string → URI (Direct)"
+  echo "❌ Define SUPABASE_DB_URL (Direct :5432). Codifica ! como %21"
   exit 1
 fi
 
-if [[ "$SUPABASE_DB_URL" == *":6543"* ]] || [[ "$SUPABASE_DB_URL" == *"pooler.supabase.com"* ]]; then
-  echo "⚠️  Parece URL de pooler. Para pg_dump usa Direct connection (db.xxx.supabase.co:5432)."
-  echo "   Continuar igual puede fallar. Ctrl+C para abortar, Enter para seguir."
-  read -r _
+if [[ "$SUPABASE_DB_URL" == *":6543"* ]]; then
+  echo "⚠️  Puerto 6543 (transaction pooler) no sirve para pg_dump. Usa :5432."
+  exit 1
 fi
 
-echo "=== 1) Comprobar contenedor Postgres local ==="
+echo "=== 1) Postgres local (PG17) ==="
 if ! docker ps --format '{{.Names}}' | grep -qx "$LOCAL_PG_CONTAINER"; then
-  echo "❌ No encuentro contenedor '$LOCAL_PG_CONTAINER'"
-  echo "   Contenedores postgres:"
-  docker ps --format '{{.Names}}' | grep -i postgres || true
-  exit 1
+  if docker ps -a --format '{{.Names}}' | grep -qx "$LOCAL_PG_CONTAINER"; then
+    echo "▶ Arrancando $LOCAL_PG_CONTAINER..."
+    docker start "$LOCAL_PG_CONTAINER"
+  else
+    echo "▶ Creando $LOCAL_PG_CONTAINER ($PG_IMAGE) en red $COOLIFY_NETWORK..."
+    docker volume create arunachala_pg17_data >/dev/null
+    docker run -d \
+      --name "$LOCAL_PG_CONTAINER" \
+      --restart unless-stopped \
+      --network "$COOLIFY_NETWORK" \
+      -e POSTGRES_USER="$LOCAL_DB_USER" \
+      -e POSTGRES_PASSWORD="$LOCAL_DB_PASSWORD" \
+      -e POSTGRES_DB="$LOCAL_DB_NAME" \
+      -v arunachala_pg17_data:/var/lib/postgresql/data \
+      "$PG_IMAGE"
+    echo "▶ Esperando a que Postgres acepte conexiones..."
+    for i in $(seq 1 30); do
+      if docker exec -e PGPASSWORD="$LOCAL_DB_PASSWORD" "$LOCAL_PG_CONTAINER" \
+        pg_isready -U "$LOCAL_DB_USER" -d "$LOCAL_DB_NAME" >/dev/null 2>&1; then
+        break
+      fi
+      sleep 1
+    done
+  fi
 fi
 
-echo "=== 2) Dump desde Supabase → $DUMP_FILE ==="
-# --network host: evita fallos IPv6 "Network is unreachable" en algunos VPS
+docker network connect "$COOLIFY_NETWORK" "$LOCAL_PG_CONTAINER" 2>/dev/null || true
+
+echo "=== 2) Dump Supabase con $PG_IMAGE → $DUMP_FILE ==="
 docker run --rm --network host \
   -v /tmp:/tmp \
-  postgres:15 \
+  "$PG_IMAGE" \
   pg_dump "$SUPABASE_DB_URL" \
     --format=custom \
     --no-owner \
@@ -55,21 +71,19 @@ docker run --rm --network host \
 
 ls -lh "$DUMP_FILE"
 
-echo "=== 3) Crear BD destino $LOCAL_DB_NAME (si no existe) ==="
+echo "=== 3) Asegurar BD $LOCAL_DB_NAME ==="
 docker exec -e PGPASSWORD="$LOCAL_DB_PASSWORD" "$LOCAL_PG_CONTAINER" \
   psql -U "$LOCAL_DB_USER" -d postgres -tc \
   "SELECT 1 FROM pg_database WHERE datname='${LOCAL_DB_NAME}'" | grep -q 1 \
   || docker exec -e PGPASSWORD="$LOCAL_DB_PASSWORD" "$LOCAL_PG_CONTAINER" \
        psql -U "$LOCAL_DB_USER" -d postgres -c "CREATE DATABASE ${LOCAL_DB_NAME} OWNER ${LOCAL_DB_USER};"
 
-echo "=== 4) Restore en local ==="
-# Copiar dump al contenedor y restaurar
+echo "=== 4) Restore ==="
 docker cp "$DUMP_FILE" "$LOCAL_PG_CONTAINER:/tmp/arunachala.dump"
 docker exec -e PGPASSWORD="$LOCAL_DB_PASSWORD" "$LOCAL_PG_CONTAINER" \
   pg_restore -U "$LOCAL_DB_USER" -d "$LOCAL_DB_NAME" \
     --no-owner --no-acl --clean --if-exists \
     /tmp/arunachala.dump || true
-# pg_restore devuelve warnings a menudo; comprobamos tablas
 
 echo "=== 5) Verificación ==="
 docker exec -e PGPASSWORD="$LOCAL_DB_PASSWORD" "$LOCAL_PG_CONTAINER" \
@@ -78,10 +92,7 @@ docker exec -e PGPASSWORD="$LOCAL_DB_PASSWORD" "$LOCAL_PG_CONTAINER" \
   psql -U "$LOCAL_DB_USER" -d "$LOCAL_DB_NAME" -c "SELECT COUNT(*) AS contents FROM contents;"
 
 echo ""
-echo "✅ Dump/restore listo."
-echo ""
-echo "Siguiente: en Coolify (API) pon DATABASE_URL apuntando al Postgres local:"
+echo "✅ Listo."
+echo "Coolify DATABASE_URL="
 echo "  postgresql://${LOCAL_DB_USER}:${LOCAL_DB_PASSWORD}@${LOCAL_PG_CONTAINER}:5432/${LOCAL_DB_NAME}"
-echo ""
-echo "Asegura que el contenedor API y ${LOCAL_PG_CONTAINER} están en la misma red Docker (coolify)."
-echo "Luego Redeploy del API y prueba /api/content."
+echo "Redeploy del API y comprueba /api/content."
