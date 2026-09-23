@@ -184,7 +184,16 @@ def recompress_one(url: str) -> Tuple[Optional[str], int, str]:
     return public_url_for(new_key), max(0, len(raw) - len(webp)), reason
 
 
-def collect_image_targets(db: Session) -> List[Tuple[object, str]]:
+def is_legacy_url(url: Optional[str]) -> bool:
+    if not url:
+        return False
+    return LEGACY_PUBLIC_MARKER in url or "supabase.co" in url
+
+
+def collect_image_targets(
+    db: Session,
+    legacy_only: bool = False,
+) -> List[Tuple[object, str]]:
     targets: List[Tuple[object, str]] = []
 
     for row in db.query(Gallery).all():
@@ -210,6 +219,13 @@ def collect_image_targets(db: Session) -> List[Tuple[object, str]]:
         if row.profile_picture and _looks_like_image_url(row.profile_picture):
             targets.append((row, "profile_picture"))
 
+    if legacy_only:
+        targets = [
+            (obj, attr)
+            for obj, attr in targets
+            if is_legacy_url(getattr(obj, attr, None))
+        ]
+
     return targets
 
 
@@ -218,15 +234,17 @@ def recompress_all(
     dry_run: bool = False,
     limit: Optional[int] = None,
     progress: Optional[Callable[[str], None]] = None,
+    legacy_only: bool = False,
 ) -> RecompressResult:
     result = RecompressResult()
     if progress:
         progress("Cargando URLs de imagen desde la base de datos...")
-    targets = collect_image_targets(db)
+    targets = collect_image_targets(db, legacy_only=legacy_only)
     if limit is not None:
         targets = targets[:limit]
     if progress:
-        progress(f"Procesando {len(targets)} imágenes...")
+        scope = "legacy (Supabase)" if legacy_only else "todas"
+        progress(f"Procesando {len(targets)} imágenes ({scope})...")
 
     for obj, attr in targets:
         result.scanned += 1
@@ -298,10 +316,17 @@ def run_recompress(
     dry_run: bool = False,
     limit: Optional[int] = None,
     progress: Optional[Callable[[str], None]] = None,
+    legacy_only: bool = False,
 ) -> RecompressResult:
     if progress:
-        progress(f"STORAGE_TYPE={STORAGE_TYPE} dry_run={dry_run}")
-    result = recompress_all(db, dry_run=dry_run, limit=limit, progress=progress)
+        progress(f"STORAGE_TYPE={STORAGE_TYPE} dry_run={dry_run} legacy_only={legacy_only}")
+    result = recompress_all(
+        db,
+        dry_run=dry_run,
+        limit=limit,
+        progress=progress,
+        legacy_only=legacy_only,
+    )
     if progress:
         progress(
             f"scanned={result.scanned} updated={result.updated} "

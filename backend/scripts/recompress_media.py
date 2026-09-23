@@ -27,6 +27,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Recomprime media existente a WebP ligero")
     parser.add_argument("--dry-run", action="store_true", help="Solo inspecciona, no escribe")
     parser.add_argument("--limit", type=int, default=None, help="Máximo de filas a procesar")
+    parser.add_argument(
+        "--legacy-only",
+        action="store_true",
+        help="Solo migra URLs legacy (Supabase) a MinIO",
+    )
     args = parser.parse_args(argv)
 
     _log("Conectando a la base de datos...")
@@ -37,6 +42,7 @@ def main(argv: list[str] | None = None) -> int:
             dry_run=args.dry_run,
             limit=args.limit,
             progress=_log,
+            legacy_only=args.legacy_only,
         )
         for line in result.details:
             _log(line)

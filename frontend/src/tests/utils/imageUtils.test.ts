@@ -33,11 +33,10 @@ describe('getImageUrl', () => {
     );
   });
 
-  it('reescribe URLs de storage público legado hacia la API /static/', () => {
-    const { API_BASE_URL } = require('../../config');
+  it('reescribe URLs de storage público legado hacia MinIO', () => {
     const legacy = `${LEGACY_PUBLIC}/gallery/articles/om_symbol.webp`;
     expect(getImageUrl(legacy)).toBe(
-      `${API_BASE_URL.replace(/\/$/, '')}/static/gallery/articles/om_symbol.webp`
+      'https://media.yogayterapiasarunachala.es/arunachala-media/gallery/articles/om_symbol.webp'
     );
   });
 

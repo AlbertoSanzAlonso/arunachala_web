@@ -66,6 +66,49 @@ async def startup_event():
     # Start Automation Scheduler
     start_scheduler()
 
+    # Migra URLs legacy (Supabase) → MinIO en segundo plano si aplica
+    import threading
+    from app.core.object_storage import STORAGE_TYPE as _STORAGE
+
+    def _migrate_legacy_media() -> None:
+        if (_STORAGE or "").strip().lower() != "s3":
+            return
+        if os.getenv("SKIP_LEGACY_MEDIA_MIGRATE", "").lower() in ("1", "true", "yes"):
+            return
+        try:
+            from app.core.database import SessionLocal
+            from app.services.media_recompress import run_recompress
+            import logging
+
+            log = logging.getLogger("uvicorn.error")
+            db = SessionLocal()
+            try:
+                result = run_recompress(
+                    db,
+                    dry_run=False,
+                    legacy_only=True,
+                    progress=log.info,
+                )
+                log.info(
+                    "startup legacy media migrate: scanned=%s updated=%s failed=%s",
+                    result.scanned,
+                    result.updated,
+                    result.failed,
+                )
+            finally:
+                db.close()
+        except Exception:
+            import logging
+            logging.getLogger("uvicorn.error").exception(
+                "startup legacy media migrate failed"
+            )
+
+    threading.Thread(
+        target=_migrate_legacy_media,
+        daemon=True,
+        name="legacy-media-migrate",
+    ).start()
+
 @app.on_event("shutdown")
 async def shutdown_event():
     await cache.disconnect()

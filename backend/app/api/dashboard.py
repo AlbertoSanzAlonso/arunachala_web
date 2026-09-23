@@ -144,10 +144,20 @@ def get_site_stats(
     }
 
 
-def _run_recompress_job(dry_run: bool, limit: Optional[int]) -> None:
+def _run_recompress_job(
+    dry_run: bool,
+    limit: Optional[int],
+    legacy_only: bool = False,
+) -> None:
     db = SessionLocal()
     try:
-        result = run_recompress(db, dry_run=dry_run, limit=limit, progress=logger.info)
+        result = run_recompress(
+            db,
+            dry_run=dry_run,
+            limit=limit,
+            progress=logger.info,
+            legacy_only=legacy_only,
+        )
         logger.info(
             "media recompress done: scanned=%s updated=%s skipped=%s failed=%s saved≈%sKB",
             result.scanned,
@@ -168,6 +178,10 @@ def recompress_media(
     dry_run: bool = Query(False),
     limit: Optional[int] = Query(None, ge=1, le=5000),
     sync: bool = Query(False, description="Si true, espera al resultado (útil en pruebas)"),
+    legacy_only: bool = Query(
+        False,
+        description="Si true, solo migra URLs legacy (Supabase) a MinIO",
+    ),
     current_user=Depends(get_current_admin_user),
     db: Session = Depends(get_db),
 ):
@@ -177,10 +191,11 @@ def recompress_media(
     Solo admin.
     """
     if sync:
-        result = run_recompress(db, dry_run=dry_run, limit=limit)
+        result = run_recompress(db, dry_run=dry_run, limit=limit, legacy_only=legacy_only)
         return {
             "status": "done",
             "dry_run": dry_run,
+            "legacy_only": legacy_only,
             "scanned": result.scanned,
             "updated": result.updated,
             "skipped": result.skipped,
@@ -189,10 +204,11 @@ def recompress_media(
             "details": result.details[:100],
         }
 
-    background_tasks.add_task(_run_recompress_job, dry_run, limit)
+    background_tasks.add_task(_run_recompress_job, dry_run, limit, legacy_only)
     return {
         "status": "started",
         "dry_run": dry_run,
+        "legacy_only": legacy_only,
         "limit": limit,
         "message": "Recompresión en segundo plano. Revisa los logs del backend.",
     }
