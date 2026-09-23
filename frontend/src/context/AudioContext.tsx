@@ -63,7 +63,10 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
     if (!audioRef.current && typeof window !== 'undefined') {
-        audioRef.current = new Audio();
+        const audio = new Audio();
+        // Do not buffer the homepage track (~6 MB) until playback actually starts.
+        audio.preload = 'none';
+        audioRef.current = audio;
     }
 
     const playlistRef = useRef<Meditation[]>([]);
@@ -206,11 +209,10 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                             const url = targetMeditation.media_url || '';
                             const fullUrl = getImageUrl(url);
                             if (!fullUrl) return;
+                            audio.preload = 'none';
                             audio.src = fullUrl;
-                            audio.preload = 'auto';
                             audio.volume = 0.05;
                             setVolumeState(0.05);
-                            audio.load();
                             audio.loop = true;
 
                             // If we are currently on home, try to play

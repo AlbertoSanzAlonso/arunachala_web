@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from fastapi import UploadFile, HTTPException
 from app.models.models import Gallery, DashboardActivity
-from app.core.image_utils import save_upload_file, delete_file
+from app.core.image_utils import save_upload_file, delete_file, is_image_upload
 import os
 from typing import List
 
@@ -33,7 +33,7 @@ class GalleryService:
             print(f"❌ Invalid category attempt: {category}")
             raise HTTPException(status_code=400, detail=f"Invalid category. Must be one of {valid_categories}")
 
-        if not file.content_type.startswith("image/"):
+        if not is_image_upload(file):
             print(f"❌ Invalid file type: {file.content_type}")
             raise HTTPException(status_code=400, detail="File must be an image")
 

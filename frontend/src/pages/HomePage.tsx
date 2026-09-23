@@ -1,7 +1,7 @@
 import React, { Suspense, lazy, useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-import videoBgWebm from 'assets/videos/VIDEOWEB.webm';
+import videoBgWebm from 'assets/videos/hero_optimized.webm';
 import videoPosterWebp from 'assets/videos/VIDEOWEB_poster.webp';
 import omSymbol from 'assets/images/om_symbol.png';
 import lotusFlower from 'assets/images/lotus_flower.png';
@@ -124,6 +124,7 @@ const HomePage: React.FC = () => {
                     loop
                     muted
                     playsInline
+                    preload="metadata"
                     poster={videoPosterWebp}
                 >
                     <source src={videoBgWebm} type="video/webm" />

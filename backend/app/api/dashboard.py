@@ -1,15 +1,19 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
-from app.core.database import get_db
+from app.core.database import SessionLocal, get_db
 from app.models.models import (
     Content, Gallery, YogaClassDefinition, Activity, 
     ClassSchedule, MassageType, TherapyType, User, DashboardActivity
 )
-from app.api.auth import get_current_user
+from app.api.auth import get_current_admin_user, get_current_user
+from app.services.media_recompress import run_recompress
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
+import logging
+
+logger = logging.getLogger("uvicorn.error")
 
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 
@@ -137,4 +141,58 @@ def get_site_stats(
         "activities": db.query(Activity).count(),
         "yoga_classes": db.query(YogaClassDefinition).count(),
         "users": db.query(User).count()
+    }
+
+
+def _run_recompress_job(dry_run: bool, limit: Optional[int]) -> None:
+    db = SessionLocal()
+    try:
+        result = run_recompress(db, dry_run=dry_run, limit=limit, progress=logger.info)
+        logger.info(
+            "media recompress done: scanned=%s updated=%s skipped=%s failed=%s saved≈%sKB",
+            result.scanned,
+            result.updated,
+            result.skipped,
+            result.failed,
+            result.saved_bytes // 1024,
+        )
+    except Exception:
+        logger.exception("media recompress failed")
+    finally:
+        db.close()
+
+
+@router.post("/recompress-media")
+def recompress_media(
+    background_tasks: BackgroundTasks,
+    dry_run: bool = Query(False),
+    limit: Optional[int] = Query(None, ge=1, le=5000),
+    sync: bool = Query(False, description="Si true, espera al resultado (útil en pruebas)"),
+    current_user=Depends(get_current_admin_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Recomprime galería, portadas y miniaturas a WebP ≤1920px.
+    También migra URLs legacy (storage público antiguo) a MinIO.
+    Solo admin.
+    """
+    if sync:
+        result = run_recompress(db, dry_run=dry_run, limit=limit)
+        return {
+            "status": "done",
+            "dry_run": dry_run,
+            "scanned": result.scanned,
+            "updated": result.updated,
+            "skipped": result.skipped,
+            "failed": result.failed,
+            "saved_bytes": result.saved_bytes,
+            "details": result.details[:100],
+        }
+
+    background_tasks.add_task(_run_recompress_job, dry_run, limit)
+    return {
+        "status": "started",
+        "dry_run": dry_run,
+        "limit": limit,
+        "message": "Recompresión en segundo plano. Revisa los logs del backend.",
     }

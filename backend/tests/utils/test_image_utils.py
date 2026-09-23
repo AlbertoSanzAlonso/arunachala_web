@@ -55,6 +55,25 @@ class TestImageUtils:
         # Verificar que es WebP
         saved_img = Image.open(full_path)
         assert saved_img.format == "WEBP"
+
+    def test_save_upload_file_downscales_large_photos(self, temp_static_dir):
+        """Las fotos de cámara no deben guardarse a resolución original."""
+        img = Image.new("RGB", (4000, 3000), color="blue")
+        buf = BytesIO()
+        img.save(buf, format="PNG")
+        buf.seek(0)
+        upload_file = UploadFile(
+            filename="foto.png",
+            file=buf,
+            headers={"content-type": "image/png"},
+        )
+
+        result_path = save_upload_file(upload_file, subdirectory="uploads")
+        relative_path = result_path[len("/static/"):]
+        saved_img = Image.open(os.path.join(temp_static_dir, relative_path))
+
+        assert max(saved_img.size) <= 1920
+        assert saved_img.size[0] == 1920
     
     def test_save_upload_file_creates_subdirectory(self, temp_static_dir, sample_image):
         """Verifica que save_upload_file crea el subdirectorio si no existe."""

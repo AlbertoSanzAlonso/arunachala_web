@@ -80,13 +80,24 @@ export default async function getCroppedImg(
     // paste generated rotate image at the top left corner
     ctx.putImageData(data, 0, 0)
 
-    // As Base64 string
-    // return canvas.toDataURL('image/jpeg');
+    // Heroes and gallery crops stay at the original photo size unless we scale them.
+    const maxEdge = 1920
+    const longest = Math.max(pixelCrop.width, pixelCrop.height)
+    const output = longest > maxEdge ? document.createElement('canvas') : canvas
+    if (longest > maxEdge) {
+        const scale = maxEdge / longest
+        output.width = Math.max(1, Math.round(pixelCrop.width * scale))
+        output.height = Math.max(1, Math.round(pixelCrop.height * scale))
+        const outCtx = output.getContext('2d')
+        if (!outCtx) {
+            return null
+        }
+        outCtx.drawImage(canvas, 0, 0, output.width, output.height)
+    }
 
-    // As a blob
-    return new Promise((resolve, reject) => {
-        canvas.toBlob((file) => {
+    return new Promise((resolve) => {
+        output.toBlob((file) => {
             resolve(file)
-        }, 'image/webp', 0.9)
+        }, 'image/webp', 0.75)
     })
 }
