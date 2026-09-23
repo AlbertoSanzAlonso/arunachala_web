@@ -191,7 +191,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                                 className={
                                     isSlider
                                         ? 'flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-8 pt-4 px-[10vw] md:px-0 w-full min-w-0'
-                                        : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pb-8 pt-4 px-6 md:px-1 w-full'
+                                        : 'grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 pb-8 pt-4 px-6 md:px-1 w-full'
                                 }
                                 style={isSlider ? { scrollbarWidth: 'none', msOverflowStyle: 'none' } : undefined}
                             >

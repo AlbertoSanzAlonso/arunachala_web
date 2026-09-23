@@ -206,7 +206,7 @@ const HomePage: React.FC = () => {
                 <section className="scroll-mt-24">
                     <Suspense fallback={<div className="h-64 animate-pulse bg-bone" aria-hidden="true" />}>
                         <FadeInSection delay={0.15}>
-                            <BlogSection limit={3} isSlider={false} showViewAll={true} />
+                            <BlogSection limit={4} isSlider={false} showViewAll={true} />
                         </FadeInSection>
                     </Suspense>
                 </section>
