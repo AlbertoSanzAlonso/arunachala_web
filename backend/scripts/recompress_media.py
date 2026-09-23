@@ -19,23 +19,28 @@ from app.core.database import SessionLocal
 from app.services.media_recompress import run_recompress
 
 
+def _log(msg: str) -> None:
+    print(msg, flush=True)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Recomprime media existente a WebP ligero")
     parser.add_argument("--dry-run", action="store_true", help="Solo inspecciona, no escribe")
     parser.add_argument("--limit", type=int, default=None, help="Máximo de filas a procesar")
     args = parser.parse_args(argv)
 
+    _log("Conectando a la base de datos...")
     db = SessionLocal()
     try:
         result = run_recompress(
             db,
             dry_run=args.dry_run,
             limit=args.limit,
-            progress=print,
+            progress=_log,
         )
         for line in result.details:
-            print(line)
-        print(
+            _log(line)
+        _log(
             f"\nResumen: scanned={result.scanned} updated={result.updated} "
             f"skipped={result.skipped} failed={result.failed} "
             f"saved≈{result.saved_bytes // 1024}KB"

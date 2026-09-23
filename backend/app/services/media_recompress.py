@@ -101,7 +101,7 @@ def resolve_storage_key(url: str) -> Optional[str]:
     return None
 
 
-def download_bytes(url: str, timeout: int = 60) -> bytes:
+def download_bytes(url: str, timeout: int = 20) -> bytes:
     req = Request(url, headers={"User-Agent": "ArunachalaMediaRecompress/1.0"})
     with urlopen(req, timeout=timeout) as resp:
         return resp.read()
@@ -217,17 +217,24 @@ def recompress_all(
     db: Session,
     dry_run: bool = False,
     limit: Optional[int] = None,
+    progress: Optional[Callable[[str], None]] = None,
 ) -> RecompressResult:
     result = RecompressResult()
+    if progress:
+        progress("Cargando URLs de imagen desde la base de datos...")
     targets = collect_image_targets(db)
     if limit is not None:
         targets = targets[:limit]
+    if progress:
+        progress(f"Procesando {len(targets)} imágenes...")
 
     for obj, attr in targets:
         result.scanned += 1
         old_url = getattr(obj, attr)
         table = getattr(obj, "__tablename__", type(obj).__name__)
         label = f"{table}#{getattr(obj, 'id', '?')}.{attr}"
+        if progress and result.scanned % 5 == 1:
+            progress(f"[{result.scanned}/{len(targets)}] {label}")
 
         if dry_run:
             try:
@@ -294,7 +301,7 @@ def run_recompress(
 ) -> RecompressResult:
     if progress:
         progress(f"STORAGE_TYPE={STORAGE_TYPE} dry_run={dry_run}")
-    result = recompress_all(db, dry_run=dry_run, limit=limit)
+    result = recompress_all(db, dry_run=dry_run, limit=limit, progress=progress)
     if progress:
         progress(
             f"scanned={result.scanned} updated={result.updated} "
