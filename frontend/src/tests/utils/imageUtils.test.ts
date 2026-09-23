@@ -33,11 +33,9 @@ describe('getImageUrl', () => {
     );
   });
 
-  it('reescribe URLs de storage público legado hacia MinIO', () => {
+  it('deja URLs de storage público legado tal cual (migración a MinIO en el API)', () => {
     const legacy = `${LEGACY_PUBLIC}/gallery/articles/om_symbol.webp`;
-    expect(getImageUrl(legacy)).toBe(
-      'https://media.yogayterapiasarunachala.es/arunachala-media/gallery/articles/om_symbol.webp'
-    );
+    expect(getImageUrl(legacy)).toBe(legacy);
   });
 
   it('deja URLs http externas tal cual', () => {

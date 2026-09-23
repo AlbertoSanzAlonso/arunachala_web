@@ -1,9 +1,6 @@
 import { API_BASE_URL } from '../config';
 
 const PRODUCTION_SITE = 'https://www.yogayterapiasarunachala.es';
-const PRODUCTION_MEDIA =
-    (typeof process !== 'undefined' && process.env?.REACT_APP_MEDIA_URL) ||
-    'https://media.yogayterapiasarunachala.es/arunachala-media';
 
 /** Rutas servidas desde frontend/public (Vercel), no desde la API. */
 const SITE_PUBLIC_ASSETS: Record<string, string> = {
@@ -69,7 +66,8 @@ const legacyPublicObjectPath = (url: string): string | null => {
 /**
  * Returns a full URL for an image/audio asset.
  * - blob:/file: → '' (invalid cross-session; use UI fallback)
- * - URLs http de storage legado (Supabase) → MinIO media.*
+ * - URLs http de storage legado (Supabase): se sirven tal cual hasta que
+ *   el API migre la fila a MinIO (antes se reescribían a /static/ → 404)
  * - data: u otras http(s) → as-is (incl. MinIO / media.*)
  * - /gallery/... o /logo_icon.webp → sitio (Vercel public/)
  * - /static/... → API (disco local), salvo assets solo en el sitio
@@ -85,8 +83,9 @@ export const getImageUrl = (url: string | null | undefined): string => {
         if (STATIC_ON_SITE_ONLY.has(fromLegacy)) {
             return resolveSitePublicAsset(`/gallery/articles/${fromLegacy.split('/').pop()}`);
         }
-        // Supabase ya no se usa: misma key en el bucket MinIO público.
-        return `${PRODUCTION_MEDIA.replace(/\/$/, '')}/${fromLegacy.replace(/^\//, '')}`;
+        // No reescribir a /static/ ni a MinIO aquí: el objeto puede no existir
+        // aún en el bucket. La migración del API actualiza la BD a media.*.
+        return trimmed;
     }
 
     if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) {
