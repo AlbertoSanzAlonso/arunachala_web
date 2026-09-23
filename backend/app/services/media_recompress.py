@@ -101,7 +101,7 @@ def resolve_storage_key(url: str) -> Optional[str]:
     return None
 
 
-def download_bytes(url: str, timeout: int = 20) -> bytes:
+def download_bytes(url: str, timeout: int = 90) -> bytes:
     req = Request(url, headers={"User-Agent": "ArunachalaMediaRecompress/1.0"})
     with urlopen(req, timeout=timeout) as resp:
         return resp.read()
@@ -150,38 +150,61 @@ def public_url_for(key: str) -> str:
     return f"{S3_PUBLIC_URL.rstrip('/')}/{S3_BUCKET}/{key.lstrip('/')}"
 
 
+def _guess_content_type(key: str) -> str:
+    import mimetypes
+
+    ctype, _ = mimetypes.guess_type(key)
+    return ctype or "application/octet-stream"
+
+
+def _download_first(url: str) -> Tuple[Optional[bytes], str, str]:
+    """Devuelve (bytes, source_url, error)."""
+    errors = []
+    for candidate in candidate_download_urls(url):
+        try:
+            return download_bytes(candidate), candidate, ""
+        except Exception as e:
+            errors.append(f"{candidate[:60]}→{e}")
+    return None, url, "; ".join(errors)
+
+
 def recompress_one(url: str) -> Tuple[Optional[str], int, str]:
+    """Migra/recomprime una URL. Soporta imágenes y binarios legacy (p. ej. mp3)."""
     if STORAGE_TYPE != "s3":
         return None, 0, "storage_not_s3"
-    if not _looks_like_image_url(url):
-        return None, 0, "not_image"
 
     key = resolve_storage_key(url)
     if not key:
         return None, 0, "no_key"
 
-    raw = None
-    source = url
-    errors = []
-    for candidate in candidate_download_urls(url):
-        try:
-            raw = download_bytes(candidate)
-            source = candidate
-            break
-        except Exception as e:
-            errors.append(f"{candidate[:60]}→{e}")
-
+    raw, source, err = _download_first(url)
     if raw is None:
-        return None, 0, f"download_failed:{'; '.join(errors)}"
+        return None, 0, f"download_failed:{err}"
 
-    work, reason = needs_work(raw, source)
-    if not work:
-        return None, 0, reason
+    is_image = _looks_like_image_url(url)
+    if is_image:
+        work, reason = needs_work(raw, source)
+        if not work:
+            return None, 0, reason
+        try:
+            new_key = ensure_webp_key(key)
+            webp = encode_lightweight_webp(Image.open(BytesIO(raw)))
+            put_bytes(new_key, webp, content_type="image/webp")
+            return public_url_for(new_key), max(0, len(raw) - len(webp)), reason
+        except Exception as e:
+            # Si no abre como imagen, copia bytes tal cual
+            is_image = False
+            reason = f"image_fallback:{e}"
 
-    new_key = ensure_webp_key(key)
-    webp = encode_lightweight_webp(Image.open(BytesIO(raw)))
-    put_bytes(new_key, webp, content_type="image/webp")
-    return public_url_for(new_key), max(0, len(raw) - len(webp)), reason
+    # Audio u otros: copia fiel al mismo key en MinIO
+    if is_legacy_url(url) or url.startswith("/static/"):
+        put_bytes(key, raw, content_type=_guess_content_type(key))
+        return public_url_for(key), 0, "migrate_binary"
+
+    on_minio = bool(S3_PUBLIC_URL) and S3_PUBLIC_URL in url
+    if on_minio:
+        return None, 0, "already_ok"
+    return None, 0, "not_image"
 
 
 def is_legacy_url(url: Optional[str]) -> bool:
@@ -203,8 +226,9 @@ def collect_image_targets(
     for row in db.query(Content).all():
         if row.thumbnail_url:
             targets.append((row, "thumbnail_url"))
-        if row.media_url and _looks_like_image_url(row.media_url):
-            targets.append((row, "media_url"))
+        if row.media_url:
+            if legacy_only or _looks_like_image_url(row.media_url):
+                targets.append((row, "media_url"))
 
     for model in (MassageType, TherapyType, Activity, Promotion):
         for row in db.query(model).all():
@@ -212,12 +236,18 @@ def collect_image_targets(
                 targets.append((row, "image_url"))
 
     for row in db.query(Personalization).all():
-        if row.value and _looks_like_image_url(row.value):
-            targets.append((row, "value"))
+        if row.value:
+            if legacy_only:
+                if is_legacy_url(row.value):
+                    targets.append((row, "value"))
+            elif _looks_like_image_url(row.value):
+                targets.append((row, "value"))
 
     for row in db.query(User).all():
-        if row.profile_picture and _looks_like_image_url(row.profile_picture):
-            targets.append((row, "profile_picture"))
+        if row.profile_picture:
+            if legacy_only or _looks_like_image_url(row.profile_picture):
+                if not legacy_only or is_legacy_url(row.profile_picture):
+                    targets.append((row, "profile_picture"))
 
     if legacy_only:
         targets = [
@@ -238,13 +268,13 @@ def recompress_all(
 ) -> RecompressResult:
     result = RecompressResult()
     if progress:
-        progress("Cargando URLs de imagen desde la base de datos...")
+        progress("Cargando URLs desde la base de datos...")
     targets = collect_image_targets(db, legacy_only=legacy_only)
     if limit is not None:
         targets = targets[:limit]
     if progress:
-        scope = "legacy (Supabase)" if legacy_only else "todas"
-        progress(f"Procesando {len(targets)} imágenes ({scope})...")
+        scope = "legacy (Supabase→MinIO)" if legacy_only else "todas"
+        progress(f"Procesando {len(targets)} archivos ({scope})...")
 
     for obj, attr in targets:
         result.scanned += 1
@@ -256,20 +286,15 @@ def recompress_all(
 
         if dry_run:
             try:
-                raw = None
-                source = old_url
-                for candidate in candidate_download_urls(old_url):
-                    try:
-                        raw = download_bytes(candidate)
-                        source = candidate
-                        break
-                    except Exception:
-                        continue
+                raw, source, err = _download_first(old_url)
                 if raw is None:
                     result.failed += 1
-                    result.details.append(f"FAIL {label}: download_failed | {old_url[:100]}")
+                    result.details.append(f"FAIL {label}: download_failed:{err} | {old_url[:100]}")
                     continue
-                work, reason = needs_work(raw, source)
+                if _looks_like_image_url(old_url):
+                    work, reason = needs_work(raw, source)
+                else:
+                    work, reason = True, "migrate_binary"
                 if work:
                     result.updated += 1
                     result.details.append(f"DRY {label}: {reason} ({len(raw)}B)")
