@@ -43,24 +43,42 @@ const formats = [
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeholder, className }) => {
     const quillRef = useRef<ReactQuill>(null);
-    // Track the last value we set programmatically, to avoid cursor jumps on every keystroke
-    const lastSetValue = useRef<string>('');
+    // Track values that originated from this editor so we don't re-paste them.
+    // Toolbar clicks briefly blur Quill; without this guard, the sync effect
+    // would paste HTML again and jump the caret/scroll to the top.
+    const lastSetValue = useRef<string>(value);
 
-    // Restore useEffect but with a guard: only update if the user is NOT typing
-    // this prevents focus loss and keyboard closure while allowing the editor
-    // to load the content correctly when it opens.
     useEffect(() => {
         const editor = quillRef.current?.getEditor();
         if (!editor) return;
 
-        // ONLY update if the editor is NOT focused. If it's focused, the user is typing
-        // and we should NOT touch the internal state to avoid keyboard dismissal.
-        if (!editor.hasFocus()) {
-            const currentHtml = editor.root.innerHTML;
-            if (value !== currentHtml) {
-                editor.clipboard.dangerouslyPasteHTML(value || '');
-            }
+        // Change came from typing / toolbar formats — do not touch Quill state.
+        if (value === lastSetValue.current) return;
+
+        const currentHtml = editor.root.innerHTML;
+        if (value === currentHtml) {
+            lastSetValue.current = value;
+            return;
         }
+
+        // External content change (open article, remount, etc.)
+        const selection = editor.getSelection();
+        const scrollTop = editor.root.scrollTop;
+        editor.clipboard.dangerouslyPasteHTML(value || '');
+        lastSetValue.current = value || '';
+
+        requestAnimationFrame(() => {
+            if (selection) {
+                try {
+                    const length = editor.getLength();
+                    const index = Math.min(selection.index, Math.max(length - 1, 0));
+                    editor.setSelection(index, selection.length);
+                } catch {
+                    // Selection may be invalid after a full content replace.
+                }
+            }
+            editor.root.scrollTop = scrollTop;
+        });
     }, [value]);
 
     return (
