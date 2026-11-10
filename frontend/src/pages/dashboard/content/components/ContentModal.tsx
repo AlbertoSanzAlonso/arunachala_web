@@ -109,8 +109,8 @@ export const ContentModal: React.FC<ContentModalProps> = ({
                                     </button>
                                 </div>
 
-                                {/* Scrollable Body */}
-                                <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
+                                {/* Scrollable Body — overflow-anchor avoids jump-to-top when headings resize */}
+                                <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar [overflow-anchor:none]">
                                     <form onSubmit={onSave} className="space-y-6">
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                         <div className="col-span-1 lg:col-span-2">

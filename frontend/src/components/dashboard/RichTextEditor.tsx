@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import 'quill-emoji/dist/quill-emoji.css';
@@ -41,45 +41,112 @@ const formats = [
     'emoji'
 ];
 
+type ScrollSnapshot = {
+    modalTop: number;
+    editorTop: number;
+    modalEl: HTMLElement | null;
+    selection: { index: number; length: number } | null;
+    fromToolbar: boolean;
+};
+
 const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeholder, className }) => {
     const quillRef = useRef<ReactQuill>(null);
-    // Track values that originated from this editor so we don't re-paste them.
-    // Toolbar clicks briefly blur Quill; without this guard, the sync effect
-    // would paste HTML again and jump the caret/scroll to the top.
-    const lastSetValue = useRef<string>(value);
+    const snapshotRef = useRef<ScrollSnapshot | null>(null);
 
+    const captureScroll = useCallback((fromToolbar: boolean) => {
+        const editor = quillRef.current?.getEditor();
+        if (!editor) return;
+        const modalEl = editor.root.closest('.overflow-y-auto') as HTMLElement | null;
+        const selection = editor.getSelection() || snapshotRef.current?.selection || null;
+        snapshotRef.current = {
+            modalTop: modalEl?.scrollTop ?? 0,
+            editorTop: editor.root.scrollTop,
+            modalEl,
+            selection,
+            fromToolbar,
+        };
+    }, []);
+
+    const restoreScroll = useCallback(() => {
+        const editor = quillRef.current?.getEditor();
+        const snap = snapshotRef.current;
+        if (!editor || !snap) return;
+
+        const apply = () => {
+            editor.root.scrollTop = snap.editorTop;
+            if (snap.modalEl) snap.modalEl.scrollTop = snap.modalTop;
+            // Only re-apply selection after toolbar formats (heading/bold/…).
+            // Restoring on every keystroke breaks normal typing.
+            if (snap.fromToolbar && snap.selection) {
+                try {
+                    const length = editor.getLength();
+                    const index = Math.min(snap.selection.index, Math.max(length - 1, 0));
+                    editor.setSelection(index, snap.selection.length);
+                } catch {
+                    // ignore invalid selection after format
+                }
+            }
+        };
+
+        apply();
+        requestAnimationFrame(apply);
+        setTimeout(apply, 0);
+        snapshotRef.current = { ...snap, fromToolbar: false };
+    }, []);
+
+    // Uncontrolled Quill: content loads via defaultValue + parent `key` remount.
+    // Do NOT re-paste HTML on value changes — that jumps caret/scroll to the top,
+    // especially when the toolbar steals focus (headers, size picker, etc.).
     useEffect(() => {
         const editor = quillRef.current?.getEditor();
         if (!editor) return;
 
-        // Change came from typing / toolbar formats — do not touch Quill state.
-        if (value === lastSetValue.current) return;
+        const toolbar = editor.getModule('toolbar') as {
+            container?: HTMLElement;
+            addHandler?: (name: string, handler: (value: unknown) => void) => void;
+        } | null;
+        const toolbarEl = toolbar?.container;
+        const savedRangeRef = { current: null as { index: number; length: number } | null };
 
-        const currentHtml = editor.root.innerHTML;
-        if (value === currentHtml) {
-            lastSetValue.current = value;
-            return;
-        }
+        const onToolbarPointer = (event: Event) => {
+            // Keep selection when clicking toolbar/pickers (header, size, …).
+            // Do not overwrite a good range with null when opening a dropdown item.
+            event.preventDefault();
+            const sel = editor.getSelection();
+            if (sel) savedRangeRef.current = sel;
+            captureScroll(true);
+        };
+        toolbarEl?.addEventListener('mousedown', onToolbarPointer, true);
+        toolbarEl?.addEventListener('touchstart', onToolbarPointer, true);
 
-        // External content change (open article, remount, etc.)
-        const selection = editor.getSelection();
-        const scrollTop = editor.root.scrollTop;
-        editor.clipboard.dangerouslyPasteHTML(value || '');
-        lastSetValue.current = value || '';
+        const withPreservedSelection = (formatName: string) => (value: unknown) => {
+            const range = savedRangeRef.current || editor.getSelection();
+            if (range) editor.setSelection(range.index, range.length, 'silent');
+            editor.format(formatName, value);
+            restoreScroll();
+        };
 
-        requestAnimationFrame(() => {
-            if (selection) {
-                try {
-                    const length = editor.getLength();
-                    const index = Math.min(selection.index, Math.max(length - 1, 0));
-                    editor.setSelection(index, selection.length);
-                } catch {
-                    // Selection may be invalid after a full content replace.
-                }
+        // Picker formats lose the caret unless we restore the range first.
+        toolbar?.addHandler?.('header', withPreservedSelection('header'));
+        toolbar?.addHandler?.('size', withPreservedSelection('size'));
+        toolbar?.addHandler?.('color', withPreservedSelection('color'));
+        toolbar?.addHandler?.('background', withPreservedSelection('background'));
+        toolbar?.addHandler?.('align', withPreservedSelection('align'));
+
+        const onTextChange = (_delta: unknown, _old: unknown, source: string) => {
+            // Block formats (h2/h3) resize content and the modal scroll jumps to top.
+            if (source === 'user' && snapshotRef.current?.fromToolbar) {
+                restoreScroll();
             }
-            editor.root.scrollTop = scrollTop;
-        });
-    }, [value]);
+        };
+        editor.on('text-change', onTextChange);
+
+        return () => {
+            toolbarEl?.removeEventListener('mousedown', onToolbarPointer, true);
+            toolbarEl?.removeEventListener('touchstart', onToolbarPointer, true);
+            editor.off('text-change', onTextChange);
+        };
+    }, [captureScroll, restoreScroll]);
 
     return (
         <div className={`rich-text-editor ${className || ''}`}>
@@ -88,8 +155,16 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeh
                 theme="snow"
                 defaultValue={value}
                 onChange={(html) => {
-                    lastSetValue.current = html;
+                    // Keep modal scroll stable across React re-renders from parent state.
+                    const editor = quillRef.current?.getEditor();
+                    const modalEl = editor?.root.closest('.overflow-y-auto') as HTMLElement | null;
+                    const modalTop = modalEl?.scrollTop ?? 0;
+                    const editorTop = editor?.root.scrollTop ?? 0;
                     onChange(html);
+                    requestAnimationFrame(() => {
+                        if (modalEl) modalEl.scrollTop = modalTop;
+                        if (editor) editor.root.scrollTop = editorTop;
+                    });
                 }}
                 modules={modules}
                 formats={formats}
@@ -123,6 +198,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeh
                     line-height: 1.8;
                     color: #5D4037; /* bark color */
                     white-space: pre-wrap !important; /* Safety fallback for missing <p> tags */
+                    overflow-anchor: none;
                 }
                 /* Match public blog styles exactly */
                 .ql-editor h1 { font-size: 2.5rem !important; line-height: 1.2 !important; margin-top: 2rem !important; margin-bottom: 1.25rem !important; font-weight: 700 !important; color: #2F4F4F !important; font-family: "Cormorant Garamond", serif !important; }
