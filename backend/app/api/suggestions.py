@@ -28,14 +28,43 @@ class SuggestionResponse(BaseModel):
     class Config:
         from_attributes = True
 
+async def _notify_owner_suggestion(
+    title: str,
+    comments: Optional[str],
+    activity_id: Optional[int],
+) -> None:
+    from app.services.email import email_service
+
+    kind = "Nueva sugerencia / propuesta" if not activity_id else "Nueva propuesta en votación"
+    await email_service.send_owner_notification(
+        subject=f"{kind}: {(title or '')[:80]}",
+        kind_label=kind,
+        fields={
+            "Propuesta": (title or "").replace("\n", "<br>"),
+            "Detalles": (comments or "—").replace("\n", "<br>"),
+            "Origen": f"Votación #{activity_id}" if activity_id else "Buzón general de la web",
+        },
+    )
+
+
 @router.post("", response_model=SuggestionResponse)
-def create_suggestion(request: Request, suggestion: SuggestionCreate, db: Session = Depends(get_db)):
+def create_suggestion(
+    request: Request,
+    suggestion: SuggestionCreate,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+):
     # Get client IP (considering proxy headers if present)
     ip_address = request.headers.get("x-forwarded-for")
     if ip_address:
         ip_address = ip_address.split(",")[0].strip()
     else:
         ip_address = request.client.host if request.client else "unknown"
+
+    # If no activity_id, this is a general proposal - set activity_type to 'custom'
+    activity_type = suggestion.activity_type
+    if not suggestion.activity_id:
+        activity_type = 'custom'
 
     # Restriction: Only one vote per IP for each specific activity (poll)
     # Note: No restriction for general proposals (activity_id == None)
@@ -54,11 +83,6 @@ def create_suggestion(request: Request, suggestion: SuggestionCreate, db: Sessio
             db.commit()
             db.refresh(existing)
             return existing
-
-    # If no activity_id, this is a general proposal - set activity_type to 'custom'
-    activity_type = suggestion.activity_type
-    if not suggestion.activity_id:
-        activity_type = 'custom'
     
     new_suggestion = Suggestion(
         activity_id=suggestion.activity_id,
@@ -71,6 +95,17 @@ def create_suggestion(request: Request, suggestion: SuggestionCreate, db: Sessio
     db.add(new_suggestion)
     db.commit()
     db.refresh(new_suggestion)
+
+    # Avisar a la propietaria cuando llega una propuesta con texto (no un voto silencioso)
+    custom_text = (new_suggestion.custom_suggestion or "").strip()
+    if custom_text and (not new_suggestion.activity_id or new_suggestion.activity_type == "custom"):
+        background_tasks.add_task(
+            _notify_owner_suggestion,
+            custom_text,
+            new_suggestion.comments,
+            new_suggestion.activity_id,
+        )
+
     return new_suggestion
 
 @router.get("/custom-proposals/{activity_id}")

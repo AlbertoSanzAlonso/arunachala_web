@@ -18,9 +18,89 @@ class EmailService:
         self.mail_from = os.getenv("MAIL_FROM")
         self.mail_from_name = os.getenv("MAIL_FROM_NAME", "Aruṇāchala Yoga & Terapias")
         self.frontend_url = os.getenv("FRONTEND_URL", "https://www.yogayterapiasarunachala.es")
+        self.contact_email = (
+            os.getenv("CONTACT_EMAIL")
+            or os.getenv("MAIL_FROM")
+            or "yogayterapiasarunachala@gmail.com"
+        )
         
         # Check if we have enough info for SMTP
         self.use_smtp = all([self.mail_server, self.mail_username, self.mail_password])
+
+    async def send_owner_notification(
+        self,
+        *,
+        subject: str,
+        kind_label: str,
+        fields: dict,
+        reply_to: Optional[str] = None,
+    ) -> bool:
+        """
+        Notifies the center owner about inbound web submissions
+        (contact messages, suggestions, comments, …).
+        """
+        to_email = self.contact_email
+        rows_html = "".join(
+            f"<tr><td style='padding:8px 12px;color:#5c6b3c;font-weight:600;vertical-align:top;white-space:nowrap;'>{label}</td>"
+            f"<td style='padding:8px 12px;color:#3d3d3d;'>{value}</td></tr>"
+            for label, value in fields.items()
+            if value is not None and str(value).strip() != ""
+        )
+        rows_text = "\n".join(
+            f"{label}: {value}"
+            for label, value in fields.items()
+            if value is not None and str(value).strip() != ""
+        )
+
+        if not self.use_smtp:
+            print("=================================================================", flush=True)
+            print(f"📧 [DEV MODE] Owner notification → {to_email}", flush=True)
+            print(f"Subject: {subject}", flush=True)
+            print(rows_text, flush=True)
+            print("=================================================================", flush=True)
+            return True
+
+        message = EmailMessage()
+        raw_from = self.mail_from or self.mail_username
+        message["From"] = formataddr((self.mail_from_name, raw_from))
+        message["To"] = to_email
+        message["Subject"] = subject
+        if reply_to:
+            message["Reply-To"] = reply_to
+
+        html_content = f"""
+        <div style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #eef2e6;">
+            <div style="background:#5c6b3c;padding:24px 20px;text-align:center;">
+                <h1 style="color:#F5F5DC;margin:0;font-size:22px;letter-spacing:2px;font-weight:300;">ARUṆĀCHALA</h1>
+                <p style="color:#F5F5DC;opacity:0.85;font-size:13px;margin:8px 0 0;">{kind_label}</p>
+            </div>
+            <div style="padding:28px 24px;color:#3d3d3d;line-height:1.6;">
+                <p style="margin-top:0;">Has recibido un nuevo envío desde la web:</p>
+                <table style="width:100%;border-collapse:collapse;background:#f9fbf4;border-radius:12px;overflow:hidden;">
+                    {rows_html}
+                </table>
+                <p style="font-size:13px;color:#777;margin-top:24px;">Puedes responder directamente a este correo si incluye dirección de respuesta.</p>
+            </div>
+        </div>
+        """
+        message.set_content(f"{kind_label}\n\n{rows_text}")
+        message.add_alternative(html_content, subtype="html")
+
+        try:
+            await aiosmtplib.send(
+                message,
+                hostname=self.mail_server,
+                port=self.mail_port,
+                username=self.mail_username,
+                password=self.mail_password,
+                start_tls=(self.mail_port == 587),
+                use_tls=(self.mail_port == 465),
+            )
+            print(f"✅ Owner notification sent to {to_email}: {subject}", flush=True)
+            return True
+        except Exception as e:
+            print(f"❌ Owner notification SMTP error: {e}", flush=True)
+            return False
 
     async def send_reset_password_email(self, email: str, token: str):
         """

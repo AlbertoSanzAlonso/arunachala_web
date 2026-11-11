@@ -518,6 +518,19 @@
   "contact_page": {
     "title": "Contact",
     "subtitle": "Have any questions? We are here to help you",
+    "form": {
+      "title": "Write to us",
+      "subtitle": "Leave your message and we will reply by email as soon as possible.",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone (optional)",
+      "message": "Message",
+      "submit": "Send message",
+      "error": "Could not send the message. Please try again.",
+      "success_title": "Message sent!",
+      "success_desc": "Thank you for writing. We will get back to you soon.",
+      "send_another": "Send another message"
+    },
     "whatsapp": {
       "title": "Let's chat on WhatsApp",
       "description": "Do you prefer a more direct approach? Message us on WhatsApp to answer your questions or book your appointment instantly.",

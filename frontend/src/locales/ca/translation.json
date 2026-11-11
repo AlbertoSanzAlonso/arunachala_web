@@ -518,6 +518,19 @@
   "contact_page": {
     "title": "Contacte",
     "subtitle": "Tens algun dubte? Som aquí per ajudar-te",
+    "form": {
+      "title": "Escriu-nos",
+      "subtitle": "Deixa'ns el teu missatge i et respondrem per correu el més aviat possible.",
+      "name": "Nom",
+      "email": "Email",
+      "phone": "Telèfon (opcional)",
+      "message": "Missatge",
+      "submit": "Enviar missatge",
+      "error": "No s'ha pogut enviar el missatge. Torna-ho a provar.",
+      "success_title": "Missatge enviat!",
+      "success_desc": "Gràcies per escriure'ns. Et respondrem aviat.",
+      "send_another": "Enviar un altre missatge"
+    },
     "whatsapp": {
       "title": "Parlem per WhatsApp",
       "description": "Prefereixes un tracte més directe? Escriu-nos per WhatsApp per resoldre dubtes o reservar la teva cita a l'instant.",

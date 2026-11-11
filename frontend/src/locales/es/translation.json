@@ -519,6 +519,19 @@
   "contact_page": {
     "title": "Contacto",
     "subtitle": "¿Tienes alguna duda? Estamos aquí para ayudarte",
+    "form": {
+      "title": "Escríbenos",
+      "subtitle": "Déjanos tu mensaje y te respondemos por correo lo antes posible.",
+      "name": "Nombre",
+      "email": "Email",
+      "phone": "Teléfono (opcional)",
+      "message": "Mensaje",
+      "submit": "Enviar mensaje",
+      "error": "No se pudo enviar el mensaje. Inténtalo de nuevo.",
+      "success_title": "¡Mensaje enviado!",
+      "success_desc": "Gracias por escribirnos. Te responderemos pronto.",
+      "send_another": "Enviar otro mensaje"
+    },
     "whatsapp": {
       "title": "Hablemos por WhatsApp",
       "description": "¿Prefieres un trato más directo? Escríbenos por WhatsApp para resolver dudas o reservar tu cita al instante.",

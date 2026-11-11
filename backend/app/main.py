@@ -18,8 +18,8 @@ from app.core.exception_handlers import global_exception_handler, http_exception
 from app.api import (
     reviews, auth, gallery, schedules, yoga_classes, treatments, 
     content, activities, upload, dashboard, rag, legacy, tags, 
-    automation, suggestions, site_config, subscriptions, promotions, 
-    announcements, seo, mantras, debug, comments
+    automation, suggestions, site_config, subscriptions, promotions,
+    announcements, seo, mantras, debug, comments, contact
 )
 from app.routers import chat
 
@@ -142,6 +142,7 @@ app.include_router(seo.router)
 app.include_router(mantras.router, prefix="/api/mantras", tags=["mantras"])
 app.include_router(debug.router, prefix="/api/debug", tags=["debug"])
 app.include_router(comments.router)
+app.include_router(contact.router)
 
 # Static Files
 static_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static")

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import {
@@ -13,9 +13,43 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import BackButton from '../components/ui/BackButton';
 import PageSEO from '../components/providers/PageSEO';
+import { API_BASE_URL } from '../config';
 
 const ContactPage: React.FC = () => {
     const { t } = useTranslation();
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [message, setMessage] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
+        setIsSubmitting(true);
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/contact`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, phone, message }),
+            });
+            if (!response.ok) {
+                const data = await response.json().catch(() => ({}));
+                throw new Error(data.detail || t('contact_page.form.error'));
+            }
+            setSubmitted(true);
+            setName('');
+            setEmail('');
+            setPhone('');
+            setMessage('');
+        } catch (err: any) {
+            setError(err.message || t('contact_page.form.error'));
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <div className="font-body text-bark min-h-screen flex flex-col relative bg-bone">
@@ -121,7 +155,6 @@ const ContactPage: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Social or Extra Info */}
                             <div className="bg-forest text-white p-8 md:p-12 rounded-[2.5rem] shadow-xl relative overflow-hidden">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
                                 <h3 className="text-2xl font-headers text-matcha mb-4 uppercase tracking-widest">Aruṇāchala</h3>
@@ -131,38 +164,112 @@ const ContactPage: React.FC = () => {
                             </div>
                         </motion.div>
 
-                        {/* Contact Form */}
-                        {/* WhatsApp CTA */}
+                        {/* Contact Form + WhatsApp */}
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.3 }}
-                            className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 md:p-12 rounded-[2.5rem] shadow-xl border border-green-100 flex flex-col justify-center items-center text-center space-y-8 h-full"
+                            className="space-y-8"
                         >
-                            <div className="bg-white p-6 rounded-full shadow-lg mb-4">
-                                <ChatBubbleLeftRightIcon className="w-16 h-16 text-green-600" />
+                            <div className="bg-white/60 p-8 md:p-12 rounded-[2.5rem] shadow-xl border border-white/50">
+                                <h2 className="text-3xl font-headers text-forest mb-2">{t('contact_page.form.title')}</h2>
+                                <p className="text-bark/60 mb-8">{t('contact_page.form.subtitle')}</p>
+
+                                {submitted ? (
+                                    <div className="text-center py-10 px-4 bg-matcha/10 rounded-3xl border border-matcha/20">
+                                        <p className="text-forest font-headers text-xl mb-2">{t('contact_page.form.success_title')}</p>
+                                        <p className="text-bark/70 text-sm">{t('contact_page.form.success_desc')}</p>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSubmitted(false)}
+                                            className="mt-6 text-sm text-forest underline hover:text-matcha"
+                                        >
+                                            {t('contact_page.form.send_another')}
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <form onSubmit={handleSubmit} className="space-y-5">
+                                        <div>
+                                            <label className="block text-[10px] font-bold uppercase tracking-widest text-forest/60 mb-2 ml-1">
+                                                {t('contact_page.form.name')}
+                                            </label>
+                                            <input
+                                                type="text"
+                                                required
+                                                value={name}
+                                                onChange={(e) => setName(e.target.value)}
+                                                className="w-full bg-white border border-forest/10 rounded-2xl px-5 py-3 text-bark focus:border-matcha focus:ring-4 focus:ring-matcha/10 outline-none transition-all"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-bold uppercase tracking-widest text-forest/60 mb-2 ml-1">
+                                                {t('contact_page.form.email')}
+                                            </label>
+                                            <input
+                                                type="email"
+                                                required
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                className="w-full bg-white border border-forest/10 rounded-2xl px-5 py-3 text-bark focus:border-matcha focus:ring-4 focus:ring-matcha/10 outline-none transition-all"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-bold uppercase tracking-widest text-forest/60 mb-2 ml-1">
+                                                {t('contact_page.form.phone')}
+                                            </label>
+                                            <input
+                                                type="tel"
+                                                value={phone}
+                                                onChange={(e) => setPhone(e.target.value)}
+                                                className="w-full bg-white border border-forest/10 rounded-2xl px-5 py-3 text-bark focus:border-matcha focus:ring-4 focus:ring-matcha/10 outline-none transition-all"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-bold uppercase tracking-widest text-forest/60 mb-2 ml-1">
+                                                {t('contact_page.form.message')}
+                                            </label>
+                                            <textarea
+                                                required
+                                                rows={5}
+                                                value={message}
+                                                onChange={(e) => setMessage(e.target.value)}
+                                                className="w-full bg-white border border-forest/10 rounded-2xl px-5 py-3 text-bark focus:border-matcha focus:ring-4 focus:ring-matcha/10 outline-none transition-all resize-none"
+                                            />
+                                        </div>
+                                        {error && (
+                                            <p className="text-red-500 text-sm text-center">{error}</p>
+                                        )}
+                                        <button
+                                            type="submit"
+                                            disabled={isSubmitting}
+                                            className="w-full py-4 bg-forest text-white rounded-2xl font-headers uppercase tracking-widest text-sm hover:bg-matcha transition-all disabled:opacity-50"
+                                        >
+                                            {isSubmitting ? t('common.sending') : t('contact_page.form.submit')}
+                                        </button>
+                                    </form>
+                                )}
                             </div>
 
-                            <div>
-                                <h2 className="text-3xl font-headers text-forest mb-4">{t('contact_page.whatsapp.title', 'Hablemos por WhatsApp')}</h2>
-                                <p className="text-bark/70 text-lg leading-relaxed max-w-md mx-auto">
-                                    {t('contact_page.whatsapp.description', '¿Prefieres un trato más directo? Escríbenos por WhatsApp para resolver dudas o reservar tu cita al instante.')}
-                                </p>
+                            <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 md:p-10 rounded-[2.5rem] shadow-lg border border-green-100 flex flex-col items-center text-center space-y-5">
+                                <div className="bg-white p-4 rounded-full shadow-md">
+                                    <ChatBubbleLeftRightIcon className="w-10 h-10 text-green-600" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-headers text-forest mb-2">{t('contact_page.whatsapp.title')}</h3>
+                                    <p className="text-bark/70 text-sm leading-relaxed max-w-md mx-auto">
+                                        {t('contact_page.whatsapp.description')}
+                                    </p>
+                                </div>
+                                <a
+                                    href="https://wa.me/34678481971"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full sm:w-auto py-3 px-8 bg-[#25D366] text-white rounded-2xl font-headers text-sm tracking-wider uppercase hover:bg-[#20bd5a] hover:scale-105 transition-all duration-300 shadow-lg flex items-center justify-center gap-3"
+                                >
+                                    {t('contact_page.whatsapp.button')}
+                                    <ArrowTopRightOnSquareIcon className="w-5 h-5" />
+                                </a>
                             </div>
-
-                            <a
-                                href="https://wa.me/34678481971"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-full sm:w-auto py-4 px-8 bg-[#25D366] text-white rounded-2xl font-headers text-lg tracking-wider uppercase hover:bg-[#20bd5a] hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-green-200/50 flex items-center justify-center gap-3"
-                            >
-                                {t('contact_page.whatsapp.button', 'Abrir Chat de WhatsApp')}
-                                <ArrowTopRightOnSquareIcon className="w-5 h-5" />
-                            </a>
-
-                            <p className="text-sm text-gray-400 italic">
-                                {t('contact_page.whatsapp.note', 'Te responderemos encantados lo antes posible.')}
-                            </p>
                         </motion.div>
                     </div>
                 </div>

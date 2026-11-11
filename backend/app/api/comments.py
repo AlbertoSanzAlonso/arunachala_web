@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request, Query
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status, Request, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
@@ -11,6 +11,7 @@ from app.schemas.comments import (
     CommentStatusUpdate,
 )
 from app.api.auth import get_current_admin_user
+from app.services.email import email_service
 
 router = APIRouter(tags=["comments"])
 
@@ -31,6 +32,18 @@ def _get_published_content(content_id: int, db: Session) -> Content:
     if content.status != "published":
         raise HTTPException(status_code=404, detail="Contenido no encontrado")
     return content
+
+
+async def _notify_owner_comment(author_name: str, body: str, content_title: str) -> None:
+    await email_service.send_owner_notification(
+        subject=f"Nuevo comentario pendiente: {content_title[:60]}",
+        kind_label="Comentario pendiente de moderación",
+        fields={
+            "Contenido": content_title,
+            "Autor": author_name,
+            "Comentario": body.replace("\n", "<br>"),
+        },
+    )
 
 
 @router.get("/api/content/{content_id}/comments", response_model=List[CommentResponse])
@@ -57,10 +70,11 @@ def create_comment(
     content_id: int,
     payload: CommentCreate,
     request: Request,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
     """Public: submit a comment (starts as pending for moderation)."""
-    _get_published_content(content_id, db)
+    content = _get_published_content(content_id, db)
 
     comment = ContentComment(
         content_id=content_id,
@@ -72,6 +86,13 @@ def create_comment(
     db.add(comment)
     db.commit()
     db.refresh(comment)
+
+    background_tasks.add_task(
+        _notify_owner_comment,
+        payload.author_name,
+        payload.body,
+        content.title or f"Contenido #{content_id}",
+    )
     return comment
 
 
