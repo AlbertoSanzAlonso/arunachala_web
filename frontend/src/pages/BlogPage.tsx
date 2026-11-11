@@ -167,7 +167,7 @@ const BlogPage: React.FC = () => {
     const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
 
     return (
-        <div className="font-body text-bark min-h-screen flex flex-col bg-bone">
+        <div className="font-body text-bark min-h-screen flex flex-col">
             <PageSEO
                 title={t('blog.seo_title', 'Blog | Arunachala Yoga y Terapias')}
                 description={t('blog.seo_description', 'Artículos sobre yoga, meditación, terapias naturales y bienestar integral en Barcelona.')}

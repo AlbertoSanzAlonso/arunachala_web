@@ -34,7 +34,7 @@ const NotFoundPage: React.FC = () => {
     }, [location.pathname, navigate]);
 
     return (
-        <div className="font-body text-bark min-h-screen flex flex-col bg-bone">
+        <div className="font-body text-bark min-h-screen flex flex-col">
             <PageSEO
                 title="Página no encontrada | Arunachala"
                 description="Lo sentimos, la página que buscas no existe o ha sido movida."

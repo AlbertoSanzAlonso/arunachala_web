@@ -118,7 +118,7 @@ ${L.instr}
     };
 
     return (
-        <section className="py-20 px-4 bg-bone text-bark overflow-hidden relative">
+        <section className="py-20 px-4 text-bark overflow-hidden relative">
             <div className="max-w-4xl mx-auto text-center relative z-10">
                 <AnimatePresence mode="wait">
                     {!started && !aiResponse && (

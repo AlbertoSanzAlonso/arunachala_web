@@ -11,6 +11,8 @@
   }
 
   body {
+    position: relative;
+    z-index: 0;
     background-color: var(--color-bone);
     color: var(--color-bark);
     font-family: 'Mulish', sans-serif;

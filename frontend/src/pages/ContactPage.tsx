@@ -52,7 +52,7 @@ const ContactPage: React.FC = () => {
     };
 
     return (
-        <div className="font-body text-bark min-h-screen flex flex-col relative bg-bone">
+        <div className="font-body text-bark min-h-screen flex flex-col relative">
             <PageSEO
                 title={t('contact_page.seo.title')}
                 description={t('contact_page.seo.description')}

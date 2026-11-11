@@ -34,7 +34,7 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({
     const { t } = useTranslation();
 
     return (
-        <section className="relative w-full bg-bone pt-32 pb-16 flex items-center justify-center overflow-hidden">
+        <section className="relative w-full pt-32 pb-16 flex items-center justify-center overflow-hidden">
             {/* Subtle decorative elements */}
             <div className="absolute top-0 right-0 w-96 h-96 bg-forest/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-matcha/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl"></div>

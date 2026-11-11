@@ -120,7 +120,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
 
     if (isLoading) {
         return (
-            <section className="py-16 bg-bone">
+            <section className="py-16">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center py-12">
                         <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-forest"></div>
@@ -131,7 +131,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({
     }
 
     return (
-        <section className="py-16 bg-bone">
+        <section className="py-16">
             <div className="max-w-7xl mx-auto md:px-6">
                 <div className="text-center mb-12 px-6">
                     <motion.h2

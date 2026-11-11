@@ -109,10 +109,10 @@ const YogaPage: React.FC = () => {
 
             <Header />
 
-            <main className="flex-grow bg-bone">
+            <main className="flex-grow">
                 <div id="top" className="relative w-full min-h-[85vh] md:min-h-[90vh] flex items-center justify-center" role="banner">
                     <div
-                        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat bg-[#e8e4db]"
+                        className="absolute inset-0 -z-10 bg-cover bg-center bg-no-repeat bg-[#e8e4db]"
                         style={customHero ? { backgroundImage: `url(${getImageUrl(customHero)})` } : {}}
                         aria-hidden="true"
                     >

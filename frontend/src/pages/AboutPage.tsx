@@ -33,7 +33,7 @@ const AboutPage: React.FC = () => {
     }, []);
 
     return (
-        <div className="font-body text-bark min-h-screen flex flex-col relative bg-bone">
+        <div className="font-body text-bark min-h-screen flex flex-col relative">
             <PageSEO
                 title={t('about.seo.title')}
                 description={t('about.seo.description')}

@@ -118,7 +118,7 @@ const NewsPage: React.FC = () => {
     const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
 
     return (
-        <div className="font-body text-bark min-h-screen flex flex-col bg-bone">
+        <div className="font-body text-bark min-h-screen flex flex-col">
             <PageSEO
                 title={t('news.seo_title', 'Noticias | Arunachala Yoga y Terapias')}
                 description={t('news.seo_description', 'Noticias y avisos del centro Aruṇāchala Yoga y Terapias en Cornellà.')}

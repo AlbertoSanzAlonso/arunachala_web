@@ -44,7 +44,7 @@ const TarifasPage: React.FC = () => {
     }, []);
 
     return (
-        <div className="font-body text-bark min-h-screen flex flex-col bg-bone">
+        <div className="font-body text-bark min-h-screen flex flex-col">
             <Helmet>
                 <title>{t('tarifas.title', 'Tarifas y Precios')} | Arunachala</title>
                 <meta name="description" content={t('tarifas.subtitle', 'Consulta nuestros precios y planes de actividades.')} />

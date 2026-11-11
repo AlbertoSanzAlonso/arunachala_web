@@ -183,7 +183,7 @@ const HomePage: React.FC = () => {
             </section>
 
             {/* Content Sections */}
-            <main className="bg-bone relative z-10">
+            <main className="relative z-10">
                 {/* Wellness Quiz Section - Snap Start to align with Hero Border */}
                 <section className="scroll-mt-24 pt-12">
                     <Suspense fallback={<div className="h-64 animate-pulse bg-bone" aria-hidden="true" />}>

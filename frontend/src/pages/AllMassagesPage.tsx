@@ -207,7 +207,7 @@ const AllMassagesPage: React.FC = () => {
     }, [activeTreatment, massages, t, i18n.language]);
 
     return (
-        <div className="font-body text-bark min-h-screen flex flex-col bg-bone">
+        <div className="font-body text-bark min-h-screen flex flex-col">
             <PageSEO
                 title={seoTitle}
                 description={seoDescription}

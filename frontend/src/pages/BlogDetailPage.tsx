@@ -155,7 +155,7 @@ const BlogDetailPage: React.FC = () => {
 
     if (isLoading || !article) {
         return (
-            <div className="min-h-screen bg-bone flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-forest"></div>
             </div>
         );
@@ -205,7 +205,7 @@ const BlogDetailPage: React.FC = () => {
     };
 
     return (
-        <div className="font-body text-bark min-h-screen bg-bone selection:bg-matcha/30">
+        <div className="font-body text-bark min-h-screen selection:bg-matcha/30">
             <PageSEO
                 title={`${translatedTitle} | Arunachala Yoga`}
                 description={translatedExcerpt}

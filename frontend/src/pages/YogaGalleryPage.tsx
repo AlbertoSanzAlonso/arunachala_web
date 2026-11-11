@@ -117,7 +117,7 @@ const YogaGalleryPage: React.FC = () => {
     }, [images, t]);
 
     return (
-        <div className="font-body text-bark min-h-screen flex flex-col bg-bone">
+        <div className="font-body text-bark min-h-screen flex flex-col">
             <PageSEO
                 title={t('gallery.yoga.seo.title')}
                 description={t('gallery.yoga.seo.description')}

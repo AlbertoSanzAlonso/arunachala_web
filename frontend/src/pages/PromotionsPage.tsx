@@ -75,7 +75,7 @@ const PromotionsPage: React.FC = () => {
     }, [promotions, t, currentLang]);
 
     return (
-        <div className="font-body text-bark min-h-screen flex flex-col bg-bone">
+        <div className="font-body text-bark min-h-screen flex flex-col">
             <PageSEO
                 title={t('promotions.seo.title')}
                 description={t('promotions.seo.description')}

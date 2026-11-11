@@ -154,7 +154,7 @@ const OurSpacePage: React.FC = () => {
             />
             <Header />
 
-            <main className="flex-grow bg-bone pt-10 md:pt-16 pb-16 relative">
+            <main className="flex-grow pt-10 md:pt-16 pb-16 relative">
                 <div className="max-w-7xl mx-auto px-6 relative w-full">
                     <div className="mb-4 md:mb-0 md:absolute md:top-0 md:left-2 z-20">
                         <BackButton />

@@ -68,7 +68,7 @@ const ReviewsSection: React.FC = () => {
 
     if (!isLoading && reviews.length === 0 && rating === 0) {
         return (
-            <section className="py-16 bg-bone">
+            <section className="py-16">
                 <div className="max-w-7xl mx-auto px-4 text-center">
                     <h2 className="text-4xl font-headers text-forest mb-6">{t('reviews.reviews_empty_title')}</h2>
                     <p className="text-bark/70 mb-8 max-w-2xl mx-auto">
@@ -88,7 +88,7 @@ const ReviewsSection: React.FC = () => {
     }
 
     return (
-        <section className="py-20 bg-bone overflow-hidden">
+        <section className="py-20 overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
                     <h2 className="text-4xl md:text-5xl font-headers text-forest mb-4">{t('reviews.reviews_title')}</h2>
