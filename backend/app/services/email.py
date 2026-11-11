@@ -72,11 +72,24 @@ class EmailService:
             print("=================================================================", flush=True)
             return True
 
+        logo_url = f"{self.frontend_url}/logo_icon.webp"
+        logo_data = None
+        try:
+            async with httpx.AsyncClient() as client:
+                resp = await client.get(logo_url, timeout=5.0)
+                if resp.status_code == 200:
+                    logo_data = resp.content
+        except Exception as e:
+            print(f"⚠️ Could not fetch logo for owner notification: {e}", flush=True)
+
+        logo_src = "cid:logo_cid" if logo_data else logo_url
         html_content = f"""
         <div style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #eef2e6;">
-            <div style="background:#5c6b3c;padding:24px 20px;text-align:center;">
-                <h1 style="color:#F5F5DC;margin:0;font-size:22px;letter-spacing:2px;font-weight:300;">ARUṆĀCHALA</h1>
-                <p style="color:#F5F5DC;opacity:0.85;font-size:13px;margin:8px 0 0;">{kind_label}</p>
+            <div style="background:#5c6b3c;padding:28px 20px;text-align:center;">
+                <div style="display:inline-block;width:110px;height:110px;border-radius:50%;background-color:#ffffff;overflow:hidden;">
+                    <img src="{logo_src}" alt="Aruṇāchala" style="width:100%;height:100%;object-fit:cover;display:block;">
+                </div>
+                <p style="color:#F5F5DC;opacity:0.9;font-size:13px;margin:14px 0 0;letter-spacing:0.5px;">{kind_label}</p>
             </div>
             <div style="padding:28px 24px;color:#3d3d3d;line-height:1.6;">
                 <p style="margin-top:0;">Aviso automático desde la web:</p>
@@ -99,6 +112,18 @@ class EmailService:
                 message["Reply-To"] = reply_to
             message.set_content(f"{kind_label}\n\n{rows_text}")
             message.add_alternative(html_content, subtype="html")
+
+            if logo_data:
+                for part in message.iter_parts():
+                    if part.get_content_subtype() == "html":
+                        part.add_related(
+                            logo_data,
+                            maintype="image",
+                            subtype="webp",
+                            cid="<logo_cid>",
+                            filename="logo.webp",
+                        )
+                        break
 
             try:
                 await aiosmtplib.send(
