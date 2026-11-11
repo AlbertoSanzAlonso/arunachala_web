@@ -115,6 +115,7 @@ const PromotionsPage: React.FC = () => {
                         >
                             {t('promotions.title')}
                         </motion.h1>
+                        <p className="sr-only">{t('answers.promotions.question')} {t('answers.promotions.answer')}</p>
 
                         <motion.p
                             initial={{ opacity: 0, y: 20 }}

@@ -38,6 +38,7 @@ const STATIC_BREADCRUMBS = {
   '/nuestro-espacio/': [HOME, { name: 'Nuestro Espacio', path: '/nuestro-espacio/' }],
   '/quienes-somos/': [HOME, { name: 'Quiénes Somos', path: '/quienes-somos/' }],
   '/contacto/': [HOME, { name: 'Contacto', path: '/contacto/' }],
+  '/preguntas-frecuentes/': [HOME, { name: 'Preguntas frecuentes', path: '/preguntas-frecuentes/' }],
   '/meditaciones/': [HOME, { name: 'Meditaciones', path: '/meditaciones/' }],
   '/promociones/': [HOME, { name: 'Promociones', path: '/promociones/' }],
   '/aviso-legal/': [HOME, { name: 'Aviso Legal', path: '/aviso-legal/' }],

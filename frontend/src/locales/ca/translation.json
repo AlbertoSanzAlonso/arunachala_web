@@ -1,6 +1,6 @@
 {
   "footer": {
-    "address": "Yoga y Terapias Aruṇāchala\nPassatge de Mateu Oliva 3, baixos\n(junt a Plaça Pallars)\n08940 Cornellà de Llobregat\nBarcelona",
+    "address": "Aruṇāchala Yoga y Terapias\nPasaje de Mateo Oliva 3, bajos\n08940 Cornellà de Llobregat\nBarcelona",
     "labels": {
       "home": "Inici",
       "yoga": "Ioga i Horaris",
@@ -8,6 +8,7 @@
       "blog": "Blog",
       "meditations": "Meditacions",
       "space": "El Nostre Espai",
+      "faq": "Preguntes freqüents",
       "legal": "Avís Legal",
       "privacy": "Política de Privadesa",
       "instagram": "Seguiu-nos a Instagram",
@@ -120,6 +121,7 @@
     "space": "El Nostre Espai",
     "about": "Sobre mi",
     "contact": "Contacte",
+    "faq": "Preguntes freqüents",
     "activities": "Activitats",
     "meditations": "Meditacions",
     "promotions": "Promocions"
@@ -540,7 +542,7 @@
     "info": {
       "title": "Informació de Contacte",
       "address_label": "Adreça",
-      "address": "Yoga y Terapias Aruṇāchala - Passatge de Mateu Oliva, 3, 08940 Cornellà de Llobregat, Barcelona",
+      "address": "Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona",
       "phone_label": "Telèfon / WhatsApp",
       "email_label": "Email",
       "hours_label": "Horari",
@@ -602,11 +604,11 @@
       "identification": {
         "title": "Identificació",
         "company": "Titular",
-        "company_value": "Susana Pérez Gil - Aruṇāchala Ioga i Teràpies",
+        "company_value": "Susana Pérez Gil - Aruṇāchala Yoga y Terapias",
         "cif": "NIF",
         "cif_value": "46616079R",
         "address": "Adreça",
-        "address_value": "Passatge de Mateu Oliva 3, baixos, 08940 Cornellà de Llobregat, Barcelona",
+        "address_value": "Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona",
         "email": "Email",
         "phone": "Telèfon"
       },
@@ -645,7 +647,7 @@
     "sections": {
       "responsible": {
         "title": "1. Responsable del tractament",
-        "content": "Titular: Susana Pérez Gil - Aruṇāchala Ioga i Teràpies\nNIF: 46616079R\nAdreça: Passatge de Mateu Oliva 3, baixos, 08940 Cornellà de Llobregat, Barcelona\nEmail: yogayterapiasarunachala@gmail.com\nTelèfon: +34 678 481 971"
+        "content": "Titular: Susana Pérez Gil - Aruṇāchala Yoga y Terapias\nNIF: 46616079R\nAdreça: Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona\nEmail: yogayterapiasarunachala@gmail.com\nTelèfon: +34 678 481 971"
       },
       "data": {
         "title": "2. Quines dades recollim?",
@@ -718,5 +720,97 @@
     "thanks_desc": "Gràcies. El revisarem i el publicarem aviat.",
     "write_another": "Escriure un altre comentari",
     "error": "No s'ha pogut enviar el comentari. Torna-ho a provar."
+  },
+  "answers": {
+    "home": {
+      "question": "On practicar ioga i teràpies a Cornellà de Llobregat?",
+      "answer": "Aruṇāchala Yoga y Terapias és el centre de Susana Pérez Gil a Cornellà de Llobregat. Ofereix classes de hatha ioga per a tots els nivells, massatges i teràpies holístiques amb cita prèvia. L'adreça és Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona. El telèfon i el WhatsApp són el +34 678 481 971."
+    },
+    "yoga": {
+      "question": "Quines classes de ioga hi ha a Aruṇāchala?",
+      "answer": "A Aruṇāchala, Cornellà de Llobregat, Susana Pérez Gil fa classes de hatha ioga i meditació per a tots els nivells. Aquesta pàgina publica el dia i l'hora de cada classe. La reserva es fa per telèfon o WhatsApp al +34 678 481 971, o per correu a yogayterapiasarunachala@gmail.com. El centre és a Pasaje de Mateo Oliva 3, bajos."
+    },
+    "therapies": {
+      "question": "Quins massatges i teràpies fa Aruṇāchala?",
+      "answer": "Aruṇāchala ofereix massatges i teràpies holístiques a Cornellà de Llobregat, sempre amb Susana Pérez Gil i amb cita prèvia. El preu vigent de cada sessió està publicat a la seva fitxa, en aquesta mateixa web. Pots demanar hora al +34 678 481 971 o a yogayterapiasarunachala@gmail.com. El centre és a Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat."
+    },
+    "massages": {
+      "question": "Quins massatges hi ha a Aruṇāchala i quant costen?",
+      "answer": "Cada massatge d'Aruṇāchala apareix aquí amb la durada i el preu que publica el centre. Les sessions són amb cita prèvia a Pasaje de Mateo Oliva 3, bajos, Cornellà de Llobregat, i les fa Susana Pérez Gil. Si una fitxa no mostra preu, es confirma en reservar al +34 678 481 971 o a yogayterapiasarunachala@gmail.com."
+    },
+    "holistic": {
+      "question": "Quines teràpies holístiques hi ha i quin és el preu?",
+      "answer": "A Aruṇāchala, Cornellà de Llobregat, les teràpies holístiques inclouen les tècniques actives d'aquesta pàgina, com reiki, tècnica metamòrfica o teràpia floral. Cada fitxa mostra la durada i el preu vigent del centre. Es reserven amb cita prèvia al +34 678 481 971. L'adreça és Pasaje de Mateo Oliva 3, bajos."
+    },
+    "about": {
+      "question": "Qui és Susana Pérez Gil?",
+      "answer": "Susana Pérez Gil és la fundadora d'Aruṇāchala Yoga y Terapias, a Cornellà de Llobregat. Fa més de 25 anys que practica ioga i s'ha format en quiromassatge, drenatge limfàtic, reflexologia, tècnica metamòrfica, reiki i com a professora de ioga. Al centre imparteix les classes i les sessions de massatge i teràpia."
+    },
+    "contact": {
+      "question": "Com contactar amb Aruṇāchala Yoga y Terapias?",
+      "answer": "Pots trucar o escriure per WhatsApp al +34 678 481 971, o enviar un correu a yogayterapiasarunachala@gmail.com. El centre és a Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona. Les classes de ioga, els massatges i les teràpies es confirmen amb cita prèvia. El formulari d'aquesta pàgina arriba al mateix correu."
+    },
+    "space": {
+      "question": "Com és l'espai d'Aruṇāchala i com s'hi arriba?",
+      "answer": "Aruṇāchala és una sala diàfana amb llum natural a Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, al costat de la plaça Pallars. S'hi arriba amb tramvia T1 i T2, parada El Pedró, amb autobús 57, 68, 94 o 95, i amb metro línia 5, Cornellà Centre. El telèfon del centre és el +34 678 481 971."
+    },
+    "activities": {
+      "question": "Quins tallers i cursos hi ha ara a Aruṇāchala?",
+      "answer": "En aquesta pàgina Aruṇāchala publica els tallers, cursos, retirs i esdeveniments amb data, lloc i preu propis del centre. Cada fitxa indica si l'activitat segueix oberta i com reservar plaça. Les sessions es fan a Pasaje de Mateo Oliva 3, bajos, Cornellà de Llobregat, tret que la fitxa indiqui un altre lloc. Reserves al +34 678 481 971."
+    },
+    "blog": {
+      "question": "Què publica el blog d'Aruṇāchala?",
+      "answer": "El blog d'Aruṇāchala aplega articles propis sobre ioga, meditació, massatges i teràpies holístiques, escrits des de la pràctica del centre a Cornellà de Llobregat. Cada text obre amb la resposta i després desenvolupa el tema. Serveix per preparar una classe o una sessió abans de reservar al +34 678 481 971."
+    },
+    "meditations": {
+      "question": "Quines meditacions guiades es poden escoltar?",
+      "answer": "Aruṇāchala publica aquí meditacions guiades i mantres en àudio per practicar a casa o abans d'una classe. Cada peça té títol i una breu explicació, i es reprodueix en aquesta mateixa pàgina. Són materials del centre de Susana Pérez Gil, a Cornellà de Llobregat."
+    },
+    "promotions": {
+      "question": "Quines promocions hi ha vigents a Aruṇāchala?",
+      "answer": "Aquesta pàgina llista només les ofertes actives del centre: el descompte, el preu i, si existeix, el codi. Quan una promoció acaba, deixa de mostrar-se. Les condicions les fixa Aruṇāchala Yoga y Terapias, a Cornellà de Llobregat. Per fer servir una oferta, reserva al +34 678 481 971 o a yogayterapiasarunachala@gmail.com."
+    },
+    "news": {
+      "question": "Quins avisos publica el centre?",
+      "answer": "Les notícies d'Aruṇāchala recullen avisos propis del centre: canvis d'horari, tancaments, classes noves i activitats a Cornellà de Llobregat. Cada avís obre amb la dada concreta i després n'explica el detall. Si un canvi afecta la teva reserva, el telèfon de contacte continua sent el +34 678 481 971."
+    }
+  },
+  "faq": {
+    "seo_title": "Preguntes freqüents | Aruṇāchala Yoga y Terapias",
+    "seo_description": "On és Aruṇāchala, com reservar, preus publicats pel centre i com arribar a Pasaje de Mateo Oliva 3, bajos, Cornellà de Llobregat.",
+    "title": "Preguntes freqüents",
+    "intro": "Respostes directes sobre el centre. El nom, l'adreça i el telèfon són els mateixos a tota la web.",
+    "prices_title": "Preus publicats pel centre",
+    "prices_intro": "Aquestes xifres surten del propi centre. Si una sessió no hi apareix, el preu es confirma en reservar.",
+    "prices_empty": "Ara mateix no hi ha preus carregats a la web. Es confirmen en reservar al +34 678 481 971.",
+    "yoga_rates": "Tarifes de ioga",
+    "massages": "Massatges",
+    "therapies": "Teràpies holístiques",
+    "items": [
+      {
+        "q": "On és Aruṇāchala Yoga y Terapias?",
+        "a": "Aruṇāchala Yoga y Terapias és a Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona, al costat de la plaça Pallars. El telèfon i el WhatsApp són el +34 678 481 971 i el correu és yogayterapiasarunachala@gmail.com. És el centre de ioga, massatges i teràpies de Susana Pérez Gil."
+      },
+      {
+        "q": "Com reservo una classe de ioga o una sessió?",
+        "a": "La reserva es fa per telèfon o WhatsApp al +34 678 481 971, per correu a yogayterapiasarunachala@gmail.com, o amb el formulari de la pàgina de contacte. Les classes, els massatges i les teràpies es confirmen amb cita prèvia. No cal crear un compte a la web."
+      },
+      {
+        "q": "Cal experiència per a les classes de ioga?",
+        "a": "No. Les classes de hatha ioga i meditació d'Aruṇāchala, a Cornellà de Llobregat, són obertes a tots els nivells. Susana Pérez Gil adapta la pràctica al moment de cada persona. El dia i l'hora de cada classe estan publicats a la pàgina de ioga del centre."
+      },
+      {
+        "q": "Quant costa una classe de ioga o un massatge?",
+        "a": "El preu el publica el propi centre en aquesta web: a les tarifes de ioga i a la fitxa de cada massatge o teràpia. Aquesta xifra és la vigent. Més avall hi ha la llista actual. Si una sessió no mostra preu, es confirma en reservar al +34 678 481 971."
+      },
+      {
+        "q": "Qui imparteix les classes i les teràpies?",
+        "a": "Les imparteix Susana Pérez Gil, fundadora d'Aruṇāchala Yoga y Terapias. Fa més de 25 anys que practica ioga i té formació en quiromassatge, drenatge limfàtic, reflexologia, tècnica metamòrfica, reiki i com a professora de ioga. El centre és a Cornellà de Llobregat."
+      },
+      {
+        "q": "Com hi arribo en transport públic?",
+        "a": "El centre és a Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat. En tramvia, línies T1 i T2, parada El Pedró. En autobús, línies 57, 68, 94 o 95. En metro, línia 5, parada Cornellà Centre. El telèfon per si necessites indicacions és el +34 678 481 971."
+      }
+    ]
   }
 }

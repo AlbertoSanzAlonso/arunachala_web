@@ -61,7 +61,7 @@ const ActivityDetailModal: React.FC<ActivityDetailModalProps> = ({
     const addToGoogleCalendar = (act: Activity) => {
         const title = getTranslated(act, 'title', i18n.language);
         const details = getTranslated(act, 'description', i18n.language) || '';
-        const location = act.location || 'Centro Arunachala, Cornellá';
+        const location = act.location || 'Aruṇāchala Yoga y Terapias, Cornellà de Llobregat';
 
         const formatGDate = (dateStr: string | null) => {
             if (!dateStr) return '';
@@ -167,7 +167,7 @@ const ActivityDetailModal: React.FC<ActivityDetailModalProps> = ({
                                             <div className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm text-xl text-forest/50">📍</div>
                                             <div>
                                                 <p className="text-[10px] font-bold text-forest/40 uppercase tracking-widest">{t('activities.labels.location')}</p>
-                                                <p className="text-forest font-bold">{activity.location || 'Centro Arunachala, Cornellá'}</p>
+                                                <p className="text-forest font-bold">{activity.location || 'Aruṇāchala Yoga y Terapias, Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat'}</p>
                                             </div>
                                         </div>
                                     </div>

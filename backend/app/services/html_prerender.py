@@ -21,6 +21,11 @@ from app.models.models import (
 SITE_BASE = settings.FRONTEND_URL.rstrip("/")
 API_PUBLIC = "https://api.yogayterapiasarunachala.es"
 
+NAP_NAME = "Aruṇāchala Yoga y Terapias"
+NAP_LINE = "Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona"
+NAP_PHONE = "+34 678 481 971"
+NAP_EMAIL = "yogayterapiasarunachala@gmail.com"
+
 BLOG_CATEGORIES = {"yoga", "therapy", "general"}
 
 
@@ -157,8 +162,8 @@ def build_news_index_html(news: list[Content]) -> str:
     )
     return f"""
     <main>
-      <h1>Noticias | Arunachala Yoga y Terapias</h1>
-      <p>Noticias y avisos del centro Aruṇāchala.</p>
+      <h1>¿Qué avisos publica el centro?</h1>
+      <p>Las noticias de Aruṇāchala recogen avisos propios del centro: cambios de horario, cierres, nuevas clases y actividades en Cornellà de Llobregat. Cada aviso abre con el dato concreto y después explica el detalle. Si un cambio afecta a tu reserva, el teléfono de contacto sigue siendo el {NAP_PHONE}.</p>
       {cards}
     </main>"""
 
@@ -258,8 +263,8 @@ def build_activity_index_html(activities: list[Activity]) -> str:
     body = "".join(cards) or "<p>Consulta el calendario de talleres y eventos del centro.</p>"
     return f"""
     <main>
-      <h1>Actividades y cursos en Cornellà</h1>
-      <p>Talleres, cursos, retiros y eventos de yoga y bienestar en Aruṇāchala Cornellà.</p>
+      <h1>¿Qué talleres y cursos hay ahora en Aruṇāchala?</h1>
+      <p>En esta página Aruṇāchala publica los talleres, cursos, retiros y eventos con fecha, lugar y precio propios del centro. Cada ficha indica si la actividad sigue abierta y cómo reservar plaza. Las sesiones se hacen en Pasaje de Mateo Oliva 3, bajos, Cornellà de Llobregat, salvo que la ficha indique otro lugar. Reservas en el {NAP_PHONE}.</p>
       {body}
     </main>"""
 
@@ -303,13 +308,13 @@ def _activity_event_schema(item: Activity, canonical: str) -> dict:
         "eventStatus": "https://schema.org/EventScheduled",
         "organizer": {
             "@type": "Organization",
-            "name": "Arunachala Yoga y Terapias",
+            "name": NAP_NAME,
             "url": SITE_BASE,
         },
         "location": {
             "@type": "Place",
-            "name": item.location or "Arunachala Yoga y Terapias",
-            "address": "Pasaje de Mateo Oliva 3, 08940 Cornellà de Llobregat, Barcelona",
+            "name": item.location or NAP_NAME,
+            "address": NAP_LINE,
         },
     }
     start = _iso(item.start_date)
@@ -372,8 +377,8 @@ def build_yoga_landing_html(classes: list[YogaClassDefinition]) -> str:
     listing = "".join(blocks) or "<p>Consulta el horario actualizado de clases en el centro.</p>"
     return f"""
     <main>
-      <h1>Clases de Yoga en Cornellà</h1>
-      <p>Hatha Yoga, Vinyasa y meditación para todos los niveles en Aruṇāchala, Cornellà de Llobregat.</p>
+      <h1>¿Qué clases de yoga hay en Aruṇāchala?</h1>
+      <p>En Aruṇāchala, Cornellà de Llobregat, Susana Pérez Gil da clases de hatha yoga y meditación para todos los niveles. Esta página publica el día y la hora de cada clase. La reserva se hace por teléfono o WhatsApp en el {NAP_PHONE}, o por correo en {NAP_EMAIL}. El centro está en Pasaje de Mateo Oliva 3, bajos.</p>
       {listing}
       <p><a href="/galeria/clases-de-yoga/">Galería de yoga</a> · <a href="/blog/yoga/">Blog de yoga</a></p>
     </main>"""
@@ -394,8 +399,8 @@ def build_therapies_hub_html(massages: list, therapies: list) -> str:
 
     return f"""
     <main>
-      <h1>Masaje y terapias en Cornellà</h1>
-      <p>Un espacio para el reencuentro contigo mismo a través del cuidado corporal y emocional. Centro de masajes y terapias holísticas en Cornellà de Llobregat, con Susana Pérez Gil.</p>
+      <h1>¿Qué masajes y terapias hace Aruṇāchala?</h1>
+      <p>Aruṇāchala ofrece masajes y terapias holísticas en Cornellà de Llobregat, siempre con Susana Pérez Gil y con cita previa. El precio vigente de cada sesión está publicado en su ficha, en esta misma web. Puedes pedir hora en el {NAP_PHONE} o en {NAP_EMAIL}. El centro está en Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat.</p>
       <section>
         <h2>Masajes</h2>
         <p>Libera tensiones y recupera la vitalidad de tu cuerpo.</p>
@@ -414,8 +419,8 @@ def build_therapies_hub_html(massages: list, therapies: list) -> str:
 def build_massage_landing_html(massages: list) -> str:
     return f"""
     <main>
-      <h1>Masajes terapéuticos en Cornellà</h1>
-      <p>Nuestras sesiones de masaje se programan con cita previa en Aruṇāchala, Pasaje de Mateo Oliva 3, Cornellà de Llobregat.</p>
+      <h1>¿Qué masajes hay en Aruṇāchala y cuánto cuestan?</h1>
+      <p>Cada masaje de Aruṇāchala aparece aquí con su duración y el precio que publica el centro. Las sesiones son con cita previa en Pasaje de Mateo Oliva 3, bajos, Cornellà de Llobregat, y las imparte Susana Pérez Gil. Si una ficha no muestra precio, se confirma al reservar en el {NAP_PHONE} o en {NAP_EMAIL}.</p>
       {_treatment_blocks(massages, "Masajes")}
       <p><a href="/terapias-y-masajes/">Volver a masaje y terapias</a></p>
     </main>"""
@@ -424,8 +429,8 @@ def build_massage_landing_html(massages: list) -> str:
 def build_holistic_landing_html(therapies: list) -> str:
     return f"""
     <main>
-      <h1>Terapias holísticas en Cornellà</h1>
-      <p>Reiki, técnica metamórfica, terapia floral y más en Aruṇāchala Cornellà.</p>
+      <h1>¿Qué terapias holísticas hay y cuál es su precio?</h1>
+      <p>En Aruṇāchala, Cornellà de Llobregat, las terapias holísticas incluyen las técnicas activas de esta página. Cada ficha muestra la duración y el precio vigente del centro. Se reservan con cita previa en el {NAP_PHONE}. La dirección es Pasaje de Mateo Oliva 3, bajos.</p>
       {_treatment_blocks(therapies, "Terapias holísticas")}
       <p><a href="/terapias-y-masajes/">Volver a masaje y terapias</a></p>
     </main>"""
@@ -453,8 +458,8 @@ def build_promotions_html(promotions: list[Promotion]) -> str:
     listing = "".join(cards) or "<p>No hay promociones activas en este momento.</p>"
     return f"""
     <main>
-      <h1>Promociones de yoga y terapias</h1>
-      <p>Ofertas del centro Aruṇāchala en Cornellà: clases de yoga, masajes y terapias holísticas.</p>
+      <h1>¿Qué promociones hay vigentes en Aruṇāchala?</h1>
+      <p>Esta página lista solo las ofertas activas del centro: el descuento, el precio y, si existe, el código. Cuando una promoción termina, deja de mostrarse. Las condiciones las fija Aruṇāchala Yoga y Terapias, en Cornellà de Llobregat. Para usar una oferta, reserva en el {NAP_PHONE} o en {NAP_EMAIL}.</p>
       {listing}
     </main>"""
 
@@ -471,8 +476,8 @@ def build_meditations_index_html(items: list[Content]) -> str:
     )
     return f"""
     <main>
-      <h1>Meditaciones guiadas</h1>
-      <p>Meditaciones guiadas y mantras de Aruṇāchala Yoga y Terapias en Cornellà.</p>
+      <h1>¿Qué meditaciones guiadas se pueden escuchar?</h1>
+      <p>Aruṇāchala publica aquí meditaciones guiadas y mantras en audio para practicar en casa o antes de una clase. Cada pieza tiene título y una breve explicación, y se reproduce en esta misma página, sin salir de la web. Son materiales del centro de Susana Pérez Gil, en Cornellà de Llobregat.</p>
       {cards}
     </main>"""
 
@@ -480,8 +485,8 @@ def build_meditations_index_html(items: list[Content]) -> str:
 def build_about_html() -> str:
     return """
     <main>
-      <h1>¿Quién soy?</h1>
-      <p>Yoga y Terapias Aruṇāchala. Un espacio de cuidado, presencia y transformación.</p>
+      <h1>¿Quién es Susana Pérez Gil?</h1>
+      <p>Susana Pérez Gil es la fundadora de Aruṇāchala Yoga y Terapias, en Cornellà de Llobregat. Lleva más de 25 años practicando yoga y se ha formado en quiromasaje, drenaje linfático, reflexología, técnica metamórfica, reiki y como profesora de yoga. En el centro imparte las clases y las sesiones de masaje y terapia.</p>
       <p>Mi nombre es Susana Pérez Gil y desde hace años acompaño a personas a través del Yoga y las Terapias Manuales, integrando cuerpo, mente y dimensión emocional-espiritual.</p>
       <h2>Mi camino hacia Aruṇāchala</h2>
       <p>Mi camino comenzó hace más de 25 años, impulsado por una profunda inspiración por la India, su cultura y su espiritualidad. Empecé a practicar Yoga con un objetivo sencillo: sentirme bien físicamente y mantener una mente estable.</p>
@@ -493,14 +498,14 @@ def build_about_html() -> str:
 
 
 def build_space_html() -> str:
-    return """
+    return f"""
     <main>
-      <h1>Nuestro espacio de yoga en Cornellà</h1>
-      <p>Un refugio de paz en la ciudad. En Aruṇāchala, centro de yoga y bienestar en Cornellà de Llobregat, el espacio está pensado para la calma y la introspección: un santuario urbano donde desconectar y reconectar.</p>
+      <h1>¿Cómo es el espacio de Aruṇāchala y cómo se llega?</h1>
+      <p>Aruṇāchala es una sala diáfana con luz natural en Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, junto a la plaza Pallars. Se llega en tranvía T1 y T2, parada El Pedró, en autobús 57, 68, 94 o 95, y en metro línea 5, Cornellà Centre. El teléfono del centro es el {NAP_PHONE}.</p>
       <p>La sala principal es diáfana, con luz natural y materiales orgánicos. El ambiente, con aromas suaves y silencio, acompaña la práctica desde que se cruza la puerta.</p>
       <h2>Cómo llegar</h2>
       <ul>
-        <li>Dirección: Pasaje de Mateo Oliva 3, bajos (junto Plaza Pallars), 08940 Cornellà de Llobregat, Barcelona.</li>
+        <li>Dirección: {NAP_LINE}.</li>
         <li>Tranvía: líneas T1 y T2 (El Pedró).</li>
         <li>Autobús: 57, 68, 94 o 95.</li>
         <li>Metro: línea 5 (Cornellà Centre).</li>
@@ -510,21 +515,198 @@ def build_space_html() -> str:
 
 
 def build_contact_html() -> str:
-    return """
+    return f"""
     <main>
-      <h1>Contacto</h1>
-      <p>Reserva tu clase de yoga o tu sesión de terapia en Aruṇāchala, Cornellà de Llobregat.</p>
+      <h1>¿Cómo contactar con Aruṇāchala Yoga y Terapias?</h1>
+      <p>Puedes llamar o escribir por WhatsApp al {NAP_PHONE}, o enviar un correo a {NAP_EMAIL}. El centro está en {NAP_LINE}. Las clases de yoga, los masajes y las terapias se confirman con cita previa. El formulario de esta página llega al mismo correo.</p>
       <ul>
-        <li>Dirección: Pasaje de Mateo Oliva 3, 08940 Cornellà de Llobregat, Barcelona.</li>
-        <li>Teléfono y WhatsApp: <a href="tel:+34678481971">+34 678 481 971</a></li>
-        <li>Email: <a href="mailto:yogayterapiasarunachala@gmail.com">yogayterapiasarunachala@gmail.com</a></li>
+        <li>{NAP_NAME}</li>
+        <li>Dirección: {NAP_LINE}.</li>
+        <li>Teléfono y WhatsApp: <a href="tel:+34678481971">{NAP_PHONE}</a></li>
+        <li>Email: <a href="mailto:{NAP_EMAIL}">{NAP_EMAIL}</a></li>
       </ul>
       <p>Las sesiones de masaje y terapias se programan con cita previa.</p>
     </main>"""
 
 
+def build_home_html(articles: list[Content]) -> str:
+    cards = "".join(
+        f"""
+        <article>
+          <h2><a href="/blog/{item.slug}/">{_escape(item.title)}</a></h2>
+          <p>{_escape(item.excerpt or "")}</p>
+        </article>"""
+        for item in articles
+        if item.slug
+    )
+    return f"""
+    <main>
+      <h1>¿Dónde practicar yoga y terapias en Cornellà de Llobregat?</h1>
+      <p>Aruṇāchala Yoga y Terapias es el centro de Susana Pérez Gil en Cornellà de Llobregat. Ofrece clases de hatha yoga para todos los niveles, masajes y terapias holísticas con cita previa. La dirección es {NAP_LINE}. El teléfono y WhatsApp son el {NAP_PHONE}.</p>
+      <p>{NAP_NAME}. <a href="tel:+34678481971">{NAP_PHONE}</a>. <a href="mailto:{NAP_EMAIL}">{NAP_EMAIL}</a>.</p>
+      <p><a href="/clases-de-yoga/">Clases de yoga</a> · <a href="/terapias-y-masajes/">Masajes y terapias</a> · <a href="/preguntas-frecuentes/">Preguntas frecuentes</a> · <a href="/contacto/">Contacto</a></p>
+      <section>
+        <h2>Blog de yoga y bienestar</h2>
+        {cards}
+      </section>
+    </main>"""
+
+
+def _price_items(items, label: str) -> str:
+    rows = []
+    for item in items:
+        price = getattr(item, "price", None)
+        if not price:
+            continue
+        name = getattr(item, "name", None) or getattr(item, "title", "")
+        rows.append(f"<li>{_escape(name)}: {_escape(str(price))}</li>")
+    if not rows:
+        return ""
+    return f"<section><h2>{_escape(label)}</h2><ul>{''.join(rows)}</ul></section>"
+
+
+def build_faq_html(tarifas, massages, therapies) -> str:
+    prices = "".join(
+        [
+            _price_items(tarifas, "Tarifas de yoga"),
+            _price_items(massages, "Masajes"),
+            _price_items(therapies, "Terapias holísticas"),
+        ]
+    )
+    if not prices:
+        prices = f"<p>Ahora mismo no hay precios cargados en la web. Se confirman al reservar en el {NAP_PHONE}.</p>"
+    return f"""
+    <main>
+      <h1>Preguntas frecuentes</h1>
+      <p>Respuestas directas sobre el centro. El nombre, la dirección y el teléfono son los mismos en toda la web. {NAP_NAME}. {NAP_LINE}. {NAP_PHONE}. {NAP_EMAIL}.</p>
+      <article>
+        <h2>¿Dónde está Aruṇāchala Yoga y Terapias?</h2>
+        <p>Aruṇāchala Yoga y Terapias está en {NAP_LINE}, junto a la plaza Pallars. El teléfono y WhatsApp son el {NAP_PHONE} y el correo es {NAP_EMAIL}. Es el centro de yoga, masajes y terapias de Susana Pérez Gil.</p>
+      </article>
+      <article>
+        <h2>¿Cómo reservo una clase de yoga o una sesión?</h2>
+        <p>La reserva se hace por teléfono o WhatsApp en el {NAP_PHONE}, por correo en {NAP_EMAIL}, o con el formulario de la página de contacto. Las clases, los masajes y las terapias se confirman con cita previa. No hace falta crear una cuenta en la web.</p>
+      </article>
+      <article>
+        <h2>¿Hace falta experiencia para las clases de yoga?</h2>
+        <p>No. Las clases de hatha yoga y meditación de Aruṇāchala, en Cornellà de Llobregat, están abiertas a todos los niveles. Susana Pérez Gil adapta la práctica al momento de cada persona. El día y la hora de cada clase están publicados en la página de yoga del centro.</p>
+      </article>
+      <article>
+        <h2>¿Cuánto cuesta una clase de yoga o un masaje?</h2>
+        <p>El precio lo publica el propio centro en esta web: en las tarifas de yoga y en la ficha de cada masaje o terapia. Esa cifra es la vigente. Más abajo está la lista actual. Si una sesión no muestra precio, se confirma al reservar en el {NAP_PHONE}.</p>
+      </article>
+      <article>
+        <h2>¿Quién imparte las clases y las terapias?</h2>
+        <p>Las imparte Susana Pérez Gil, fundadora de Aruṇāchala Yoga y Terapias. Lleva más de 25 años de práctica de yoga y formación en quiromasaje, drenaje linfático, reflexología, técnica metamórfica, reiki y como profesora de yoga. El centro está en Cornellà de Llobregat.</p>
+      </article>
+      <article>
+        <h2>¿Cómo llego en transporte público?</h2>
+        <p>El centro está en {NAP_LINE}. En tranvía, líneas T1 y T2, parada El Pedró. En autobús, líneas 57, 68, 94 o 95. En metro, línea 5, parada Cornellà Centre. El teléfono por si necesitas indicaciones es el {NAP_PHONE}.</p>
+      </article>
+      <section>
+        <h2>Precios publicados por el centro</h2>
+        {prices}
+      </section>
+    </main>"""
+
+
+def _faq_schema() -> dict:
+    pairs = [
+        (
+            "¿Dónde está Aruṇāchala Yoga y Terapias?",
+            f"Aruṇāchala Yoga y Terapias está en {NAP_LINE}. Teléfono {NAP_PHONE}. Correo {NAP_EMAIL}.",
+        ),
+        (
+            "¿Cómo reservo una clase de yoga o una sesión?",
+            f"Por teléfono o WhatsApp en el {NAP_PHONE}, por correo en {NAP_EMAIL}, o con el formulario de contacto. Con cita previa.",
+        ),
+        (
+            "¿Hace falta experiencia para las clases de yoga?",
+            "No. Las clases de Aruṇāchala están abiertas a todos los niveles.",
+        ),
+        (
+            "¿Cuánto cuesta una clase de yoga o un masaje?",
+            f"El precio vigente lo publica el centro en esta web. Si no aparece, se confirma en el {NAP_PHONE}.",
+        ),
+        (
+            "¿Quién imparte las clases y las terapias?",
+            "Susana Pérez Gil, fundadora de Aruṇāchala Yoga y Terapias.",
+        ),
+        (
+            "¿Cómo llego en transporte público?",
+            f"Tranvía T1 y T2 (El Pedró), autobús 57, 68, 94 o 95, metro línea 5 (Cornellà Centre). Dirección: {NAP_LINE}.",
+        ),
+    ]
+    return {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": question,
+                "acceptedAnswer": {"@type": "Answer", "text": answer},
+            }
+            for question, answer in pairs
+        ],
+    }
+
+
 def _render_extended(normalized: str, db: Session) -> Optional[dict]:
     """Landings, actividades y listados que no cubren los artículos."""
+    if normalized == "/":
+        articles = (
+            db.query(Content)
+            .filter(
+                Content.type == "article",
+                Content.status == "published",
+                Content.slug.is_not(None),
+                ~Content.slug.contains("sugerencia"),
+            )
+            .order_by(Content.created_at.desc())
+            .limit(6)
+            .all()
+        )
+        return {
+            "title": "Aruṇāchala Yoga y Terapias | Centro de bienestar en Cornellà",
+            "description": f"Centro de Susana Pérez Gil en {NAP_LINE}. Clases de hatha yoga, masajes y terapias con cita previa. Teléfono {NAP_PHONE}.",
+            "inner_html": build_home_html(articles),
+            "json_ld": {
+                "@context": "https://schema.org",
+                "@type": "YogaStudio",
+                "name": NAP_NAME,
+                "url": SITE_BASE,
+                "telephone": "+34678481971",
+                "email": NAP_EMAIL,
+                "address": {
+                    "@type": "PostalAddress",
+                    "streetAddress": "Pasaje de Mateo Oliva 3, bajos",
+                    "addressLocality": "Cornellà de Llobregat",
+                    "postalCode": "08940",
+                    "addressRegion": "Barcelona",
+                    "addressCountry": "ES",
+                },
+            },
+        }
+
+    if normalized == "/preguntas-frecuentes/":
+        now = datetime.utcnow()
+        tarifas = (
+            db.query(Promotion)
+            .filter(
+                Promotion.is_active == True,
+                Promotion.is_tarifa == True,
+                (Promotion.start_date == None) | (Promotion.start_date <= now),
+                (Promotion.end_date == None) | (Promotion.end_date >= now),
+            )
+            .all()
+        )
+        return {
+            "title": "Preguntas frecuentes | Aruṇāchala Yoga y Terapias",
+            "description": f"Dónde está Aruṇāchala, cómo reservar y los precios publicados por el centro. {NAP_LINE}. {NAP_PHONE}.",
+            "inner_html": build_faq_html(tarifas, _active_treatments(MassageType, db), _active_treatments(TherapyType, db)),
+            "json_ld": _faq_schema(),
+        }
+
     if normalized == "/meditaciones/":
         items = (
             db.query(Content)
@@ -681,8 +863,8 @@ def build_blog_index_html(articles: list[Content]) -> str:
     )
     return f"""
     <main>
-      <h1>Blog | Arunachala Yoga y Terapias</h1>
-      <p>Artículos sobre yoga, meditación, terapias holísticas y bienestar.</p>
+      <h1>¿Qué publica el blog de Aruṇāchala?</h1>
+      <p>El blog de Aruṇāchala reúne artículos propios sobre yoga, meditación, masajes y terapias holísticas, escritos desde la práctica del centro en Cornellà de Llobregat. Cada texto abre con la respuesta y después desarrolla el tema. Sirve para preparar una clase o una sesión antes de reservar en el {NAP_PHONE}.</p>
       {cards}
     </main>"""
 
@@ -809,6 +991,9 @@ def wrap_full_html(
   <title>{safe_title}</title>
   <meta name="description" content="{safe_description}"/>
   <link rel="canonical" href="{safe_canonical}"/>
+  <link rel="ai-catalog" type="application/json" href="https://www.yogayterapiasarunachala.es/.well-known/ai-catalog.json"/>
+  <link rel="ard" type="application/json" href="https://www.yogayterapiasarunachala.es/.well-known/ard.json"/>
+  <link rel="api-catalog" type="application/linkset+json" href="https://www.yogayterapiasarunachala.es/.well-known/api-catalog"/>
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large"/>
   <meta property="og:type" content="{_escape(og_type)}"/>
   <meta property="og:site_name" content="Arunachala Yoga y Terapias"/>

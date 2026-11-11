@@ -135,7 +135,7 @@ const TherapiesPage: React.FC = () => {
     const structuredData = useMemo(() => {
         const provider = {
             '@type': 'HealthAndBeautyBusiness',
-            name: 'Arunachala Yoga y Terapias',
+            name: 'Aruṇāchala Yoga y Terapias',
             url: BASE_URL,
         };
 
@@ -351,6 +351,7 @@ const TherapiesPage: React.FC = () => {
                         >
                             {t('therapies.title')}
                         </motion.h1>
+                        <p className="sr-only">{t('answers.therapies.question')} {t('answers.therapies.answer')}</p>
 
                         <motion.p
                             initial={{ opacity: 0, y: 20 }}

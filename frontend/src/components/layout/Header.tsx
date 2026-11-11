@@ -373,6 +373,7 @@ const Header: React.FC = () => {
                     <Link to="/actividades" onClick={handleNavLinkClick('/actividades')} className="text-[#F5F5DC] font-headers text-4xl short:text-2xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.activities')}</Link>
                     <Link to="/nuestro-espacio" onClick={handleNavLinkClick('/nuestro-espacio')} className="text-[#F5F5DC] font-headers text-4xl short:text-2xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.space', 'Nuestro Espacio')}</Link>
                     <Link to="/contacto" onClick={handleNavLinkClick('/contacto')} className="text-[#F5F5DC] font-headers text-4xl short:text-2xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.contact')}</Link>
+                    <Link to="/preguntas-frecuentes" onClick={handleNavLinkClick('/preguntas-frecuentes')} className="text-[#F5F5DC] font-headers text-4xl short:text-2xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.faq')}</Link>
 
                     {/* Added Promociones apartada y en color marrón - Only if active promotions exist */}
                     {hasPromotions && (

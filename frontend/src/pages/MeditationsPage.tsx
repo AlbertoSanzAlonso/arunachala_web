@@ -387,6 +387,7 @@ const MeditationsPage: React.FC = () => {
                     >
                         {t('meditations.title')}
                     </motion.h1>
+                    <p className="sr-only">{t('answers.meditations.question')} {t('answers.meditations.answer')}</p>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}

@@ -1,0 +1,25 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://api.yogayterapiasarunachala.es/",
+      "service-desc": [
+        {
+          "href": "https://www.yogayterapiasarunachala.es/openapi.json",
+          "type": "application/openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://www.yogayterapiasarunachala.es/llms.txt",
+          "type": "text/plain"
+        }
+      ],
+      "status": [
+        {
+          "href": "https://www.yogayterapiasarunachala.es/.well-known/ai-catalog.json",
+          "type": "application/json"
+        }
+      ]
+    }
+  ]
+}

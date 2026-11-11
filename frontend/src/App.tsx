@@ -52,6 +52,7 @@ const SiteCustomization = lazy(() => import('./pages/dashboard/SiteCustomization
 const CommentsManager = lazy(() => import('./pages/dashboard/CommentsManager'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
+const FaqPage = lazy(() => import('./pages/FaqPage'));
 const LegalNoticePage = lazy(() => import('./pages/LegalNoticePage'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const UnsubscribePage = lazy(() => import('./pages/UnsubscribePage'));
@@ -106,6 +107,7 @@ const AppContent = () => {
                 <Route path="/nuestro-espacio" element={<OurSpacePage />} />
                 <Route path="/quienes-somos" element={<AboutPage />} />
                 <Route path="/contacto" element={<ContactPage />} />
+                <Route path="/preguntas-frecuentes" element={<FaqPage />} />
                 <Route path="/aviso-legal" element={<LegalNoticePage />} />
                 <Route path="/politica-de-privacidad" element={<PrivacyPolicyPage />} />
                 <Route path="/unsubscribe" element={<UnsubscribePage />} />

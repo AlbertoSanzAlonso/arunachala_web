@@ -360,7 +360,7 @@ const AllTherapiesPage: React.FC = () => {
                     {/* Header Title Section */}
                     <FadeInSection className="text-center mb-16 pt-0">
                         <h1 className="text-4xl md:text-6xl font-headers text-forest mb-4">{t('therapies.sections.therapies')}</h1>
-                        <p className="text-bark/70 text-lg md:text-xl max-w-2xl mx-auto">{t('therapies.sections.therapies_sub')}</p>
+                        <p className="sr-only">{t('answers.holistic.question')} {t('answers.holistic.answer')}</p>
                         <p className="text-bark/60 text-sm mt-6">
                             {t('therapies.holistic_page.related_massages')}{' '}
                             <Link to="/terapias/masajes/" className="text-forest font-semibold hover:text-matcha underline underline-offset-4">

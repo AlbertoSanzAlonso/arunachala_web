@@ -1,0 +1,46 @@
+{
+  "protocolVersion": "0.2.5",
+  "name": "Aruṇāchala Yoga y Terapias",
+  "description": "Ficha informativa. Este dominio no opera un endpoint JSON-RPC A2A. Las mismas respuestas están en las páginas públicas: clases, masajes, preguntas frecuentes y contacto. Nombre, dirección y teléfono canónicos: Aruṇāchala Yoga y Terapias, Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona, +34 678 481 971.",
+  "url": "https://www.yogayterapiasarunachala.es/contacto/",
+  "preferredTransport": "JSONRPC",
+  "version": "1.0.0",
+  "documentationUrl": "https://www.yogayterapiasarunachala.es/llms.txt",
+  "provider": {
+    "organization": "Aruṇāchala Yoga y Terapias",
+    "url": "https://www.yogayterapiasarunachala.es/"
+  },
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain", "text/html"],
+  "skills": [
+    {
+      "id": "centro",
+      "name": "Datos del centro",
+      "description": "Nombre, dirección y teléfono, idénticos en toda la web. Se leen en la home, el contacto y llms.txt. No hay un método JSON-RPC: hay que leer esas páginas.",
+      "tags": ["contacto", "direccion", "nap"],
+      "examples": [
+        "dónde está Aruṇāchala Yoga y Terapias",
+        "teléfono de Arunachala en Cornellà"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/html", "text/plain"]
+    },
+    {
+      "id": "clases_y_precios",
+      "name": "Clases, masajes y precios publicados",
+      "description": "Horario de yoga y precio de cada sesión publicados por el centro en la web y en la API de lectura. No inventar tarifas que no aparezcan ahí.",
+      "tags": ["yoga", "masajes", "precios"],
+      "examples": [
+        "qué clases de yoga hay en Aruṇāchala",
+        "cuánto cuesta un masaje en Arunachala"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/html", "application/json"]
+    }
+  ]
+}

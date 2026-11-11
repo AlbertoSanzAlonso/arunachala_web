@@ -58,6 +58,7 @@ const AboutPage: React.FC = () => {
                             >
                                 {t('about.title')}
                             </motion.h1>
+                            <p className="sr-only">{t('answers.about.question')} {t('answers.about.answer')}</p>
 
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                                 <motion.div

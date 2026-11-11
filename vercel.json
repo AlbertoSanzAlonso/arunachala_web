@@ -32,9 +32,97 @@
     {
       "source": "/sitemap.xml",
       "destination": "https://api.yogayterapiasarunachala.es/sitemap.xml"
+    },
+    {
+      "source": "/.well-known/api-catalog",
+      "destination": "/.well-known/api-catalog.json"
+    },
+    {
+      "source": "/.well-known/api-catalog/",
+      "destination": "/.well-known/api-catalog.json"
     }
   ],
   "headers": [
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Link",
+          "value": "<https://www.yogayterapiasarunachala.es/.well-known/ai-catalog.json>; rel=\"ai-catalog\", <https://www.yogayterapiasarunachala.es/.well-known/ard.json>; rel=\"ard\", <https://www.yogayterapiasarunachala.es/.well-known/api-catalog>; rel=\"api-catalog\"; type=\"application/linkset+json\", <https://www.yogayterapiasarunachala.es/llms.txt>; rel=\"describedby\"; type=\"text/plain\""
+        }
+      ]
+    },
+    {
+      "source": "/index.html",
+      "headers": [
+        {
+          "key": "Link",
+          "value": "<https://www.yogayterapiasarunachala.es/.well-known/ai-catalog.json>; rel=\"ai-catalog\", <https://www.yogayterapiasarunachala.es/.well-known/ard.json>; rel=\"ard\", <https://www.yogayterapiasarunachala.es/.well-known/api-catalog>; rel=\"api-catalog\"; type=\"application/linkset+json\""
+        }
+      ]
+    },
+    {
+      "source": "/.well-known/api-catalog",
+      "headers": [
+        { "key": "Content-Type", "value": "application/linkset+json; charset=utf-8" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
+      "source": "/.well-known/api-catalog/",
+      "headers": [
+        { "key": "Content-Type", "value": "application/linkset+json; charset=utf-8" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
+      "source": "/llms.txt",
+      "headers": [
+        { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
+      "source": "/openapi.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/openapi+json; charset=utf-8" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
+      "source": "/.well-known/(ai-catalog.json|ard.json|mcp.json|agent.json)",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json; charset=utf-8" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
+      "source": "/.well-known/mcp/server-card.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json; charset=utf-8" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
+      "source": "/mcp/server-card.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json; charset=utf-8" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
+      "source": "/.well-known/api-catalog.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/linkset+json; charset=utf-8" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
+      "source": "/.well-known/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
     {
       "source": "/gallery/(.*)",
       "headers": [

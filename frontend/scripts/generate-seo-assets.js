@@ -93,6 +93,12 @@ const STATIC_ROUTES = [
     description: 'Conoce a Susana Pérez Gil y el equipo de Aruṇāchala, centro de yoga y terapias en Cornellà.',
   },
   {
+    path: '/preguntas-frecuentes/',
+    title: 'Preguntas frecuentes | Aruṇāchala Yoga y Terapias',
+    description:
+      'Dónde está Aruṇāchala, cómo reservar, precios publicados por el centro y cómo llegar a Pasaje de Mateo Oliva 3, bajos, Cornellà de Llobregat.',
+  },
+  {
     path: '/contacto/',
     title: 'Contacto | Yoga y Terapias Aruṇāchala Cornellà',
     description:

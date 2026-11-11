@@ -130,11 +130,15 @@ function buildHomeExtras(articles) {
     .join('\n');
 
   return `
-    <section aria-label="Últimos artículos del blog">
-      <h2>Blog de Yoga y Bienestar</h2>
-      ${cards}
-      <p><a href="/blog/">Ver todos los artículos</a></p>
-    </section>`;
+    <main>
+      <h1>¿Dónde practicar yoga y terapias en Cornellà de Llobregat?</h1>
+      <p>Aruṇāchala Yoga y Terapias es el centro de Susana Pérez Gil en Cornellà de Llobregat. Ofrece clases de hatha yoga para todos los niveles, masajes y terapias holísticas con cita previa. La dirección es Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona. El teléfono y WhatsApp son el +34 678 481 971.</p>
+      <section aria-label="Últimos artículos del blog">
+        <h2>Blog de Yoga y Bienestar</h2>
+        ${cards}
+        <p><a href="/blog/">Ver todos los artículos</a> · <a href="/preguntas-frecuentes/">Preguntas frecuentes</a></p>
+      </section>
+    </main>`;
 }
 
 function buildBlogIndexExtras(articles) {
@@ -436,10 +440,10 @@ function buildSpacePage() {
 function buildContactPage() {
   return `
     <main>
-      <h1>Contacto</h1>
-      <p>Reserva tu clase de yoga o tu sesión de terapia en Aruṇāchala.</p>
+      <h1>¿Cómo contactar con Aruṇāchala Yoga y Terapias?</h1>
+      <p>Puedes llamar o escribir por WhatsApp al +34 678 481 971, o enviar un correo a yogayterapiasarunachala@gmail.com. El centro está en Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona.</p>
       <ul>
-        <li>Pasaje de Mateo Oliva 3, 08940 Cornellà de Llobregat, Barcelona.</li>
+        <li>Aruṇāchala Yoga y Terapias. Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona.</li>
         <li>Teléfono y WhatsApp: <a href="tel:+34678481971">+34 678 481 971</a></li>
         <li>Email: <a href="mailto:yogayterapiasarunachala@gmail.com">yogayterapiasarunachala@gmail.com</a></li>
       </ul>
@@ -553,6 +557,18 @@ async function main() {
       innerHtml = buildSpacePage();
     } else if (route.path === '/contacto/') {
       innerHtml = buildContactPage();
+    } else if (route.path === '/preguntas-frecuentes/') {
+      innerHtml = `
+    <main>
+      <h1>Preguntas frecuentes</h1>
+      <p>Aruṇāchala Yoga y Terapias está en Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona. Teléfono y WhatsApp: +34 678 481 971. Correo: yogayterapiasarunachala@gmail.com.</p>
+      <h2>¿Dónde está Aruṇāchala Yoga y Terapias?</h2>
+      <p>En Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona. El teléfono es el +34 678 481 971.</p>
+      <h2>¿Cómo reservo una clase de yoga o una sesión?</h2>
+      <p>Por teléfono o WhatsApp en el +34 678 481 971, o por correo en yogayterapiasarunachala@gmail.com. Con cita previa.</p>
+      <h2>¿Cuánto cuesta una clase de yoga o un masaje?</h2>
+      <p>El precio vigente lo publica el propio centro en las fichas de esta web. Si no aparece, se confirma al reservar en el +34 678 481 971.</p>
+    </main>`;
     } else if (blogMatch && articlesBySlug[blogMatch[1]]) {
       innerHtml = buildArticlePage(articlesBySlug[blogMatch[1]], articles);
     } else if (meditationMatch && meditationsBySlug[meditationMatch[1]]) {

@@ -226,8 +226,9 @@ const ActivitiesPage: React.FC = () => {
                             <h1 className="text-4xl md:text-6xl font-headers text-forest uppercase tracking-wide">
                                 {t('activities.title', 'Nuestras Actividades')}
                             </h1>
+                            <p className="sr-only">{t('answers.activities.question')} {t('answers.activities.answer')}</p>
                             <div className="w-24 h-1 bg-gradient-to-r from-matcha to-forest mx-auto rounded-full" />
-                            <p className="text-lg md:text-xl text-bark/80 max-w-2xl mx-auto font-light">
+                            <p className="text-lg text-bark/90 max-w-3xl mx-auto font-light leading-relaxed">
                                 {t('activities.subtitle', 'Talleres intensivos y eventos especiales diseñados para tu crecimiento.')}
                             </p>
                         </motion.div>

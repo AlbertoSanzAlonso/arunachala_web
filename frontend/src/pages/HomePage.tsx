@@ -12,6 +12,7 @@ import { API_BASE_URL } from 'config';
 import { useTranslation } from 'react-i18next';
 import { getImageUrl } from 'utils/imageUtils';
 import PageSEO from 'components/providers/PageSEO';
+import { BUSINESS, businessPostalAddress } from 'config/business';
 
 // Lazy load heavy components
 const ImageSlider = lazy(() => import('components/sections/ImageSlider'));
@@ -67,7 +68,8 @@ const HomePage: React.FC = () => {
     const localBusinessSchema = {
         "@context": "https://schema.org",
         "@type": "YogaStudio",
-        "name": "Arunachala Yoga y Terapias",
+        "name": BUSINESS.name,
+        "alternateName": ["Arunachala Yoga y Terapias", "Arunachala", "Yoga y Terapias Arunachala"],
         "image": "https://www.yogayterapiasarunachala.es/logo_wide.webp",
         "logo": {
             "@type": "ImageObject",
@@ -77,15 +79,9 @@ const HomePage: React.FC = () => {
         },
         "@id": "https://www.yogayterapiasarunachala.es",
         "url": "https://www.yogayterapiasarunachala.es",
-        "telephone": "+34678481971",
-        "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "Pasaje de Mateo Oliva 3",
-            "addressLocality": "Cornellá de Llobregat",
-            "postalCode": "08940",
-            "addressRegion": "Barcelona",
-            "addressCountry": "ES"
-        },
+        "telephone": BUSINESS.phoneTel,
+        "email": BUSINESS.email,
+        "address": businessPostalAddress,
         "geo": {
             "@type": "GeoCoordinates",
             "latitude": 41.3533,
@@ -103,21 +99,20 @@ const HomePage: React.FC = () => {
             "https://www.instagram.com/yogayterapiasarunachala/",
             "https://www.youtube.com/@yogayterapiasarunachala2252"
         ],
-        "description": "Centro de Yoga y Terapias en Cornellá de Llobregat. Clases de Hatha Yoga, Vinyasa y Terapias Holísticas."
+        "description": "Centro de yoga y terapias en Cornellà de Llobregat. Clases de hatha yoga, masajes y terapias holísticas."
     };
 
     return (
         <div id="home-scroll-container" ref={containerRef} className="font-body text-bark relative h-screen overflow-y-auto scroll-smooth">
             <PageSEO
-                title="Arunachala Yoga y Terapias | Centro de Bienestar en Cornellá"
-                description="Clases de Yoga, masajes y terapias: Centro de Yoga en Cornellá de Llobregat"
+                title="Centro de Bienestar en Cornellà"
+                description="Aruṇāchala Yoga y Terapias, centro de Susana Pérez Gil en Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat. Clases de hatha yoga, masajes y terapias con cita previa. Teléfono +34 678 481 971."
                 structuredData={localBusinessSchema}
             />
             <Header />
 
             {/* Hero Section with Video */}
             <section className="relative min-h-[75vh] short:min-h-[calc(100vh-3.5rem)] md:min-h-[90vh] short:md:min-h-[calc(100vh-3.5rem)] w-full overflow-hidden flex flex-col items-center justify-start short:justify-center md:justify-center pt-6 short:pt-0 md:pt-16 short:md:pt-0" role="banner">
-                <h1 className="sr-only">Arunachala Yoga y Terapias</h1>
                 <video
                     className="absolute top-0 left-0 w-full h-full object-cover opacity-85"
                     autoPlay
@@ -135,6 +130,8 @@ const HomePage: React.FC = () => {
 
                 {/* Main Content Container */}
                 <div className="relative z-40 flex flex-col items-center w-full max-w-4xl short:max-w-5xl px-4 gap-6 short:gap-5 md:gap-10 short:md:gap-6 pb-32 short:pb-0 md:pb-0 md:-translate-y-16 short:md:translate-y-0">
+                    <h1 className="sr-only">{t('answers.home.question')}</h1>
+                    <p className="sr-only">{t('answers.home.answer')}</p>
 
                     {/* Navigation Buttons */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 short:gap-4 md:gap-12 short:md:gap-8 w-full text-center">

@@ -127,6 +127,7 @@ const NewsPage: React.FC = () => {
             <Header />
 
             <main className="flex-grow">
+                <p className="sr-only">{t('answers.news.question')} {t('answers.news.answer')}</p>
                 <BlogHeader
                     filters={filters}
                     onFilterChange={handleFilterChange}

@@ -95,10 +95,11 @@ const OurSpacePage: React.FC = () => {
         const yogaStudio = {
             '@context': 'https://schema.org',
             '@type': 'YogaStudio',
-            name: 'Arunachala Yoga y Terapias',
+            name: 'Aruṇāchala Yoga y Terapias',
             url: BASE_URL,
             image: `${BASE_URL}/logo_wide.webp`,
             telephone: '+34678481971',
+            email: 'yogayterapiasarunachala@gmail.com',
             address: {
                 '@type': 'PostalAddress',
                 streetAddress: 'Pasaje de Mateo Oliva 3, bajos',
@@ -167,6 +168,7 @@ const OurSpacePage: React.FC = () => {
                     >
                         {t('space.title', 'Nuestro Espacio')}
                     </motion.h1>
+                    <p className="sr-only">{t('answers.space.question')} {t('answers.space.answer')}</p>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
                         {/* Presentation Text */}
@@ -193,7 +195,7 @@ const OurSpacePage: React.FC = () => {
                                 className="flex items-center gap-2 text-forest font-bold pt-4 hover:text-matcha transition-colors w-fit group"
                             >
                                 <MapPinIcon className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                                <span>{t('contact_page.info.address', 'Yoga y Terapias Arunachala - Pasaje de Mateo Oliva, 3, 08940 Cornellá de Llobregat')}</span>
+                                <span>Aruṇāchala Yoga y Terapias. Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona</span>
                             </a>
                             <p className="pt-4 text-bark/70 text-sm">
                                 {t('space.related_contact')}{' '}
@@ -337,7 +339,7 @@ const OurSpacePage: React.FC = () => {
                             {/* Interactive Map */}
                             <div className="w-full h-[300px] lg:h-auto rounded-xl overflow-hidden bg-gray-200 shadow-md border border-bone/50 relative group/map">
                                 <iframe
-                                    src="https://maps.google.com/maps?q=Passatge+de+Mateu+Oliva,+3,+Cornellá+de+Llobregat&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                                    src="https://maps.google.com/maps?q=Pasaje+de+Mateo+Oliva+3,+bajos,+08940+Cornell%C3%A0+de+Llobregat&t=&z=15&ie=UTF8&iwloc=&output=embed"
                                     width="100%"
                                     height="100%"
                                     style={{ border: 0 }}

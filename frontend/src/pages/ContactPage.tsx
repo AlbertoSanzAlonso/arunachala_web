@@ -14,6 +14,7 @@ import Footer from '../components/layout/Footer';
 import BackButton from '../components/ui/BackButton';
 import PageSEO from '../components/providers/PageSEO';
 import { API_BASE_URL } from '../config';
+import { BUSINESS, BUSINESS_ADDRESS_LINE } from '../config/business';
 
 const ContactPage: React.FC = () => {
     const { t } = useTranslation();
@@ -74,6 +75,7 @@ const ContactPage: React.FC = () => {
                         >
                             {t('contact_page.title')}
                         </motion.h1>
+                        <p className="sr-only">{t('answers.contact.question')} {t('answers.contact.answer')}</p>
                         <motion.p
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -108,7 +110,7 @@ const ContactPage: React.FC = () => {
                                                 rel="noopener noreferrer"
                                                 className="text-bark/80 leading-relaxed hover:text-matcha transition-colors"
                                             >
-                                                {t('contact_page.info.address')}
+                                                {BUSINESS.name}. {BUSINESS_ADDRESS_LINE}
                                             </a>
                                         </div>
                                     </div>
@@ -120,10 +122,10 @@ const ContactPage: React.FC = () => {
                                         <div>
                                             <h3 className="font-headers text-forest text-lg uppercase tracking-wide">{t('contact_page.info.phone_label')}</h3>
                                             <a
-                                                href="tel:+34678481971"
+                                                href={`tel:${BUSINESS.phoneTel}`}
                                                 className="text-bark/80 text-xl font-medium tracking-wider hover:text-matcha transition-colors"
                                             >
-                                                +34 678 48 19 71
+                                                {BUSINESS.phoneDisplay}
                                             </a>
                                         </div>
                                     </div>
@@ -135,10 +137,10 @@ const ContactPage: React.FC = () => {
                                         <div>
                                             <h3 className="font-headers text-forest text-lg uppercase tracking-wide">{t('contact_page.info.email_label')}</h3>
                                             <a
-                                                href="mailto:yogayterapiasarunachala@gmail.com"
+                                                href={`mailto:${BUSINESS.email}`}
                                                 className="text-bark/80 break-all hover:text-matcha transition-colors"
                                             >
-                                                yogayterapiasarunachala@gmail.com
+                                                {BUSINESS.email}
                                             </a>
                                         </div>
                                     </div>

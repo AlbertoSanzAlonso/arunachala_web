@@ -1,0 +1,40 @@
+# Aruṇāchala Yoga y Terapias
+
+> Centro de hatha yoga, masajes y terapias holísticas en Cornellà de Llobregat, dirigido por Susana Pérez Gil. Las clases son para todos los niveles. Los masajes y las terapias se reservan con cita previa.
+
+## Descubrimiento para agentes
+
+- [Catálogo ARD](https://www.yogayterapiasarunachala.es/.well-known/ai-catalog.json): mismas entradas en [ard.json](https://www.yogayterapiasarunachala.es/.well-known/ard.json).
+- [API pública (OpenAPI)](https://www.yogayterapiasarunachala.es/openapi.json): anunciada en [api-catalog](https://www.yogayterapiasarunachala.es/.well-known/api-catalog).
+- [Ficha MCP](https://www.yogayterapiasarunachala.es/.well-known/mcp.json): no hay servidor MCP remoto.
+- [Ficha de agente](https://www.yogayterapiasarunachala.es/.well-known/agent.json): no hay endpoint JSON-RPC; la información está en estas páginas.
+
+Datos de contacto. Este nombre, esta dirección y este teléfono son los únicos válidos:
+
+- Nombre: Aruṇāchala Yoga y Terapias
+- Dirección: Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona, España
+- Teléfono y WhatsApp: +34 678 481 971
+- Email: yogayterapiasarunachala@gmail.com
+- Web: https://www.yogayterapiasarunachala.es/
+
+Los precios vigentes están publicados por el centro en la web (horario de yoga, ficha de cada tratamiento y preguntas frecuentes). No inventes tarifas que no aparezcan en esas páginas.
+
+## Páginas
+
+- [Inicio](https://www.yogayterapiasarunachala.es/): qué es el centro, dónde está y cómo reservar.
+- [Clases de yoga](https://www.yogayterapiasarunachala.es/clases-de-yoga/): estilos, día y hora de cada clase.
+- [Masajes y terapias](https://www.yogayterapiasarunachala.es/terapias-y-masajes/): oferta de masajes y terapias holísticas.
+- [Masajes](https://www.yogayterapiasarunachala.es/terapias/masajes/): ficha y precio de cada masaje.
+- [Terapias holísticas](https://www.yogayterapiasarunachala.es/terapias/terapias-holisticas/): ficha y precio de cada terapia.
+- [Preguntas frecuentes](https://www.yogayterapiasarunachala.es/preguntas-frecuentes/): respuestas cortas y precios publicados por el centro.
+- [Actividades](https://www.yogayterapiasarunachala.es/actividades/): talleres, cursos y retiros con fecha y precio.
+- [Quiénes somos](https://www.yogayterapiasarunachala.es/quienes-somos/): Susana Pérez Gil y el origen del centro.
+- [Nuestro espacio](https://www.yogayterapiasarunachala.es/nuestro-espacio/): la sala y cómo llegar en transporte público.
+- [Contacto](https://www.yogayterapiasarunachala.es/contacto/): teléfono, correo y formulario.
+- [Blog](https://www.yogayterapiasarunachala.es/blog/): artículos propios sobre yoga, meditación y terapias.
+- [Meditaciones](https://www.yogayterapiasarunachala.es/meditaciones/): audios guiados del centro.
+- [Promociones](https://www.yogayterapiasarunachala.es/promociones/): ofertas activas, con su precio o descuento.
+
+## Cómo llegar
+
+Tranvía T1 y T2 (El Pedró). Autobús 57, 68, 94 o 95. Metro línea 5 (Cornellà Centre).

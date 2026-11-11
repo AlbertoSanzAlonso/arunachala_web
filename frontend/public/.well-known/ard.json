@@ -1,0 +1,134 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Aruṇāchala Yoga y Terapias",
+    "identifier": "www.yogayterapiasarunachala.es"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:www.yogayterapiasarunachala.es:page:inicio",
+      "displayName": "Aruṇāchala Yoga y Terapias",
+      "description": "Centro de hatha yoga, masajes y terapias holísticas de Susana Pérez Gil en Cornellà de Llobregat. Dirección: Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona. Teléfono +34 678 481 971.",
+      "type": "text/html",
+      "url": "https://www.yogayterapiasarunachala.es/",
+      "representativeQueries": [
+        "dónde practicar yoga en Cornellà de Llobregat",
+        "centro de yoga y masajes Arunachala",
+        "teléfono de Aruṇāchala Yoga y Terapias"
+      ]
+    },
+    {
+      "identifier": "urn:air:www.yogayterapiasarunachala.es:page:yoga",
+      "displayName": "Clases de yoga en Aruṇāchala",
+      "description": "Clases de hatha yoga y meditación para todos los niveles, con el día y la hora publicados por el centro.",
+      "type": "text/html",
+      "url": "https://www.yogayterapiasarunachala.es/clases-de-yoga/",
+      "representativeQueries": [
+        "qué clases de yoga hay en Aruṇāchala",
+        "horario de yoga en Cornellà",
+        "hace falta experiencia para las clases de yoga"
+      ]
+    },
+    {
+      "identifier": "urn:air:www.yogayterapiasarunachala.es:page:terapias",
+      "displayName": "Masajes y terapias holísticas",
+      "description": "Masajes y terapias con cita previa. El precio vigente está en la ficha de cada sesión.",
+      "type": "text/html",
+      "url": "https://www.yogayterapiasarunachala.es/terapias-y-masajes/",
+      "representativeQueries": [
+        "qué masajes hace Aruṇāchala",
+        "terapias holísticas en Cornellà de Llobregat",
+        "reservar un masaje en Arunachala"
+      ]
+    },
+    {
+      "identifier": "urn:air:www.yogayterapiasarunachala.es:page:masajes",
+      "displayName": "Fichas de masajes",
+      "description": "Cada masaje con su duración y el precio que publica el centro.",
+      "type": "text/html",
+      "url": "https://www.yogayterapiasarunachala.es/terapias/masajes/",
+      "representativeQueries": [
+        "cuánto cuesta un masaje en Aruṇāchala",
+        "masaje tailandés en Cornellà"
+      ]
+    },
+    {
+      "identifier": "urn:air:www.yogayterapiasarunachala.es:page:preguntas",
+      "displayName": "Preguntas frecuentes",
+      "description": "Respuestas cortas sobre dirección, reserva, experiencia previa, precios publicados y transporte.",
+      "type": "text/html",
+      "url": "https://www.yogayterapiasarunachala.es/preguntas-frecuentes/",
+      "representativeQueries": [
+        "cómo reservo una clase de yoga en Aruṇāchala",
+        "cómo llego a Arunachala en transporte público",
+        "precios de yoga y masajes en Aruṇāchala"
+      ]
+    },
+    {
+      "identifier": "urn:air:www.yogayterapiasarunachala.es:page:contacto",
+      "displayName": "Contacto",
+      "description": "Teléfono y WhatsApp +34 678 481 971, correo yogayterapiasarunachala@gmail.com y formulario.",
+      "type": "text/html",
+      "url": "https://www.yogayterapiasarunachala.es/contacto/",
+      "representativeQueries": [
+        "cómo contactar con Aruṇāchala Yoga y Terapias",
+        "WhatsApp de Arunachala Cornellà"
+      ]
+    },
+    {
+      "identifier": "urn:air:www.yogayterapiasarunachala.es:doc:llms",
+      "displayName": "Resumen para modelos de lenguaje",
+      "description": "Presentación del centro, NAP canónico y enlaces de las páginas públicas.",
+      "type": "text/plain",
+      "url": "https://www.yogayterapiasarunachala.es/llms.txt",
+      "representativeQueries": [
+        "resumen de Aruṇāchala Yoga y Terapias para un agente",
+        "dirección y teléfono oficiales de Arunachala"
+      ]
+    },
+    {
+      "identifier": "urn:air:www.yogayterapiasarunachala.es:api:publica",
+      "displayName": "API pública de lectura",
+      "description": "OpenAPI de los listados públicos: clases, masajes, terapias, tarifas, actividades y el envío del formulario de contacto.",
+      "type": "application/openapi+json",
+      "url": "https://www.yogayterapiasarunachala.es/openapi.json",
+      "representativeQueries": [
+        "API pública de horarios y precios de Aruṇāchala",
+        "endpoint de tarifas de yoga de Arunachala"
+      ]
+    },
+    {
+      "identifier": "urn:air:www.yogayterapiasarunachala.es:doc:mcp",
+      "displayName": "Ficha MCP del sitio",
+      "description": "No hay servidor MCP remoto ni herramientas invocables. La ficha remite a las páginas públicas y a llms.txt.",
+      "type": "application/mcp-server-card+json",
+      "url": "https://www.yogayterapiasarunachala.es/.well-known/mcp.json",
+      "representativeQueries": [
+        "tiene Aruṇāchala un servidor MCP",
+        "herramientas de agente de la web de Arunachala"
+      ]
+    },
+    {
+      "identifier": "urn:air:www.yogayterapiasarunachala.es:doc:agente",
+      "displayName": "Ficha de agente",
+      "description": "No hay endpoint JSON-RPC. Las respuestas sobre el centro están en las páginas públicas.",
+      "type": "application/a2a-agent-card+json",
+      "url": "https://www.yogayterapiasarunachala.es/.well-known/agent.json",
+      "representativeQueries": [
+        "agente de Aruṇāchala Yoga y Terapias",
+        "cómo consulta un agente los datos de Arunachala"
+      ]
+    },
+    {
+      "identifier": "urn:air:www.yogayterapiasarunachala.es:doc:api-catalog",
+      "displayName": "Catálogo de la API pública",
+      "description": "Linkset RFC 9727 que apunta al OpenAPI de lectura y al formulario de contacto.",
+      "type": "application/linkset+json",
+      "url": "https://www.yogayterapiasarunachala.es/.well-known/api-catalog",
+      "representativeQueries": [
+        "descripción de la API pública de Aruṇāchala",
+        "openapi de horarios y tarifas de Arunachala"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "specVersion": "0.1",
+  "name": "arunachala-web",
+  "title": "Aruṇāchala Yoga y Terapias — información pública",
+  "description": "Este sitio no expone un servidor MCP remoto ni herramientas WebMCP invocables. La información para agentes está en las páginas HTML, en llms.txt y en la API pública de lectura descrita en openapi.json.",
+  "provider": {
+    "name": "Aruṇāchala Yoga y Terapias",
+    "url": "https://www.yogayterapiasarunachala.es/",
+    "contact": "https://www.yogayterapiasarunachala.es/contacto/"
+  },
+  "transport": {
+    "type": "none",
+    "binding": "http-documents",
+    "api": null,
+    "remoteEndpoint": null,
+    "note": "No hay endpoint MCP al que conectarse. Lee https://www.yogayterapiasarunachala.es/llms.txt y el catálogo ARD."
+  },
+  "tools": [],
+  "catalog": "https://www.yogayterapiasarunachala.es/.well-known/ai-catalog.json",
+  "documentation": "https://www.yogayterapiasarunachala.es/llms.txt"
+}

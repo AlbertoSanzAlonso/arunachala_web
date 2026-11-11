@@ -132,6 +132,7 @@ const YogaPage: React.FC = () => {
                         >
                             {t('yoga.title')}
                         </motion.h1>
+                        <p className="sr-only">{t('answers.yoga.question')} {t('answers.yoga.answer')}</p>
 
                         <motion.p
                             initial={{ opacity: 0, y: 20 }}

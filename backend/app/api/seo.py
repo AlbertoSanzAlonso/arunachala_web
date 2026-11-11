@@ -194,6 +194,7 @@ async def sitemap(db: Session = Depends(get_db)):
         ("/promociones/",               "0.8", "weekly"),
         ("/quienes-somos/",             "0.7", "monthly"),
         ("/contacto/",                  "0.6", "monthly"),
+        ("/preguntas-frecuentes/",      "0.8", "weekly"),
         ("/galeria/clases-de-yoga/",    "0.7", "weekly"),
         ("/galeria/terapias-y-masajes/", "0.7", "weekly"),
         ("/aviso-legal/",               "0.4", "monthly"),

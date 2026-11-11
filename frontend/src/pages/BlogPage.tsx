@@ -177,7 +177,8 @@ const BlogPage: React.FC = () => {
 
             <main className="flex-grow">
                 {/* Hero */}
-                <BlogHeader 
+                <p className="sr-only">{t('answers.blog.question')} {t('answers.blog.answer')}</p>
+                <BlogHeader
                     filters={filters}
                     onFilterChange={handleFilterChange}
                     articles={articles}

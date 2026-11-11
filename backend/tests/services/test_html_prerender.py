@@ -93,3 +93,15 @@ def test_prerender_covers_activities_news_and_landings(db_session):
     contact = render_full_page("/contacto/", db_session)
     assert contact is not None
     assert "+34 678 481 971" in contact
+    assert "Pasaje de Mateo Oliva 3, bajos" in contact
+
+    home = render_full_page("/", db_session)
+    assert home is not None
+    assert "¿Dónde practicar yoga y terapias en Cornellà de Llobregat?" in home
+    assert "Susana Pérez Gil" in home
+
+    faq = render_full_page("/preguntas-frecuentes/", db_session)
+    assert faq is not None
+    assert "FAQPage" in faq
+    assert "¿Cómo reservo una clase de yoga o una sesión?" in faq
+    assert "+34 678 481 971" in faq

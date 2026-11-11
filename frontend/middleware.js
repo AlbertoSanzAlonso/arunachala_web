@@ -4,13 +4,27 @@
  * Mantener en sync con /middleware.js (raíz del repo, por si Vercel usa esa raíz).
  */
 const BOT_UA =
-  /googlebot|google-inspectiontool|bingbot|yandex|baiduspider|duckduckbot|slurp|facebookexternalhit|twitterbot|linkedinbot|embedly|slackbot|whatsapp|telegrambot|applebot|pinterest|redditbot|discordbot/i;
+  /googlebot|google-inspectiontool|google-extended|bingbot|yandex|baiduspider|duckduckbot|slurp|facebookexternalhit|twitterbot|linkedinbot|embedly|slackbot|whatsapp|telegrambot|applebot|pinterest|redditbot|discordbot|gptbot|chatgpt-user|oai-searchbot|claudebot|claude-searchbot|claude-user|anthropic-ai|perplexitybot|perplexity-user|amazonbot|cohere-ai|meta-externalagent|bytespider|youbot|diffbot|ccbot|mistralai/i;
 
 const API_BASE =
   process.env.REACT_APP_API_URL?.replace(/\/$/, '') ||
   'https://api.yogayterapiasarunachala.es';
 
 const BLOG_CATEGORIES = new Set(['yoga', 'therapy', 'general']);
+
+const DISCOVERY_LINK_HEADER =
+  '<https://www.yogayterapiasarunachala.es/.well-known/ai-catalog.json>; rel="ai-catalog", <https://www.yogayterapiasarunachala.es/.well-known/ard.json>; rel="ard", <https://www.yogayterapiasarunachala.es/.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json", <https://www.yogayterapiasarunachala.es/llms.txt>; rel="describedby"; type="text/plain"';
+
+const DISCOVERY_LINKS = `<link rel="ai-catalog" type="application/json" href="https://www.yogayterapiasarunachala.es/.well-known/ai-catalog.json"/>
+  <link rel="ard" type="application/json" href="https://www.yogayterapiasarunachala.es/.well-known/ard.json"/>
+  <link rel="api-catalog" type="application/linkset+json" href="https://www.yogayterapiasarunachala.es/.well-known/api-catalog"/>
+  <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt"/>`;
+
+function withDiscoveryLinks(html) {
+  if (html.includes('rel="ai-catalog"') || html.includes("rel='ai-catalog'")) return html;
+  if (html.includes('</head>')) return html.replace('</head>', `  ${DISCOVERY_LINKS}\n</head>`);
+  return html;
+}
 
 const EXACT_PATHS = new Set([
   '/blog/',
@@ -25,6 +39,8 @@ const EXACT_PATHS = new Set([
   '/nuestro-espacio/',
   '/contacto/',
   '/promociones/',
+  '/preguntas-frecuentes/',
+  '/',
 ]);
 
 function shouldPrerender(pathname) {
@@ -60,13 +76,14 @@ export default async function middleware(request) {
     });
 
     if (response.ok) {
-      const html = await response.text();
+      const html = withDiscoveryLinks(await response.text());
       return new Response(html, {
         status: 200,
         headers: {
           'Content-Type': 'text/html; charset=utf-8',
           'Cache-Control': 'public, max-age=300',
           'X-Prerender': 'dynamic',
+          Link: DISCOVERY_LINK_HEADER,
         },
       });
     }
@@ -92,5 +109,7 @@ export const config = {
     '/nuestro-espacio',
     '/contacto',
     '/promociones',
+    '/preguntas-frecuentes',
+    '/',
   ],
 };

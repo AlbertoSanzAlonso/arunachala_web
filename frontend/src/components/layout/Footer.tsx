@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { BUSINESS } from '../../config/business';
 
 // Simple Icon Components for cleaner footer code
 const InstagramIcon = (props: React.ComponentProps<'svg'>) => (
@@ -34,23 +35,21 @@ const Footer: React.FC = () => {
                     <h3 className="text-2xl font-headers tracking-widest text-[#F5F5DC] font-bold">ARUṆĀCHALA</h3>
                     <address className="not-italic">
                         <a
-                            href="https://www.google.com/maps/search/?api=1&query=Yoga+y+Terapias+Arunachala"
+                            href="https://www.google.com/maps/search/?api=1&query=Aru%C5%86%C4%81chala+Yoga+y+Terapias+Pasaje+de+Mateo+Oliva+3+Cornell%C3%A0"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-[#F5F5DC]/90 leading-relaxed text-sm hover:text-[#becf81] transition-colors"
                         >
-                            {t('footer.address').split('\n').map((line, i) => (
-                                <React.Fragment key={i}>
-                                    {line}
-                                    {i < t('footer.address').split('\n').length - 1 && <br />}
-                                </React.Fragment>
-                            ))}
+                            <span className="block">{BUSINESS.name}</span>
+                            <span className="block">{BUSINESS.street}</span>
+                            <span className="block">{BUSINESS.postalCode} {BUSINESS.locality}</span>
+                            <span className="block">{BUSINESS.region}</span>
                         </a>
                     </address>
                     <p className="text-[#F5F5DC]/80 text-sm">
-                        <a href="mailto:yogayterapiasarunachala@gmail.com" className="hover:text-[#becf81] transition-colors">yogayterapiasarunachala@gmail.com</a>
+                        <a href={`mailto:${BUSINESS.email}`} className="hover:text-[#becf81] transition-colors">{BUSINESS.email}</a>
                         <br />
-                        <a href="tel:+34678481971" className="hover:text-[#becf81] transition-colors">Tel. 678 481 971</a>
+                        <a href={`tel:${BUSINESS.phoneTel}`} className="hover:text-[#becf81] transition-colors">{BUSINESS.phoneDisplay}</a>
                     </p>
                 </div>
 
@@ -64,6 +63,7 @@ const Footer: React.FC = () => {
                         <li><Link to="/blog/" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.blog')}</Link></li>
                         <li><Link to="/meditaciones/" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.meditations')}</Link></li>
                         <li><Link to="/nuestro-espacio/" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.space')}</Link></li>
+                        <li><Link to="/preguntas-frecuentes/" onClick={() => window.scrollTo(0, 0)} className="hover:text-[#becf81] hover:translate-x-1 transition-all inline-block">{t('footer.labels.faq')}</Link></li>
                     </ul>
                 </div>
 

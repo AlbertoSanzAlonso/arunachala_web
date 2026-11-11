@@ -1,0 +1,98 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "API pública de Aruṇāchala Yoga y Terapias",
+    "version": "1.0.0",
+    "description": "Lectura de clases, masajes, terapias, tarifas, actividades y envío del formulario de contacto. Los precios que devuelve son los publicados por el centro."
+  },
+  "servers": [
+    { "url": "https://api.yogayterapiasarunachala.es" }
+  ],
+  "paths": {
+    "/api/yoga-classes": {
+      "get": {
+        "operationId": "listYogaClasses",
+        "summary": "Clases de yoga y sus horarios",
+        "responses": { "200": { "description": "Listado de clases" } }
+      }
+    },
+    "/api/treatments/massages": {
+      "get": {
+        "operationId": "listMassages",
+        "summary": "Masajes activos, con duración y precio si el centro lo ha publicado",
+        "responses": { "200": { "description": "Listado de masajes" } }
+      }
+    },
+    "/api/treatments/therapies": {
+      "get": {
+        "operationId": "listTherapies",
+        "summary": "Terapias holísticas activas, con duración y precio si el centro lo ha publicado",
+        "responses": { "200": { "description": "Listado de terapias" } }
+      }
+    },
+    "/api/promotions/tarifas": {
+      "get": {
+        "operationId": "listYogaRates",
+        "summary": "Tarifas de yoga publicadas por el centro",
+        "responses": { "200": { "description": "Listado de tarifas" } }
+      }
+    },
+    "/api/promotions/": {
+      "get": {
+        "operationId": "listPromotions",
+        "summary": "Promociones activas",
+        "responses": { "200": { "description": "Listado de promociones" } }
+      }
+    },
+    "/api/activities/": {
+      "get": {
+        "operationId": "listActivities",
+        "summary": "Talleres, cursos y eventos activos",
+        "responses": { "200": { "description": "Listado de actividades" } }
+      }
+    },
+    "/api/content": {
+      "get": {
+        "operationId": "listContent",
+        "summary": "Artículos, meditaciones o noticias publicadas",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["article", "meditation", "announcement"] }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["published"] }
+          }
+        ],
+        "responses": { "200": { "description": "Listado de contenidos" } }
+      }
+    },
+    "/api/contact": {
+      "post": {
+        "operationId": "sendContactMessage",
+        "summary": "Envía el formulario de contacto al correo del centro",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "message"],
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string", "format": "email" },
+                  "phone": { "type": "string" },
+                  "message": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Mensaje aceptado" } }
+      }
+    }
+  }
+}
