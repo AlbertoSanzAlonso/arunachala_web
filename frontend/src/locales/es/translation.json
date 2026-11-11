@@ -714,7 +714,10 @@
     "placeholder": "Escribe tu pregunta...",
     "tooltip": "¿Cómo puedo ayudarte? ✨",
     "status": "Namasté 🙏 Online",
-    "ai_notice": "✨ Inteligencia Artificial entrenada para Aruṇāchala ✨"
+    "ai_notice": "✨ Inteligencia Artificial entrenada para Aruṇāchala ✨",
+    "fullscreen": "Pantalla completa",
+    "exit_fullscreen": "Salir de pantalla completa",
+    "close": "Cerrar chat"
   },
   "reviews": {
     "reviews_empty_title": "Tu opinión nos importa",

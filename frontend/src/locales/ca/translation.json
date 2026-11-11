@@ -690,7 +690,10 @@
     "placeholder": "Escriu la teva pregunta...",
     "tooltip": "Com puc ajudar-te? ✨",
     "status": "Namasté 🙏 En línia",
-    "ai_notice": "✨ Intel·ligència Artificial entrenada per Aruṇāchala ✨"
+    "ai_notice": "✨ Intel·ligència Artificial entrenada per Aruṇāchala ✨",
+    "fullscreen": "Pantalla completa",
+    "exit_fullscreen": "Sortir de la pantalla completa",
+    "close": "Tancar el xat"
   },
   "reviews": {
     "reviews_empty_title": "La teva opinió ens importa",

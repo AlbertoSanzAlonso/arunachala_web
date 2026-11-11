@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChatBubbleLeftRightIcon, XMarkIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
+import { ArrowsPointingInIcon, ArrowsPointingOutIcon, ChatBubbleLeftRightIcon, XMarkIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import omSymbol from 'assets/images/om_symbol.png';
@@ -25,6 +25,7 @@ interface Message {
 const ChatBot: React.FC = () => {
     const { i18n, t } = useTranslation();
     const { isChatOpen: isOpen, openChat, closeChat } = useUIStore();
+    const [isFullscreen, setIsFullscreen] = useState(false);
     const [isActive, setIsActive] = useState(true);
     const [botAvatar, setBotAvatar] = useState<string | null>(null);
 
@@ -99,6 +100,27 @@ const ChatBot: React.FC = () => {
             inputRef.current.focus();
         }
     }, [isOpen]);
+
+    useEffect(() => {
+        if (!isOpen) setIsFullscreen(false);
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (!isFullscreen) return;
+
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') setIsFullscreen(false);
+        };
+        window.addEventListener('keydown', onKeyDown);
+
+        return () => {
+            document.body.style.overflow = previousOverflow;
+            window.removeEventListener('keydown', onKeyDown);
+        };
+    }, [isFullscreen]);
 
     const handleSendMessage = async (e?: React.FormEvent) => {
         e?.preventDefault();
@@ -249,7 +271,10 @@ const ChatBot: React.FC = () => {
                         animate={{ opacity: 1, y: 0, scale: 1, x: 0 }}
                         exit={{ opacity: 0, y: 100, scale: 0.9, x: -20 }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="fixed bottom-4 left-4 md:bottom-6 md:left-6 z-[60] w-[calc(100vw-32px)] md:w-[400px] max-h-[85vh] md:max-h-[650px] h-[80vh] md:h-[75vh] flex flex-col bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-white/20 font-body"
+                        className={isFullscreen
+                            ? "fixed inset-0 z-[70] h-[100dvh] w-full max-h-none rounded-none flex flex-col bg-white shadow-2xl overflow-hidden font-body"
+                            : "fixed bottom-4 left-4 md:bottom-6 md:left-6 z-[60] w-[calc(100vw-32px)] md:w-[400px] max-h-[85vh] md:max-h-[650px] h-[80vh] md:h-[75vh] flex flex-col bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-white/20 font-body"
+                        }
                     >
                         {/* Header */}
                         <div className="bg-gradient-to-r from-[#becf81] to-[#a9bb6e] p-5 flex items-center justify-between shrink-0 shadow-md">
@@ -275,16 +300,37 @@ const ChatBot: React.FC = () => {
                                     </div>
                                 </div>
                             </div>
-                            <button
-                                onClick={closeChat}
-                                className="text-white/80 hover:text-white hover:bg-white/10 p-2 rounded-xl transition-colors"
-                            >
-                                <XMarkIcon className="w-6 h-6" />
-                            </button>
+                            <div className="flex items-center gap-1">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsFullscreen((value) => !value)}
+                                    aria-pressed={isFullscreen}
+                                    aria-label={isFullscreen
+                                        ? t('chatbot.exit_fullscreen', 'Salir de pantalla completa')
+                                        : t('chatbot.fullscreen', 'Pantalla completa')}
+                                    title={isFullscreen
+                                        ? t('chatbot.exit_fullscreen', 'Salir de pantalla completa')
+                                        : t('chatbot.fullscreen', 'Pantalla completa')}
+                                    className="text-white/80 hover:text-white hover:bg-white/10 p-2 rounded-xl transition-colors"
+                                >
+                                    {isFullscreen
+                                        ? <ArrowsPointingInIcon className="w-6 h-6" />
+                                        : <ArrowsPointingOutIcon className="w-6 h-6" />}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={closeChat}
+                                    className="text-white/80 hover:text-white hover:bg-white/10 p-2 rounded-xl transition-colors"
+                                    aria-label={t('chatbot.close', 'Cerrar chat')}
+                                >
+                                    <XMarkIcon className="w-6 h-6" />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Messages Area */}
-                        <div className="flex-1 overflow-y-auto p-5 space-y-6 bg-[#fdfbf7]/50 scroll-smooth">
+                        <div className="flex-1 overflow-y-auto p-5 bg-[#fdfbf7]/50 scroll-smooth">
+                            <div className={`space-y-6 ${isFullscreen ? 'mx-auto w-full max-w-3xl' : ''}`}>
                             {messages.map((msg) => (
                                 <motion.div
                                     key={msg.id}
@@ -323,11 +369,12 @@ const ChatBot: React.FC = () => {
                                 </div>
                             )}
                             <div ref={messagesEndRef} className="h-2" />
+                            </div>
                         </div>
 
                         {/* Input Area */}
                         <div className="p-5 bg-white border-t border-gray-100 shrink-0">
-                            <form onSubmit={handleSendMessage} className="relative flex items-center">
+                            <form onSubmit={handleSendMessage} className={`relative mx-auto flex w-full items-center ${isFullscreen ? 'max-w-3xl' : ''}`}>
                                 <input
                                     ref={inputRef}
                                     type="text"
