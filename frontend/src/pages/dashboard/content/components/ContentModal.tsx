@@ -1,7 +1,7 @@
 
 import React, { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { ArrowsPointingOutIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { TagSelector } from '../../../../components/dashboard/TagSelector';
 import RichTextEditor from '../../../../components/dashboard/RichTextEditor';
 import CropModal from '../../../../components/ui/modals/CropModal';
@@ -47,6 +47,27 @@ export const ContentModal: React.FC<ContentModalProps> = ({
     showCloseConfirm,
     setShowCloseConfirm
 }) => {
+    const [editorFullscreen, setEditorFullscreen] = React.useState(false);
+    const [fullscreenHost, setFullscreenHost] = React.useState<HTMLDivElement | null>(null);
+    const headerRef = React.useRef<HTMLDivElement>(null);
+    const bodyRef = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+        if (!isOpen || formData.type === 'meditation') {
+            setEditorFullscreen(false);
+        }
+    }, [isOpen, formData.type]);
+
+    React.useEffect(() => {
+        const setInert = (element: HTMLElement | null, inert: boolean) => {
+            if (!element) return;
+            if (inert) element.setAttribute('inert', '');
+            else element.removeAttribute('inert');
+        };
+        setInert(headerRef.current, editorFullscreen);
+        setInert(bodyRef.current, editorFullscreen);
+    }, [editorFullscreen, isOpen]);
+
     const handleRequestClose = () => {
         // Simple comparison to check for changes
         const hasChanges = JSON.stringify(formData) !== JSON.stringify(editingContent || {
@@ -70,7 +91,7 @@ export const ContentModal: React.FC<ContentModalProps> = ({
 
     return (
         <Transition.Root show={isOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-50" onClose={handleRequestClose}>
+            <Dialog as="div" className={editorFullscreen ? 'relative z-[80]' : 'relative z-50'} onClose={handleRequestClose}>
                 <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -83,8 +104,8 @@ export const ContentModal: React.FC<ContentModalProps> = ({
                     <Dialog.Overlay className="fixed inset-0 bg-black/25 transition-opacity" />
                 </Transition.Child>
 
-                <div className="fixed inset-0 overflow-y-auto">
-                    <div className="flex min-h-full items-center justify-center p-4 text-center">
+                <div className={`fixed inset-0 ${editorFullscreen ? 'overflow-hidden' : 'overflow-y-auto'}`}>
+                    <div className={`flex min-h-full items-center justify-center text-center ${editorFullscreen ? 'p-0' : 'p-4'}`}>
                         <Transition.Child
                             as={Fragment}
                             enter="ease-out duration-300"
@@ -94,9 +115,12 @@ export const ContentModal: React.FC<ContentModalProps> = ({
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-4xl h-[90vh] flex flex-col transform overflow-hidden rounded-3xl bg-white text-left align-middle shadow-2xl transition-all border border-bark/10">
+                            <Dialog.Panel className={editorFullscreen
+                                ? 'fixed inset-0 z-[70] flex h-[100dvh] w-screen max-w-none flex-col overflow-hidden rounded-none bg-[#f4f1eb] text-left'
+                                : 'relative w-full max-w-4xl h-[90vh] flex flex-col transform overflow-hidden rounded-3xl bg-white text-left align-middle shadow-2xl transition-all border border-bark/10'
+                            }>
                                 {/* Fixed Header */}
-                                <div className="px-6 py-4 border-b border-bark/5 flex items-center justify-between shrink-0 bg-white z-30">
+                                <div ref={headerRef} className="px-6 py-4 border-b border-bark/5 flex items-center justify-between shrink-0 bg-white z-30">
                                     <Dialog.Title as="h3" className="text-xl font-headers text-forest">
                                         {editingContent ? 'Editar Contenido' : 'Nuevo Contenido'}
                                     </Dialog.Title>
@@ -110,7 +134,7 @@ export const ContentModal: React.FC<ContentModalProps> = ({
                                 </div>
 
                                 {/* Scrollable Body — overflow-anchor avoids jump-to-top when headings resize */}
-                                <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar [overflow-anchor:none]">
+                                <div ref={bodyRef} className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar [overflow-anchor:none]">
                                     <form onSubmit={onSave} className="space-y-6">
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                         <div className="col-span-1 lg:col-span-2">
@@ -190,10 +214,21 @@ export const ContentModal: React.FC<ContentModalProps> = ({
                                         </div>
 
                                         <div className="col-span-1 lg:col-span-2">
-                                            <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center justify-between gap-3 mb-2">
                                                 <label className="block text-sm font-medium text-gray-700">
                                                     {formData.type === 'meditation' ? 'Audio' : 'Cuerpo del Artículo'}
                                                 </label>
+                                                {formData.type !== 'meditation' && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setEditorFullscreen(true)}
+                                                        className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-forest/20 bg-forest/5 px-3 py-1.5 text-xs font-medium text-forest transition-colors hover:bg-forest/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-forest"
+                                                        title="Abrir el editor a pantalla completa"
+                                                    >
+                                                        <ArrowsPointingOutIcon className="h-4 w-4" aria-hidden="true" />
+                                                        Pantalla completa
+                                                    </button>
+                                                )}
                                             </div>
                                             {formData.type === 'meditation' ? (
                                                 <div className="mt-1 space-y-2">
@@ -226,6 +261,9 @@ export const ContentModal: React.FC<ContentModalProps> = ({
                                                         onChange={(value) => setFormData((prev: any) => ({ ...prev, body: value }))}
                                                         placeholder="Escribe el contenido aquí..."
                                                         className="w-full"
+                                                        expanded={editorFullscreen}
+                                                        fullscreenHost={fullscreenHost}
+                                                        onExitFullscreen={() => setEditorFullscreen(false)}
                                                     />
                                                     <p className="mt-1 text-[10px] text-gray-400">
                                                         Usa la barra de herramientas para dar formato visual.
@@ -344,6 +382,11 @@ export const ContentModal: React.FC<ContentModalProps> = ({
                                     </div>
                                 </form>
                             </div>
+
+                                <div
+                                    ref={setFullscreenHost}
+                                    className={editorFullscreen ? 'absolute inset-0 z-40 flex min-h-0 flex-col' : 'hidden'}
+                                />
 
                                 {isCropModalOpen && imageSrc && (
                                     <CropModal

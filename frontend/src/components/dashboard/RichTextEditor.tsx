@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import ReactQuill from 'react-quill';
+import { ArrowsPointingInIcon } from '@heroicons/react/24/outline';
 import 'react-quill/dist/quill.snow.css';
 import 'quill-emoji/dist/quill-emoji.css';
 import * as Emoji from 'quill-emoji';
@@ -12,6 +14,9 @@ interface RichTextEditorProps {
     onChange: (value: string) => void;
     placeholder?: string;
     className?: string;
+    expanded?: boolean;
+    onExitFullscreen?: () => void;
+    fullscreenHost?: HTMLElement | null;
 }
 
 const modules = {
@@ -49,9 +54,18 @@ type ScrollSnapshot = {
     fromToolbar: boolean;
 };
 
-const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeholder, className }) => {
+const RichTextEditor: React.FC<RichTextEditorProps> = ({
+    value,
+    onChange,
+    placeholder,
+    className,
+    expanded = false,
+    onExitFullscreen,
+    fullscreenHost = null,
+}) => {
     const quillRef = useRef<ReactQuill>(null);
     const snapshotRef = useRef<ScrollSnapshot | null>(null);
+    const inFullscreen = Boolean(expanded && fullscreenHost);
 
     const captureScroll = useCallback((fromToolbar: boolean) => {
         const editor = quillRef.current?.getEditor();
@@ -146,10 +160,62 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeh
             toolbarEl?.removeEventListener('touchstart', onToolbarPointer, true);
             editor.off('text-change', onTextChange);
         };
-    }, [captureScroll, restoreScroll]);
+    }, [captureScroll, restoreScroll, inFullscreen]);
 
-    return (
-        <div className={`rich-text-editor ${className || ''}`}>
+    useEffect(() => {
+        if (!expanded) return;
+
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        const focusEditor = () => quillRef.current?.getEditor()?.focus();
+        const focusTimer = window.setTimeout(focusEditor, 50);
+
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key !== 'Escape') return;
+            event.preventDefault();
+            event.stopPropagation();
+
+            const editorRoot = quillRef.current?.getEditor()?.root?.parentElement?.parentElement;
+            const tooltip = editorRoot?.querySelector('.ql-tooltip.ql-editing');
+            if (tooltip) {
+                tooltip.classList.remove('ql-editing');
+                focusEditor();
+                return;
+            }
+            const openPicker = editorRoot?.querySelector('.ql-picker.ql-expanded');
+            if (openPicker) {
+                openPicker.classList.remove('ql-expanded');
+                focusEditor();
+                return;
+            }
+            onExitFullscreen?.();
+        };
+
+        window.addEventListener('keydown', onKeyDown, true);
+        return () => {
+            document.body.style.overflow = previousOverflow;
+            window.clearTimeout(focusTimer);
+            window.removeEventListener('keydown', onKeyDown, true);
+        };
+    }, [expanded, onExitFullscreen]);
+
+    const editor = (
+        <div className={`rich-text-editor ${inFullscreen ? 'is-expanded' : ''} ${className || ''}`}>
+            {inFullscreen && (
+                <div className="flex shrink-0 items-center justify-between gap-3 border-b border-bark/10 bg-white px-4 py-3 sm:px-6">
+                    <p className="font-headers text-lg text-forest">Editor a pantalla completa</p>
+                    <button
+                        type="button"
+                        onClick={onExitFullscreen}
+                        className="inline-flex items-center gap-2 rounded-full bg-forest px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-forest/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2"
+                    >
+                        <ArrowsPointingInIcon className="h-4 w-4" aria-hidden="true" />
+                        Salir
+                        <span className="rounded bg-white/15 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide">ESC</span>
+                    </button>
+                </div>
+            )}
             <ReactQuill
                 ref={quillRef}
                 theme="snow"
@@ -169,9 +235,54 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeh
                 modules={modules}
                 formats={formats}
                 placeholder={placeholder}
-                className="bg-white rounded-md"
+                className={inFullscreen ? 'rte-surface' : 'bg-white rounded-md'}
             />
             <style>{`
+                .rich-text-editor.is-expanded {
+                    display: flex;
+                    flex-direction: column;
+                    height: 100%;
+                    min-height: 0;
+                    background: #f4f1eb;
+                }
+                .rich-text-editor.is-expanded .rte-surface,
+                .rich-text-editor.is-expanded .quill {
+                    display: flex;
+                    flex: 1 1 auto;
+                    flex-direction: column;
+                    min-height: 0;
+                    height: 100%;
+                    background: transparent;
+                }
+                .rich-text-editor.is-expanded .ql-toolbar {
+                    position: relative;
+                    top: 0 !important;
+                    flex-shrink: 0;
+                    border-radius: 0;
+                    border-left: none;
+                    border-right: none;
+                    background: white;
+                    z-index: 5;
+                }
+                .rich-text-editor.is-expanded .ql-container {
+                    flex: 1 1 auto;
+                    min-height: 0;
+                    height: auto !important;
+                    overflow-y: auto;
+                    border: none;
+                    background: transparent;
+                }
+                .rich-text-editor.is-expanded .ql-editor {
+                    width: min(92vw, 80rem);
+                    max-width: 100%;
+                    margin: 1.25rem auto 2rem;
+                    min-height: calc(100% - 3rem);
+                    background: #fff;
+                    border-radius: 1rem;
+                    box-shadow: 0 10px 30px rgba(47, 79, 79, 0.06);
+                    padding: 2.5rem clamp(1.25rem, 4vw, 3.5rem) 5rem;
+                    box-sizing: border-box;
+                }
                 .ql-container {
                     border-bottom-left-radius: 0.375rem;
                     border-bottom-right-radius: 0.375rem;
@@ -261,6 +372,12 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeh
             `}</style>
         </div>
     );
+
+    if (inFullscreen && fullscreenHost) {
+        return createPortal(editor, fullscreenHost);
+    }
+
+    return editor;
 };
 
 export default RichTextEditor;
