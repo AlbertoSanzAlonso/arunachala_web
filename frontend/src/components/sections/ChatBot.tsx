@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowsPointingInIcon, ArrowsPointingOutIcon, ChatBubbleLeftRightIcon, XMarkIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 import ReactMarkdown from 'react-markdown';
@@ -26,7 +26,7 @@ const ChatBot: React.FC = () => {
     const { i18n, t } = useTranslation();
     const { isChatOpen: isOpen, openChat, closeChat } = useUIStore();
     const [isFullscreen, setIsFullscreen] = useState(false);
-    const [scrollbarWidth, setScrollbarWidth] = useState(0);
+    const [fullscreenFrame, setFullscreenFrame] = useState<{ left: number; width: number } | null>(null);
     const [isActive, setIsActive] = useState(true);
     const [botAvatar, setBotAvatar] = useState<string | null>(null);
 
@@ -106,33 +106,42 @@ const ChatBot: React.FC = () => {
         if (!isOpen) setIsFullscreen(false);
     }, [isOpen]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!isFullscreen) {
-            setScrollbarWidth(0);
+            setFullscreenFrame(null);
             return;
         }
 
         const html = document.documentElement;
         const previousHtmlOverflow = html.style.overflow;
         const previousBodyOverflow = document.body.style.overflow;
+        html.classList.add('chat-fullscreen');
         html.style.overflow = 'hidden';
         document.body.style.overflow = 'hidden';
 
-        const measureScrollbar = () => {
-            setScrollbarWidth(Math.max(0, window.innerWidth - html.clientWidth));
+        const gap = 24;
+        const measure = () => {
+            const visible = html.clientWidth;
+            setFullscreenFrame({
+                left: gap,
+                width: Math.max(0, visible - gap * 2),
+            });
         };
-        measureScrollbar();
+        measure();
 
         const onKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') setIsFullscreen(false);
         };
-        window.addEventListener('resize', measureScrollbar);
+        window.addEventListener('resize', measure);
+        window.visualViewport?.addEventListener('resize', measure);
         window.addEventListener('keydown', onKeyDown);
 
         return () => {
+            html.classList.remove('chat-fullscreen');
             html.style.overflow = previousHtmlOverflow;
             document.body.style.overflow = previousBodyOverflow;
-            window.removeEventListener('resize', measureScrollbar);
+            window.removeEventListener('resize', measure);
+            window.visualViewport?.removeEventListener('resize', measure);
             window.removeEventListener('keydown', onKeyDown);
         };
     }, [isFullscreen]);
@@ -288,11 +297,11 @@ const ChatBot: React.FC = () => {
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
                         transformTemplate={(_, generated) => (isFullscreen ? 'none' : generated)}
                         style={isFullscreen ? {
-                            top: '1.5rem',
-                            bottom: '1.5rem',
-                            left: '1.5rem',
-                            right: `calc(1.5rem + ${scrollbarWidth}px)`,
-                            width: 'auto',
+                            top: 24,
+                            bottom: 24,
+                            left: fullscreenFrame?.left ?? 24,
+                            width: fullscreenFrame?.width ?? 'calc(100% - 48px)',
+                            right: 'auto',
                             height: 'auto',
                             maxWidth: 'none',
                             margin: 0,
@@ -303,10 +312,7 @@ const ChatBot: React.FC = () => {
                         }
                     >
                         {/* Header */}
-                        <div className={`p-5 flex items-center justify-between shrink-0 shadow-md ${isFullscreen
-                            ? 'bg-gradient-to-r from-[#d5e6a4] via-[#b5cb78] to-[#7c9346]'
-                            : 'bg-gradient-to-r from-[#becf81] to-[#a9bb6e]'
-                        }`}>
+                        <div className="bg-gradient-to-r from-[#becf81] to-[#a9bb6e] p-5 flex items-center justify-between shrink-0 shadow-md">
                             <div className="flex items-center gap-3">
                                 <motion.div
                                     animate={{ rotate: [0, 10, -10, 0] }}

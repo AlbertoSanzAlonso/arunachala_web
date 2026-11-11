@@ -80,6 +80,19 @@
 }
 
 /* Mobile-first responsiveness helpers */
+html.chat-fullscreen,
+html.chat-fullscreen body {
+  overflow: hidden !important;
+  scrollbar-width: none;
+}
+
+html.chat-fullscreen::-webkit-scrollbar,
+html.chat-fullscreen body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
