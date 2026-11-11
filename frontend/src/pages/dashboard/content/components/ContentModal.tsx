@@ -48,25 +48,12 @@ export const ContentModal: React.FC<ContentModalProps> = ({
     setShowCloseConfirm
 }) => {
     const [editorFullscreen, setEditorFullscreen] = React.useState(false);
-    const [fullscreenHost, setFullscreenHost] = React.useState<HTMLDivElement | null>(null);
-    const headerRef = React.useRef<HTMLDivElement>(null);
-    const bodyRef = React.useRef<HTMLDivElement>(null);
 
     React.useEffect(() => {
         if (!isOpen || formData.type === 'meditation') {
             setEditorFullscreen(false);
         }
     }, [isOpen, formData.type]);
-
-    React.useEffect(() => {
-        const setInert = (element: HTMLElement | null, inert: boolean) => {
-            if (!element) return;
-            if (inert) element.setAttribute('inert', '');
-            else element.removeAttribute('inert');
-        };
-        setInert(headerRef.current, editorFullscreen);
-        setInert(bodyRef.current, editorFullscreen);
-    }, [editorFullscreen, isOpen]);
 
     const handleRequestClose = () => {
         // Simple comparison to check for changes
@@ -120,7 +107,7 @@ export const ContentModal: React.FC<ContentModalProps> = ({
                                 : 'relative w-full max-w-4xl h-[90vh] flex flex-col transform overflow-hidden rounded-3xl bg-white text-left align-middle shadow-2xl transition-all border border-bark/10'
                             }>
                                 {/* Fixed Header */}
-                                <div ref={headerRef} className="px-6 py-4 border-b border-bark/5 flex items-center justify-between shrink-0 bg-white z-30">
+                                <div className={`px-6 py-4 border-b border-bark/5 flex items-center justify-between shrink-0 bg-white z-30 ${editorFullscreen ? 'hidden' : ''}`}>
                                     <Dialog.Title as="h3" className="text-xl font-headers text-forest">
                                         {editingContent ? 'Editar Contenido' : 'Nuevo Contenido'}
                                     </Dialog.Title>
@@ -134,9 +121,13 @@ export const ContentModal: React.FC<ContentModalProps> = ({
                                 </div>
 
                                 {/* Scrollable Body — overflow-anchor avoids jump-to-top when headings resize */}
-                                <div ref={bodyRef} className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar [overflow-anchor:none]">
-                                    <form onSubmit={onSave} className="space-y-6">
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                <div className={editorFullscreen
+                                    ? 'flex min-h-0 flex-1 flex-col overflow-hidden p-0'
+                                    : 'flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar [overflow-anchor:none]'}>
+                                    <form onSubmit={onSave} className={editorFullscreen ? 'flex h-full min-h-0 flex-1 flex-col' : 'space-y-6'}>
+                                    <div className={editorFullscreen
+                                        ? 'flex min-h-0 flex-1 flex-col [&>*:not(.editor-slot)]:hidden'
+                                        : 'grid grid-cols-1 lg:grid-cols-2 gap-4'}>
                                         <div className="col-span-1 lg:col-span-2">
                                             <label className="block text-sm font-medium text-gray-700">
                                                 Título <span className="text-red-500">*</span>
@@ -213,8 +204,8 @@ export const ContentModal: React.FC<ContentModalProps> = ({
                                             />
                                         </div>
 
-                                        <div className="col-span-1 lg:col-span-2">
-                                            <div className="flex items-center justify-between gap-3 mb-2">
+                                        <div className={`editor-slot ${editorFullscreen ? 'flex min-h-0 flex-1 flex-col' : 'col-span-1 lg:col-span-2'}`}>
+                                            <div className={`items-center justify-between gap-3 mb-2 ${editorFullscreen ? 'hidden' : 'flex'}`}>
                                                 <label className="block text-sm font-medium text-gray-700">
                                                     {formData.type === 'meditation' ? 'Audio' : 'Cuerpo del Artículo'}
                                                 </label>
@@ -254,18 +245,17 @@ export const ContentModal: React.FC<ContentModalProps> = ({
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <div className="mt-1">
+                                                <div className={editorFullscreen ? 'flex min-h-0 flex-1 flex-col' : 'mt-1'}>
                                                     <RichTextEditor
                                                         key={`${editingContent?.id ?? 'new'}-${editorSalt}`}
                                                         value={formData.body || ''}
                                                         onChange={(value) => setFormData((prev: any) => ({ ...prev, body: value }))}
                                                         placeholder="Escribe el contenido aquí..."
-                                                        className="w-full"
+                                                        className={editorFullscreen ? 'min-h-0 flex-1' : 'w-full'}
                                                         expanded={editorFullscreen}
-                                                        fullscreenHost={fullscreenHost}
                                                         onExitFullscreen={() => setEditorFullscreen(false)}
                                                     />
-                                                    <p className="mt-1 text-[10px] text-gray-400">
+                                                    <p className={`mt-1 text-[10px] text-gray-400 ${editorFullscreen ? 'hidden' : ''}`}>
                                                         Usa la barra de herramientas para dar formato visual.
                                                     </p>
                                                 </div>
@@ -364,7 +354,7 @@ export const ContentModal: React.FC<ContentModalProps> = ({
                                         </div>
                                     </div>
 
-                                    <div className="mt-6 flex justify-end space-x-3">
+                                    <div className={`mt-6 flex justify-end space-x-3 ${editorFullscreen ? 'hidden' : ''}`}>
                                         <button
                                             type="button"
                                             className="inline-flex justify-center rounded-md border border-transparent bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
@@ -382,11 +372,6 @@ export const ContentModal: React.FC<ContentModalProps> = ({
                                     </div>
                                 </form>
                             </div>
-
-                                <div
-                                    ref={setFullscreenHost}
-                                    className={editorFullscreen ? 'absolute inset-0 z-40 flex min-h-0 flex-col' : 'hidden'}
-                                />
 
                                 {isCropModalOpen && imageSrc && (
                                     <CropModal

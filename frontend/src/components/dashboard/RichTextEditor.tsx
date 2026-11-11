@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useCallback } from 'react';
-import { createPortal } from 'react-dom';
 import ReactQuill from 'react-quill';
 import { ArrowsPointingInIcon } from '@heroicons/react/24/outline';
 import 'react-quill/dist/quill.snow.css';
@@ -16,7 +15,6 @@ interface RichTextEditorProps {
     className?: string;
     expanded?: boolean;
     onExitFullscreen?: () => void;
-    fullscreenHost?: HTMLElement | null;
 }
 
 const modules = {
@@ -61,11 +59,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     className,
     expanded = false,
     onExitFullscreen,
-    fullscreenHost = null,
 }) => {
     const quillRef = useRef<ReactQuill>(null);
     const snapshotRef = useRef<ScrollSnapshot | null>(null);
-    const inFullscreen = Boolean(expanded && fullscreenHost);
 
     const captureScroll = useCallback((fromToolbar: boolean) => {
         const editor = quillRef.current?.getEditor();
@@ -160,7 +156,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
             toolbarEl?.removeEventListener('touchstart', onToolbarPointer, true);
             editor.off('text-change', onTextChange);
         };
-    }, [captureScroll, restoreScroll, inFullscreen]);
+    }, [captureScroll, restoreScroll]);
 
     useEffect(() => {
         if (!expanded) return;
@@ -200,42 +196,44 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         };
     }, [expanded, onExitFullscreen]);
 
-    const editor = (
-        <div className={`rich-text-editor ${inFullscreen ? 'is-expanded' : ''} ${className || ''}`}>
-            {inFullscreen && (
-                <div className="flex shrink-0 items-center justify-between gap-3 border-b border-bark/10 bg-white px-4 py-3 sm:px-6">
-                    <p className="font-headers text-lg text-forest">Editor a pantalla completa</p>
-                    <button
-                        type="button"
-                        onClick={onExitFullscreen}
-                        className="inline-flex items-center gap-2 rounded-full bg-forest px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-forest/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2"
-                    >
-                        <ArrowsPointingInIcon className="h-4 w-4" aria-hidden="true" />
-                        Salir
-                        <span className="rounded bg-white/15 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide">ESC</span>
-                    </button>
-                </div>
-            )}
+    return (
+        <div className={`rich-text-editor ${expanded ? 'is-expanded' : ''} ${className || ''}`}>
+            {/* Siempre en el árbol: si aparece y desaparece, Quill se reinicia y aplana el HTML. */}
+            <div className={expanded
+                ? 'flex shrink-0 items-center justify-between gap-3 border-b border-bark/10 bg-white px-4 py-3 sm:px-6'
+                : 'hidden'}>
+                <p className="font-headers text-lg text-forest">Editor a pantalla completa</p>
+                <button
+                    type="button"
+                    onClick={onExitFullscreen}
+                    className="inline-flex items-center gap-2 rounded-full bg-forest px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-forest/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2"
+                >
+                    <ArrowsPointingInIcon className="h-4 w-4" aria-hidden="true" />
+                    Salir
+                    <span className="rounded bg-white/15 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide">ESC</span>
+                </button>
+            </div>
             <ReactQuill
                 ref={quillRef}
                 theme="snow"
                 defaultValue={value}
                 onChange={(html) => {
-                    // Keep modal scroll stable across React re-renders from parent state.
                     const editor = quillRef.current?.getEditor();
-                    const modalEl = editor?.root.closest('.overflow-y-auto') as HTMLElement | null;
+                    if (!editor?.root?.isConnected) return;
+                    // Keep modal scroll stable across React re-renders from parent state.
+                    const modalEl = editor.root.closest('.overflow-y-auto') as HTMLElement | null;
                     const modalTop = modalEl?.scrollTop ?? 0;
-                    const editorTop = editor?.root.scrollTop ?? 0;
+                    const editorTop = editor.root.scrollTop ?? 0;
                     onChange(html);
                     requestAnimationFrame(() => {
                         if (modalEl) modalEl.scrollTop = modalTop;
-                        if (editor) editor.root.scrollTop = editorTop;
+                        if (editor.root.isConnected) editor.root.scrollTop = editorTop;
                     });
                 }}
                 modules={modules}
                 formats={formats}
                 placeholder={placeholder}
-                className={inFullscreen ? 'rte-surface' : 'bg-white rounded-md'}
+                className="bg-white rounded-md"
             />
             <style>{`
                 .rich-text-editor.is-expanded {
@@ -246,7 +244,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                     min-height: 0;
                     background: #f4f1eb;
                 }
-                .rich-text-editor.is-expanded .rte-surface,
                 .rich-text-editor.is-expanded .quill {
                     display: flex;
                     flex: 1 1 auto;
@@ -372,12 +369,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
             `}</style>
         </div>
     );
-
-    if (inFullscreen && fullscreenHost) {
-        return createPortal(editor, fullscreenHost);
-    }
-
-    return editor;
 };
 
 export default RichTextEditor;
