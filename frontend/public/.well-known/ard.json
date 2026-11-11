@@ -6,7 +6,7 @@
   },
   "entries": [
     {
-      "identifier": "urn:air:www.yogayterapiasarunachala.es:page:inicio",
+      "identifier": "urn:ai:www.yogayterapiasarunachala.es:page:inicio",
       "displayName": "Aruṇāchala Yoga y Terapias",
       "description": "Centro de hatha yoga, masajes y terapias holísticas de Susana Pérez Gil en Cornellà de Llobregat. Dirección: Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat, Barcelona. Teléfono +34 678 481 971.",
       "type": "text/html",
@@ -18,7 +18,7 @@
       ]
     },
     {
-      "identifier": "urn:air:www.yogayterapiasarunachala.es:page:yoga",
+      "identifier": "urn:ai:www.yogayterapiasarunachala.es:page:yoga",
       "displayName": "Clases de yoga en Aruṇāchala",
       "description": "Clases de hatha yoga y meditación para todos los niveles, con el día y la hora publicados por el centro.",
       "type": "text/html",
@@ -30,7 +30,7 @@
       ]
     },
     {
-      "identifier": "urn:air:www.yogayterapiasarunachala.es:page:terapias",
+      "identifier": "urn:ai:www.yogayterapiasarunachala.es:page:terapias",
       "displayName": "Masajes y terapias holísticas",
       "description": "Masajes y terapias con cita previa. El precio vigente está en la ficha de cada sesión.",
       "type": "text/html",
@@ -42,7 +42,7 @@
       ]
     },
     {
-      "identifier": "urn:air:www.yogayterapiasarunachala.es:page:masajes",
+      "identifier": "urn:ai:www.yogayterapiasarunachala.es:page:masajes",
       "displayName": "Fichas de masajes",
       "description": "Cada masaje con su duración y el precio que publica el centro.",
       "type": "text/html",
@@ -53,7 +53,7 @@
       ]
     },
     {
-      "identifier": "urn:air:www.yogayterapiasarunachala.es:page:preguntas",
+      "identifier": "urn:ai:www.yogayterapiasarunachala.es:page:preguntas",
       "displayName": "Preguntas frecuentes",
       "description": "Respuestas cortas sobre dirección, reserva, experiencia previa, precios publicados y transporte.",
       "type": "text/html",
@@ -65,7 +65,7 @@
       ]
     },
     {
-      "identifier": "urn:air:www.yogayterapiasarunachala.es:page:contacto",
+      "identifier": "urn:ai:www.yogayterapiasarunachala.es:page:contacto",
       "displayName": "Contacto",
       "description": "Teléfono y WhatsApp +34 678 481 971, correo yogayterapiasarunachala@gmail.com y formulario.",
       "type": "text/html",
@@ -76,7 +76,7 @@
       ]
     },
     {
-      "identifier": "urn:air:www.yogayterapiasarunachala.es:doc:llms",
+      "identifier": "urn:ai:www.yogayterapiasarunachala.es:doc:llms",
       "displayName": "Resumen para modelos de lenguaje",
       "description": "Presentación del centro, NAP canónico y enlaces de las páginas públicas.",
       "type": "text/plain",
@@ -87,7 +87,7 @@
       ]
     },
     {
-      "identifier": "urn:air:www.yogayterapiasarunachala.es:api:publica",
+      "identifier": "urn:ai:www.yogayterapiasarunachala.es:api:publica",
       "displayName": "API pública de lectura",
       "description": "OpenAPI de los listados públicos: clases, masajes, terapias, tarifas, actividades y el envío del formulario de contacto.",
       "type": "application/openapi+json",
@@ -98,7 +98,7 @@
       ]
     },
     {
-      "identifier": "urn:air:www.yogayterapiasarunachala.es:doc:mcp",
+      "identifier": "urn:ai:www.yogayterapiasarunachala.es:doc:mcp",
       "displayName": "Ficha MCP del sitio",
       "description": "No hay servidor MCP remoto ni herramientas invocables. La ficha remite a las páginas públicas y a llms.txt.",
       "type": "application/mcp-server-card+json",
@@ -109,7 +109,7 @@
       ]
     },
     {
-      "identifier": "urn:air:www.yogayterapiasarunachala.es:doc:agente",
+      "identifier": "urn:ai:www.yogayterapiasarunachala.es:doc:agente",
       "displayName": "Ficha de agente",
       "description": "No hay endpoint JSON-RPC. Las respuestas sobre el centro están en las páginas públicas.",
       "type": "application/a2a-agent-card+json",
@@ -120,7 +120,7 @@
       ]
     },
     {
-      "identifier": "urn:air:www.yogayterapiasarunachala.es:doc:api-catalog",
+      "identifier": "urn:ai:www.yogayterapiasarunachala.es:doc:api-catalog",
       "displayName": "Catálogo de la API pública",
       "description": "Linkset RFC 9727 que apunta al OpenAPI de lectura y al formulario de contacto.",
       "type": "application/linkset+json",
