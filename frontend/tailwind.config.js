@@ -36,8 +36,18 @@ module.exports = {
                 headers: ['"Cormorant Garamond"', 'serif'],
                 body: ['"Mulish"', 'sans-serif'],
             },
+            keyframes: {
+                heartbeat: {
+                    '0%, 100%': { transform: 'scale(1)' },
+                    '14%': { transform: 'scale(1.12)' },
+                    '28%': { transform: 'scale(1)' },
+                    '42%': { transform: 'scale(1.12)' },
+                    '70%': { transform: 'scale(1)' },
+                },
+            },
             animation: {
                 'spin-slow': 'spin 3s linear infinite',
+                heartbeat: 'heartbeat 1.4s ease-in-out infinite',
             },
         },
     },
