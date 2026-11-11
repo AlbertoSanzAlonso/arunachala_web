@@ -12,6 +12,7 @@ import ScrollToTop from './components/providers/ScrollToTop';
 import ToastNotification from './components/ui/ToastNotification';
 import LanguageSync from './components/providers/LanguageSync';
 import FloatingNav from './components/layout/FloatingNav';
+import LogoWatermark from './components/layout/LogoWatermark';
 import { useUIStore } from './store/uiStore';
 
 
@@ -81,6 +82,7 @@ const AppContent = () => {
             <div style={{ display: hideChatBot ? 'none' : 'block' }}>
                 <ChatBot />
             </div>
+            <LogoWatermark />
             <FloatingNav />
             <MeditationPlayerModal />
             <Routes>

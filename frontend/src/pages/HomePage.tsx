@@ -134,7 +134,7 @@ const HomePage: React.FC = () => {
                 <div className="absolute top-0 left-0 w-full h-full bg-black/50"></div>
 
                 {/* Main Content Container */}
-                <div className="relative z-10 flex flex-col items-center w-full max-w-4xl short:max-w-5xl px-4 gap-6 short:gap-5 md:gap-10 short:md:gap-6 pb-32 short:pb-0 md:pb-0 md:-translate-y-16 short:md:translate-y-0">
+                <div className="relative z-40 flex flex-col items-center w-full max-w-4xl short:max-w-5xl px-4 gap-6 short:gap-5 md:gap-10 short:md:gap-6 pb-32 short:pb-0 md:pb-0 md:-translate-y-16 short:md:translate-y-0">
 
                     {/* Navigation Buttons */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 short:gap-4 md:gap-12 short:md:gap-8 w-full text-center">

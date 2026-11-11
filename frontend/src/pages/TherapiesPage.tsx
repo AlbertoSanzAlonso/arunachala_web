@@ -338,11 +338,11 @@ const TherapiesPage: React.FC = () => {
                         <div className="absolute inset-0 bg-black/50" />
                     </div>
 
-                    <div className="absolute top-8 left-0 z-20 w-full md:w-auto">
+                    <div className="absolute top-8 left-0 z-40 w-full md:w-auto">
                         <BackButton className="text-white hover:text-matcha transition-colors" label={t('common.back_home')} />
                     </div>
 
-                    <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 max-w-7xl mx-auto w-full py-12">
+                    <div className="relative z-40 flex flex-col items-center justify-center text-center px-6 max-w-7xl mx-auto w-full py-12">
                         <motion.h1
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
