@@ -4,6 +4,7 @@ import { ArrowsPointingInIcon, ArrowsPointingOutIcon, ChatBubbleLeftRightIcon, X
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import omSymbol from 'assets/images/om_symbol.png';
+import logo from 'assets/images/logo_transparent_v2.webp';
 import { API_BASE_URL } from 'config';
 import { useTranslation } from 'react-i18next';
 import { getImageUrl } from 'utils/imageUtils';
@@ -376,7 +377,19 @@ const ChatBot: React.FC = () => {
                         </div>
 
                         {/* Messages Area */}
-                        <div className="flex-1 overflow-y-auto p-5 bg-[#fdfbf7]/50 scroll-smooth">
+                        <div className="relative flex-1 overflow-hidden bg-[#fdfbf7]/50">
+                            <div
+                                aria-hidden="true"
+                                className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
+                            >
+                                <img
+                                    src={logo}
+                                    alt=""
+                                    draggable={false}
+                                    className="w-[min(78%,18rem)] max-h-[72%] object-contain select-none opacity-[0.22]"
+                                />
+                            </div>
+                            <div className="relative z-10 h-full overflow-y-auto p-5 scroll-smooth">
                             <div className={`space-y-6 ${isFullscreen ? 'mx-auto w-full max-w-3xl' : ''}`}>
                             {messages.map((msg) => (
                                 <motion.div
@@ -416,6 +429,7 @@ const ChatBot: React.FC = () => {
                                 </div>
                             )}
                             <div ref={messagesEndRef} className="h-2" />
+                            </div>
                             </div>
                         </div>
 
