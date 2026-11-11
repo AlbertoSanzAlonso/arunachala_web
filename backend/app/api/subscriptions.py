@@ -129,6 +129,31 @@ async def confirm_subscription_query(token: str, background_tasks: BackgroundTas
     """Confirmation endpoint using query parameter"""
     return await _process_confirmation(token, background_tasks, db)
 
+async def _notify_staff_newsletter(
+    *,
+    kind: str,
+    email: str,
+    first_name: Optional[str] = None,
+    language: Optional[str] = None,
+) -> None:
+    if kind == "subscribe":
+        subject = f"Nueva alta en newsletter: {email}"
+        kind_label = "Alta en newsletter"
+    else:
+        subject = f"Baja en newsletter: {email}"
+        kind_label = "Baja en newsletter"
+
+    await email_service.send_owner_notification(
+        subject=subject,
+        kind_label=kind_label,
+        fields={
+            "Email": email,
+            "Nombre": first_name or "—",
+            "Idioma": language or "—",
+        },
+    )
+
+
 async def _process_confirmation(token: str, background_tasks: BackgroundTasks, db: Session):
     if not token:
         raise HTTPException(status_code=400, detail="Token no proporcionado")
@@ -160,6 +185,13 @@ async def _process_confirmation(token: str, background_tasks: BackgroundTasks, d
         first_name,
         language
     )
+    background_tasks.add_task(
+        _notify_staff_newsletter,
+        kind="subscribe",
+        email=email,
+        first_name=first_name,
+        language=language,
+    )
     
     return {"message": "Suscripción confirmada correctamente. ¡Bienvenido/a!", "status": "success"}
 
@@ -172,13 +204,24 @@ def get_subscriptions(confirmed_only: bool = False, db: Session = Depends(get_db
     return query.all()
 
 @router.delete("/{email}")
-def unsubscribe(email: str, db: Session = Depends(get_db)):
-    sub = db.query(Subscription).filter(Subscription.email == email).first()
+def unsubscribe(email: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    email_low = email.lower().strip()
+    sub = db.query(Subscription).filter(Subscription.email.ilike(email_low)).first()
     if not sub:
         raise HTTPException(status_code=404, detail="Subscription not found")
-    
+
+    first_name = sub.first_name
+    language = sub.language
     db.delete(sub)
     db.commit()
+
+    background_tasks.add_task(
+        _notify_staff_newsletter,
+        kind="unsubscribe",
+        email=email_low,
+        first_name=first_name,
+        language=language,
+    )
     return {"message": "Successfully unsubscribed and removed from our database"}
 
 @router.post("/bulk-delete")

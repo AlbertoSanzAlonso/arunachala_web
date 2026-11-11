@@ -18,14 +18,26 @@ class EmailService:
         self.mail_from = os.getenv("MAIL_FROM")
         self.mail_from_name = os.getenv("MAIL_FROM_NAME", "Aruṇāchala Yoga & Terapias")
         self.frontend_url = os.getenv("FRONTEND_URL", "https://www.yogayterapiasarunachala.es")
-        self.contact_email = (
+        raw_contacts = (
             os.getenv("CONTACT_EMAIL")
             or os.getenv("MAIL_FROM")
-            or "yogayterapiasarunachala@gmail.com"
+            or "yogayterapiasarunachala@gmail.com,albertosanzdev@gmail.com"
         )
+        self.contact_emails = self._parse_email_list(raw_contacts)
         
         # Check if we have enough info for SMTP
         self.use_smtp = all([self.mail_server, self.mail_username, self.mail_password])
+
+    @staticmethod
+    def _parse_email_list(value: str) -> list[str]:
+        seen = set()
+        emails: list[str] = []
+        for part in (value or "").replace(";", ",").split(","):
+            email = part.strip().lower()
+            if email and "@" in email and email not in seen:
+                seen.add(email)
+                emails.append(email)
+        return emails or ["yogayterapiasarunachala@gmail.com"]
 
     async def send_owner_notification(
         self,
@@ -36,10 +48,10 @@ class EmailService:
         reply_to: Optional[str] = None,
     ) -> bool:
         """
-        Notifies the center owner about inbound web submissions
-        (contact messages, suggestions, comments, …).
+        Notifies center staff about inbound web events
+        (contact, suggestions, comments, newsletter signup/unsubscribe, …).
         """
-        to_email = self.contact_email
+        recipients = list(self.contact_emails)
         rows_html = "".join(
             f"<tr><td style='padding:8px 12px;color:#5c6b3c;font-weight:600;vertical-align:top;white-space:nowrap;'>{label}</td>"
             f"<td style='padding:8px 12px;color:#3d3d3d;'>{value}</td></tr>"
@@ -54,19 +66,11 @@ class EmailService:
 
         if not self.use_smtp:
             print("=================================================================", flush=True)
-            print(f"📧 [DEV MODE] Owner notification → {to_email}", flush=True)
+            print(f"📧 [DEV MODE] Owner notification → {', '.join(recipients)}", flush=True)
             print(f"Subject: {subject}", flush=True)
             print(rows_text, flush=True)
             print("=================================================================", flush=True)
             return True
-
-        message = EmailMessage()
-        raw_from = self.mail_from or self.mail_username
-        message["From"] = formataddr((self.mail_from_name, raw_from))
-        message["To"] = to_email
-        message["Subject"] = subject
-        if reply_to:
-            message["Reply-To"] = reply_to
 
         html_content = f"""
         <div style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #eef2e6;">
@@ -75,7 +79,7 @@ class EmailService:
                 <p style="color:#F5F5DC;opacity:0.85;font-size:13px;margin:8px 0 0;">{kind_label}</p>
             </div>
             <div style="padding:28px 24px;color:#3d3d3d;line-height:1.6;">
-                <p style="margin-top:0;">Has recibido un nuevo envío desde la web:</p>
+                <p style="margin-top:0;">Aviso automático desde la web:</p>
                 <table style="width:100%;border-collapse:collapse;background:#f9fbf4;border-radius:12px;overflow:hidden;">
                     {rows_html}
                 </table>
@@ -83,24 +87,34 @@ class EmailService:
             </div>
         </div>
         """
-        message.set_content(f"{kind_label}\n\n{rows_text}")
-        message.add_alternative(html_content, subtype="html")
 
-        try:
-            await aiosmtplib.send(
-                message,
-                hostname=self.mail_server,
-                port=self.mail_port,
-                username=self.mail_username,
-                password=self.mail_password,
-                start_tls=(self.mail_port == 587),
-                use_tls=(self.mail_port == 465),
-            )
-            print(f"✅ Owner notification sent to {to_email}: {subject}", flush=True)
-            return True
-        except Exception as e:
-            print(f"❌ Owner notification SMTP error: {e}", flush=True)
-            return False
+        raw_from = self.mail_from or self.mail_username
+        ok = True
+        for to_email in recipients:
+            message = EmailMessage()
+            message["From"] = formataddr((self.mail_from_name, raw_from))
+            message["To"] = to_email
+            message["Subject"] = subject
+            if reply_to:
+                message["Reply-To"] = reply_to
+            message.set_content(f"{kind_label}\n\n{rows_text}")
+            message.add_alternative(html_content, subtype="html")
+
+            try:
+                await aiosmtplib.send(
+                    message,
+                    hostname=self.mail_server,
+                    port=self.mail_port,
+                    username=self.mail_username,
+                    password=self.mail_password,
+                    start_tls=(self.mail_port == 587),
+                    use_tls=(self.mail_port == 465),
+                )
+                print(f"✅ Owner notification sent to {to_email}: {subject}", flush=True)
+            except Exception as e:
+                ok = False
+                print(f"❌ Owner notification SMTP error ({to_email}): {e}", flush=True)
+        return ok
 
     async def send_reset_password_email(self, email: str, token: str):
         """

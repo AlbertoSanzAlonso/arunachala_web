@@ -62,8 +62,11 @@ class Settings(BaseSettings):
     MAIL_USERNAME: Optional[str] = None
     MAIL_PASSWORD: Optional[str] = None
     MAIL_FROM: Optional[str] = None
-    # Destinatario de mensajes/sugerencias enviados desde la web
-    CONTACT_EMAIL: Optional[str] = "yogayterapiasarunachala@gmail.com"
+    # Destinatarios de avisos internos (mensajes, sugerencias, newsletter…).
+    # Varios emails separados por coma.
+    CONTACT_EMAIL: Optional[str] = (
+        "yogayterapiasarunachala@gmail.com,albertosanzdev@gmail.com"
+    )
 
     model_config = {
         "env_file": ".env",
