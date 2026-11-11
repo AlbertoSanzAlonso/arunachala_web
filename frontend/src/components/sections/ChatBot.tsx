@@ -116,15 +116,25 @@ const ChatBot: React.FC = () => {
         const previousHtmlOverflow = html.style.overflow;
         const previousBodyOverflow = document.body.style.overflow;
         html.classList.add('chat-fullscreen');
-        html.style.overflow = 'hidden';
-        document.body.style.overflow = 'hidden';
+        html.style.setProperty('overflow', 'hidden', 'important');
+        document.body.style.setProperty('overflow', 'hidden', 'important');
 
         const gap = 24;
+        const scrollbarSize = () => {
+            const probe = document.createElement('div');
+            probe.style.cssText = 'position:absolute;top:-9999px;width:100px;height:100px;overflow:scroll;visibility:hidden;';
+            document.body.appendChild(probe);
+            const size = probe.offsetWidth - probe.clientWidth;
+            probe.remove();
+            return Math.max(0, size, window.innerWidth - html.clientWidth);
+        };
         const measure = () => {
-            const visible = html.clientWidth;
+            const scrollbar = scrollbarSize();
+            const visualWidth = window.visualViewport?.width ?? html.clientWidth;
+            const usable = Math.min(html.clientWidth, visualWidth, window.innerWidth - scrollbar);
             setFullscreenFrame({
                 left: gap,
-                width: Math.max(0, visible - gap * 2),
+                width: Math.max(0, Math.round(usable - gap * 2)),
             });
         };
         measure();
@@ -138,6 +148,8 @@ const ChatBot: React.FC = () => {
 
         return () => {
             html.classList.remove('chat-fullscreen');
+            html.style.removeProperty('overflow');
+            document.body.style.removeProperty('overflow');
             html.style.overflow = previousHtmlOverflow;
             document.body.style.overflow = previousBodyOverflow;
             window.removeEventListener('resize', measure);
