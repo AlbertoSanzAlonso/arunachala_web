@@ -26,6 +26,7 @@ const ChatBot: React.FC = () => {
     const { i18n, t } = useTranslation();
     const { isChatOpen: isOpen, openChat, closeChat } = useUIStore();
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [scrollbarWidth, setScrollbarWidth] = useState(0);
     const [isActive, setIsActive] = useState(true);
     const [botAvatar, setBotAvatar] = useState<string | null>(null);
 
@@ -106,18 +107,32 @@ const ChatBot: React.FC = () => {
     }, [isOpen]);
 
     useEffect(() => {
-        if (!isFullscreen) return;
+        if (!isFullscreen) {
+            setScrollbarWidth(0);
+            return;
+        }
 
-        const previousOverflow = document.body.style.overflow;
+        const html = document.documentElement;
+        const previousHtmlOverflow = html.style.overflow;
+        const previousBodyOverflow = document.body.style.overflow;
+        html.style.overflow = 'hidden';
         document.body.style.overflow = 'hidden';
+
+        const measureScrollbar = () => {
+            setScrollbarWidth(Math.max(0, window.innerWidth - html.clientWidth));
+        };
+        measureScrollbar();
 
         const onKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') setIsFullscreen(false);
         };
+        window.addEventListener('resize', measureScrollbar);
         window.addEventListener('keydown', onKeyDown);
 
         return () => {
-            document.body.style.overflow = previousOverflow;
+            html.style.overflow = previousHtmlOverflow;
+            document.body.style.overflow = previousBodyOverflow;
+            window.removeEventListener('resize', measureScrollbar);
             window.removeEventListener('keydown', onKeyDown);
         };
     }, [isFullscreen]);
@@ -271,13 +286,27 @@ const ChatBot: React.FC = () => {
                         animate={{ opacity: 1, y: 0, scale: 1, x: 0 }}
                         exit={{ opacity: 0, y: 100, scale: 0.9, x: -20 }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                        transformTemplate={(_, generated) => (isFullscreen ? 'none' : generated)}
+                        style={isFullscreen ? {
+                            top: '1.5rem',
+                            bottom: '1.5rem',
+                            left: '1.5rem',
+                            right: `calc(1.5rem + ${scrollbarWidth}px)`,
+                            width: 'auto',
+                            height: 'auto',
+                            maxWidth: 'none',
+                            margin: 0,
+                        } : undefined}
                         className={isFullscreen
-                            ? "fixed inset-0 z-[70] h-[100dvh] w-full max-h-none rounded-none flex flex-col bg-white shadow-2xl overflow-hidden font-body"
-                            : "fixed bottom-4 left-4 md:bottom-6 md:left-6 z-[60] w-[calc(100vw-32px)] md:w-[400px] max-h-[85vh] md:max-h-[650px] h-[80vh] md:h-[75vh] flex flex-col bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-white/20 font-body"
+                            ? "fixed z-[70] flex flex-col bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden font-body"
+                            : "fixed bottom-4 left-4 md:bottom-6 md:left-6 z-[60] w-[calc(100%-2rem)] md:w-[400px] max-h-[85vh] md:max-h-[650px] h-[80vh] md:h-[75vh] flex flex-col bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden font-body"
                         }
                     >
                         {/* Header */}
-                        <div className="bg-gradient-to-r from-[#becf81] to-[#a9bb6e] p-5 flex items-center justify-between shrink-0 shadow-md">
+                        <div className={`p-5 flex items-center justify-between shrink-0 shadow-md ${isFullscreen
+                            ? 'bg-gradient-to-r from-[#d5e6a4] via-[#b5cb78] to-[#7c9346]'
+                            : 'bg-gradient-to-r from-[#becf81] to-[#a9bb6e]'
+                        }`}>
                             <div className="flex items-center gap-3">
                                 <motion.div
                                     animate={{ rotate: [0, 10, -10, 0] }}
