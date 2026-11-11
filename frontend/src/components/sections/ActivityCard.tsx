@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { getTranslated } from 'utils/translate';
 import { getImageUrl } from 'utils/imageUtils';
+import { activityPublicPath } from 'utils/activityPaths';
 
 interface Activity {
     id: number;
@@ -71,7 +72,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity, index, onClick })
                 <div className="flex-grow">
                     {activity.slug && activity.type !== 'sugerencia' ? (
                         <Link
-                            to={`/actividades/?slug=${activity.slug}`}
+                            to={activityPublicPath(activity)}
                             className="block text-2xl font-headers text-forest mb-3 uppercase tracking-tight group-hover:text-matcha transition-colors"
                             onClick={(e) => e.stopPropagation()}
                         >

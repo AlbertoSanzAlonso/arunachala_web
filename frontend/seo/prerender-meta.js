@@ -29,7 +29,7 @@ function breadcrumbCurrentFromRoute(route) {
     return { name, path: route.path };
   }
 
-  if (/^\/(blog|meditaciones)\/[^/]+\/$/.test(pathOnly)) {
+  if (/^\/(blog|meditaciones|noticias|actividades)\/[^/]+\/$/.test(pathOnly)) {
     return { name, path: pathOnly };
   }
 
@@ -112,7 +112,10 @@ async function fetchContentRoutes() {
 
     for (const item of items) {
       if (!item.slug || String(item.slug).includes('sugerencia')) continue;
-      const prefix = item.type === 'meditation' ? '/meditaciones' : '/blog';
+      let prefix = '/blog';
+      if (item.type === 'meditation') prefix = '/meditaciones';
+      else if (item.type === 'announcement') prefix = '/noticias';
+      else if (item.type !== 'article') continue;
       const excerpt =
         (item.excerpt && String(item.excerpt).trim()) ||
         (item.meta_description && String(item.meta_description).trim()) ||
@@ -132,7 +135,7 @@ async function fetchContentRoutes() {
   return routes;
 }
 
-/** Rutas con query (?slug=) solo para seo-routes.json / seo-bootstrap (sin HTML propio). */
+/** Cada actividad tiene HTML propio en /actividades/:slug/. */
 async function fetchActivityMetaRoutes() {
   const routes = [];
   try {
@@ -149,7 +152,7 @@ async function fetchActivityMetaRoutes() {
       ).slice(0, 160);
 
       routes.push({
-        path: `/actividades/?slug=${act.slug}`,
+        path: `/actividades/${act.slug}/`,
         title: `${title} | Arunachala Yoga y Terapias`,
         description,
       });
@@ -171,8 +174,8 @@ async function main() {
   const staticRoutes = JSON.parse(fs.readFileSync(STATIC_ROUTES_PATH, 'utf8'));
   const contentRoutes = await fetchContentRoutes();
   const activityMetaRoutes = await fetchActivityMetaRoutes();
-  const htmlRoutes = [...staticRoutes, ...contentRoutes];
-  const allRoutes = [...htmlRoutes, ...activityMetaRoutes];
+  const htmlRoutes = [...staticRoutes, ...contentRoutes, ...activityMetaRoutes];
+  const allRoutes = htmlRoutes;
 
   const seen = new Set();
   let written = 0;

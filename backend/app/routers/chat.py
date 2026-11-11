@@ -221,7 +221,11 @@ def get_inventory_summary(db: Session, lang: str = "es"):
                 elif Model == Promotion:
                      url = "/" 
                 elif Model == Activity:
-                     url = f"/actividades?activity={item.id}"
+                     activity_slug = getattr(item, "slug", None)
+                     if activity_slug and getattr(item, "type", None) != "sugerencia" and "sugerencia" not in activity_slug:
+                         url = f"/actividades/{activity_slug}/"
+                     else:
+                         url = f"/actividades?activity={item.id}"
                 
                 info = f"'{title}' (URL: {url})" if url else f"'{title}'"
                 
@@ -601,7 +605,7 @@ REGLAS DE URLS:
  - Blog/Artículos: /blog/SLUG
  - Noticias: /noticias/SLUG
  - Meditación: /meditaciones/SLUG
- - Actividades/Eventos: /actividades?activity=ID
+ - Actividades/Eventos: /actividades/SLUG
 
 PROHIBIDO USAR URLs COMPLETAS: Usa solo rutas relativas (ej: /blog/mi-slug). NUNCA escribas "http://...".
 

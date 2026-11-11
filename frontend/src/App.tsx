@@ -100,6 +100,7 @@ const AppContent = () => {
                 <Route path="/galeria/clases-de-yoga" element={<YogaGalleryPage />} />
                 <Route path="/galeria/terapias-y-masajes" element={<TherapiesGalleryPage />} />
                 <Route path="/actividades" element={<ActivitiesPage />} />
+                <Route path="/actividades/:slug" element={<ActivitiesPage />} />
                 <Route path="/nuestro-espacio" element={<OurSpacePage />} />
                 <Route path="/quienes-somos" element={<AboutPage />} />
                 <Route path="/contacto" element={<ContactPage />} />

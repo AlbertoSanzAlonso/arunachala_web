@@ -193,6 +193,259 @@ function buildMeditationPage(item) {
     </main>`;
 }
 
+function isPublicActivity(activity) {
+  return (
+    activity &&
+    activity.slug &&
+    activity.is_active !== false &&
+    activity.type !== 'sugerencia' &&
+    !String(activity.slug).includes('sugerencia')
+  );
+}
+
+function plainText(value) {
+  return String(value || '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function formatDate(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function jsonLdScript(data) {
+  const payload = JSON.stringify(data).replace(/</g, '\\u003c');
+  return `<script type="application/ld+json">${payload}</script>`;
+}
+
+function buildNewsIndex(news) {
+  const items = news
+    .filter((item) => item.slug)
+    .map(
+      (item) => `
+        <article>
+          <h2><a href="/noticias/${item.slug}/">${escapeHtml(item.title)}</a></h2>
+          <p>${escapeHtml(item.excerpt || '')}</p>
+        </article>`
+    )
+    .join('\n');
+  return `
+    <main>
+      <h1>Noticias | Arunachala Yoga y Terapias</h1>
+      <p>Noticias y avisos del centro Aruṇāchala en Cornellà.</p>
+      ${items}
+    </main>`;
+}
+
+function buildNewsPage(item, allNews) {
+  const related = allNews.filter((entry) => entry.slug && entry.slug !== item.slug).slice(0, 6);
+  return `
+    <main>
+      <article>
+        <nav><a href="/noticias/">← Noticias</a> · <a href="/">Inicio</a></nav>
+        <h1>${escapeHtml(item.title)}</h1>
+        ${item.excerpt ? `<p>${escapeHtml(item.excerpt)}</p>` : ''}
+        <div class="prose">${renderBody(item.body)}</div>
+      </article>
+      <nav>
+        <h2>Otras noticias</h2>
+        <ul>
+          ${related.map((entry) => `<li><a href="/noticias/${entry.slug}/">${escapeHtml(entry.title)}</a></li>`).join('\n')}
+        </ul>
+      </nav>
+    </main>`;
+}
+
+function buildActivitiesIndex(activities) {
+  const items = activities
+    .filter(isPublicActivity)
+    .map(
+      (activity) => `
+        <article>
+          <h2><a href="/actividades/${activity.slug}/">${escapeHtml(activity.title)}</a></h2>
+          <p>${escapeHtml(plainText(activity.description).slice(0, 220))}</p>
+          <p>${escapeHtml(activity.type || '')}${activity.start_date ? ` · ${formatDate(activity.start_date)}` : ''}</p>
+        </article>`
+    )
+    .join('\n');
+  return `
+    <main>
+      <h1>Actividades y cursos en Cornellà</h1>
+      <p>Talleres, cursos, retiros y eventos de yoga y bienestar en Aruṇāchala.</p>
+      ${items}
+    </main>`;
+}
+
+function buildActivityPage(activity) {
+  const facts = [
+    activity.start_date ? `<li>Inicio: ${formatDate(activity.start_date)}</li>` : '',
+    activity.end_date ? `<li>Fin: ${formatDate(activity.end_date)}</li>` : '',
+    `<li>Lugar: ${escapeHtml(activity.location || 'Centro Arunachala, Cornellà de Llobregat')}</li>`,
+    activity.price ? `<li>Precio: ${escapeHtml(activity.price)}</li>` : '',
+  ].join('');
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: activity.title,
+    description: String(activity.description || activity.title).replace(/<[^>]+>/g, ' ').slice(0, 300),
+    url: `${SITE_BASE}/actividades/${activity.slug}/`,
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    eventStatus: 'https://schema.org/EventScheduled',
+    location: {
+      '@type': 'Place',
+      name: activity.location || 'Arunachala Yoga y Terapias',
+      address: 'Pasaje de Mateo Oliva 3, 08940 Cornellà de Llobregat, Barcelona',
+    },
+    organizer: {
+      '@type': 'Organization',
+      name: 'Arunachala Yoga y Terapias',
+      url: SITE_BASE,
+    },
+  };
+  if (activity.start_date) schema.startDate = activity.start_date;
+  if (activity.end_date) schema.endDate = activity.end_date;
+  return `
+    ${jsonLdScript(schema)}
+    <main>
+      <article>
+        <nav><a href="/actividades/">← Actividades</a> · <a href="/">Inicio</a></nav>
+        <h1>${escapeHtml(activity.title)}</h1>
+        <ul>${facts}</ul>
+        <div class="prose">${renderBody(activity.description)}</div>
+      </article>
+    </main>`;
+}
+
+function treatmentBlocks(items) {
+  return items
+    .filter((item) => item && item.is_active !== false)
+    .map((item) => {
+      const meta = [item.duration_min ? `${item.duration_min} min` : '', item.price || ''].filter(Boolean).join(' · ');
+      return `
+        <article>
+          <h2>${escapeHtml(item.name)}</h2>
+          ${meta ? `<p>${escapeHtml(meta)}</p>` : ''}
+          <div>${renderBody(item.description || item.excerpt || '')}</div>
+          ${item.benefits ? `<h3>Beneficios</h3><div>${renderBody(item.benefits)}</div>` : ''}
+        </article>`;
+    })
+    .join('\n');
+}
+
+function buildYogaLanding(classes) {
+  const blocks = (classes || [])
+    .map((yogaClass) => {
+      const slots = (yogaClass.schedules || [])
+        .filter((slot) => slot.is_active !== false)
+        .map((slot) => `<li>${escapeHtml(slot.day_of_week)} ${escapeHtml(slot.start_time)}–${escapeHtml(slot.end_time)}</li>`)
+        .join('');
+      return `
+        <article>
+          <h2>${escapeHtml(yogaClass.name)}</h2>
+          <div>${renderBody(yogaClass.description || '')}</div>
+          ${slots ? `<ul>${slots}</ul>` : ''}
+        </article>`;
+    })
+    .join('\n');
+  return `
+    <main>
+      <h1>Clases de Yoga en Cornellà</h1>
+      <p>Hatha Yoga, Vinyasa y meditación para todos los niveles en Aruṇāchala, Cornellà de Llobregat.</p>
+      ${blocks}
+      <p><a href="/blog/yoga/">Blog de yoga</a></p>
+    </main>`;
+}
+
+function buildTherapiesHub(massages, therapies) {
+  const cards = (items, href) =>
+    items
+      .filter((item) => item && item.is_active !== false)
+      .map(
+        (item) => `
+        <article>
+          <h2><a href="${href}">${escapeHtml(item.name)}</a></h2>
+          <p>${escapeHtml(item.excerpt || '')}</p>
+        </article>`
+      )
+      .join('\n');
+  return `
+    <main>
+      <h1>Masaje y terapias en Cornellà</h1>
+      <p>Centro de masajes y terapias holísticas en Cornellà de Llobregat, con Susana Pérez Gil.</p>
+      <section>
+        <h2>Masajes</h2>
+        ${cards(massages, '/terapias/masajes/')}
+        <p><a href="/terapias/masajes/">Ver todos los masajes</a></p>
+      </section>
+      <section>
+        <h2>Terapias holísticas</h2>
+        ${cards(therapies, '/terapias/terapias-holisticas/')}
+        <p><a href="/terapias/terapias-holisticas/">Ver terapias holísticas</a></p>
+      </section>
+    </main>`;
+}
+
+function buildPromotions(promotions) {
+  const cards = (promotions || [])
+    .filter((promo) => promo && promo.is_active !== false && !promo.is_tarifa)
+    .map(
+      (promo) => `
+        <article>
+          <h2>${escapeHtml(promo.title)}</h2>
+          <div>${renderBody(promo.description || '')}</div>
+        </article>`
+    )
+    .join('\n');
+  return `
+    <main>
+      <h1>Promociones de yoga y terapias</h1>
+      <p>Ofertas del centro Aruṇāchala en Cornellà.</p>
+      ${cards}
+    </main>`;
+}
+
+function buildAboutPage() {
+  return `
+    <main>
+      <h1>¿Quién soy?</h1>
+      <p>Mi nombre es Susana Pérez Gil y acompaño a personas a través del Yoga y las Terapias Manuales en Aruṇāchala, Cornellà de Llobregat.</p>
+      <p>El camino empezó hace más de 25 años. La formación incluye Quiromasaje, Drenaje Linfático, Reflexología, Técnica Metamórfica, Reiki y la Formación de Profesora de Yoga. El centro tomó el nombre de la montaña sagrada Aruṇāchala, en Tiruvannamalai.</p>
+      <p><a href="/contacto/">Contacto</a> · <a href="/clases-de-yoga/">Clases de yoga</a> · <a href="/terapias-y-masajes/">Masajes y terapias</a></p>
+    </main>`;
+}
+
+function buildSpacePage() {
+  return `
+    <main>
+      <h1>Nuestro espacio de yoga en Cornellà</h1>
+      <p>Sala diáfana, luz natural y un ambiente pensado para la calma en Pasaje de Mateo Oliva 3, Cornellà de Llobregat.</p>
+      <ul>
+        <li>Tranvía T1 y T2 (El Pedró).</li>
+        <li>Autobús 57, 68, 94 o 95.</li>
+        <li>Metro línea 5 (Cornellà Centre).</li>
+      </ul>
+      <p><a href="/contacto/">Contactar</a></p>
+    </main>`;
+}
+
+function buildContactPage() {
+  return `
+    <main>
+      <h1>Contacto</h1>
+      <p>Reserva tu clase de yoga o tu sesión de terapia en Aruṇāchala.</p>
+      <ul>
+        <li>Pasaje de Mateo Oliva 3, 08940 Cornellà de Llobregat, Barcelona.</li>
+        <li>Teléfono y WhatsApp: <a href="tel:+34678481971">+34 678 481 971</a></li>
+        <li>Email: <a href="mailto:yogayterapiasarunachala@gmail.com">yogayterapiasarunachala@gmail.com</a></li>
+      </ul>
+    </main>`;
+}
+
 function buildStaticPage(route) {
   return `
     <main class="font-body text-bark min-h-screen bg-bone">
@@ -218,6 +471,15 @@ async function fetchJson(url) {
   return response.json();
 }
 
+async function fetchJsonOr(url, fallback) {
+  try {
+    return await fetchJson(url);
+  } catch (err) {
+    console.warn(`Prerender: ${url} — ${err.message}`);
+    return fallback;
+  }
+}
+
 async function main() {
   const templatePath = path.join(BUILD_DIR, 'index.html');
   const routesPath = path.join(BUILD_DIR, 'seo-routes.json');
@@ -231,9 +493,15 @@ async function main() {
   const routes = fs.existsSync(routesPath) ? JSON.parse(fs.readFileSync(routesPath, 'utf8')) : [];
 
   console.log('Prerender: obteniendo contenido de la API...');
-  const [articles, meditations] = await Promise.all([
+  const [articles, meditations, news, activities, yogaClasses, massages, therapies, promotions] = await Promise.all([
     fetchJson(`${API_BASE}/api/content?type=article&status=published`),
     fetchJson(`${API_BASE}/api/content?type=meditation&status=published`),
+    fetchJsonOr(`${API_BASE}/api/content?type=announcement&status=published`, []),
+    fetchJsonOr(`${API_BASE}/api/activities/`, []),
+    fetchJsonOr(`${API_BASE}/api/yoga-classes`, []),
+    fetchJsonOr(`${API_BASE}/api/treatments/massages`, []),
+    fetchJsonOr(`${API_BASE}/api/treatments/therapies`, []),
+    fetchJsonOr(`${API_BASE}/api/promotions/`, []),
   ]);
 
   const articlesBySlug = Object.fromEntries(
@@ -241,6 +509,12 @@ async function main() {
   );
   const meditationsBySlug = Object.fromEntries(
     meditations.filter((m) => m.slug).map((m) => [m.slug, m])
+  );
+  const newsBySlug = Object.fromEntries(
+    news.filter((item) => item.slug).map((item) => [item.slug, item])
+  );
+  const activitiesBySlug = Object.fromEntries(
+    activities.filter(isPublicActivity).map((activity) => [activity.slug, activity])
   );
 
   let count = 0;
@@ -252,16 +526,42 @@ async function main() {
 
     const blogMatch = route.path.match(/^\/blog\/([^/]+)\/$/);
     const meditationMatch = route.path.match(/^\/meditaciones\/([^/]+)\/$/);
+    const newsMatch = route.path.match(/^\/noticias\/([^/]+)\/$/);
+    const activityMatch = route.path.match(/^\/actividades\/([^/]+)\/$/);
 
     if (route.path === '/') {
       innerHtml = buildHomeExtras(articles);
     } else if (route.path === '/blog/') {
       innerHtml = buildBlogIndexExtras(articles);
+    } else if (route.path === '/noticias/') {
+      innerHtml = buildNewsIndex(news);
+    } else if (route.path === '/actividades/') {
+      innerHtml = buildActivitiesIndex(activities);
+    } else if (route.path === '/clases-de-yoga/') {
+      innerHtml = buildYogaLanding(yogaClasses);
+    } else if (route.path === '/terapias-y-masajes/') {
+      innerHtml = buildTherapiesHub(massages, therapies);
+    } else if (route.path === '/terapias/masajes/') {
+      innerHtml = `<main><h1>Masajes terapéuticos en Cornellà</h1><p>Sesiones con cita previa en Aruṇāchala.</p>${treatmentBlocks(massages)}</main>`;
+    } else if (route.path === '/terapias/terapias-holisticas/') {
+      innerHtml = `<main><h1>Terapias holísticas en Cornellà</h1><p>Reiki, técnica metamórfica, terapia floral y más en Aruṇāchala.</p>${treatmentBlocks(therapies)}</main>`;
+    } else if (route.path === '/promociones/') {
+      innerHtml = buildPromotions(promotions);
+    } else if (route.path === '/quienes-somos/') {
+      innerHtml = buildAboutPage();
+    } else if (route.path === '/nuestro-espacio/') {
+      innerHtml = buildSpacePage();
+    } else if (route.path === '/contacto/') {
+      innerHtml = buildContactPage();
     } else if (blogMatch && articlesBySlug[blogMatch[1]]) {
       innerHtml = buildArticlePage(articlesBySlug[blogMatch[1]], articles);
     } else if (meditationMatch && meditationsBySlug[meditationMatch[1]]) {
       innerHtml = buildMeditationPage(meditationsBySlug[meditationMatch[1]]);
-    } else if (!blogMatch && !meditationMatch) {
+    } else if (newsMatch && newsBySlug[newsMatch[1]]) {
+      innerHtml = buildNewsPage(newsBySlug[newsMatch[1]], news);
+    } else if (activityMatch && activitiesBySlug[activityMatch[1]]) {
+      innerHtml = buildActivityPage(activitiesBySlug[activityMatch[1]]);
+    } else if (!blogMatch && !meditationMatch && !newsMatch && !activityMatch) {
       innerHtml = buildStaticPage(route);
     } else {
       continue;

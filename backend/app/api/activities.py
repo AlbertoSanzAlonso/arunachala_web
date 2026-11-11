@@ -116,7 +116,8 @@ async def notify_subscribers_activity_change(activity_id: int, db_session_factor
             activity_data = {
                 "title": activity.title,
                 "translations": activity.translations,
-                "type": activity.type
+                "type": activity.type,
+                "slug": activity.slug,
             }
         
         subscribers = db.query(Subscription).filter(
@@ -135,7 +136,12 @@ async def notify_subscribers_activity_change(activity_id: int, db_session_factor
             return
         
         frontend_url = os.getenv("FRONTEND_URL", "https://www.yogayterapiasarunachala.es")
-        activity_url = f"{frontend_url}/actividades?activity={activity_id_for_url}"
+        slug = activity_data.get("slug") if activity_data else None
+        kind = activity_data.get("type") if activity_data else None
+        if slug and kind != "sugerencia" and "sugerencia" not in slug:
+            activity_url = f"{frontend_url}/actividades/{slug}/"
+        else:
+            activity_url = f"{frontend_url}/actividades?activity={activity_id_for_url}"
         
         is_sugerencia = activity_data.get("type") == "sugerencia"
         if is_sugerencia:
@@ -672,7 +678,7 @@ async def acknowledge_activity_finish(
             activity.id,
             SessionLocal,
             "delete",
-            {"title": activity.title, "translations": activity.translations}
+            {"title": activity.title, "translations": activity.translations, "type": activity.type, "slug": activity.slug}
         )
     
     db.delete(activity)
@@ -716,7 +722,7 @@ async def delete_activity(
             activity.id,
             SessionLocal,
             "delete",
-            {"title": activity.title, "translations": activity.translations}
+            {"title": activity.title, "translations": activity.translations, "type": activity.type, "slug": activity.slug}
         )
     
     db.delete(activity)

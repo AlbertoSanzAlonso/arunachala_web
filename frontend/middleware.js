@@ -1,6 +1,7 @@
 /**
  * Prerender dinámico para bots: sirve HTML con texto real sin esperar un rebuild.
  * Los usuarios normales siguen recibiendo la SPA de React.
+ * Mantener en sync con /middleware.js (raíz del repo, por si Vercel usa esa raíz).
  */
 const BOT_UA =
   /googlebot|google-inspectiontool|bingbot|yandex|baiduspider|duckduckbot|slurp|facebookexternalhit|twitterbot|linkedinbot|embedly|slackbot|whatsapp|telegrambot|applebot|pinterest|redditbot|discordbot/i;
@@ -11,15 +12,30 @@ const API_BASE =
 
 const BLOG_CATEGORIES = new Set(['yoga', 'therapy', 'general']);
 
+const EXACT_PATHS = new Set([
+  '/blog/',
+  '/noticias/',
+  '/meditaciones/',
+  '/actividades/',
+  '/clases-de-yoga/',
+  '/terapias-y-masajes/',
+  '/terapias/masajes/',
+  '/terapias/terapias-holisticas/',
+  '/quienes-somos/',
+  '/nuestro-espacio/',
+  '/contacto/',
+  '/promociones/',
+]);
+
 function shouldPrerender(pathname) {
   const path = pathname.endsWith('/') ? pathname : `${pathname}/`;
-
-  if (path === '/blog/') return true;
+  if (EXACT_PATHS.has(path)) return true;
+  if (/^\/noticias\/[^/]+\/$/.test(path)) return true;
+  if (/^\/meditaciones\/[^/]+\/$/.test(path)) return true;
+  if (/^\/actividades\/[^/]+\/$/.test(path)) return true;
 
   const blogMatch = path.match(/^\/blog\/([^/]+)\/$/);
   if (blogMatch && !BLOG_CATEGORIES.has(blogMatch[1])) return true;
-
-  if (/^\/meditaciones\/[^/]+\/$/.test(path)) return true;
 
   return false;
 }
@@ -60,5 +76,21 @@ export default async function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/blog/:path*', '/meditaciones/:path*'],
+  matcher: [
+    '/blog',
+    '/blog/:path*',
+    '/noticias',
+    '/noticias/:path*',
+    '/meditaciones',
+    '/meditaciones/:path*',
+    '/actividades',
+    '/actividades/:path*',
+    '/clases-de-yoga',
+    '/terapias-y-masajes',
+    '/terapias/:path*',
+    '/quienes-somos',
+    '/nuestro-espacio',
+    '/contacto',
+    '/promociones',
+  ],
 };

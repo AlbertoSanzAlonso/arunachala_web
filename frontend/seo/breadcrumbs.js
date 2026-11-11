@@ -34,6 +34,7 @@ const STATIC_BREADCRUMBS = {
     { name: 'Galería', path: '/galeria/terapias-y-masajes/' },
   ],
   '/actividades/': [HOME, { name: 'Actividades', path: '/actividades/' }],
+  '/noticias/': [HOME, { name: 'Noticias', path: '/noticias/' }],
   '/nuestro-espacio/': [HOME, { name: 'Nuestro Espacio', path: '/nuestro-espacio/' }],
   '/quienes-somos/': [HOME, { name: 'Quiénes Somos', path: '/quienes-somos/' }],
   '/contacto/': [HOME, { name: 'Contacto', path: '/contacto/' }],
@@ -78,6 +79,20 @@ function resolveBreadcrumbs(pathname, current) {
     const base = STATIC_BREADCRUMBS['/blog/'];
     if (current) return [...base, current];
     return [...base, { name: blogMatch[1].replace(/-/g, ' '), path }];
+  }
+
+  const newsMatch = path.match(/^\/noticias\/([^/]+)\/$/);
+  if (newsMatch) {
+    const base = STATIC_BREADCRUMBS['/noticias/'];
+    if (current) return [...base, current];
+    return [...base, { name: newsMatch[1].replace(/-/g, ' '), path }];
+  }
+
+  const activityMatch = path.match(/^\/actividades\/([^/]+)\/$/);
+  if (activityMatch) {
+    const base = STATIC_BREADCRUMBS['/actividades/'];
+    if (current) return [...base, current];
+    return [...base, { name: activityMatch[1].replace(/-/g, ' '), path }];
   }
 
   const meditationMatch = path.match(/^\/meditaciones\/([^/]+)\/$/);

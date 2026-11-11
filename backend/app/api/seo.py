@@ -247,7 +247,7 @@ async def sitemap(db: Session = Depends(get_db)):
     for act in activities_list:
         lastmod = (act.updated_at or act.created_at or datetime.now()).strftime('%Y-%m-%d')
         urls.append(f"""  <url>
-    <loc>{BASE_URL}/actividades/?slug={act.slug}</loc>
+    <loc>{BASE_URL}/actividades/{act.slug}/</loc>
     <lastmod>{lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

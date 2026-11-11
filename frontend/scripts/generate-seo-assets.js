@@ -47,6 +47,11 @@ const STATIC_ROUTES = [
       'Talleres, cursos, retiros y eventos de yoga y bienestar en Aruṇāchala Cornellà. Consulta fechas, precios y reserva tu plaza.',
   },
   {
+    path: '/noticias/',
+    title: 'Noticias | Arunachala Yoga y Terapias',
+    description: 'Noticias y avisos del centro Aruṇāchala Yoga y Terapias en Cornellà.',
+  },
+  {
     path: '/blog/',
     title: 'Blog | Aruṇāchala Yoga y Terapias',
     description:
@@ -141,7 +146,7 @@ function activityRoutes(activities) {
   return activities
     .filter((act) => act.slug && act.is_active !== false && !act.slug.includes('sugerencia'))
     .map((act) => ({
-      path: `/actividades/?slug=${act.slug}`,
+      path: `/actividades/${act.slug}/`,
       title: `${act.title} | Arunachala Yoga y Terapias`,
       description: truncate(act.description || act.title),
     }));
@@ -149,10 +154,17 @@ function activityRoutes(activities) {
 
 function buildLinksHtml(routes) {
   const sections = {
-    'Páginas principales': routes.filter((r) => !r.path.startsWith('/blog/') && !r.path.startsWith('/meditaciones/') && !r.path.includes('?slug=')),
+    'Páginas principales': routes.filter(
+      (r) =>
+        !r.path.startsWith('/blog/') &&
+        !r.path.startsWith('/meditaciones/') &&
+        !r.path.startsWith('/noticias/') &&
+        !(r.path.startsWith('/actividades/') && r.path !== '/actividades/')
+    ),
     'Artículos del blog': routes.filter((r) => r.path.startsWith('/blog/') && r.path !== '/blog/' && !r.path.startsWith('/blog/yoga') && !r.path.startsWith('/blog/therapy') && !r.path.startsWith('/blog/general')),
+    Noticias: routes.filter((r) => r.path.startsWith('/noticias/') && r.path !== '/noticias/'),
     Meditaciones: routes.filter((r) => r.path.startsWith('/meditaciones/') && r.path !== '/meditaciones/'),
-    Actividades: routes.filter((r) => r.path.includes('?slug=')),
+    Actividades: routes.filter((r) => r.path.startsWith('/actividades/') && r.path !== '/actividades/'),
   };
 
   const lists = Object.entries(sections)
@@ -195,9 +207,10 @@ function buildLinksHtml(routes) {
 async function main() {
   console.log(`SEO: fetching content from ${API_BASE}...`);
 
-  const [articles, meditations, activities] = await Promise.all([
+  const [articles, meditations, news, activities] = await Promise.all([
     fetchJson(`${API_BASE}/api/content?type=article&status=published`),
     fetchJson(`${API_BASE}/api/content?type=meditation&status=published`),
+    fetchJson(`${API_BASE}/api/content?type=announcement&status=published`),
     fetchJson(`${API_BASE}/api/activities/`),
   ]);
 
@@ -205,6 +218,7 @@ async function main() {
     ...STATIC_ROUTES,
     ...contentRoutes(articles, '/blog'),
     ...contentRoutes(meditations, '/meditaciones'),
+    ...contentRoutes(news, '/noticias'),
     ...activityRoutes(activities),
   ];
 

@@ -6,6 +6,7 @@ import { API_BASE_URL } from '../../config';
 import ToastNotification, { Toast } from '../../components/ui/ToastNotification';
 import PageLoader from '../../components/ui/PageLoader';
 import CropModal from '../../components/ui/modals/CropModal';
+import { activityPublicPath } from '../../utils/activityPaths';
 
 interface Activity {
     id: number;
@@ -19,6 +20,7 @@ interface Activity {
     image_url: string | null;
     is_active: boolean;
     created_at: string;
+    slug?: string | null;
     activity_data?: any;
     vote_results?: Record<string, number>;
     user_comments?: { text: string; option: string; date: string }[];
@@ -602,7 +604,7 @@ export default function ActivityManager() {
                                 <button onClick={() => handleDeleteClick(item.id)} className="flex-1 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-all flex items-center justify-center gap-2 leading-none"><TrashIcon className="h-4 w-4" /> Borrar</button>
                                 <div className="w-px bg-gray-100"></div>
                                 <a
-                                    href={`/actividades?activity=${item.id}`}
+                                    href={activityPublicPath(item)}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex-1 px-4 py-3 text-sm font-bold text-blue-500 hover:bg-blue-50 transition-all flex items-center justify-center gap-2 leading-none"

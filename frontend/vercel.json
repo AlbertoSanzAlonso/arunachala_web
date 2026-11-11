@@ -1,6 +1,12 @@
 {
   "trailingSlash": true,
   "redirects": [
+    {
+      "source": "/actividades/",
+      "has": [{ "type": "query", "key": "slug", "value": "(?<slug>[^&]+)" }],
+      "destination": "/actividades/:slug/",
+      "permanent": true
+    },
     { "source": "/taller-de-ceramica/", "destination": "/actividades/", "permanent": true },
     { "source": "/drenaje-linfatico-manual/", "destination": "/terapias-y-masajes/", "permanent": true },
     { "source": "/yoga-suave/", "destination": "/clases-de-yoga/", "permanent": true },

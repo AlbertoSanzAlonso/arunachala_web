@@ -5,6 +5,7 @@ import { getTranslated } from 'utils/translate';
 import { getImageUrl } from 'utils/imageUtils';
 import ShareButton from 'components/ui/ShareButton';
 import DynamicPoll from 'components/sections/DynamicPoll';
+import { activityPublicPath } from 'utils/activityPaths';
 
 interface Activity {
     id: number;
@@ -101,7 +102,7 @@ const ActivityDetailModal: React.FC<ActivityDetailModalProps> = ({
             >
                 <div className="absolute top-4 right-4 md:top-6 md:right-6 z-[110] flex gap-2">
                     <ShareButton
-                        url={`/actividades?activity=${activity.id}`}
+                        url={activityPublicPath(activity)}
                         title={getTranslated(activity, 'title', i18n.language)}
                         text={t('activities.share_text')}
                         className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-white/95 backdrop-blur-md rounded-full text-forest hover:bg-forest hover:text-white transition-all shadow-lg border border-forest/10"

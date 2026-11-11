@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { API_BASE_URL } from 'config';
 import { getTranslated } from 'utils/translate';
+import { activityPublicPath } from 'utils/activityPaths';
 
 interface Activity {
     id: number;
@@ -13,6 +14,7 @@ interface Activity {
     start_date: string | null;
     location: string | null;
     image_url: string | null;
+    slug?: string | null;
     translations?: any;
 }
 
@@ -87,7 +89,7 @@ const FeaturedActivities: React.FC = () => {
                             transition={{ duration: 0.3, delay: index * 0.1 }}
                         >
                             <Link
-                                to={`/actividades?activity=${activity.id}`}
+                                to={activityPublicPath(activity)}
                                 className="group block bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 border border-forest/5 hover:border-matcha/30"
                             >
                                 <div className="flex items-start justify-between gap-3">

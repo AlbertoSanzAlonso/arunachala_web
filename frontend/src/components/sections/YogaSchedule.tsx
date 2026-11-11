@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import omSymbol from 'assets/images/om_symbol.png';
 import { API_BASE_URL } from 'config';
 import { getTranslated } from 'utils/translate';
+import { activityPublicPath } from 'utils/activityPaths';
 
 
 
@@ -490,7 +491,7 @@ const YogaSchedule: React.FC<YogaScheduleProps> = ({ onlyWeekly, onlyWeekend, hi
                         {weekendActivities.map((activity, idx) => (
                             <Link
                                 key={idx}
-                                to={`/actividades?activity=${activity.id}`}
+                                to={activityPublicPath(activity)}
                                 className="group bg-white border border-forest/10 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 flex flex-col h-full"
                             >
                                 <div className="p-6 md:p-8 flex flex-col h-full">

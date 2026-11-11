@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import Header from 'components/layout/Header';
@@ -9,6 +9,7 @@ import { API_BASE_URL } from 'config';
 import { getTranslated } from 'utils/translate';
 import { getImageUrl } from 'utils/imageUtils';
 import PageSEO from 'components/providers/PageSEO';
+import { activityPublicPath } from 'utils/activityPaths';
 
 // Modular components
 import ActivityCard from 'components/sections/ActivityCard';
@@ -44,7 +45,10 @@ const ACTIVITIES_PATH = '/actividades/';
 
 const ActivitiesPage: React.FC = () => {
     const { t, i18n } = useTranslation();
+    const { slug: routeSlug } = useParams();
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const legacySlug = searchParams.get('slug');
     const [activities, setActivities] = useState<Activity[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
@@ -70,21 +74,20 @@ const ActivitiesPage: React.FC = () => {
     }, []);
 
     const activeActivity = useMemo(() => {
-        const activityId = searchParams.get('activity');
-        const activitySlug = searchParams.get('slug');
         if (activities.length === 0) return null;
-        if (activityId) {
-            return activities.find((a) => a.id === parseInt(activityId, 10)) ?? null;
-        }
-        if (activitySlug) {
+        if (routeSlug) {
             return (
                 activities.find(
-                    (a) => a.slug === activitySlug || (a as Activity).activity_data?.slug === activitySlug
+                    (a) => a.slug === routeSlug || (a as Activity).activity_data?.slug === routeSlug
                 ) ?? null
             );
         }
+        const activityId = searchParams.get('activity');
+        if (activityId) {
+            return activities.find((a) => a.id === parseInt(activityId, 10)) ?? null;
+        }
         return null;
-    }, [activities, searchParams]);
+    }, [activities, routeSlug, searchParams]);
 
     // Handle deep linking for activity detail
     useEffect(() => {
@@ -104,7 +107,18 @@ const ActivitiesPage: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {filtered.length > 0 ? (
                         filtered.map((activity, index) => (
-                            <ActivityCard key={activity.id} activity={activity} index={index} onClick={() => setSelectedActivity(activity)} />
+                            <ActivityCard
+                                key={activity.id}
+                                activity={activity}
+                                index={index}
+                                onClick={() => {
+                                    if (activity.slug && activity.type !== 'sugerencia') {
+                                        navigate(activityPublicPath(activity));
+                                        return;
+                                    }
+                                    setSelectedActivity(activity);
+                                }}
+                            />
                         ))
                     ) : (
                         <div className="col-span-full py-12 px-8 bg-forest/5 rounded-3xl border border-dashed border-forest/10 text-forest/40 italic text-left">
@@ -128,9 +142,11 @@ const ActivitiesPage: React.FC = () => {
               .slice(0, 160)
         : t('activities.seo.description');
 
-    const canonical = activeActivity?.slug
-        ? `${BASE_URL}${ACTIVITIES_PATH}?slug=${activeActivity.slug}`
-        : `${BASE_URL}${ACTIVITIES_PATH}`;
+    const detailPath = activeActivity?.slug && activeActivity.type !== 'sugerencia'
+        ? activityPublicPath(activeActivity)
+        : null;
+
+    const canonical = detailPath ? `${BASE_URL}${detailPath}` : `${BASE_URL}${ACTIVITIES_PATH}`;
 
     const structuredData = useMemo(() => {
         if (activeActivity) {
@@ -139,7 +155,7 @@ const ActivitiesPage: React.FC = () => {
                 '@type': 'Event',
                 name: getTranslated(activeActivity, 'title', i18n.language),
                 description: seoDescription,
-                url: `${BASE_URL}${ACTIVITIES_PATH}?slug=${activeActivity.slug}`,
+                url: `${BASE_URL}${activityPublicPath(activeActivity)}`,
                 location: activeActivity.location
                     ? { '@type': 'Place', name: activeActivity.location }
                     : undefined,
@@ -164,12 +180,16 @@ const ActivitiesPage: React.FC = () => {
                 itemListElement: listable.map((act, index) => ({
                     '@type': 'ListItem',
                     position: index + 1,
-                    url: `${BASE_URL}${ACTIVITIES_PATH}?slug=${act.slug}`,
+                    url: `${BASE_URL}${activityPublicPath(act)}`,
                     name: getTranslated(act, 'title', i18n.language),
                 })),
             },
         };
     }, [activeActivity, activities, t, i18n.language, seoDescription]);
+
+    if (legacySlug) {
+        return <Navigate to={`/actividades/${legacySlug}/`} replace />;
+    }
 
     return (
         <div className="font-body text-bark min-h-screen flex flex-col relative">
@@ -183,7 +203,7 @@ const ActivitiesPage: React.FC = () => {
                     activeActivity?.slug
                         ? {
                               name: getTranslated(activeActivity, 'title', i18n.language),
-                              path: `${ACTIVITIES_PATH}?slug=${activeActivity.slug}`,
+                              path: activityPublicPath(activeActivity),
                           }
                         : undefined
                 }
@@ -248,7 +268,10 @@ const ActivitiesPage: React.FC = () => {
                     <ActivityDetailModal 
                         activity={selectedActivity} 
                         userSuggestions={userSuggestions}
-                        onClose={() => setSelectedActivity(null)}
+                        onClose={() => {
+                            setSelectedActivity(null);
+                            if (routeSlug) navigate('/actividades/');
+                        }}
                         onVote={() => { fetchData(); setSelectedActivity(null); }}
                     />
                 )}

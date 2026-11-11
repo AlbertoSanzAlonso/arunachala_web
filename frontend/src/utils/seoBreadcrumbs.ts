@@ -104,6 +104,19 @@ export function resolveBreadcrumbs(
         ];
     }
 
+    const activityMatch = path.match(/^\/actividades\/([^/]+)\/$/);
+    if (activityMatch) {
+        const base = STATIC_BREADCRUMBS['/actividades/'];
+        if (current) return [...base, current];
+        return [
+            ...base,
+            {
+                name: activityMatch[1].replace(/-/g, ' '),
+                path,
+            },
+        ];
+    }
+
     const meditationMatch = path.match(/^\/meditaciones\/([^/]+)\/$/);
     if (meditationMatch) {
         const base = STATIC_BREADCRUMBS['/meditaciones/'];
