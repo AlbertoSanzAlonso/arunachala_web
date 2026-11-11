@@ -14,11 +14,13 @@
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
         "module": "esnext",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
         "jsx": "react-jsx",
+        "types": ["node"],
+        "ignoreDeprecations": "6.0",
         "baseUrl": "src",
         "paths": {
             "@/*": ["*"]
