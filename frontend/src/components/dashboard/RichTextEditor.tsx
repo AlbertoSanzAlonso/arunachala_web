@@ -240,6 +240,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <style>{`
                 .rich-text-editor.is-expanded {
                     display: flex;
+                    flex: 1 1 auto;
                     flex-direction: column;
                     height: 100%;
                     min-height: 0;
@@ -251,7 +252,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                     flex: 1 1 auto;
                     flex-direction: column;
                     min-height: 0;
-                    height: 100%;
                     background: transparent;
                 }
                 .rich-text-editor.is-expanded .ql-toolbar {
