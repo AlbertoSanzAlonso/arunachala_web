@@ -68,29 +68,55 @@ export const isHtmlContent = (text: string) => {
 
 const LOWER = 'a-záéíóúüñ';
 const UPPER = 'A-ZÁÉÍÓÚÜÑ';
+const VOID_TAGS = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr']);
+
+const gluedCamel = () => new RegExp(`([${LOWER}@]{5,})([${UPPER}])`, 'g');
+const gluedSentence = () => new RegExp(`([.!?…:])([¿¡]?)([${UPPER}])`, 'g');
+const gluedQuestion = () => new RegExp(`([${LOWER}]{2,}[¿¡])([${UPPER}])`, 'g');
+
+/** Texto visible, sin etiquetas: sirve para saber si el editor sigue mostrando frases pegadas. */
+export const hasGluedLineBreaks = (text: string) => {
+    if (!text) return false;
+    return gluedCamel().test(text) || gluedSentence().test(text) || gluedQuestion().test(text);
+};
+
+const splitGluedText = (text: string) => text
+    .replace(gluedCamel(), '$1</p><p>$2')
+    .replace(gluedSentence(), '$1$2</p><p>$3')
+    .replace(gluedQuestion(), '$1</p><p>$2');
 
 /**
  * Recupera saltos perdidos al pegar frases ("coordinaciónFortalece", "descansar.Cada").
+ * Solo parte texto que ya vive dentro de un <p>, así el corte `</p><p>` sigue siendo HTML válido.
  * No parte camelCase corto (WhatsApp, AeroNidrā).
  */
 export const restoreGluedLineBreaks = (html: string) => {
     if (!html || !isHtmlContent(html)) return html;
 
-    return html.replace(/>([^<]*)</g, (_match, text: string) => {
-        let fixed = text.replace(
-            new RegExp(`([${LOWER}@]{5,})([${UPPER}])`, 'g'),
-            '$1<br>$2'
-        );
-        fixed = fixed.replace(
-            new RegExp(`([.!?…:])([¿¡]?)([${UPPER}])`, 'g'),
-            '$1$2<br>$3'
-        );
-        fixed = fixed.replace(
-            new RegExp(`([${LOWER}]{2,}[¿¡])([${UPPER}])`, 'g'),
-            '$1<br>$2'
-        );
-        return `>${fixed}<`;
+    const parts: string[] = [];
+    const stack: string[] = [];
+    const tokens = html.match(/<[^>]+>|[^<]+/g) || [];
+
+    tokens.forEach((token) => {
+        if (!token.startsWith('<')) {
+            const parent = stack[stack.length - 1];
+            parts.push(parent === 'p' ? splitGluedText(token) : token);
+            return;
+        }
+
+        parts.push(token);
+        const tag = /^<\/?\s*([a-zA-Z0-9]+)/.exec(token);
+        if (!tag) return;
+        const name = tag[1].toLowerCase();
+        if (token.startsWith('</')) {
+            if (stack[stack.length - 1] === name) stack.pop();
+            return;
+        }
+        if (token.endsWith('/>') || VOID_TAGS.has(name)) return;
+        stack.push(name);
     });
+
+    return parts.join('');
 };
 
 /**

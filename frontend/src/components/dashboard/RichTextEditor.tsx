@@ -4,6 +4,7 @@ import { ArrowsPointingInIcon } from '@heroicons/react/24/outline';
 import 'react-quill/dist/quill.snow.css';
 import 'quill-emoji/dist/quill-emoji.css';
 import * as Emoji from 'quill-emoji';
+import { hasGluedLineBreaks, restoreGluedLineBreaks } from '../../utils/markdownUtils';
 
 // Register emoji module
 ReactQuill.Quill.register('modules/emoji', Emoji);
@@ -17,7 +18,66 @@ interface RichTextEditorProps {
     onExitFullscreen?: () => void;
 }
 
+type ClipboardDelta = {
+    ops?: Array<{ insert?: unknown }>;
+    insert: (text: string, attributes?: Record<string, unknown>) => ClipboardDelta;
+};
+
+function deltaEndsWithNewline(delta: ClipboardDelta) {
+    const ops = delta.ops ?? [];
+    for (let i = ops.length - 1; i >= 0; i -= 1) {
+        const insert = ops[i]?.insert;
+        if (typeof insert !== 'string') return false;
+        if (insert.length === 0) continue;
+        return insert.endsWith('\n');
+    }
+    return false;
+}
+
+function blockNewlineAttributes(node: Element): Record<string, unknown> | null {
+    switch (node.tagName) {
+        case 'H1':
+            return { header: 1 };
+        case 'H2':
+            return { header: 2 };
+        case 'H3':
+            return { header: 3 };
+        case 'BLOCKQUOTE':
+            return { blockquote: true };
+        case 'LI':
+            return { list: node.parentElement?.tagName === 'OL' ? 'ordered' : 'bullet' };
+        case 'P':
+        case 'BR':
+            return {};
+        default:
+            return null;
+    }
+}
+
+// Quill solo inserta un salto si getComputedStyle dice que el nodo es un bloque.
+// Dentro del diálogo (transform, overflow, clipboard fuera de pantalla) eso falla
+// y todo el artículo queda en un solo párrafo. Este matcher no mira el CSS.
+function ensureBlockNewline(node: HTMLElement, delta: ClipboardDelta) {
+    const attributes = blockNewlineAttributes(node);
+    if (!attributes || deltaEndsWithNewline(delta)) return delta;
+    if (Object.keys(attributes).length > 0) delta.insert('\n', attributes);
+    else delta.insert('\n');
+    return delta;
+}
+
 const modules = {
+    clipboard: {
+        matchVisual: false,
+        matchers: [
+            ['p', ensureBlockNewline],
+            ['h1', ensureBlockNewline],
+            ['h2', ensureBlockNewline],
+            ['h3', ensureBlockNewline],
+            ['li', ensureBlockNewline],
+            ['blockquote', ensureBlockNewline],
+            ['br', ensureBlockNewline],
+        ],
+    },
     toolbar: {
         container: [
             [{ 'header': [1, 2, 3, false] }],
@@ -62,6 +122,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 }) => {
     const quillRef = useRef<ReactQuill>(null);
     const snapshotRef = useRef<ScrollSnapshot | null>(null);
+    const initialHtmlRef = useRef(restoreGluedLineBreaks(value || ''));
 
     const captureScroll = useCallback((fromToolbar: boolean) => {
         const editor = quillRef.current?.getEditor();
@@ -158,6 +219,15 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         };
     }, [captureScroll, restoreScroll]);
 
+    // Si el primer pegado dejó frases unidas, vuelve a cargar el HTML reparado una sola vez.
+    useEffect(() => {
+        const editor = quillRef.current?.getEditor();
+        if (!editor) return;
+        if (!hasGluedLineBreaks(editor.getText())) return;
+        const repaired = restoreGluedLineBreaks(initialHtmlRef.current);
+        editor.setContents(editor.clipboard.convert(repaired), 'api');
+    }, []);
+
     useEffect(() => {
         if (!expanded) return;
 
@@ -216,7 +286,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <ReactQuill
                 ref={quillRef}
                 theme="snow"
-                defaultValue={value}
+                defaultValue={initialHtmlRef.current}
                 onChange={(html) => {
                     const editor = quillRef.current?.getEditor();
                     if (!editor?.root?.isConnected) return;
@@ -298,6 +368,16 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                     .ql-toolbar {
                         top: -32px; /* Compensate sm:p-8 padding */
                     }
+                }
+                .ql-clipboard p,
+                .ql-clipboard h1,
+                .ql-clipboard h2,
+                .ql-clipboard h3,
+                .ql-clipboard blockquote {
+                    display: block !important;
+                }
+                .ql-clipboard li {
+                    display: list-item !important;
                 }
                 .ql-editor {
                     min-height: 200px;

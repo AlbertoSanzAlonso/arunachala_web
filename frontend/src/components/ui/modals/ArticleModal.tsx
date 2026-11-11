@@ -1,4 +1,4 @@
-import { prepareMarkdown, fixMediaUrls, isHtmlContent } from 'utils/markdownUtils';
+import { prepareMarkdown, fixMediaUrls, isHtmlContent, restoreGluedLineBreaks } from 'utils/markdownUtils';
 import {
     XMarkIcon,
     CalendarIcon
@@ -100,7 +100,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, isOpen, onClose })
 
         if (isHtml) {
             return {
-                processed: fixMediaUrls(processed),
+                processed: fixMediaUrls(restoreGluedLineBreaks(processed)),
                 isHtml: true
             };
         }
