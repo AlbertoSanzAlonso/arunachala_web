@@ -66,6 +66,33 @@ export const isHtmlContent = (text: string) => {
     return trimmed.startsWith('<') && trimmed.includes('>');
 };
 
+const LOWER = 'a-záéíóúüñ';
+const UPPER = 'A-ZÁÉÍÓÚÜÑ';
+
+/**
+ * Recupera saltos perdidos al pegar frases ("coordinaciónFortalece", "descansar.Cada").
+ * No parte camelCase corto (WhatsApp, AeroNidrā).
+ */
+export const restoreGluedLineBreaks = (html: string) => {
+    if (!html || !isHtmlContent(html)) return html;
+
+    return html.replace(/>([^<]*)</g, (_match, text: string) => {
+        let fixed = text.replace(
+            new RegExp(`([${LOWER}@]{5,})([${UPPER}])`, 'g'),
+            '$1<br>$2'
+        );
+        fixed = fixed.replace(
+            new RegExp(`([.!?…:])([¿¡]?)([${UPPER}])`, 'g'),
+            '$1$2<br>$3'
+        );
+        fixed = fixed.replace(
+            new RegExp(`([${LOWER}]{2,}[¿¡])([${UPPER}])`, 'g'),
+            '$1<br>$2'
+        );
+        return `>${fixed}<`;
+    });
+};
+
 /**
  * Procesa contenido de blog (Markdown o HTML) y limpia artefactos
  */
@@ -77,7 +104,7 @@ export const prepareArticleContent = (content: string) => {
 
     if (isHtml) {
         return {
-            processed: fixMediaUrls(processed),
+            processed: fixMediaUrls(restoreGluedLineBreaks(processed)),
             isHtml: true
         };
     }

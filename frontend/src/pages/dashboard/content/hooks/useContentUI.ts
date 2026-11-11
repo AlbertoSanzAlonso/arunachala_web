@@ -2,7 +2,7 @@
 import { useState, useCallback } from 'react';
 import { marked } from 'marked';
 import { Content, TabType } from '../types';
-import { prepareMarkdown, isHtmlContent } from '../../../../utils/markdownUtils';
+import { prepareMarkdown, isHtmlContent, restoreGluedLineBreaks } from '../../../../utils/markdownUtils';
 
 export const useContentUI = (currentTab: TabType) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,13 +48,18 @@ export const useContentUI = (currentTab: TabType) => {
                 }
             }
 
+            body = restoreGluedLineBreaks(body);
+
             const normalizedTranslations = content.translations ? { ...content.translations } : {};
             Object.keys(normalizedTranslations).forEach(lang => {
                 const trans = normalizedTranslations[lang];
-                if (trans && trans.body && !isHtmlContent(trans.body)) {
+                if (trans && trans.body) {
+                    const translatedBody = isHtmlContent(trans.body)
+                        ? trans.body
+                        : marked.parse(prepareMarkdown(trans.body)) as string;
                     normalizedTranslations[lang] = {
                         ...trans,
-                        body: marked.parse(prepareMarkdown(trans.body)) as string
+                        body: restoreGluedLineBreaks(translatedBody)
                     };
                 }
             });
