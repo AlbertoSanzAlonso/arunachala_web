@@ -10,6 +10,13 @@ const HIDDEN_PREFIXES = [
     '/reset-password',
 ];
 
+const INNER_SCROLL_PATHS = new Set(['/', '/clases-de-yoga', '/terapias-y-masajes']);
+
+export function pageUsesInnerScroll(pathname: string) {
+    const path = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
+    return INNER_SCROLL_PATHS.has(path);
+}
+
 const SECTION_WATERMARKS: { test: (pathname: string) => boolean; src: string }[] = [
     {
         test: (pathname) =>
@@ -35,10 +42,17 @@ const LogoWatermark: React.FC = () => {
     const src = SECTION_WATERMARKS.find((entry) => entry.test(pathname))?.src
         ?? '/logo_transparent_v2.webp';
 
+    // Home, yoga y terapias desplazan un contenedor interno. `fixed` se
+    // recalcula con ese scroll y el logo salta. En el resto de páginas el
+    // documento es el scroller: sticky lo mantiene en el centro del viewport.
+    const frameClass = pageUsesInnerScroll(pathname)
+        ? 'absolute inset-0'
+        : 'sticky top-0 h-screen w-full -mb-[100vh]';
+
     return (
         <div
             aria-hidden="true"
-            className="pointer-events-none fixed inset-0 z-[-1] flex items-center justify-center"
+            className={`pointer-events-none z-[-1] flex items-center justify-center overflow-hidden [overflow-anchor:none] ${frameClass}`}
         >
             <img
                 src={src}

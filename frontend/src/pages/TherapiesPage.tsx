@@ -193,7 +193,7 @@ const TherapiesPage: React.FC = () => {
     }, [massages, therapies, t, i18n.language]);
 
     return (
-        <div id="therapies-scroll-container" ref={containerRef} className="font-body text-bark h-screen overflow-y-auto flex flex-col relative scroll-smooth">
+        <div id="therapies-scroll-container" ref={containerRef} className="font-body text-bark h-full overflow-y-auto flex flex-col relative scroll-smooth">
             <PageSEO
                 title={t('therapies.seo.title')}
                 description={t('therapies.seo.description')}

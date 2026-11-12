@@ -101,7 +101,7 @@ const YogaPage: React.FC = () => {
     );
 
     return (
-        <div id="yoga-scroll-container" ref={containerRef} className="font-body text-bark h-screen overflow-y-auto flex flex-col relative scroll-smooth">
+        <div id="yoga-scroll-container" ref={containerRef} className="font-body text-bark h-full overflow-y-auto flex flex-col relative scroll-smooth">
             <PageSEO
                 title={t('yoga.seo.title')}
                 description={t('yoga.seo.description')}

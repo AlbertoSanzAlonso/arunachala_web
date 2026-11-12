@@ -103,7 +103,7 @@ const HomePage: React.FC = () => {
     };
 
     return (
-        <div id="home-scroll-container" ref={containerRef} className="font-body text-bark relative h-screen overflow-y-auto scroll-smooth">
+        <div id="home-scroll-container" ref={containerRef} className="font-body text-bark relative h-full overflow-y-auto scroll-smooth">
             <PageSEO
                 title="Centro de Bienestar en Cornellà"
                 description="Aruṇāchala Yoga y Terapias, centro de Susana Pérez Gil en Pasaje de Mateo Oliva 3, bajos, 08940 Cornellà de Llobregat. Clases de hatha yoga, masajes y terapias con cita previa. Teléfono +34 678 481 971."

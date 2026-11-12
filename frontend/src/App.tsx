@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import PageLoader from './components/ui/PageLoader';
 import DashboardLayout from './layouts/DashboardLayout';
@@ -12,7 +12,7 @@ import ScrollToTop from './components/providers/ScrollToTop';
 import ToastNotification from './components/ui/ToastNotification';
 import LanguageSync from './components/providers/LanguageSync';
 import FloatingNav from './components/layout/FloatingNav';
-import LogoWatermark from './components/layout/LogoWatermark';
+import LogoWatermark, { pageUsesInnerScroll } from './components/layout/LogoWatermark';
 import { useUIStore } from './store/uiStore';
 
 
@@ -77,15 +77,34 @@ const AppContent = () => {
         location.pathname.startsWith('/newsletter') ||
         location.pathname.startsWith('/confirmar-suscripcion');
 
+    const locksViewport = pageUsesInnerScroll(location.pathname);
+
+    useEffect(() => {
+        if (!locksViewport) return;
+        const html = document.documentElement;
+        const body = document.body;
+        const previous = {
+            htmlOverflow: html.style.overflow,
+            bodyOverflow: body.style.overflow,
+        };
+        html.style.overflow = 'hidden';
+        body.style.overflow = 'hidden';
+        return () => {
+            html.style.overflow = previous.htmlOverflow;
+            body.style.overflow = previous.bodyOverflow;
+        };
+    }, [locksViewport]);
+
     return (
         <Suspense fallback={<PageLoader />}>
             <ToastNotification toasts={toasts} onRemove={removeToast} />
             <div style={{ display: hideChatBot ? 'none' : 'block' }}>
                 <ChatBot />
             </div>
-            <LogoWatermark />
             <FloatingNav />
             <MeditationPlayerModal />
+            <div className={locksViewport ? 'relative z-0 h-screen overscroll-none' : 'relative z-0'}>
+            <LogoWatermark />
             <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<HomePage />} />
@@ -146,6 +165,7 @@ const AppContent = () => {
                     </Route>
                 </Route>
             </Routes>
+            </div>
         </Suspense>
     );
 };
