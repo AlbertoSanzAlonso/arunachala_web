@@ -18,10 +18,22 @@ const LANGUAGES = [
     { code: 'en', label: 'EN' }
 ];
 
+function measureScrollGutter() {
+    const scroller =
+        document.getElementById('home-scroll-container') ||
+        document.getElementById('yoga-scroll-container') ||
+        document.getElementById('therapies-scroll-container');
+    // En el scroll de la ventana, un `fixed` ya queda a la izquierda de la barra.
+    // En home, yoga y terapias la barra es del contenedor interno y el menú la tapa.
+    if (!scroller) return 0;
+    return Math.max(0, scroller.offsetWidth - scroller.clientWidth);
+}
+
 const Header: React.FC = () => {
     const [logoUrl, setLogoUrl] = React.useState<string | null>(null);
     const [hasPromotions, setHasPromotions] = React.useState(false);
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const [scrollGutter, setScrollGutter] = React.useState(0);
     const [showVolume, setShowVolume] = React.useState(false);
     const { t, i18n } = useTranslation();
     const { addToast } = useUIStore();
@@ -74,6 +86,13 @@ const Header: React.FC = () => {
         fetchLogo();
         fetchPromotions();
     }, []);
+
+    React.useEffect(() => {
+        const update = () => setScrollGutter(measureScrollGutter());
+        update();
+        window.addEventListener('resize', update);
+        return () => window.removeEventListener('resize', update);
+    }, [isMenuOpen]);
 
     const scrollToTop = () => {
         const homeContainer = document.getElementById('home-scroll-container');
@@ -364,16 +383,20 @@ const Header: React.FC = () => {
             </header>
 
             <div
-                className={`fixed top-0 right-0 h-full w-full md:w-96 z-[49] bg-[#5c6b3c]/95 backdrop-blur-md shadow-2xl transform transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col items-center justify-center short:justify-start short:pt-20 short:overflow-y-auto`}
+                style={{ right: scrollGutter }}
+                className="pointer-events-none fixed top-0 left-0 z-[49] h-full overflow-hidden md:left-auto md:w-96"
             >
-                <nav className={`flex flex-col gap-8 short:gap-3.5 text-center ${hasPromotions ? 'mt-24 short:mt-4' : 'short:mt-2'}`}>
-                    <Link to="/quienes-somos" onClick={handleNavLinkClick('/quienes-somos')} className="text-[#F5F5DC] font-headers text-4xl short:text-2xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.about')}</Link>
-                    <Link to="/blog" onClick={handleNavLinkClick('/blog')} className="text-[#F5F5DC] font-headers text-4xl short:text-2xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">Blog</Link>
-                    <Link to="/meditaciones" onClick={handleNavLinkClick('/meditaciones')} className="text-[#F5F5DC] font-headers text-4xl short:text-2xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.meditations')}</Link>
-                    <Link to="/actividades" onClick={handleNavLinkClick('/actividades')} className="text-[#F5F5DC] font-headers text-4xl short:text-2xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.activities')}</Link>
-                    <Link to="/nuestro-espacio" onClick={handleNavLinkClick('/nuestro-espacio')} className="text-[#F5F5DC] font-headers text-4xl short:text-2xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.space', 'Nuestro Espacio')}</Link>
-                    <Link to="/contacto" onClick={handleNavLinkClick('/contacto')} className="text-[#F5F5DC] font-headers text-4xl short:text-2xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.contact')}</Link>
-                    <Link to="/preguntas-frecuentes" onClick={handleNavLinkClick('/preguntas-frecuentes')} className="text-[#F5F5DC] font-headers text-4xl short:text-2xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.faq')}</Link>
+            <div
+                className={`flex h-full w-full flex-col items-center justify-center bg-[#5c6b3c]/95 shadow-2xl backdrop-blur-md transition-transform duration-500 short:justify-start short:overflow-y-auto short:pt-20 ${isMenuOpen ? 'pointer-events-auto translate-x-0' : 'translate-x-full'}`}
+            >
+                <nav className={`flex w-full flex-col gap-6 px-6 text-center md:gap-8 short:gap-3.5 ${hasPromotions ? 'mt-24 short:mt-4' : 'short:mt-2'}`}>
+                    <Link to="/quienes-somos" onClick={handleNavLinkClick('/quienes-somos')} className="text-[#F5F5DC] font-headers text-2xl md:text-4xl short:text-2xl min-w-0 max-w-full px-2 hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.about')}</Link>
+                    <Link to="/blog" onClick={handleNavLinkClick('/blog')} className="text-[#F5F5DC] font-headers text-2xl md:text-4xl short:text-2xl min-w-0 max-w-full px-2 hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">Blog</Link>
+                    <Link to="/meditaciones" onClick={handleNavLinkClick('/meditaciones')} className="text-[#F5F5DC] font-headers text-2xl md:text-4xl short:text-2xl min-w-0 max-w-full px-2 hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.meditations')}</Link>
+                    <Link to="/actividades" onClick={handleNavLinkClick('/actividades')} className="text-[#F5F5DC] font-headers text-2xl md:text-4xl short:text-2xl min-w-0 max-w-full px-2 hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.activities')}</Link>
+                    <Link to="/nuestro-espacio" onClick={handleNavLinkClick('/nuestro-espacio')} className="text-[#F5F5DC] font-headers text-2xl md:text-4xl short:text-2xl min-w-0 max-w-full px-2 hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.space', 'Nuestro Espacio')}</Link>
+                    <Link to="/contacto" onClick={handleNavLinkClick('/contacto')} className="text-[#F5F5DC] font-headers text-2xl md:text-4xl short:text-2xl min-w-0 max-w-full px-2 hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.contact')}</Link>
+                    <Link to="/preguntas-frecuentes" onClick={handleNavLinkClick('/preguntas-frecuentes')} className="text-[#F5F5DC] font-headers text-2xl md:text-4xl short:text-2xl min-w-0 max-w-full px-2 hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.faq')}</Link>
 
                     {/* Added Promociones apartada y en color marrón - Only if active promotions exist */}
                     {hasPromotions && (
@@ -381,13 +404,14 @@ const Header: React.FC = () => {
                             <Link
                                 to="/promociones"
                                 onClick={handleNavLinkClick('/promociones')}
-                                className="text-white bg-bark/40 hover:bg-bark px-8 py-3 short:px-5 short:py-2 rounded-full font-headers text-4xl short:text-2xl hover:text-bone transition-all hover:scale-105 transform duration-300 uppercase border border-white/20"
+                                className="text-white bg-bark/40 hover:bg-bark px-6 py-2.5 md:px-8 md:py-3 short:px-5 short:py-2 rounded-full font-headers text-2xl md:text-4xl short:text-2xl hover:text-bone transition-all hover:scale-105 transform duration-300 uppercase border border-white/20 max-w-full"
                             >
                                 {t('menu.promotions', 'Promociones')}
                             </Link>
                         </div>
                     )}
                 </nav>
+            </div>
             </div>
         </>
     );
