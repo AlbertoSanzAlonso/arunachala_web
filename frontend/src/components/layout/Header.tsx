@@ -364,7 +364,7 @@ const Header: React.FC = () => {
             </header>
 
             <div
-                className={`fixed top-0 right-0 h-full w-full md:w-96 z-40 bg-[#5c6b3c]/95 backdrop-blur-md shadow-2xl transform transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col items-center justify-center short:justify-start short:pt-20 short:overflow-y-auto`}
+                className={`fixed top-0 right-0 h-full w-full md:w-96 z-[49] bg-[#5c6b3c]/95 backdrop-blur-md shadow-2xl transform transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col items-center justify-center short:justify-start short:pt-20 short:overflow-y-auto`}
             >
                 <nav className={`flex flex-col gap-8 short:gap-3.5 text-center ${hasPromotions ? 'mt-24 short:mt-4' : 'short:mt-2'}`}>
                     <Link to="/quienes-somos" onClick={handleNavLinkClick('/quienes-somos')} className="text-[#F5F5DC] font-headers text-4xl short:text-2xl hover:text-matcha transition-all hover:scale-105 transform duration-300 uppercase">{t('menu.about')}</Link>
