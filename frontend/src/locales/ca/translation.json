@@ -689,6 +689,8 @@
   },
   "chatbot": {
     "welcome": "Namasté! 🙏 Benvingut a Aruṇāchala. Soc el teu assistent virtual. En què et puc ajudar avui? Pots preguntar-me sobre horaris, classes de ioga o teràpies.",
+    "whatsapp_prompt": "També pots parlar amb nosaltres per WhatsApp:",
+    "whatsapp_button": "Parlar per WhatsApp",
     "placeholder": "Escriu la teva pregunta...",
     "tooltip": "Com puc ajudar-te? ✨",
     "status": "Namasté 🙏 En línia",

@@ -713,6 +713,8 @@
   },
   "chatbot": {
     "welcome": "¡Namasté! 🙏 Bienvenido a Aruṇāchala. Soy tu asistente virtual. ¿En qué puedo ayudarte hoy? Puedes preguntarme sobre horarios, clases de yoga, o terapias.",
+    "whatsapp_prompt": "También puedes hablar con nosotros por WhatsApp:",
+    "whatsapp_button": "Hablar por WhatsApp",
     "placeholder": "Escribe tu pregunta...",
     "tooltip": "¿Cómo puedo ayudarte? ✨",
     "status": "Namasté 🙏 Online",

@@ -689,6 +689,8 @@
   },
   "chatbot": {
     "welcome": "Namaste! 🙏 Welcome to Aruṇāchala. I am your virtual assistant. How can I help you today? You can ask me about schedules, yoga classes, or therapies.",
+    "whatsapp_prompt": "You can also chat with us on WhatsApp:",
+    "whatsapp_button": "Chat on WhatsApp",
     "placeholder": "Type your question...",
     "tooltip": "How can I help you? ✨",
     "status": "Namaste 🙏 Online",
