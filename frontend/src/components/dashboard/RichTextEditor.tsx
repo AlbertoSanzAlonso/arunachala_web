@@ -340,6 +340,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                     background: transparent;
                 }
                 .rich-text-editor.is-expanded .ql-editor {
+                    /* Contiene el ::before del placeholder (Quill lo ancla a .ql-container). */
+                    position: relative;
                     width: min(92vw, 80rem);
                     max-width: 100%;
                     margin: 1.25rem auto 2rem;
@@ -349,6 +351,11 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                     box-shadow: 0 10px 30px rgba(47, 79, 79, 0.06);
                     padding: 2.5rem clamp(1.25rem, 4vw, 3.5rem) 5rem;
                     box-sizing: border-box;
+                }
+                .rich-text-editor.is-expanded .ql-editor.ql-blank::before {
+                    left: clamp(1.25rem, 4vw, 3.5rem);
+                    right: clamp(1.25rem, 4vw, 3.5rem);
+                    top: 2.5rem;
                 }
                 .ql-container {
                     border-bottom-left-radius: 0.375rem;
