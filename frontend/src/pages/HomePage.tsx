@@ -1,5 +1,6 @@
 import React, { Suspense, lazy, useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import videoBgWebm from 'assets/videos/hero_optimized.webm';
 import videoPosterWebp from 'assets/videos/VIDEOWEB_poster.webp';
@@ -22,13 +23,34 @@ const FeaturedActivities = lazy(() => import('components/sections/FeaturedActivi
 const BlogSection = lazy(() => import('components/sections/BlogSection'));
 const NewsletterForm = lazy(() => import('components/NewsletterForm'));
 
+const heroEase = [0.22, 1, 0.36, 1] as const;
+
+const heroContainerVariants = {
+    hidden: {},
+    visible: {
+        transition: {
+            staggerChildren: 0.14,
+            delayChildren: 0.18,
+        },
+    },
+};
+
+const heroItemVariants = {
+    hidden: { opacity: 0, y: 18 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.85, ease: heroEase },
+    },
+};
+
 const HomePage: React.FC = () => {
     const { t, i18n } = useTranslation();
     const containerRef = useRef<HTMLDivElement>(null);
     const [galleryImages, setGalleryImages] = useState<string[]>([]);
-
-
+    const [videoReady, setVideoReady] = useState(false);
     const [dailyMantra, setDailyMantra] = useState<{ text_sanskrit: string, translation: string, translations?: any } | null>(null);
+    const [mantraStatus, setMantraStatus] = useState<'loading' | 'ready' | 'empty'>('loading');
 
     useEffect(() => {
         const fetchMantra = async () => {
@@ -36,10 +58,16 @@ const HomePage: React.FC = () => {
                 const response = await fetch(`${API_BASE_URL}/api/mantras/daily`);
                 if (response.ok) {
                     const data = await response.json();
-                    setDailyMantra(data);
+                    if (data?.text_sanskrit) {
+                        setDailyMantra(data);
+                        setMantraStatus('ready');
+                        return;
+                    }
                 }
+                setMantraStatus('empty');
             } catch (error) {
                 console.error("Failed to load mantra:", error);
+                setMantraStatus('empty');
             }
         };
 
@@ -61,7 +89,6 @@ const HomePage: React.FC = () => {
         fetchMantra();
         fetchGallery();
     }, []);
-
 
 
 
@@ -113,14 +140,23 @@ const HomePage: React.FC = () => {
 
             {/* Hero Section with Video */}
             <section className="relative min-h-[75vh] short:min-h-[calc(100vh-3.5rem)] md:min-h-[90vh] short:md:min-h-[calc(100vh-3.5rem)] w-full overflow-hidden flex flex-col items-center justify-start short:justify-center md:justify-center pt-6 short:pt-0 md:pt-16 short:md:pt-0" role="banner">
-                <video
+                {/* Poster stays visible while the video fades in */}
+                <img
+                    src={videoPosterWebp}
+                    alt=""
+                    aria-hidden="true"
                     className="absolute top-0 left-0 w-full h-full object-cover opacity-85"
+                />
+                <video
+                    className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-[1200ms] ease-out ${videoReady ? 'opacity-85' : 'opacity-0'}`}
                     autoPlay
                     loop
                     muted
                     playsInline
-                    preload="metadata"
+                    preload="auto"
                     poster={videoPosterWebp}
+                    onLoadedData={() => setVideoReady(true)}
+                    onCanPlay={() => setVideoReady(true)}
                 >
                     <source src={videoBgWebm} type="video/webm" />
                     Your browser does not support the video tag.
@@ -134,47 +170,85 @@ const HomePage: React.FC = () => {
                     <p className="sr-only">{t('answers.home.answer')}</p>
 
                     {/* Navigation Buttons */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 short:gap-4 md:gap-12 short:md:gap-8 w-full text-center">
-                        <Link
-                            to="/clases-de-yoga"
-                            className="group cursor-pointer p-6 short:p-4 md:p-8 short:md:p-5 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-bone/50"
-                        >
-                            <img src={omSymbol} alt="" aria-hidden="true" className="h-14 short:h-10 md:h-20 short:md:h-12 w-auto mb-3 short:mb-2 md:mb-4 short:md:mb-2.5 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
-                            <h2 className="text-3xl short:text-2xl md:text-5xl short:md:text-3xl font-headers text-bone mb-2 short:mb-1.5 md:mb-4 short:md:mb-2 group-hover:scale-110 transition-transform duration-500 uppercase">{t('hero.yoga.title')}</h2>
-                            <p className="text-bone/80 text-base short:text-sm md:text-lg short:md:text-base opacity-80 group-hover:opacity-100 transition-opacity duration-500">
-                                {t('hero.yoga.subtitle')}
-                            </p>
-                        </Link>
+                    <motion.div
+                        className="grid grid-cols-1 md:grid-cols-2 gap-4 short:gap-4 md:gap-12 short:md:gap-8 w-full text-center"
+                        initial="hidden"
+                        animate="visible"
+                        variants={heroContainerVariants}
+                    >
+                        <motion.div variants={heroItemVariants}>
+                            <Link
+                                to="/clases-de-yoga"
+                                className="group cursor-pointer p-6 short:p-4 md:p-8 short:md:p-5 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-bone/50"
+                            >
+                                <img src={omSymbol} alt="" aria-hidden="true" className="h-14 short:h-10 md:h-20 short:md:h-12 w-auto mb-3 short:mb-2 md:mb-4 short:md:mb-2.5 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
+                                <h2 className="text-3xl short:text-2xl md:text-5xl short:md:text-3xl font-headers text-bone mb-2 short:mb-1.5 md:mb-4 short:md:mb-2 group-hover:scale-110 transition-transform duration-500 uppercase">{t('hero.yoga.title')}</h2>
+                                <p className="text-bone/80 text-base short:text-sm md:text-lg short:md:text-base opacity-80 group-hover:opacity-100 transition-opacity duration-500">
+                                    {t('hero.yoga.subtitle')}
+                                </p>
+                            </Link>
+                        </motion.div>
 
-                        <Link
-                            to="/terapias-y-masajes/"
-                            className="group cursor-pointer p-6 short:p-4 md:p-8 short:md:p-5 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-bone/50"
-                        >
-                            <img src={lotusFlower} alt="" aria-hidden="true" className="h-14 short:h-10 md:h-20 short:md:h-12 w-auto mb-3 short:mb-2 md:mb-4 short:md:mb-2.5 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
-                            <h2 className="text-3xl short:text-2xl md:text-5xl short:md:text-3xl font-headers text-bone mb-2 short:mb-1.5 md:mb-4 short:md:mb-2 group-hover:scale-110 transition-transform duration-500 uppercase">{t('hero.therapies.title')}</h2>
-                            <p className="text-bone/80 text-base short:text-sm md:text-lg short:md:text-base opacity-80 group-hover:opacity-100 transition-opacity duration-500">
-                                {t('hero.therapies.subtitle')}
-                            </p>
-                        </Link>
-                    </div>
+                        <motion.div variants={heroItemVariants}>
+                            <Link
+                                to="/terapias-y-masajes/"
+                                className="group cursor-pointer p-6 short:p-4 md:p-8 short:md:p-5 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-bone/50"
+                            >
+                                <img src={lotusFlower} alt="" aria-hidden="true" className="h-14 short:h-10 md:h-20 short:md:h-12 w-auto mb-3 short:mb-2 md:mb-4 short:md:mb-2.5 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
+                                <h2 className="text-3xl short:text-2xl md:text-5xl short:md:text-3xl font-headers text-bone mb-2 short:mb-1.5 md:mb-4 short:md:mb-2 group-hover:scale-110 transition-transform duration-500 uppercase">{t('hero.therapies.title')}</h2>
+                                <p className="text-bone/80 text-base short:text-sm md:text-lg short:md:text-base opacity-80 group-hover:opacity-100 transition-opacity duration-500">
+                                    {t('hero.therapies.subtitle')}
+                                </p>
+                            </Link>
+                        </motion.div>
+                    </motion.div>
 
-                    {/* Mantra of the Day Section */}
-                    {dailyMantra && (
-                        <div className="text-center animate-fade-in max-w-2xl short:max-w-3xl px-6 short:px-5 py-6 short:py-4 rounded-2xl bg-black/10 backdrop-blur-sm border border-bone/10 shadow-2xl hover:bg-black/20 transition-all duration-700">
-                            <p className="text-xs md:text-sm uppercase tracking-[0.4em] text-bone/60 mb-4 short:mb-2.5 font-light">{t('home.mantra_title')}</p>
-                            <h3 className="text-2xl short:text-xl md:text-4xl short:md:text-2xl font-serif italic text-bone mb-3 short:mb-2 leading-relaxed drop-shadow-md">
-                                "{dailyMantra.text_sanskrit}"
-                            </h3>
-                            <p className="text-bone/70 text-sm short:text-sm md:text-base font-light italic">
-                                — {
-                                    (i18n.language !== 'es' &&
-                                    dailyMantra.translations &&
-                                    dailyMantra.translations[i18n.language]?.translation)
-                                    || dailyMantra.translation
-                                }
-                            </p>
-                        </div>
-                    )}
+                    {/* Mantra slot: reserved from first paint so the hero does not jump */}
+                    <AnimatePresence initial={false}>
+                        {mantraStatus !== 'empty' && (
+                            <motion.div
+                                key="mantra-slot"
+                                initial={{ opacity: 0, y: 14 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, height: 0, transition: { duration: 0.55, ease: heroEase } }}
+                                transition={{ duration: 0.85, ease: heroEase, delay: 0.35 }}
+                                className="w-full max-w-2xl short:max-w-3xl overflow-hidden"
+                            >
+                                <div className="min-h-[9.5rem] short:min-h-[7.75rem] md:min-h-[11.5rem] short:md:min-h-[8.5rem] flex items-center justify-center">
+                                    {dailyMantra ? (
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ duration: 0.9, ease: heroEase }}
+                                            className="w-full text-center px-6 short:px-5 py-6 short:py-4 rounded-2xl bg-black/10 backdrop-blur-sm border border-bone/10 shadow-2xl hover:bg-black/20 transition-colors duration-700"
+                                        >
+                                            <p className="text-xs md:text-sm uppercase tracking-[0.4em] text-bone/60 mb-4 short:mb-2.5 font-light">{t('home.mantra_title')}</p>
+                                            <h3 className="text-2xl short:text-xl md:text-4xl short:md:text-2xl font-serif italic text-bone mb-3 short:mb-2 leading-relaxed drop-shadow-md">
+                                                "{dailyMantra.text_sanskrit}"
+                                            </h3>
+                                            <p className="text-bone/70 text-sm short:text-sm md:text-base font-light italic">
+                                                — {
+                                                    (i18n.language !== 'es' &&
+                                                    dailyMantra.translations &&
+                                                    dailyMantra.translations[i18n.language]?.translation)
+                                                    || dailyMantra.translation
+                                                }
+                                            </p>
+                                        </motion.div>
+                                    ) : (
+                                        <div
+                                            className="w-full px-6 short:px-5 py-6 short:py-4 rounded-2xl border border-bone/5 bg-black/5 animate-pulse"
+                                            aria-hidden="true"
+                                        >
+                                            <div className="mx-auto mb-4 short:mb-2.5 h-3 w-28 rounded bg-bone/10" />
+                                            <div className="mx-auto mb-3 short:mb-2 h-7 short:h-6 md:h-9 max-w-md w-[80%] rounded bg-bone/10" />
+                                            <div className="mx-auto h-4 w-48 rounded bg-bone/10" />
+                                        </div>
+                                    )}
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                 </div>
             </section>

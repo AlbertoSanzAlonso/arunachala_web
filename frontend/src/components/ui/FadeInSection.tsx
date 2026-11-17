@@ -14,9 +14,9 @@ const FadeInSection: React.FC<FadeInSectionProps> = ({ children, delay = 0, clas
     return (
         <motion.div
             ref={ref}
-            initial={{ opacity: 0, y: 50 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: delay }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: delay }}
             className={className}
         >
             {children}
