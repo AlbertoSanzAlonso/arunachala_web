@@ -6,8 +6,8 @@ import { motion } from 'framer-motion';
 import { getImageUrl } from 'utils/imageUtils';
 import { getTranslated } from 'utils/translate';
 import { Article } from 'types/blog';
-import omSymbol from 'assets/images/om_symbol.png';
-import lotusFlower from 'assets/images/lotus_flower.png';
+import omSymbol from 'assets/images/om_symbol.webp';
+import lotusFlower from 'assets/images/lotus_flower.webp';
 
 interface RelatedArticlesProps {
     articles: Article[];

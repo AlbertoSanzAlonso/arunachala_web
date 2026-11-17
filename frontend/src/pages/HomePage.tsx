@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import videoBgWebm from 'assets/videos/hero_optimized.webm';
-import omSymbol from 'assets/images/om_symbol.png';
-import lotusFlower from 'assets/images/lotus_flower.png';
+import videoPoster from 'assets/videos/VIDEOWEB_poster.webp';
+import omSymbol from 'assets/images/om_symbol.webp';
+import lotusFlower from 'assets/images/lotus_flower.webp';
 import Header from 'components/layout/Header';
 import Footer from 'components/layout/Footer';
 import FadeInSection from 'components/ui/FadeInSection';
@@ -14,7 +15,6 @@ import { getImageUrl } from 'utils/imageUtils';
 import PageSEO from 'components/providers/PageSEO';
 import { BUSINESS, businessPostalAddress } from 'config/business';
 
-// Lazy load heavy components
 const ImageSlider = lazy(() => import('components/sections/ImageSlider'));
 const ReviewsSection = lazy(() => import('components/sections/ReviewsSection'));
 const WellnessQuiz = lazy(() => import('components/wellness-quiz/WellnessQuiz'));
@@ -48,6 +48,7 @@ const HomePage: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [galleryImages, setGalleryImages] = useState<string[]>([]);
     const [videoReady, setVideoReady] = useState(false);
+    const [loadHeroVideo, setLoadHeroVideo] = useState(false);
     const [dailyMantra, setDailyMantra] = useState<{ text_sanskrit: string, translation: string, translations?: any } | null>(null);
     const [mantraStatus, setMantraStatus] = useState<'loading' | 'ready' | 'empty'>('loading');
 
@@ -87,6 +88,23 @@ const HomePage: React.FC = () => {
 
         fetchMantra();
         fetchGallery();
+    }, []);
+
+    // Diferir el webm (~3.5MB) para no competir con FCP/LCP en móvil
+    useEffect(() => {
+        const startVideo = () => setLoadHeroVideo(true);
+        const win = window as Window & {
+            requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+            cancelIdleCallback?: (id: number) => void;
+        };
+
+        if (typeof win.requestIdleCallback === 'function') {
+            const id = win.requestIdleCallback(startVideo, { timeout: 1800 });
+            return () => win.cancelIdleCallback?.(id);
+        }
+
+        const timer = window.setTimeout(startVideo, 900);
+        return () => window.clearTimeout(timer);
     }, []);
 
 
@@ -139,19 +157,29 @@ const HomePage: React.FC = () => {
 
             {/* Hero Section with Video */}
             <section className="relative min-h-[75vh] short:min-h-[calc(100vh-3.5rem)] md:min-h-[90vh] short:md:min-h-[calc(100vh-3.5rem)] w-full overflow-hidden flex flex-col items-center justify-start short:justify-center md:justify-center pt-6 short:pt-0 md:pt-16 short:md:pt-0 bg-black" role="banner">
-                <video
-                    className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-[1200ms] ease-out ${videoReady ? 'opacity-100' : 'opacity-0'}`}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="auto"
-                    onLoadedData={() => setVideoReady(true)}
-                    onCanPlay={() => setVideoReady(true)}
-                >
-                    <source src={videoBgWebm} type="video/webm" />
-                    Your browser does not support the video tag.
-                </video>
+                <img
+                    src={videoPoster}
+                    alt=""
+                    aria-hidden="true"
+                    fetchPriority="high"
+                    decoding="async"
+                    className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-[1200ms] ease-out ${videoReady ? 'opacity-0' : 'opacity-100'}`}
+                />
+                {loadHeroVideo && (
+                    <video
+                        className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-[1200ms] ease-out ${videoReady ? 'opacity-100' : 'opacity-0'}`}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        preload="metadata"
+                        poster={videoPoster}
+                        onLoadedData={() => setVideoReady(true)}
+                        onCanPlay={() => setVideoReady(true)}
+                    >
+                        <source src={videoBgWebm} type="video/webm" />
+                    </video>
+                )}
                 {/* Overlay */}
                 <div className="absolute top-0 left-0 w-full h-full bg-black/50"></div>
 
@@ -172,7 +200,7 @@ const HomePage: React.FC = () => {
                                 to="/clases-de-yoga"
                                 className="group cursor-pointer p-6 short:p-4 md:p-8 short:md:p-5 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-bone/50"
                             >
-                                <img src={omSymbol} alt="" aria-hidden="true" className="h-14 short:h-10 md:h-20 short:md:h-12 w-auto mb-3 short:mb-2 md:mb-4 short:md:mb-2.5 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
+                                <img src={omSymbol} alt="" aria-hidden="true" width={80} height={80} decoding="async" className="h-14 short:h-10 md:h-20 short:md:h-12 w-auto mb-3 short:mb-2 md:mb-4 short:md:mb-2.5 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
                                 <h2 className="text-3xl short:text-2xl md:text-5xl short:md:text-3xl font-headers text-bone mb-2 short:mb-1.5 md:mb-4 short:md:mb-2 group-hover:scale-110 transition-transform duration-500 uppercase">{t('hero.yoga.title')}</h2>
                                 <p className="text-bone/80 text-base short:text-sm md:text-lg short:md:text-base opacity-80 group-hover:opacity-100 transition-opacity duration-500">
                                     {t('hero.yoga.subtitle')}
@@ -185,7 +213,7 @@ const HomePage: React.FC = () => {
                                 to="/terapias-y-masajes/"
                                 className="group cursor-pointer p-6 short:p-4 md:p-8 short:md:p-5 border-2 border-transparent hover:border-bone/50 rounded-xl transition-all duration-500 bg-black/20 hover:bg-black/40 backdrop-blur-sm flex flex-col items-center focus:outline-none focus:ring-2 focus:ring-bone/50"
                             >
-                                <img src={lotusFlower} alt="" aria-hidden="true" className="h-14 short:h-10 md:h-20 short:md:h-12 w-auto mb-3 short:mb-2 md:mb-4 short:md:mb-2.5 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
+                                <img src={lotusFlower} alt="" aria-hidden="true" width={80} height={60} decoding="async" className="h-14 short:h-10 md:h-20 short:md:h-12 w-auto mb-3 short:mb-2 md:mb-4 short:md:mb-2.5 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 drop-shadow-lg" />
                                 <h2 className="text-3xl short:text-2xl md:text-5xl short:md:text-3xl font-headers text-bone mb-2 short:mb-1.5 md:mb-4 short:md:mb-2 group-hover:scale-110 transition-transform duration-500 uppercase">{t('hero.therapies.title')}</h2>
                                 <p className="text-bone/80 text-base short:text-sm md:text-lg short:md:text-base opacity-80 group-hover:opacity-100 transition-opacity duration-500">
                                     {t('hero.therapies.subtitle')}

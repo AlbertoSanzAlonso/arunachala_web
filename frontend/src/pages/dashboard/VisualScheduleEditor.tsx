@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeftIcon, CloudArrowUpIcon, LockClosedIcon } from '@heroicons/react/24/outline'; // Added Lock icon
-import omSymbol from '../../assets/images/om_symbol.png';
+import omSymbol from '../../assets/images/om_symbol.webp';
 import { API_BASE_URL } from '../../config';
 
 interface ClassType {

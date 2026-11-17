@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import lotusFlower from 'assets/images/lotus_flower.png';
+import lotusFlower from 'assets/images/lotus_flower.webp';
 
 const PageLoader: React.FC = () => {
     const { t } = useTranslation();

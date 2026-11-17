@@ -12,8 +12,8 @@ import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Dialog, Transition } from '@headlessui/react';
 import remarkGfm from 'remark-gfm';
-import omSymbol from 'assets/images/om_symbol.png';
-import lotusFlower from 'assets/images/lotus_flower.png';
+import omSymbol from 'assets/images/om_symbol.webp';
+import lotusFlower from 'assets/images/lotus_flower.webp';
 
 interface Article {
     id: number;

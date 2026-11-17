@@ -1,21 +1,14 @@
 import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import PageLoader from './components/ui/PageLoader';
-import DashboardLayout from './layouts/DashboardLayout';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/providers/ProtectedRoute';
 import { AudioProvider } from './context/AudioContext';
-import MeditationsPage from './pages/MeditationsPage';
-import ChatBot from './components/sections/ChatBot';
-import MeditationPlayerModal from './components/ui/modals/MeditationPlayerModal';
 import ScrollToTop from './components/providers/ScrollToTop';
 import ToastNotification from './components/ui/ToastNotification';
 import LanguageSync from './components/providers/LanguageSync';
-import FloatingNav from './components/layout/FloatingNav';
 import LogoWatermark, { pageUsesInnerScroll } from './components/layout/LogoWatermark';
 import { useUIStore } from './store/uiStore';
-
-
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const YogaPage = lazy(() => import('./pages/YogaPage'));
@@ -30,6 +23,11 @@ const AllTherapiesPage = lazy(() => import('./pages/AllTherapiesPage'));
 const ActivitiesPage = lazy(() => import('./pages/ActivitiesPage'));
 const OurSpacePage = lazy(() => import('./pages/OurSpacePage'));
 const PromotionsPage = lazy(() => import('./pages/PromotionsPage'));
+const MeditationsPage = lazy(() => import('./pages/MeditationsPage'));
+const ChatBot = lazy(() => import('./components/sections/ChatBot'));
+const MeditationPlayerModal = lazy(() => import('./components/ui/modals/MeditationPlayerModal'));
+const FloatingNav = lazy(() => import('./components/layout/FloatingNav'));
+const DashboardLayout = lazy(() => import('./layouts/DashboardLayout'));
 
 // Dashboard Pages
 const LoginPage = lazy(() => import('./pages/LoginPage'));
@@ -66,6 +64,7 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const AppContent = () => {
     const location = useLocation();
     const { toasts, removeToast } = useUIStore();
+    const [mountDeferredWidgets, setMountDeferredWidgets] = React.useState(false);
 
     // Hide ChatBot on login, register, and all dashboard paths
     const hideChatBot =
@@ -95,14 +94,39 @@ const AppContent = () => {
         };
     }, [locksViewport]);
 
+    // ChatBot / FloatingNav / modal: fuera del critical path
+    useEffect(() => {
+        const enable = () => setMountDeferredWidgets(true);
+        const win = window as Window & {
+            requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+            cancelIdleCallback?: (id: number) => void;
+        };
+        if (typeof win.requestIdleCallback === 'function') {
+            const id = win.requestIdleCallback(enable, { timeout: 3000 });
+            return () => win.cancelIdleCallback?.(id);
+        }
+        const timer = window.setTimeout(enable, 1500);
+        return () => window.clearTimeout(timer);
+    }, []);
+
     return (
         <Suspense fallback={<PageLoader />}>
             <ToastNotification toasts={toasts} onRemove={removeToast} />
-            <div style={{ display: hideChatBot ? 'none' : 'block' }}>
-                <ChatBot />
-            </div>
-            <FloatingNav />
-            <MeditationPlayerModal />
+            {mountDeferredWidgets && !hideChatBot && (
+                <Suspense fallback={null}>
+                    <ChatBot />
+                </Suspense>
+            )}
+            {mountDeferredWidgets && (
+                <>
+                    <Suspense fallback={null}>
+                        <FloatingNav />
+                    </Suspense>
+                    <Suspense fallback={null}>
+                        <MeditationPlayerModal />
+                    </Suspense>
+                </>
+            )}
             <div className={locksViewport ? 'relative z-0 h-screen overscroll-none' : 'relative z-0'}>
             <LogoWatermark />
             <Routes>

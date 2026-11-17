@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowsPointingInIcon, ArrowsPointingOutIcon, ChatBubbleLeftRightIcon, XMarkIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import omSymbol from 'assets/images/om_symbol.png';
+import omSymbol from 'assets/images/om_symbol.webp';
 import logo from 'assets/images/logo_transparent_v2.webp';
 import { API_BASE_URL } from 'config';
 import { useTranslation } from 'react-i18next';
@@ -65,33 +65,58 @@ const ChatBot: React.FC = () => {
     };
 
     useEffect(() => {
-        const fetchPersonalization = async () => {
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/site-config/chatbot_avatar_url`);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.value) setBotAvatar(getImageUrl(data.value));
-                }
-            } catch (error) {
-                console.error("Error fetching bot avatar:", error);
-            }
-        };
+        let cancelled = false;
 
         const fetchConfig = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/config`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setIsActive(data.is_active ?? true);
-                }
+                if (!response.ok || cancelled) return;
+                const data = await response.json();
+                if (!cancelled) setIsActive(data.is_active ?? true);
             } catch (error) {
                 console.error("Error fetching bot config:", error);
             }
         };
 
-        fetchConfig();
-        fetchPersonalization();
+        // No bloquear el arranque: config del bot en idle
+        const win = window as Window & {
+            requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+            cancelIdleCallback?: (id: number) => void;
+        };
+        let idleId: number | undefined;
+        let timer: number | undefined;
+
+        if (typeof win.requestIdleCallback === 'function') {
+            idleId = win.requestIdleCallback(() => { void fetchConfig(); }, { timeout: 2500 });
+        } else {
+            timer = window.setTimeout(() => { void fetchConfig(); }, 1200);
+        }
+
+        return () => {
+            cancelled = true;
+            if (idleId !== undefined) win.cancelIdleCallback?.(idleId);
+            if (timer !== undefined) window.clearTimeout(timer);
+        };
     }, []);
+
+    useEffect(() => {
+        if (!isOpen || botAvatar) return;
+
+        let cancelled = false;
+        const fetchPersonalization = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/site-config/chatbot_avatar_url`);
+                if (!response.ok || cancelled) return;
+                const data = await response.json();
+                if (!cancelled && data.value) setBotAvatar(getImageUrl(data.value));
+            } catch (error) {
+                console.error("Error fetching bot avatar:", error);
+            }
+        };
+
+        void fetchPersonalization();
+        return () => { cancelled = true; };
+    }, [isOpen, botAvatar]);
 
     useEffect(() => {
         scrollToBottom();

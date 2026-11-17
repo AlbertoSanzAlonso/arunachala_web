@@ -7,8 +7,8 @@ import { Article } from 'types/blog';
 import { getImageUrl } from 'utils/imageUtils';
 import { getTranslated } from 'utils/translate';
 import { getContentDetailPath } from 'utils/contentPaths';
-import omSymbol from 'assets/images/om_symbol.png';
-import lotusFlower from 'assets/images/lotus_flower.png';
+import omSymbol from 'assets/images/om_symbol.webp';
+import lotusFlower from 'assets/images/lotus_flower.webp';
 
 interface ArticleCardProps {
     article: Article;

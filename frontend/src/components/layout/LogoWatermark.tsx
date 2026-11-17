@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import omSymbol from 'assets/images/om_symbol.png';
-import lotusFlower from 'assets/images/lotus_flower.png';
+import omSymbol from 'assets/images/om_symbol.webp';
+import lotusFlower from 'assets/images/lotus_flower.webp';
 
 const HIDDEN_PREFIXES = [
     '/login',

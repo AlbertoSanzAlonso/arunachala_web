@@ -32,13 +32,26 @@
     <link rel="ai-catalog" type="application/json" href="https://www.yogayterapiasarunachala.es/.well-known/ai-catalog.json" />
     <link rel="ard" type="application/json" href="https://www.yogayterapiasarunachala.es/.well-known/ard.json" />
     <link rel="api-catalog" type="application/linkset+json" href="https://www.yogayterapiasarunachala.es/.well-known/api-catalog" />
-    <script src="%PUBLIC_URL%/seo-bootstrap.js"></script>
+    <link rel="preconnect" href="https://api.yogayterapiasarunachala.es" crossorigin>
+    <link rel="preconnect" href="https://media.yogayterapiasarunachala.es" crossorigin>
+    <link rel="dns-prefetch" href="https://api.yogayterapiasarunachala.es">
+    <link rel="dns-prefetch" href="https://media.yogayterapiasarunachala.es">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Fuentes no bloqueantes: media=print + onload evita retrasar FCP -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Mulish:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Mulish:wght@300;400;500;600;700&display=swap"
+        media="print"
+        onload="this.media='all'">
+    <noscript>
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Mulish:wght@300;400;500;600;700&display=swap">
+    </noscript>
+
+    <script src="%PUBLIC_URL%/seo-bootstrap.js" defer></script>
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="48x48" href="%PUBLIC_URL%/favicon-48x48.png" />
     <link rel="icon" type="image/png" sizes="96x96" href="%PUBLIC_URL%/favicon-96x96.png" />

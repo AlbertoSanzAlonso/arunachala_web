@@ -10,8 +10,8 @@ import PageSEO from '../components/providers/PageSEO';
 import { API_BASE_URL } from '../config';
 import { getTranslated } from '../utils/translate';
 import { getImageUrl } from '../utils/imageUtils';
-import omSymbol from '../assets/images/om_symbol.png';
-import lotusFlower from '../assets/images/lotus_flower.png';
+import omSymbol from '../assets/images/om_symbol.webp';
+import lotusFlower from '../assets/images/lotus_flower.webp';
 
 interface Article {
     id: number;
