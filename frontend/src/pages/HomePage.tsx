@@ -138,9 +138,9 @@ const HomePage: React.FC = () => {
             <Header />
 
             {/* Hero Section with Video */}
-            <section className="relative min-h-[75vh] short:min-h-[calc(100vh-3.5rem)] md:min-h-[90vh] short:md:min-h-[calc(100vh-3.5rem)] w-full overflow-hidden flex flex-col items-center justify-start short:justify-center md:justify-center pt-6 short:pt-0 md:pt-16 short:md:pt-0" role="banner">
+            <section className="relative min-h-[75vh] short:min-h-[calc(100vh-3.5rem)] md:min-h-[90vh] short:md:min-h-[calc(100vh-3.5rem)] w-full overflow-hidden flex flex-col items-center justify-start short:justify-center md:justify-center pt-6 short:pt-0 md:pt-16 short:md:pt-0 bg-black" role="banner">
                 <video
-                    className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-[1200ms] ease-out ${videoReady ? 'opacity-85' : 'opacity-0'}`}
+                    className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-[1200ms] ease-out ${videoReady ? 'opacity-100' : 'opacity-0'}`}
                     autoPlay
                     loop
                     muted
