@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import videoBgWebm from 'assets/videos/hero_optimized.webm';
-import videoPoster from 'assets/videos/VIDEOWEB_poster.webp';
 import omSymbol from 'assets/images/om_symbol.webp';
 import lotusFlower from 'assets/images/lotus_flower.webp';
 import Header from 'components/layout/Header';
@@ -155,16 +154,8 @@ const HomePage: React.FC = () => {
             />
             <Header />
 
-            {/* Hero Section with Video */}
+            {/* Hero Section with Video — sin poster: evita fotograma estático solapado con el vídeo */}
             <section className="relative min-h-[75vh] short:min-h-[calc(100vh-3.5rem)] md:min-h-[90vh] short:md:min-h-[calc(100vh-3.5rem)] w-full overflow-hidden flex flex-col items-center justify-start short:justify-center md:justify-center pt-6 short:pt-0 md:pt-16 short:md:pt-0 bg-black" role="banner">
-                <img
-                    src={videoPoster}
-                    alt=""
-                    aria-hidden="true"
-                    fetchPriority="high"
-                    decoding="async"
-                    className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-[1200ms] ease-out ${videoReady ? 'opacity-0' : 'opacity-100'}`}
-                />
                 {loadHeroVideo && (
                     <video
                         className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-[1200ms] ease-out ${videoReady ? 'opacity-100' : 'opacity-0'}`}
@@ -173,9 +164,7 @@ const HomePage: React.FC = () => {
                         muted
                         playsInline
                         preload="metadata"
-                        poster={videoPoster}
-                        onLoadedData={() => setVideoReady(true)}
-                        onCanPlay={() => setVideoReady(true)}
+                        onPlaying={() => setVideoReady(true)}
                     >
                         <source src={videoBgWebm} type="video/webm" />
                     </video>
